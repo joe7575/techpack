@@ -35,7 +35,7 @@ local function formspec(state, rules, endless)
 	end
 	tbl[#tbl+1] = "checkbox[0,8.5;endless;Run endless;"..endless.."]"
 	tbl[#tbl+1] = "image_button[5,8.5;1,1;".. tubelib.state_button(state) ..";button;]"
-	tbl[#tbl+1] = "button[7,8.5;1.5,1;help;help]"
+	tbl[#tbl+1] = "button[6.2,8.5;1.5,1;help;help]"
 	
 	return table.concat(tbl)
 end
