@@ -2,8 +2,6 @@
 
 This tubelib extension provides small and smart sensors, actors and controllers.
 
-![SmartLine](https://github.com/joe7575/techpack/blob/master/smartline/screenshot.png)
-
 The most important and smart node of SmartLine is the SmartLine Controller, a 'computer' to control and monitor Tubelib based machines.
 You don't need any programming skills, it is more like a configuration according to the "IF this THEN that" concept:
 

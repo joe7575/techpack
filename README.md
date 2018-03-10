@@ -2,6 +2,8 @@
 
 TechPack, a Mining, Crafting, &amp; Farming Modpack for Minetest.
 
+![TechPack](https://github.com/joe7575/techpack/blob/master/screenshot.png)
+
 TechPack is a collection of following Mods:
 
 * tubelib, a Mod for item exchange via lumber tubes and wireless message communication between nodes.
