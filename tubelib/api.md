@@ -279,7 +279,7 @@ and as templates for own projects:
 ## 6. Further information
 
 The complete functionality is implemented in the file 
-![command.lua](https://github.com/joe7575/Minetest-Tubelib/blob/master/command.lua). 
+![command.lua](https://github.com/joe7575/techpack/blob/master/tubelib/command.lua). 
 This file has further helper functions and is recommended for deeper study.
 
 ## 7. History

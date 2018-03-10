@@ -2,11 +2,9 @@
 
 ## Hints for Admins and Players
 
-Tubelib is little useful for itself, it makes only sense with extensions such as:  
-- ![tubelib_addons1](https://github.com/joe7575/tubelib_addons1) with farming nodes like Harvester, Quarry, Grinder, Autocrafter, Fermenter and Reformer.
-- ![tubelib_addons2](https://github.com/joe7575/tubelib_addons2) with control task nodes like Timer, Sequencer, Repeater, Gate, Door, Access Lock and Color Lamp.
+Tubelib is little useful for itself, it makes only sense with izs extensions.
 
-However Tubelib provides the following basic nodes:
+However, Tubelib provides the following basic nodes:
 
 ### Tubes
 Tubes allow the item exchange between two nodes. Tube forks are not possible. You have to use chests 
