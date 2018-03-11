@@ -29,5 +29,5 @@ Recipe for Compressed Gravel:
     Sieved Gravel, Sieved Gravel,
 
 
-## Dependencies
-default, optional moreores and tubelib   
+### Dependencies
+default, optional moreores, hopper, and pipeworks
