@@ -24,4 +24,7 @@ Code: Licensed under the GNU LGPL version 2.1 or later. See LICENSE.txt
 Textures: CC BY-SA 3.0
 
 # Dependencies 
-default, doors. Optional: display_lib, font_lib, mail, moreores
+default, doors.  
+SmartLine Display optional: display_lib, font_lib  
+SmartLine Controller optional: mail,  
+Gravelsieve optional: moreores, hopper, pipeworks  
