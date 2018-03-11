@@ -18,12 +18,12 @@ TechPack is a collection of following Mods:
   ![README.md](https://github.com/joe7575/techpack/blob/master/smartline/README.md)
 
 
-# License
+### License
 Copyright (C) 2017-2018 Joachim Stolberg  
 Code: Licensed under the GNU LGPL version 2.1 or later. See LICENSE.txt  
 Textures: CC BY-SA 3.0
 
-# Dependencies 
+### Dependencies 
 default, doors.  
 SmartLine Display optional: display_lib, font_lib  
 SmartLine Controller optional: mail,  
