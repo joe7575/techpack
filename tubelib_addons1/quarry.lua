@@ -140,6 +140,7 @@ local ResultNodes = {
 	["default:stone"] = "default:cobble",
 	["default:mossycobble"] = "default:mossycobble",
 	["default:desert_stone"] = "default:desert_cobble",
+	["default:desert_cobble"] = "default:desert_cobble",
 	["default:clay"] = "default:clay_lump",
 	["default:stone_with_coal"] = "default:coal_lump",
 	["default:stone_with_iron"] = "default:iron_lump",

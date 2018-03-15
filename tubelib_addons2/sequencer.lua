@@ -103,9 +103,9 @@ local function check_rules(pos, elapsed)
 			tubelib.send_message(rule.num, placer_name, nil, tAction[rule.act], number)
 			index = get_next_slot(index, rules, endless)
 			if index ~= nil and offs ~= nil and running == 1 then
-				-- after the last rule a pause with 2 or more sec is required
-				if index == 1 and offs < 2 then
-					offs = 2
+				-- after the last rule a pause with 1 or more sec is required
+				if index == 1 and offs < 1 then
+					offs = 1
 				end
 				meta:set_string("infotext", "Tubelib Sequencer "..number..": running ("..index.."/"..NUM_SLOTS..")")
 				meta:set_int("index", index)
