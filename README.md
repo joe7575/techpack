@@ -12,7 +12,7 @@ TechPack is a collection of following Mods:
 * gravelsieve, a Mod to sieve ores from gravel.
 * smartline, a Mod with small and smart sensors, actors and controllers.
 
-[b]A Tutorial to TechPack is available as ![Wiki](https://github.com/joe7575/techpack/wiki)[/b]
+**A TechPack Tutorial to is available as ![Wiki](https://github.com/joe7575/techpack/wiki)**
 
 TechPack is a collection of mods for an automated mining, crafting, and farming. It is no replacement for Pipeworks, Mesecons, Technic, and Co., but it is a lightweight and simple to use alternative for servers with the focus on building (not only playing around with technique stuff).
 If a player uses the full potential of TechPack, he can work on his building projects while TechPack is producing most of the necessary materials in the meantime. 
