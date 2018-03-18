@@ -25,7 +25,6 @@ local TICKS_TO_SLEEP = 5
 local CYCLE_TIME = 2
 local STOP_STATE = 0
 local STANDBY_STATE = -1
-local FAULT_STATE = -2
 
 -- Return a key/value table with all items and the corresponding stack numbers
 local function invlist_content_as_kvlist(list)
@@ -302,7 +301,7 @@ local function on_receive_fields(pos, formname, fields, player)
 	filter_settings(pos)
 	
 	if fields.button ~= nil then
-		if running > STOP_STATE or running == FAULT_STATE then
+		if running > STOP_STATE then
 			stop_the_machine(pos)
 		else
 			start_the_machine(pos)
