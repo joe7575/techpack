@@ -36,6 +36,8 @@ local function read_number(itemstack, user, pointed_thing)
 			numbers[number] = true
 			user:set_attribute("tubelib_prog_numbers", minetest.serialize(numbers))
 			minetest.chat_send_player(user:get_player_name(), "[Tubelib Programmer] number "..number.." read")
+		else
+			minetest.chat_send_player(user:get_player_name(), "[Tubelib Programmer] Unknown node on "..minetest.pos_to_string(pos))
 		end
 	else
 		return reset_programmer(itemstack, user, pointed_thing)
