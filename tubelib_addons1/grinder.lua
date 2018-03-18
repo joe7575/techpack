@@ -18,7 +18,7 @@ local TICKS_TO_SLEEP = 10
 local CYCLE_TIME = 2
 local STOP_STATE = 0
 local STANDBY_STATE = -1
-local FAULT_STATE = -2
+local FAULT_STATE = -3
 
 
 local function formspec(state)
@@ -285,7 +285,7 @@ tubelib.register_node("tubelib_addons1:grinder", {"tubelib_addons1:grinder_activ
 		elseif topic == "state" then
 			local meta = minetest.get_meta(pos)
 			local running = meta:get_int("running")
-			return tubelib.statestring(runnnig)
+			return tubelib.statestring(running)
 		else
 			return "unsupported"
 		end

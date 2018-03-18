@@ -24,7 +24,7 @@ local CYCLE_TIME = 4
 local BURNING_TIME = 16
 local TICKS_TO_SLEEP = 5
 local STOP_STATE = 0
-local FAULT_STATE = -2
+local FAULT_STATE = -3
 
 local Depth2Idx = {[1]=1 ,[2]=2, [3]=3, [5]=4, [10]=5, [15]=6, [20]=7, [25]=8}
 local Level2Idx = {[2]=1, [1]=2, [0]=3, [-1]=4, [-2]=5, [-3]=6, 

@@ -19,7 +19,7 @@ local CYCLE_TIME = 4
 local TICKS_TO_SLEEP = 5
 local STOP_STATE = 0
 local STANDBY_STATE = -1
-local FAULT_STATE = -2
+local FAULT_STATE = -3
 
 
 local leaves = {
@@ -135,7 +135,7 @@ end
 local function goto_sleep(pos)
 	local meta = minetest.get_meta(pos)
 	local number = meta:get_string("number")
-	meta:set_int("running", STOP_STATE)
+	meta:set_int("running", STANDBY_STATE)
 	minetest.get_node_timer(pos):start(CYCLE_TIME * TICKS_TO_SLEEP)
 	meta:set_string("infotext", "Tubelib Fermenter "..number..": standby")
 	meta:set_string("formspec", formspec(tubelib.STANDBY))
