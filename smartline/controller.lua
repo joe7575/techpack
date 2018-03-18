@@ -63,7 +63,7 @@ The colors show, if conditions are true or false and
 if actions were already executed or not.
 It has a 'update' button to update the view.
 
-For more information, see: goo.gl/wZ5GUR
+For more information, see: goo.gl/fF5ap6
 ]]
 
 local sOUTPUT = "Press 'help' for edit commands" 
@@ -109,12 +109,12 @@ local CondRunTimeHandlers = {}
 local ActnRunTimeHandlers = {}
 
 
-local function eval_cond(data, flags, timers, inputs, actions)
-	return CondRunTimeHandlers[data.__idx__](data, flags, timers, inputs, actions) and 1 or 0
+local function eval_cond(data, environ)
+	return CondRunTimeHandlers[data.__idx__](data, environ) and 1 or 0
 end
 
-local function exec_action(data, flags, timers, number)
-	ActnRunTimeHandlers[data.__idx__](data, flags, timers, number)
+local function exec_action(data, environ, number)
+	ActnRunTimeHandlers[data.__idx__](data, environ, number)
 end
 
 smartline = {}
@@ -255,11 +255,21 @@ local function runtime_data(postfix, type, fs_data)
 end
 
 local function decrement_timers(timers)
-	for idx,_ in ipairs(timers) do
-		timers[idx] = tonumber(timers[idx])
-		if timers[idx] >= 0 then
-			timers[idx] = timers[idx] - 1
+	if timers ~= nil then
+		for idx,_ in pairs(timers) do
+			timers[idx] = tonumber(timers[idx])
+			if timers[idx] >= 0 then
+				timers[idx] = timers[idx] - 1
+			end
 		end
+	end
+end
+
+local function toggle_flag(environ)
+	if environ.toggle == true then
+		environ.toggle = false
+	else
+		environ.toggle = true
 	end
 end
 
@@ -268,7 +278,7 @@ end
 -- Condition formspec
 --
 local function formspec_cond(_postfix_, fs_data)
-	local tbl = {"size[8.2,10]"..
+	local tbl = {"size[8.2,9]"..
 		default.gui_bg..
 		default.gui_bg_img..
 		default.gui_slots..
@@ -280,8 +290,8 @@ local function formspec_cond(_postfix_, fs_data)
 	tbl[#tbl+1] = "label[0,0.1;Condition type:]"
 	tbl[#tbl+1] = "textlist[0,0.6;8,1.4;cond;"..sConditions..";"..cond_idx.."]"
 	tbl = add_controls_to_table(tbl, _postfix_, fs_data, fs_definition)
-	tbl[#tbl+1] = "button[4,9.4;2,1;_cancel_;cancel]"
-	tbl[#tbl+1] = "button[6,9.4;2,1;_exit_;ok]"
+	tbl[#tbl+1] = "button[4,8.4;2,1;_cancel_;cancel]"
+	tbl[#tbl+1] = "button[6,8.4;2,1;_exit_;ok]"
 	return table.concat(tbl)
 end
 
@@ -312,7 +322,7 @@ end
 -- Action formspec
 --
 local function formspec_actn(_postfix_, fs_data)
-	local tbl = {"size[8.2,10]"..
+	local tbl = {"size[8.2,9]"..
 		default.gui_bg..
 		default.gui_bg_img..
 		default.gui_slots..
@@ -324,8 +334,8 @@ local function formspec_actn(_postfix_, fs_data)
 	tbl[#tbl+1] = "label[0,0.1;Action type:]"
 	tbl[#tbl+1] = "textlist[0,0.6;8,1.4;actn;"..sActions..";"..actn_idx.."]"
 	tbl = add_controls_to_table(tbl, _postfix_, fs_data, fs_definition)
-	tbl[#tbl+1] = "button[4,9.4;2,1;_cancel_;cancel]"
-	tbl[#tbl+1] = "button[6,9.4;2,1;_exit_;ok]"
+	tbl[#tbl+1] = "button[4,8.4;2,1;_cancel_;cancel]"
+	tbl[#tbl+1] = "button[6,8.4;2,1;_exit_;ok]"
 	return table.concat(tbl)
 end
 
@@ -416,7 +426,7 @@ local function eval_formspec_oprnd(meta, fs_data, fields, readonly)
 end
 
 local function formspec_main(state, fs_data, output)
-	local tbl = {"size[15,10;true]"..
+	local tbl = {"size[15,9;true]"..
 		default.gui_bg..
 		default.gui_bg_img..
 		default.gui_slots..
@@ -424,7 +434,7 @@ local function formspec_main(state, fs_data, output)
 		"label[0.8,0;label:]label[3.8,0;IF  cond 1:]label[7,0;and/or]label[8.3,0;cond 2:]label[11.7,0;THEN  action:]"}
 		
 	for idx = 1,NUM_RULES do
-		local ypos = idx * 0.8 - 0.4
+		local ypos = idx * 0.75 - 0.4
 		tbl[#tbl+1] = "label[0,"..(0.2+ypos)..";"..idx.."]"
 		tbl[#tbl+1] = "button[0.4,"..ypos..";3,1;label"..idx..";"..(fs_data["label"..idx] or "...").."]"
 		tbl[#tbl+1] = "button[3.5,"..ypos..";3.4,1;cond1"..idx..";"..(fs_data["cond1"..idx] or "...").."]"
@@ -432,12 +442,12 @@ local function formspec_main(state, fs_data, output)
 		tbl[#tbl+1] = "button[8,"..  ypos..";3.4,1;cond2"..idx..";"..(fs_data["cond2"..idx] or "...").."]"
 		tbl[#tbl+1] = "button[11.5,".. ypos..";3.4,1;actna"..idx..";"..(fs_data["actna"..idx] or "...").."]"
 	end
-	tbl[#tbl+1] = "image_button[14,9;1,1;".. tubelib.state_button(state) ..";button;]"
-	tbl[#tbl+1] = "button[10.6,9;1.5,1;state;state]"
-	tbl[#tbl+1] = "button[12.2,9;1.5,1;help;help]"
-	tbl[#tbl+1] = "label[0.2,8.8;"..output.."]"
-	tbl[#tbl+1] = "field[0.4,9.6;4.8,1;cmnd;;<cmnd>]"
-	tbl[#tbl+1] = "button[5,9.3;1,1;ok;OK]"
+	tbl[#tbl+1] = "image_button[14,8.1;1,1;".. tubelib.state_button(state) ..";button;]"
+	tbl[#tbl+1] = "button[10.6,8.2;1.5,1;state;state]"
+	tbl[#tbl+1] = "button[12.2,8.2;1.5,1;help;help]"
+	tbl[#tbl+1] = "label[0.2,8.4;"..output.."]"
+	tbl[#tbl+1] = "field[6.5,8.5;3,1;cmnd;;<cmnd>]"
+	tbl[#tbl+1] = "button[9.2,8.2;1,1;ok;OK]"
 	return table.concat(tbl)
 end
 
@@ -466,7 +476,7 @@ local function eval_formspec_main(meta, fs_data, fields, readonly)
 end
 
 local function formspec_help(offs)
-	return "size[15,10]"..
+	return "size[15,9]"..
 		default.gui_bg..
 		default.gui_bg_img..
 		default.gui_slots..
@@ -474,7 +484,7 @@ local function formspec_help(offs)
 		"label[0,"..(-offs/50)..";"..sHELP.."]"..
 		--"label[0.2,0;test]"..
 		"scrollbar[13.5,1;0.5,7;vertical;sb_help;"..offs.."]"..
-		"button[13.5,9;1.5,1;close;close]"
+		"button[13.3,8.2;1.5,1;close;close]"
 end
 
 local function background(xpos, ypos, val)
@@ -490,7 +500,7 @@ end
 local function formspec_state(meta, fs_data)
 	local number = meta:get_string("number")
 	local state = meta:get_int("state")
-	local tbl = {"size[15,10;true]"..
+	local tbl = {"size[15,9;true]"..
 		default.gui_bg..
 		default.gui_bg_img..
 		default.gui_slots..
@@ -498,83 +508,79 @@ local function formspec_state(meta, fs_data)
 		"label[0.8,0;label:]label[3.8,0;IF  cond 1:]label[7,0;and/or]label[8.3,0;cond 2:]label[11.7,0;THEN  action:]"}
 	
 	if state == tubelib.RUNNING and number then
-		local inputs = tubelib.get_data(number, "inputs") or {}
-		local act_gate = tubelib.get_data(number, "act_gate") or {}
-		local timers = tubelib.get_data(number, "timers") or {}
-		local flags = tubelib.get_data(number, "flags") or {}
-		local conds = tubelib.get_data(number, "conds") or {}
+		local environ = tubelib.get_data(number, "environ") 
+		local act_gate = tubelib.get_data(number, "act_gate")
+		local conds = tubelib.get_data(number, "conds")
 		
-		for idx = 1,NUM_RULES do
-			local ypos = idx * 0.6 + 0.2
-			local s1 = fs_data["cond1"..idx] or "    ...    "
-			local s2 = fs_data["cond2"..idx] or "    ...    "
-			local sa = fs_data["actna"..idx] or "    ...    "
-			if conds[idx] == nil then
-				tbl[#tbl+1] = background(3.7,  ypos, nil)
-				tbl[#tbl+1] = background(8,    ypos, nil)
-			else
-				tbl[#tbl+1] = background(3.7,  ypos, conds[idx] == 1 or conds[idx] == 3)
-				tbl[#tbl+1] = background(8,    ypos, conds[idx] == 2 or conds[idx] == 3)
+		if environ and act_gate and conds then
+			for idx = 1,NUM_RULES do
+				local ypos = idx * 0.6 + 0.2
+				local s1 = fs_data["cond1"..idx] or "    ...    "
+				local s2 = fs_data["cond2"..idx] or "    ...    "
+				local sa = fs_data["actna"..idx] or "    ...    "
+				if conds[idx] == nil then
+					tbl[#tbl+1] = background(3.7,  ypos, nil)
+					tbl[#tbl+1] = background(8,    ypos, nil)
+				else
+					tbl[#tbl+1] = background(3.7,  ypos, conds[idx] == 1 or conds[idx] == 3)
+					tbl[#tbl+1] = background(8,    ypos, conds[idx] == 2 or conds[idx] == 3)
+				end
+				tbl[#tbl+1] = background(11.5, ypos, act_gate[idx])
+				tbl[#tbl+1] = "label[0,"..  ypos..";"..idx.."]"
+				tbl[#tbl+1] = "label[0.5,"..ypos..";"..(fs_data["label"..idx] or "    ...    ").."]"
+				tbl[#tbl+1] = "label[3.7,"..  ypos..";"..s1.."]"
+				tbl[#tbl+1] = "label[7.2,"..  ypos..";"..(fs_data["oprnd"..idx] or "or").."]"
+				tbl[#tbl+1] = "label[8,"..  ypos..";"..s2.."]"
+				tbl[#tbl+1] = "label[11.5,".. ypos..";"..sa.."]"
+				if act_gate[idx] == true then
+					act_gate[idx] = false
+				end
 			end
-			tbl[#tbl+1] = background(11.5, ypos, act_gate[idx])
-			tbl[#tbl+1] = "label[0,"..  ypos..";"..idx.."]"
-			tbl[#tbl+1] = "label[0.5,"..ypos..";"..(fs_data["label"..idx] or "    ...    ").."]"
-			tbl[#tbl+1] = "label[3.7,"..  ypos..";"..s1.."]"
-			tbl[#tbl+1] = "label[7.2,"..  ypos..";"..(fs_data["oprnd"..idx] or "or").."]"
-			tbl[#tbl+1] = "label[8,"..  ypos..";"..s2.."]"
-			tbl[#tbl+1] = "label[11.5,".. ypos..";"..sa.."]"
+			
+			tbl[#tbl+1] = "label[10,7; Seconds: "..(meta:get_int("runtime") or 1).."]"
+
+			tbl[#tbl+1] = "label[0,7;"..output("Inputs", "i(", ")", environ.inputs).."]"
+			tbl[#tbl+1] = "label[0,7.6;"..output("Timers", "t", "", environ.timers).."]"
+			tbl[#tbl+1] = "label[0,8.2;"..output("Flags", "f", "", environ.flags).."]"
+			
+			tbl[#tbl+1] = "label[0,8.8;Hint:]"
+			tbl[#tbl+1] = "box[1.3,8.8;6,0.4;#008000]"
+			tbl[#tbl+1] = "label[1.4,8.8;condition true / action executed]"
+			tbl[#tbl+1] = "box[7.9,8.8;6,0.4;#800000]"
+			tbl[#tbl+1] = "label[8,8.8;condition false / action out-of-date]"
 		end
-		
-		tbl[#tbl+1] = "label[10,8.2; Seconds: "..(meta:get_int("runtime") or 1).."]"
-
-		tbl[#tbl+1] = "label[0,7;"..output("Inputs", "i(", ")", inputs).."]"
-		tbl[#tbl+1] = "label[0,7.6;"..output("Timers", "t", "", timers).."]"
-		tbl[#tbl+1] = "label[0,8.2;"..output("Flags", "f", "", flags).."]"
-		
-		tbl[#tbl+1] = "label[0,9;Hint:]"
-		tbl[#tbl+1] = "box[1.3,9;7,0.4;#008000]"
-		tbl[#tbl+1] = "label[1.4,9;condition is true / action was executed]"
-		tbl[#tbl+1] = "box[8.9,9;4,0.4;#800000]"
-		tbl[#tbl+1] = "label[9,9;condition is false]"
-		tbl[#tbl+1] = "box[1.3,9.6;7,0.4;#202020]"
-		tbl[#tbl+1] = "label[1.4,9.6;action was not executed]"
-
 	end
 	
-	tbl[#tbl+1] = "button[13.3,8;1.7,1;update;update]"
-	tbl[#tbl+1] = "button[13.3,9;1.7,1;close;close]"
+	tbl[#tbl+1] = "button[13.3,6.9;1.7,1;update;update]"
+	tbl[#tbl+1] = "button[13.3,7.8;1.7,1;close;close]"
 	return table.concat(tbl)
 end
 
 local function execute(meta, number, debug)
 	local rt_rules = tubelib.get_data(number, "rt_rules")
-	local inputs = tubelib.get_data(number, "inputs") or {}
-	local act_gate = tubelib.get_data(number, "act_gate") or {}
-	local timers = tubelib.get_data(number, "timers") or {}
-	local flags = tubelib.get_data(number, "flags") or {}
-	local conds = tubelib.get_data(number, "conds") or {}
-	local actions =  {}
-	decrement_timers(timers)
-	for i,item in ipairs(rt_rules) do
-		local c1 = eval_cond(item.cond1, flags, timers, inputs, actions)
-		local c2 = eval_cond(item.cond2, flags, timers, inputs, actions)
-		conds[i] = c1 + c2*2
-		if c1 + c2 >= item.cond_cnt then
-			if act_gate[i] == nil then
-				-- execute action
-				exec_action(item.actn, flags, timers, number)
-				actions[i] = true
+	local environ = tubelib.get_data(number, "environ")
+	local act_gate = tubelib.get_data(number, "act_gate")
+	local conds = tubelib.get_data(number, "conds")
+	if rt_rules and environ and act_gate and conds then
+		environ.actions =  {}
+		decrement_timers(environ.timers)
+		toggle_flag(environ)
+		for i,item in ipairs(rt_rules) do
+			local c1 = eval_cond(item.cond1, environ)
+			local c2 = eval_cond(item.cond2, environ)
+			conds[i] = c1 + c2*2
+			if c1 + c2 >= item.cond_cnt then
+				if act_gate[i] == nil then
+					-- execute action
+					exec_action(item.actn, environ, number)
+					environ.actions[i] = true
+					act_gate[i] = true
+				end
+			else
+				act_gate[i] = nil
 			end
-			act_gate[i] = true
-		else
-			act_gate[i] = nil
 		end
 	end
-	tubelib.set_data(number, "inputs", inputs)
-	tubelib.set_data(number, "act_gate", act_gate)
-	tubelib.set_data(number, "timers", timers)
-	tubelib.set_data(number, "flags", flags)
-	tubelib.set_data(number, "conds", conds)
 end
 
 local function check_rules(pos, elapsed)
@@ -605,11 +611,14 @@ local function switch_state(pos, state, fs_data)
 end
 
 local function start_controller(pos, number, fs_data)
-	tubelib.set_data(number, "timers",   {})  -- local timers
-	tubelib.set_data(number, "inputs",   {})  -- for rx commands
-	tubelib.set_data(number, "flags",    {})  -- to store flags
-	tubelib.set_data(number, "conds",    {})  -- to store conditions
-	tubelib.set_data(number, "act_gate", {})  -- for action states
+	-- delete old data
+	tubelib.set_data(number, "environ",  {
+		timers = {}, 
+		flags = {}, 
+		inputs = {}
+	})
+	tubelib.set_data(number, "conds",    {})
+	tubelib.set_data(number, "act_gate", {})
 	switch_state(pos, tubelib.RUNNING, fs_data)
 end
 
@@ -854,10 +863,10 @@ minetest.register_craft({
 local function set_input(meta, payload, val)
 	if payload then 
 		local number = meta:get_string("number")
-		local inputs = tubelib.get_data(number, "inputs")
-		if inputs then
-			inputs[payload] = val
-			tubelib.set_data(number, "inputs", inputs)
+		local environ = tubelib.get_data(number, "environ") or {}
+		if environ.inputs then
+			environ.inputs[payload] = val
+			tubelib.set_data(number, "environ", environ)
 		end
 	end
 end	
@@ -908,6 +917,25 @@ local function update_node_database(meta)
 	return tOld2NewCond, tOld2NewActn
 end
 
+local function maintain_dataset(number)
+	local flags = tubelib.get_data(number, "flags")
+	if flags ~= nil then
+		local timers = tubelib.get_data(number, "timers") or {}
+		local inputs = tubelib.get_data(number, "inputs") or {}
+		
+		tubelib.set_data(number, "environ", {
+			flags = flags, 
+			timers = timers, 
+			inputs = inputs, 
+			vars = {}
+		})
+		
+		tubelib.set_data(number, "inputs", nil)
+		tubelib.set_data(number, "timers", nil)
+		tubelib.set_data(number, "flags", nil)
+	end
+end
+
 minetest.register_lbm({
 	label = "[SmartLine] Controller update",
 	name = "smartline:update",
@@ -932,6 +960,8 @@ minetest.register_lbm({
 		local number = meta:get_string("number")
 		local owner = meta:get_string("owner")
 		formspec2runtime_rule(number, owner, fs_data)
+	
+		maintain_dataset(number)
 	end
 })
 
