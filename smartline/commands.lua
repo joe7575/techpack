@@ -69,7 +69,7 @@ smartline.register_condition("toggle", {
 		{
 			type = "label", 
 			name = "lbl", 
-			label = "Hint: This flag toggles (true/false) every second\nand can be used to trigger\nan action every two seconds.", 
+			label = "Hint: This flag toggles (true/false) every two\nseconds and can be used to trigger\nan action every four seconds.", 
 		},
 	},
 	on_execute = function(data, environ) 
