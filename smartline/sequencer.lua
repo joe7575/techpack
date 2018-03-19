@@ -22,7 +22,7 @@ local sHELP = [[label[0,0;SmartLine Sequencer Help
 Define a sequence of commands to control other machines.
 Numbers(s) are the node numbers, the command shall sent to.
 The commands 'on'/'off' are used for machines and other nodes.
-Offset is the time to the next line in seconds (0..999).
+Offset is the time to the next line in seconds (1..999).
 If endless is set, the Sequencer restarts again and again.
 The command '  ' does nothing, only consuming the offset time.
 ]
@@ -109,11 +109,14 @@ local function check_rules(pos, elapsed)
 		while true do -- process all rules as long as offs == 0
 			local rule = rules[index]
 			local offs = rules[index].offs
+			if type(offs) == "string" then
+				offs = 0
+			end
 			tubelib.send_message(rule.num, placer_name, nil, tAction[rule.act], number)
 			index = get_next_slot(index, rules, endless)
 			if index ~= nil and offs ~= nil and running == 1 then
 				-- after the last rule a pause with 2 or more sec is required
-				if index == 1 and offs < 2 then
+				if index == 1 and offs < 1 then
 					offs = 2
 				end
 				meta:set_string("infotext", "Tubelib Sequencer "..number..": running ("..index.."/"..NUM_SLOTS..")")
