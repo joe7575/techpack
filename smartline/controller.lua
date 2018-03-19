@@ -265,12 +265,8 @@ local function decrement_timers(timers)
 	end
 end
 
-local function toggle_flag(environ)
-	if environ.toggle == true then
-		environ.toggle = false
-	else
-		environ.toggle = true
-	end
+local function toggle_flag(meta, environ)
+	environ.toggle = (meta:get_int("runtime") or 0) % 4 >= 2
 end
 
 
@@ -564,7 +560,7 @@ local function execute(meta, number, debug)
 	if rt_rules and environ and act_gate and conds then
 		environ.actions =  {}
 		decrement_timers(environ.timers)
-		toggle_flag(environ)
+		toggle_flag(meta, environ)
 		for i,item in ipairs(rt_rules) do
 			local c1 = eval_cond(item.cond1, environ)
 			local c2 = eval_cond(item.cond2, environ)

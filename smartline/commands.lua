@@ -687,3 +687,28 @@ smartline.register_condition("action", {
 	end,
 })
 
+
+local function daytime()
+	local t = minetest.get_timeofday()
+	return string.format("%02d:%02d", math.floor(t*24) % 24, math.floor(t*1440) % 60)
+end
+	
+smartline.register_condition("rtc", {
+	title = "Read RTC",
+	formspec = {
+		{
+			type = "label", 
+			name = "lbl", 
+			label = "Hint: The condition is always false.\nThe time is available as state\n(see Display actions).", 
+		},
+	},
+	
+	on_execute = function(data, environ) 
+		environ.state = daytime()
+		return false
+	end,
+	button_label = function(data) 
+		return "RTC"
+	end,
+})
+
