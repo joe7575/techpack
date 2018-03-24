@@ -13,7 +13,7 @@
 ]]--
 
 local tColors = {"#0000FF", "#00FFFF", "#00FF00", "#FFFF00", "#FF0000", "#FF00FF",
-				 "#FFFFFF", "#000000", "#3BC23B", "#CA3131", "#FFA500", "#FFC0CB"}
+                 "#FFFFFF", "#000000", "#3BC23B", "#CA3131", "#FFA500", "#FFC0CB"}
 local sColor = "1,2,3,4,5,6,7,8,9,10,11,12"
 
 local function switch_node(pos, num, player)

@@ -3,7 +3,7 @@
 	Tubelib Addons 1
 	================
 
-	Copyright (C) 2017 Joachim Stolberg
+	Copyright (C) 2017,2018 Joachim Stolberg
 
 	LGPLv2.1+
 	See LICENSE.txt for more information
@@ -135,45 +135,6 @@ end
 
 local QuarrySchedule = {0,0,3,3,3,3,2,2,2,2,1,1,1,1,0,3,0,0,3,3,2,2,1,0,0}
 
-local ResultNodes = {
-	["default:cobble"] = "default:cobble",
-	["default:stone"] = "default:cobble",
-	["default:mossycobble"] = "default:mossycobble",
-	["default:desert_stone"] = "default:desert_cobble",
-	["default:desert_cobble"] = "default:desert_cobble",
-	["default:clay"] = "default:clay_lump",
-	["default:stone_with_coal"] = "default:coal_lump",
-	["default:stone_with_iron"] = "default:iron_lump",
-	["default:stone_with_copper"] = "default:copper_lump",
-	["default:stone_with_gold"] = "default:gold_lump",
-	["default:gravel"] = "default:gravel",
-	["default:stone_with_mese"] = "default:meselamp",
-	["default:stone_with_tin"] = "default:tin_lump",
-	["default:stone_with_diamond"] = "default:diamond",
-	["default:dirt"] = "default:dirt",
-	["default:dirt_with_grass"] = "default:dirt",
-	["default:dirt_with_grass_footsteps"] = "default:dirt",
-	["default:dirt_with_dry_grass"] = "default:dirt",
-	["default:dirt_with_snow"] = "default:dirt",
-	["default:dirt_with_rainforest_litter"] = "default:dirt",
-	["default:sand"] = "default:sand",
-	["default:desert_sand"] = "default:desert_sand",
-	["default:silver_sand"] = "default:silver_sand",
-	["moreores:mineral_silver"] = "moreores:silver_lump",
-	["moreores:mineral_mithril"] = "moreores:mithril_lump",
-	["stairs:stair_cobble"] = "stairs:stair_cobble",
-	["stairs:stair_mossycobble"] = "stairs:stair_mossycobble",
-	["stairs:stair_desert_cobble"] = "stairs:stair_desert_cobble",
-	["default:cactus"] = "default:cactus",
-	["default:ice"] = "default:ice",
-	["default:snowblock"] = "default:snowblock",
-	["default:dirt_with_snow"] = "default:dirt",
-	["default:snow"] = "default:snow",
-	["default:coral_skeleton"] = "default:coral_skeleton",
-	["default:coral_orange"] = "default:coral_skeleton",
-	["default:coral_brown"] = "default:coral_skeleton",
-}
-
 
 local function get_next_pos(pos, facedir, dir)
 	facedir = (facedir + dir) % 4
@@ -229,11 +190,12 @@ local function quarry_next_node(pos, meta)
 	end
 
 	local number = meta:get_string("number")
-	if ResultNodes[node.name] ~= nil then
+	local order = tubelib_addons1.GroundNodes[node.name]
+	if order ~= nil then
 		local inv = meta:get_inventory()
-		if inv:room_for_item("main", ItemStack(node.name)) then
+		if inv:room_for_item("main", ItemStack(order.drop)) then
 			minetest.remove_node(quarry_pos)
-			inv:add_item("main", ItemStack(ResultNodes[node.name]))
+			inv:add_item("main", ItemStack(order.drop))
 			meta:set_string("infotext", "Tubelib Quarry "..number..
 					": running "..idx.."/"..(curr_level-pos.y))
 			return true

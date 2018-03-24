@@ -3,7 +3,7 @@
 	Tubelib Addons 1
 	================
 
-	Copyright (C) 2017 Joachim Stolberg
+	Copyright (C) 2017,2018 Joachim Stolberg
 
 	LGPLv2.1+
 	See LICENSE.txt for more information

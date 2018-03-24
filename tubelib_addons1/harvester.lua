@@ -3,7 +3,7 @@
 	Tubelib Addons 1
 	================
 
-	Copyright (C) 2017 Joachim Stolberg
+	Copyright (C) 2017,2018 Joachim Stolberg
 
 	LGPLv2.1+
 	See LICENSE.txt for more information
@@ -56,76 +56,6 @@ end
 
 local WorkingSteps = gen_working_steps()
 
-
--- valid harvesting nodes and the results for the inventory
-local ResultNodes = {
-	["default:tree"] = "default:tree",
-	["default:aspen_tree"] = "default:aspen_tree",
-	["default:pine_tree"] = "default:pine_tree",
-	["default:acacia_tree"] = "default:acacia_tree",
-	["default:jungletree"] = "default:jungletree",
-	
-	["default:leaves"] = "default:leaves",
-	["default:aspen_leaves"] = "default:aspen_leaves",
-	["default:pine_needles"] = "default:pine_needles",
-	["default:acacia_leaves"] = "default:acacia_leaves",
-	["default:jungleleaves"] = "default:jungleleaves",
-	
-	["default:bush_leaves"] = "default:bush_leaves",
-	["default:acacia_bush_leaves"] = "default:acacia_bush_leaves",
-	
-	["default:cactus"] = "default:cactus",
-	["default:papyrus"] = "default:papyrus",
-	
-	["farming:wheat_8"] = "farming:wheat",
-	["farming:cotton_8"] = "farming:cotton",
-	
-	["default:apple"] = "default:apple",
-
-	["farming:carrot_8"] = "farming:carrot 2",
-	["farming:potato_4"] = "farming:potato 3",
-	["farming:tomato_8"] = "farming:tomato 3",
-	["farming:cucumber_4"] = "farming:cucumber 2",
-	["farming:corn_8"] = "farming:corn 2",
-	["farming:coffee_5"] = "farming:coffee_beans 2",
-	["farming:melon_8"] = "farming:melon_slice 9",
-	["farming:pumpkin_8"] = "farming:pumpkin_slice 9",
-	["farming:raspberry_4"] = "farming:raspberries",
-	["farming:blueberry_4"] = "farming:blueberries",
-	["farming:rhubarb_3"] = "farming:rhubarb 2",
-	["farming:beanpole_5"] = "farming:beans 3",
-	["farming:grapes_8"] = "farming:grapes 3",
-	["farming:barley_7"] = "farming:barley",
-	["farming:chili_8"] = "farming:chili_pepper 2",
-	["farming:hemp_8"] = "farming:hemp_leaf",
-}
-
--- Which sapling/seed belongs to which tree/crop
-local SaplingList = {
-	["default:tree"] = "default:sapling",
-	["default:aspen_tree"] = "default:aspen_sapling",
-	["default:pine_tree"] = "default:pine_sapling",
-	["default:acacia_tree"] = "default:acacia_sapling",
-	["default:jungletree"] = "default:junglesapling",
-	["farming:wheat_8"] = "farming:wheat_1",
-	["farming:cotton_8"] = "farming:cotton_1",
-	["farming:carrot_8"] = "farming:carrot_1",
-	["farming:potato_4"] = "farming:potato_1",
-	["farming:tomato_8"] = "farming:tomato_1",
-	["farming:cucumber_4"] = "farming:cucumber_1",
-	["farming:corn_8"] = "farming:corn_1",
-	["farming:coffee_5"] = "farming:coffee_1",
-	["farming:melon_8"] = "farming:melon_1",
-	["farming:pumpkin_8"] = "farming:pumpkin_1",
-	["farming:raspberry_4"] = "farming:raspberry_1",
-	["farming:blueberry_4"] = "farming:blueberry_1",
-	["farming:rhubarb_3"] = "farming:rhubarb_1",
-	["farming:beanpole_5"] = "farming:beanpole_1",
-	["farming:grapes_8"] = "farming:grapes_1",
-	["farming:barley_7"] = "farming:barley_1",
-	["farming:chili_8"] = "farming:chili_1",
-	["farming:hemp_8"] = "farming:hemp_1",
-}
 
 local function formspec(this, state)
 	-- some recalculations
@@ -238,7 +168,7 @@ end
 -- Remove wood/leave nodes and place sapling if necessary
 -- Return false if inventory is full
 -- else return true
-local function remove_or_replace_node(pos, inv, node)
+local function remove_or_replace_node(pos, inv, node, order)
 	local next_pos = table.copy(pos)
 	next_pos.y = next_pos.y - 1
 	
@@ -248,34 +178,15 @@ local function remove_or_replace_node(pos, inv, node)
 	end
 	local next_node = minetest.get_node_or_nil(next_pos)
 	if next_node then
-		-- don't remove the last cactus block
-		if node.name == "default:cactus" and next_node.name ~= "default:cactus" then
-			return true
-		end
-		-- don't remove the last papyrus block
-		if node.name == "default:papyrus" and next_node.name ~= "default:papyrus" then
-			return true
-		end
 		minetest.remove_node(pos)
-		inv:add_item("main", ItemStack(ResultNodes[node.name]))
-		if ResultNodes[next_node.name] == nil and next_node.name ~= "air" then  -- hit the ground?
-			if SaplingList[node.name] then
-				node.name = SaplingList[node.name]
-				minetest.set_node(pos, {name=node.name, paramtype2 = "wallmounted", param2=1})
-				if node.name:sub(1,8) == "farming:" then
-					-- farming_redo installed?
-					if farming.mod == "redo" then
-						-- nothing to do
-					else
-						-- We have to simulate "on_place" and start the timer by hand
-						-- because the after_place_node function checks player rights and can't therefore
-						-- be used.
-						minetest.get_node_timer(pos):start(math.random(166,288))
-					end
-				else
-					-- default trees
-					minetest.get_node_timer(pos):start(math.random(2400,4800))
-				end
+		inv:add_item("main", ItemStack(order.drop))
+		if tubelib_addons1.GroundNodes[next_node.name] ~= nil and order.plant then  -- hit the ground?
+			minetest.set_node(pos, {name=order.plant, paramtype2 = "wallmounted", param2=1})
+			if order.t1 ~= nil then 
+				-- We have to simulate "on_place" and start the timer by hand
+				-- because the after_place_node function checks player rights and can't therefore
+				-- be used.
+				minetest.get_node_timer(pos):start(math.random(order.t1, order.t2))
 			end
 		remove_all_sapling_items(pos)
 		end
@@ -326,8 +237,9 @@ local function harvest_field(this, meta)
 		pos.y = y_pos
 		local node = minetest.get_node_or_nil(pos)
 		if node and node.name ~= "air" then
-			if ResultNodes[node.name] then
-				if not remove_or_replace_node(pos, inv, node) then
+			local order = tubelib_addons1.FarmingNodes[node.name]
+			if order then
+				if not remove_or_replace_node(pos, inv, node, order) then
 					return false
 				end
 			else 	
