@@ -32,6 +32,7 @@ end
 -- farming nodes with ABM
 function tubelib_addons1.register_farming_node(name, drop, plant)
 	tubelib_addons1.FarmingNodes[name] = {drop = drop or name, plant = plant}
+	tubelib_addons1.FarmingNodes[name].leaves = string.find(name, "leaves") ~= nil
 end
 
 function tubelib_addons1.register_ground_node(name, drop)
@@ -55,6 +56,7 @@ tn("default:jungletree",  "default:jungletree",  "default:junglesapling")
 fn("default:leaves")
 fn("default:aspen_leaves")
 fn("default:pine_needles")
+tubelib_addons1.FarmingNodes["default:pine_needles"].leaves = true  -- accepted as leaves
 fn("default:acacia_leaves")
 fn("default:jungleleaves")
 

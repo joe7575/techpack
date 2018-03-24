@@ -51,6 +51,13 @@ TechPack provides:
 - a Signal Tower node showing machine states
 - a Display node for text outputs of the Controller
 
+TechPack supports the following mods:
+- Farming Redo (Harvester, Fermenter)
+- Ethereal (Harvester, Quarry, Fermenter)
+- Pipeworks (Gravel Sieve)
+- Hopper (Gravel Sieve)
+- Mesecon (Mesecon Converter)
+
 ### License
 Copyright (C) 2017-2018 Joachim Stolberg  
 Code: Licensed under the GNU LGPL version 2.1 or later. See LICENSE.txt  

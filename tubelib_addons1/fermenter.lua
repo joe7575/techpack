@@ -22,16 +22,6 @@ local STANDBY_STATE = -1
 local FAULT_STATE = -3
 
 
-local leaves = {
-	["default:leaves"] = true,
-	["default:aspen_leaves"] = true,
-	["default:pine_needles"] = true,
-	["default:acacia_leaves"] = true,
-	["default:jungleleaves"] = true,
-	["default:bush_leaves"] = true,
-	["default:acacia_bush_leaves"] = true,
-}
-
 local function formspec(state)
 	return "size[8,8]"..
 	default.gui_bg..
@@ -50,13 +40,18 @@ local function formspec(state)
 	"listring[current_player;main]"
 end
 
+local function is_leaves(name)
+	return tubelib_addons1.FarmingNodes[name] ~= nil  and
+	       tubelib_addons1.FarmingNodes[name].leaves == true
+end
+
 local function allow_metadata_inventory_put(pos, listname, index, stack, player)
 	if minetest.is_protected(pos, player:get_player_name()) then
 		return 0
 	end
 	local meta = minetest.get_meta(pos)
 	local inv = meta:get_inventory()
-	if listname == "src" and leaves[stack:get_name()] then
+	if listname == "src" and is_leaves(stack:get_name()) then
 		return stack:get_count()
 	elseif listname == "dst" then
 		return stack:get_count()
@@ -97,7 +92,7 @@ local function convert_leaves_to_biogas(meta)
 	if inv:room_for_item("dst", biogas) then					-- enough output space?
 		local items = tubelib.get_num_items(meta, "src", 2)
 		if items then											-- input available?
-			if leaves[items:get_name()] then					-- valid input?
+			if is_leaves(items:get_name()) then
 				inv:add_item("dst", biogas)
 				return true
 			else
