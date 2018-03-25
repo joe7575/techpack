@@ -90,13 +90,19 @@ minetest.register_node("tubelib_addons2:mesecons_converter", {
 		effector = {
 			rules = mesecon.rules.default,
 			action_on = function (pos, node)
-				send_message(pos, "on", nil)
+				local meta = minetest.get_meta(pos)
+				local own_number = meta:get_string("own_number")
+				send_message(pos, "on", own_number)
 			end,
 			action_off = function (pos, node)
-				send_message(pos, "off", nil)
+				local meta = minetest.get_meta(pos)
+				local own_number = meta:get_string("own_number")
+				send_message(pos, "off", own_number)
 			end,
 			action_change = function (pos, node)
-				send_message(pos, "change", nil)
+				local meta = minetest.get_meta(pos)
+				local own_number = meta:get_string("own_number")
+				send_message(pos, "change", own_number)
 			end,
 		}
 	},
