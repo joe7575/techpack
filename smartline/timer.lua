@@ -99,6 +99,14 @@ local function check_rules(pos,elapsed)
 	for idx,act in ipairs(actions) do
 		if act ~= "" and numbers[idx] ~= "" then
 			local hr = (events[idx] - 1) * 2
+			if ((hour - hr) % 24) <= 4 then  -- last 4 hours?
+				if done[idx] == false then  -- not already executed?
+					tubelib.send_message(numbers[idx], placer_name, nil, act, own_num)
+					done[idx] = true
+				end
+			else
+				done[idx] = false
+			end
 			if hour == hr and done[idx] == false then
 				tubelib.send_message(numbers[idx], placer_name, nil, act, own_num)
 				done[idx] = true
@@ -218,26 +226,16 @@ minetest.register_craft({
 })
 
 minetest.register_lbm({
-	label = "[Tubelib] Timer update",
+	label = "[SmartLine] Timer update",
 	name = "smartline:update",
 	nodenames = {"smartline:timer"},
-	run_at_every_load = false,
+	run_at_every_load = true,
 	action = function(pos, node)
 		local meta = minetest.get_meta(pos)
-		local events = minetest.deserialize(meta:get_string("events"))
-		local numbers = minetest.deserialize(meta:get_string("numbers"))
-		local actions = {}
-		for _,a in ipairs(minetest.deserialize(meta:get_string("actions"))) do
-			if a == "start" then
-				actions[#actions+1] = "on"
-			elseif a == "stop" then
-				actions[#actions+1] = "off"
-			else
-				actions[#actions+1] = a
-			end
-		end
-		meta:set_string("actions", minetest.serialize(actions))
-		meta:set_string("formspec", formspec(events, numbers, actions))
+		-- check rules for just loaded areas
+		local done = {false,false,false,false,false,false}
+		meta:set_string("done",  minetest.serialize(done))
+		check_rules(pos,0)
 	end
 })
 

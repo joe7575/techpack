@@ -80,9 +80,13 @@ local function check_rules(pos,elapsed)
 	for idx,act in ipairs(actions) do
 		if act ~= "" and numbers[idx] ~= "" then
 			local hr = (events[idx] - 1) * 2
-			if hour == hr and done[idx] == false then
-				tubelib.send_message(numbers[idx], placer_name, nil, act, number)
-				done[idx] = true
+			if ((hour - hr) % 24) <= 4 then  -- last 4 hours?
+				if done[idx] == false then  -- not already executed?
+					tubelib.send_message(numbers[idx], placer_name, nil, act, number)
+					done[idx] = true
+				end
+			else
+				done[idx] = false
 			end
 		end
 	end
@@ -186,9 +190,14 @@ minetest.register_lbm({
 	label = "[Tubelib] Timer update",
 	name = "tubelib_addons2:update",
 	nodenames = {"tubelib_addons2:timer"},
-	run_at_every_load = false,
+	run_at_every_load = true,
 	action = function(pos, node)
 		local meta = minetest.get_meta(pos)
+		-- check rules for just loaded areas
+		local done = {false,false,false,false,false,false}
+		meta:set_string("done",  minetest.serialize(done))
+		check_rules(pos,0)
+		
 		local events = minetest.deserialize(meta:get_string("events"))
 		local numbers = minetest.deserialize(meta:get_string("numbers"))
 		local actions = {}
