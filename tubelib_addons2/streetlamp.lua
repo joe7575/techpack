@@ -112,7 +112,7 @@ minetest.register_node("tubelib_addons2:streetlamp_on", {
 minetest.register_craft({
 	type = "shapeless",
 	output = "tubelib_addons2:streetlamp 2",
-	recipe = {"ubelib_addons2:lamp", "default:steel_ingot", "default:glass"},
+	recipe = {"tubelib:lamp", "default:steel_ingot", "default:glass"},
 })
 
 --------------------------------------------------------------- tubelib
