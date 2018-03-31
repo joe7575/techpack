@@ -76,4 +76,4 @@ Gravelsieve optional: moreores, hopper, pipeworks
 - 2018-03-24  V1.01  * Support for Ethereal added
 - 2018-03-27  V1.02  * Timer improvements for unloaded areas
 - 2018-03-29  V1.03  * Area protected chest added to tubelib_addons1
-- 2018-03-31  V1.04  * Maintenance, minor issues, Unifieddyes support for Color Lamp 
+- 2018-03-31  V1.04  * Maintenance, minor issues, Unifieddyes support for Color Lamp, Street Lamp added
