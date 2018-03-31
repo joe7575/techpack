@@ -161,19 +161,15 @@ end
 -- Add node to the tubelib lists and update the tube surrounding.
 -- Function determines and returns the node position number,
 -- needed for message communication.
--- If 'name' is nil, the tube surrounding is not updated,
--- which should be used for nodes without tube connection.
 function tubelib.add_node(pos, name)
 	-- store position 
 	local number = get_number(pos)
-	if name then
-		Number2Pos[number] = {
-			pos = pos, 
-			name = name,
-		}
-		-- update surrounding tubes
-		tubelib.update_tubes(pos)
-	end
+	Number2Pos[number] = {
+		pos = pos, 
+		name = name,
+	}
+	-- update surrounding tubes
+	tubelib.update_tubes(pos)
 	return number
 end
 
@@ -226,10 +222,8 @@ function tubelib.send_message(numbers, placer_name, clicker_name, topic, payload
 			local data = Number2Pos[num]
 			if placer_name and not minetest.is_protected(data.pos, placer_name) then
 				if clicker_name == nil or not minetest.is_protected(data.pos, clicker_name) then
-					if data and data.name then
-						if tubelib_NodeDef[data.name] and tubelib_NodeDef[data.name].on_recv_message then
-							tubelib_NodeDef[data.name].on_recv_message(data.pos, topic, payload)
-						end
+					if tubelib_NodeDef[data.name] and tubelib_NodeDef[data.name].on_recv_message then
+						tubelib_NodeDef[data.name].on_recv_message(data.pos, topic, payload)
 					end
 				end
 			end
@@ -240,10 +234,8 @@ end
 function tubelib.send_request(number, topic, payload)
 	if Number2Pos[number] and Number2Pos[number].name then
 		local data = Number2Pos[number]
-		if data and data.name then
-			if tubelib_NodeDef[data.name] and tubelib_NodeDef[data.name].on_recv_message then
-				return tubelib_NodeDef[data.name].on_recv_message(data.pos, topic, payload)
-			end
+		if tubelib_NodeDef[data.name] and tubelib_NodeDef[data.name].on_recv_message then
+			return tubelib_NodeDef[data.name].on_recv_message(data.pos, topic, payload)
 		end
 	end
 	return false

@@ -70,7 +70,7 @@ minetest.register_node("tubelib:button", {
 
 	after_place_node = function(pos, placer)
 		local meta = minetest.get_meta(pos)
-		local own_num = tubelib.add_node(pos)
+		local own_num = tubelib.add_node(pos, "tubelib:button")
 		meta:set_string("own_num", own_num)
 		meta:set_string("formspec", "size[5,6]"..
 		"dropdown[0.2,0;3;type;switch,button 2s,button 4s,button 8s,button 16s;1]".. 

@@ -32,7 +32,7 @@ minetest.register_node("tubelib_addons2:repeater", {
 
 	after_place_node = function(pos, placer)
 		local meta = minetest.get_meta(pos)
-		local own_number = tubelib.add_node(pos)
+		local own_number = tubelib.add_node(pos, "tubelib_addons2:repeater")
 		meta:set_string("own_number", own_number)
 		meta:set_string("formspec", formspec(meta))
 		meta:set_string("infotext", "Tubelib Repeater "..own_number..": not connected")

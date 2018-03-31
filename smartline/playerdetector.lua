@@ -121,7 +121,7 @@ minetest.register_node("smartline:playerdetector", {
 		},
 	},
 	after_place_node = function(pos, placer)
-		local number = tubelib.add_node(pos)
+		local number = tubelib.add_node(pos, "smartline:playerdetector")
 		local meta = minetest.get_meta(pos)
 		meta:set_string("number", number)
 		local numbers = meta:get_string("numbers") or ""

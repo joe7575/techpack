@@ -36,7 +36,7 @@ for idx,pgn in ipairs(tPgns) do
 		after_place_node = function(pos, placer)
 			local meta = minetest.get_meta(pos)
 			local node = minetest.get_node(pos)
-			local number = tubelib.add_node(pos)
+			local number = tubelib.add_node(pos, "tubelib_addons2:gateblock"..idx)
 			meta:set_string("infotext", "Tubelib Gate Block "..number)
 			meta:set_string("formspec", "size[3,2]"..
 			"label[0,0;Select texture]"..

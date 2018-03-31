@@ -45,7 +45,7 @@ minetest.register_node("smartline:repeater", {
 
 	after_place_node = function(pos, placer)
 		local meta = minetest.get_meta(pos)
-		local own_number = tubelib.add_node(pos)
+		local own_number = tubelib.add_node(pos, "smartline:repeater")
 		meta:set_string("own_number", own_number)
 		meta:set_string("formspec", formspec(meta))
 		meta:set_string("infotext", "SmartLine Repeater "..own_number..": not connected")

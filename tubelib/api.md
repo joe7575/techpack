@@ -126,7 +126,6 @@ Parameters:
 The function is used to register the nodes position for the communication node 
 number and to update the tube surrounding.
 `pos` the node position, `name` is the node name.
-If 'name' is nil, the tube surrounding is not updated, which should be used for nodes without tube connection.
 
   
 

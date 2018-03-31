@@ -222,7 +222,7 @@ minetest.register_node("smartline:sequencer", {
 	},
 	after_place_node = function(pos, placer)
 		local meta = minetest.get_meta(pos)
-		local number = tubelib.add_node(pos)
+		local number = tubelib.add_node(pos, "smartline:sequencer")
 		local rules = {}
 		for idx = 1,NUM_SLOTS do
 			rules[idx] = {offs = "", num = "", act = 1}

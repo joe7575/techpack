@@ -36,7 +36,7 @@ minetest.register_node("tubelib_addons2:lamp", {
 	tiles = {"tubelib_addons2_lamp.png^[colorize:#000000:100"},
 
 	after_place_node = function(pos, placer)
-		local number = tubelib.add_node(pos)
+		local number = tubelib.add_node(pos, "tubelib_addons2:lamp")
 		local meta = minetest.get_meta(pos)
 		meta:set_int("number", number)
 		switch_node(pos, "", placer)

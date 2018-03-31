@@ -31,7 +31,7 @@ minetest.register_node("tubelib_addons2:lamp_off", {
 	tiles = {"tubelib_addons2_lamp.png^[colorize:#000000:100"},
 
 	after_place_node = function(pos, placer, itemstack, pointed_thing)
-		local number = tubelib.add_node(pos)
+		local number = tubelib.add_node(pos, "tubelib_addons2:lamp_off")
 		local meta = minetest.get_meta(pos)
 		meta:set_string("infotext", "Tubelib Color Lamp "..number)
 		unifieddyes.recolor_on_place(pos, placer, itemstack, pointed_thing)
