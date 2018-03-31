@@ -1,4 +1,4 @@
-# TechPack V1.03
+# TechPack V1.04
 
 TechPack, a Mining, Crafting, &amp; Farming Modpack for Minetest.
 
@@ -65,8 +65,9 @@ Textures: CC BY-SA 3.0
 
 ### Dependencies 
 default, doors.  
+Tubelib Color Lamps optional: unifieddyes  
 SmartLine Display optional: display_lib, font_lib  
-SmartLine Controller optional: mail,  
+SmartLine Controller optional: mail  
 Gravelsieve optional: moreores, hopper, pipeworks  
 
 
@@ -75,3 +76,4 @@ Gravelsieve optional: moreores, hopper, pipeworks
 - 2018-03-24  V1.01  * Support for Ethereal added
 - 2018-03-27  V1.02  * Timer improvements for unloaded areas
 - 2018-03-29  V1.03  * Area protected chest added to tubelib_addons1
+- 2018-03-31  V1.04  * Maintenance, minor issues, Unifieddyes support for Color Lamp 

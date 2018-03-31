@@ -136,6 +136,7 @@ minetest.register_node("tubelib_addons1:pusher_fast", {
 	end,
 	
 	on_timer = keep_running,
+	on_rotate = screwdriver.disallow,
 
 	paramtype = "light",
 	sunlight_propagates = true,
@@ -201,6 +202,7 @@ minetest.register_node("tubelib_addons1:pusher_fast_active", {
 	end,
 	
 	on_timer = keep_running,
+	on_rotate = screwdriver.disallow,
 	
 	paramtype = "light",
 	sunlight_propagates = true,

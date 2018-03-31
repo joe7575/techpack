@@ -91,24 +91,27 @@ minetest.register_node("tubelib_addons1:funnel", {
 	end,
 	
 	after_place_node = function(pos, placer)
+		tubelib.add_node(pos, "tubelib_addons1:funnel")
 		local meta = minetest.get_meta(pos)
 		meta:set_string("formspec", formspec())
 		minetest.get_node_timer(pos):start(1)
 	end,
 
 	on_timer = scan_for_objects,
+	on_rotate = screwdriver.disallow,
 		
 	can_dig = function(pos,player)
 		if minetest.is_protected(pos, player:get_player_name()) then
 			return false
 		end
-		local meta = minetest.get_meta(pos);
+		local meta = minetest.get_meta(pos)
 		local inv = meta:get_inventory()
 		return inv:is_empty("main")
 	end,
 
 	on_dig = function(pos, node, puncher, pointed_thing)
 		minetest.node_dig(pos, node, puncher, pointed_thing)
+		tubelib.remove_node(pos)
 	end,
 
 	allow_metadata_inventory_put = allow_metadata_inventory_put,

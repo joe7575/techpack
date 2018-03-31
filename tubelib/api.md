@@ -126,6 +126,7 @@ Parameters:
 The function is used to register the nodes position for the communication node 
 number and to update the tube surrounding.
 `pos` the node position, `name` is the node name.
+If 'name' is nil, the tube surrounding is not updated, which should be used for nodes without tube connection.
 
   
 
@@ -197,18 +198,12 @@ Because several nodes could be addressed, the function don't return any response
 
 
 ```LUA
-    tubelib.send_request(number, placer_name, clicker_name, topic, payload)
+    tubelib.send_request(number, topic, payload)
 ```
 In contrast to `send_message` this functions send a message to exactly one node 
 referenced by `number` and returns the node response. 
 The message is based on the topic string (e.g. "state") and
 topic related payload.
-The placer and clicker names are needed to check the protection rights. 
-`placer_name` is the name of the player, who places the node.
-`clicker_name` is the name of the player, who uses the node.
-`placer_name` of sending and receiving nodes have to be the same.
-If every player should be able to send a message, use nil for clicker_name.
-
   
 
 ## 4. Code Snippets
@@ -286,3 +281,4 @@ This file has further helper functions and is recommended for deeper study.
 
 2017-10-02  First draft  
 2017-10-29  Commands start/stop replaced by on/off
+2018-03-31  Corrections for 'send_request' and 'add_node'

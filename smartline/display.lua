@@ -51,7 +51,7 @@ minetest.register_node("smartline:display", {
 	},
 
 	after_place_node = function(pos, placer)
-		local number = tubelib.add_node(pos, "smartline:display")
+		local number = tubelib.add_node(pos)
 		local meta = minetest.get_meta(pos)
 		meta:set_string("number", number)
 		meta:set_string("text", " \n \nMinetest\nSmartLine Tools\n \nDisplay\nNumber: "..number)

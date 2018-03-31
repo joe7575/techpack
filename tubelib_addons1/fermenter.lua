@@ -235,6 +235,7 @@ minetest.register_node("tubelib_addons1:fermenter", {
 		end
 	end,
 	
+	on_rotate = screwdriver.disallow,
 	on_timer = keep_running,
 	on_receive_fields = on_receive_fields,
 	allow_metadata_inventory_put = allow_metadata_inventory_put,

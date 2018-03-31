@@ -136,6 +136,7 @@ minetest.register_node("tubelib:pusher", {
 	end,
 	
 	on_timer = keep_running,
+	on_rotate = screwdriver.disallow,
 
 	paramtype = "light",
 	sunlight_propagates = true,
@@ -201,6 +202,7 @@ minetest.register_node("tubelib:pusher_active", {
 	end,
 	
 	on_timer = keep_running,
+	on_rotate = screwdriver.disallow,
 	
 	paramtype = "light",
 	sunlight_propagates = true,

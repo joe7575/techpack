@@ -152,7 +152,7 @@ minetest.register_node("smartline:timer", {
 		local numbers = {"0000","","","","",""}
 		local actions = {"","","","","",""}
 		local done = {false,false,false,false,false,false}
-		local own_num = tubelib.add_node(pos, "smartline:timer")
+		local own_num = tubelib.add_node(pos)
 		meta:set_string("own_num", own_num)
 		meta:set_string("placer_name", placer:get_player_name())
 		meta:set_string("events",  minetest.serialize(events))

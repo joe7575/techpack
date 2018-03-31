@@ -3,7 +3,7 @@
 	Tubelib Addons 2
 	================
 
-	Copyright (C) 2017 Joachim Stolberg
+	Copyright (C) 2017-2018 Joachim Stolberg
 
 	LGPLv2.1+
 	See LICENSE.txt for more information
@@ -23,6 +23,7 @@ local function switch_node(pos, num, player)
 		node.name = "tubelib_addons2:lamp"..num
 		minetest.swap_node(pos, node)
 		local number = meta:get_int("number")
+		number = string.format("%.04u", number)
 		meta:set_string("infotext", "Tubelib Color Lamp "..number)
 		if num ~= "" then
 			meta:set_int("color", num)
@@ -32,12 +33,10 @@ end
 
 minetest.register_node("tubelib_addons2:lamp", {
 	description = "Tubelib Color Lamp",
-	tiles = {
-		"tubelib_addons2_lamp.png^[colorize:#FFFFFF:120",
-	},
+	tiles = {"tubelib_addons2_lamp.png^[colorize:#000000:100"},
 
 	after_place_node = function(pos, placer)
-		local number = tubelib.add_node(pos, "tubelib_addons2:lamp")
+		local number = tubelib.add_node(pos)
 		local meta = minetest.get_meta(pos)
 		meta:set_int("number", number)
 		switch_node(pos, "", placer)
@@ -100,7 +99,6 @@ for idx,color in ipairs(tColors) do
 		description = "Tubelib Color Lamp",
 		tiles = {
 			"tubelib_addons2_lamp.png^[colorize:"..color..":120",
-			--"tubelib_lamp.png^[colorize:"..color,
 		},
 
 		on_receive_fields = function(pos, formname, fields, player)
@@ -119,7 +117,8 @@ for idx,color in ipairs(tColors) do
 
 		paramtype = 'light',
 		light_source = LIGHT_MAX,	
-		groups = {crumbly=0, not_in_creative_inventory=1},
+		groups = {choppy=2, cracky=1, not_in_creative_inventory=1},
 		is_ground_content = false,
+		drop = "tubelib_addons2:lamp"
 	})
 end

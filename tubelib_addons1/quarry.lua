@@ -320,6 +320,7 @@ minetest.register_node("tubelib_addons1:quarry", {
 	end,
 
 	on_receive_fields = on_receive_fields,
+	on_rotate = screwdriver.disallow,
 
 	on_dig = function(pos, node, puncher, pointed_thing)
 		if minetest.is_protected(pos, puncher:get_player_name()) then
@@ -370,6 +371,7 @@ minetest.register_node("tubelib_addons1:quarry_active", {
 	on_receive_fields = on_receive_fields,
 
 	on_timer = keep_running,
+	on_rotate = screwdriver.disallow,
 
 	allow_metadata_inventory_put = allow_metadata_inventory_put,
 	allow_metadata_inventory_take = allow_metadata_inventory_take,

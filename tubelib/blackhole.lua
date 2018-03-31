@@ -49,6 +49,7 @@ minetest.register_node("tubelib:blackhole", {
 		tubelib.remove_node(pos) -- <<=== tubelib
 	end,
 
+	on_rotate = screwdriver.disallow,
 	paramtype = "light",
 	sunlight_propagates = true,
 	paramtype2 = "facedir",

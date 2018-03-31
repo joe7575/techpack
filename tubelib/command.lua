@@ -161,15 +161,19 @@ end
 -- Add node to the tubelib lists and update the tube surrounding.
 -- Function determines and returns the node position number,
 -- needed for message communication.
+-- If 'name' is nil, the tube surrounding is not updated,
+-- which should be used for nodes without tube connection.
 function tubelib.add_node(pos, name)
 	-- store position 
 	local number = get_number(pos)
-	Number2Pos[number] = {
-		pos = pos, 
-		name = name,
-	}
-	-- update surrounding tubes
-	tubelib.update_tubes(pos)
+	if name then
+		Number2Pos[number] = {
+			pos = pos, 
+			name = name,
+		}
+		-- update surrounding tubes
+		tubelib.update_tubes(pos)
+	end
 	return number
 end
 

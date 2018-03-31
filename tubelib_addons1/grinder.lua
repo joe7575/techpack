@@ -203,6 +203,7 @@ minetest.register_node("tubelib_addons1:grinder", {
 		end
 	end,
 
+	on_rotate = screwdriver.disallow,
 	on_timer = keep_running,
 	on_receive_fields = on_receive_fields,
 	allow_metadata_inventory_put = allow_metadata_inventory_put,
@@ -240,6 +241,7 @@ minetest.register_node("tubelib_addons1:grinder_active", {
 		"tubelib_front.png",
 	},
 
+	on_rotate = screwdriver.disallow,
 	on_timer = keep_running,
 	on_receive_fields = on_receive_fields,
 	allow_metadata_inventory_put = allow_metadata_inventory_put,

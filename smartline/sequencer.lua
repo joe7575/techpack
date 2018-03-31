@@ -69,7 +69,7 @@ local function stop_the_sequencer(pos)
 	local meta = minetest.get_meta(pos)
 	local number = meta:get_string("number")
 	meta:set_int("running", STOP_STATE)
-	meta:set_string("infotext", "Tubelib Sequencer "..number..": stopped")
+	meta:set_string("infotext", "SmartLine Sequencer "..number..": stopped")
 	local rules = minetest.deserialize(meta:get_string("rules"))
 	local endless = meta:get_int("endless") or 0
 	meta:set_string("formspec", formspec(tubelib.STOPPED, rules, endless))
@@ -119,7 +119,7 @@ local function check_rules(pos, elapsed)
 				if index == 1 and offs < 1 then
 					offs = 2
 				end
-				meta:set_string("infotext", "Tubelib Sequencer "..number..": running ("..index.."/"..NUM_SLOTS..")")
+				meta:set_string("infotext", "SmartLine Sequencer "..number..": running ("..index.."/"..NUM_SLOTS..")")
 				meta:set_int("index", index)
 				if offs > 0 then
 					minetest.after(0, restart_timer, pos, offs)
@@ -222,7 +222,7 @@ minetest.register_node("smartline:sequencer", {
 	},
 	after_place_node = function(pos, placer)
 		local meta = minetest.get_meta(pos)
-		local number = tubelib.add_node(pos, "smartline:sequencer")
+		local number = tubelib.add_node(pos)
 		local rules = {}
 		for idx = 1,NUM_SLOTS do
 			rules[idx] = {offs = "", num = "", act = 1}
@@ -234,6 +234,7 @@ minetest.register_node("smartline:sequencer", {
 		meta:set_int("endless", 0)
 		meta:get_int("running", STOP_STATE)
 		meta:set_string("formspec", formspec(tubelib.STOPPED, rules, 0))
+		meta:set_string("infotext", "SmartLine Sequencer "..number)
 	end,
 
 	on_receive_fields = on_receive_fields,

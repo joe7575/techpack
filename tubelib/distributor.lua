@@ -360,6 +360,7 @@ minetest.register_node("tubelib:distributor", {
 	allow_metadata_inventory_move = allow_metadata_inventory_move,
 
 	on_timer = keep_running,
+	on_rotate = screwdriver.disallow,
 	
 	paramtype = "light",
 	sunlight_propagates = true,
@@ -398,6 +399,7 @@ minetest.register_node("tubelib:distributor_active", {
 	allow_metadata_inventory_move = allow_metadata_inventory_move,
 
 	on_timer = keep_running,
+	on_rotate = screwdriver.disallow,
 
 	paramtype = "light",
 	sunlight_propagates = true,

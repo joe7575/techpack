@@ -813,7 +813,7 @@ minetest.register_node("smartline:controller", {
 	
 	after_place_node = function(pos, placer)
 		local meta = minetest.get_meta(pos)
-		local number = tubelib.add_node(pos, "smartline:controller")
+		local number = tubelib.add_node(pos)
 		local fs_data = {}
 		meta:set_string("fs_data", minetest.serialize(fs_data)) 
 		meta:set_string("owner", placer:get_player_name())

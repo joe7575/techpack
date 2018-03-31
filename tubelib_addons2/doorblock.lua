@@ -52,7 +52,7 @@ for idx,pgn in ipairs(tPgns) do
 		after_place_node = function(pos, placer)
 			local meta = minetest.get_meta(pos)
 			local node = minetest.get_node(pos)
-			local number = tubelib.add_node(pos, node.name)
+			local number = tubelib.add_node(pos)
 			tubelib.set_data(number, "facedir", node.param2)
 			meta:set_string("number", number)
 			meta:set_string("infotext", "Tubelib Door Block "..number)

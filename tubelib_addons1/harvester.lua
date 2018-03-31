@@ -369,6 +369,7 @@ minetest.register_node("tubelib_addons1:harvester_base", {
 		end
 	end,
 
+	on_rotate = screwdriver.disallow,
 	on_receive_fields = on_receive_fields,
 	on_timer = keep_running,
 	allow_metadata_inventory_put = allow_metadata_inventory_put,
@@ -389,6 +390,7 @@ minetest.register_node("tubelib_addons1:harvester_base_active", {
 		'tubelib_addons1_harvester.png',
 	},
 
+	on_rotate = screwdriver.disallow,
 	on_receive_fields = on_receive_fields,
 	on_timer = keep_running,
 	allow_metadata_inventory_put = allow_metadata_inventory_put,

@@ -17,19 +17,19 @@
 local MAX_TUBE_LENGTH = 100
 
 local TubeTypes = {
-	0,0,0,0,0,0,1,3,1,3,	-- 01-10
-	4,5,3,1,3,1,4,5,1,3,	-- 11-20
-	1,3,4,5,3,1,3,1,4,5,	-- 21-30
-	2,2,2,2,0,2,2,2,5,2,	-- 31-40
-	5,0,					-- 40-41
+	0,0,0,0,0,0,1,3,1,3,    -- 01-10
+	4,5,3,1,3,1,4,5,1,3,    -- 11-20
+	1,3,4,5,3,1,3,1,4,5,    -- 21-30
+	2,2,2,2,0,2,2,2,5,2,    -- 31-40
+	5,0,                    -- 40-41
 }
 
 local TubeFacedir = {
-	0,0,0,0,0,0,0,2,0,1,	-- 01-10
-	2,2,2,1,3,1,3,3,0,3,	-- 11-20
-	0,0,0,0,1,1,0,1,1,1,	-- 21-30
-	0,0,0,0,0,0,0,0,0,0,	-- 31-40
-	0,0,					-- 40-41
+	0,0,0,0,0,0,0,2,0,1,    -- 01-10
+	2,2,2,1,3,1,3,3,0,3,    -- 11-20
+	0,0,0,0,1,1,0,1,1,1,    -- 21-30
+	0,0,0,0,0,0,0,0,0,0,    -- 31-40
+	0,0,                    -- 40-41
 }
 
 tubelib.knownNodes = {
@@ -78,14 +78,14 @@ local function remote_node(pos, npos)
 		local dest_pos2 = minetest.string_to_pos(minetest.get_meta(npos):get_string("dest_pos2"))
 		if dest_pos2 == nil then
 			local facedir = minetest.get_meta(npos):get_int("facedir")
-			return pos, facedir						-- node connected with itself
+			return pos, facedir                     -- node connected with itself
 		else
 			local facedir2 = minetest.get_meta(npos):get_int("facedir2")
-			return dest_pos2, facedir2  			-- one tube connection
+			return dest_pos2, facedir2              -- one tube connection
 		end
 	else
 		local facedir = minetest.get_meta(npos):get_int("facedir")
-		return dest_pos, facedir					-- multi tube connection
+		return dest_pos, facedir                    -- multi tube connection
 	end
 end
 
@@ -252,7 +252,7 @@ local function update_head_tubes(pos)
 		local cnt1, peer1, dest1 = walk_to_peer(pos, pos1)
 		local cnt2, peer2, dest2 = walk_to_peer(pos, pos2)
 		
-		if cnt1 == 0 and cnt2 == 0 then	-- first tube node placed?
+		if cnt1 == 0 and cnt2 == 0 then  -- first tube node placed?
 			-- we have to store both dest positions
 			minetest.get_meta(peer1):set_string("dest_pos", minetest.pos_to_string(dest1))
 			minetest.get_meta(peer1):set_int("facedir", dir_to_facedir(peer1, dest1))
@@ -277,7 +277,7 @@ local function update_head_tubes(pos)
 	return 0
 end	
 		
--- Update all tubes arround the currently placed tube		
+-- Update all tubes arround the currently placed tube
 local function update_surrounding_tubes(pos)
 	update_tube({x=pos.x  , y=pos.y  , z=pos.z+1})
 	update_tube({x=pos.x+1, y=pos.y  , z=pos.z  })
@@ -314,14 +314,14 @@ function tubelib.update_tubes(pos)
 end		
 	
 local DefNodeboxes = {
-    -- x1   y1    z1     x2   y2   z2
-    { -1/4, -1/4, -1/4,  1/4, 1/4, 1/4 },
-    { -1/4, -1/4, -1/4,  1/4, 1/4, 1/4 },
+	-- x1   y1    z1     x2   y2   z2
+	{ -1/4, -1/4, -1/4,  1/4, 1/4, 1/4 },
+	{ -1/4, -1/4, -1/4,  1/4, 1/4, 1/4 },
 }
 
 local DirCorrections = {
-    {3, 6}, {2, 5},             -- standard tubes
-    {3, 1}, {3, 2}, {3, 5},   	-- knees from front to..
+	{3, 6}, {2, 5},             -- standard tubes
+	{3, 1}, {3, 2}, {3, 5},     -- knees from front to..
 }
 
 local SelectBoxes = {
@@ -350,37 +350,37 @@ local TilesData = {
 		"tubelib_tube.png^[transformR90",
         "tubelib_tube.png^[transformR90",
 	},
-    {
-        "tubelib_knee.png^[transformR270",
-        "tubelib_knee.png^[transformR180",
-        "tubelib_knee2.png^[transformR270",
-        "tubelib_hole2.png^[transformR90",
-        "tubelib_knee2.png^[transformR90",
-        "tubelib_hole2.png^[transformR270",
-    },
-    {
-        "tubelib_knee2.png",
-        "tubelib_hole2.png^[transformR180",
-        "tubelib_knee.png^[transformR270",
-        "tubelib_knee.png",
-        "tubelib_knee2.png",
-        "tubelib_hole2.png",
-    },
-    {
-        "tubelib_hole2.png",
-        "tubelib_knee2.png^[transformR180",
-        "tubelib_knee.png^[transformR180",
-        "tubelib_knee.png^[transformR90",
-        "tubelib_knee2.png^[transformR180",
-        "tubelib_hole2.png^[transformR180",
-    },
+	{
+		"tubelib_knee.png^[transformR270",
+		"tubelib_knee.png^[transformR180",
+		"tubelib_knee2.png^[transformR270",
+		"tubelib_hole2.png^[transformR90",
+		"tubelib_knee2.png^[transformR90",
+		"tubelib_hole2.png^[transformR270",
+	},
+	{
+		"tubelib_knee2.png",
+		"tubelib_hole2.png^[transformR180",
+		"tubelib_knee.png^[transformR270",
+		"tubelib_knee.png",
+		"tubelib_knee2.png",
+		"tubelib_hole2.png",
+	},
+	{
+		"tubelib_hole2.png",
+		"tubelib_knee2.png^[transformR180",
+		"tubelib_knee.png^[transformR180",
+		"tubelib_knee.png^[transformR90",
+		"tubelib_knee2.png^[transformR180",
+		"tubelib_hole2.png^[transformR180",
+	},
 }
 
 
 for idx,pos in ipairs(DirCorrections) do
-    node_box_data = table.copy(DefNodeboxes)
-    node_box_data[1][pos[1]] = node_box_data[1][pos[1]] * 2
-    node_box_data[2][pos[2]] = node_box_data[2][pos[2]] * 2
+	node_box_data = table.copy(DefNodeboxes)
+	node_box_data[1][pos[1]] = node_box_data[1][pos[1]] * 2
+	node_box_data[2][pos[2]] = node_box_data[2][pos[2]] * 2
 
 	tiles_data = TilesData[idx]
 	
@@ -389,14 +389,14 @@ for idx,pos in ipairs(DirCorrections) do
 	else
 		hidden = 1
 	end
-    minetest.register_node("tubelib:tube"..idx, {
-        description = "Tubelib Tube",
-        tiles = tiles_data,
-        drawtype = "nodebox",
-        node_box = {
-          type = "fixed",
-          fixed = node_box_data,
-        },
+	minetest.register_node("tubelib:tube"..idx, {
+		description = "Tubelib Tube",
+		tiles = tiles_data,
+		drawtype = "nodebox",
+		node_box = {
+		  type = "fixed",
+		  fixed = node_box_data,
+		},
 		selection_box = {
 			type = "fixed",
 			fixed = SelectBoxes[idx],
@@ -417,10 +417,12 @@ for idx,pos in ipairs(DirCorrections) do
 		after_dig_node = function(pos, oldnode, oldmetadata, digger)
 			after_tube_removed(pos, oldnode)
 		end,
-        paramtype2 = "facedir",
-        paramtype = "light",
-        sunlight_propagates = true,
-        is_ground_content = false,
+		
+		on_rotate = screwdriver.disallow,
+		paramtype2 = "facedir",
+		paramtype = "light",
+		sunlight_propagates = true,
+		is_ground_content = false,
 		groups = {choppy=2, cracky=3, stone=1, not_in_creative_inventory=hidden},
 		drop = "tubelib:tube1",
 		sounds = default.node_sound_wood_defaults(),

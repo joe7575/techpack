@@ -79,7 +79,7 @@ minetest.register_node("tubelib_addons2:accesscontrol", {
 	},
 
 	after_place_node = function(pos, placer)
-		local number = tubelib.add_node(pos, "tubelib_addons2:accesscontrol")
+		local number = tubelib.add_node(pos)
 		local meta = minetest.get_meta(pos)
 		meta:set_string("number", number)
 		local numbers = meta:get_string("numbers") or ""

@@ -44,7 +44,7 @@ minetest.register_node("smartline:signaltower", {
 	},
 	
 	after_place_node = function(pos, placer)
-		local number = tubelib.add_node(pos, "smartline:signaltower")
+		local number = tubelib.add_node(pos)
 		local meta = minetest.get_meta(pos)
 		meta:set_string("state", "off")
 		meta:set_string("infotext", "SmartLine Signal Tower "..number)

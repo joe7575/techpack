@@ -201,7 +201,7 @@ minetest.register_node("tubelib_addons2:sequencer", {
 	
 	after_place_node = function(pos, placer)
 		local meta = minetest.get_meta(pos)
-		local number = tubelib.add_node(pos, "tubelib_addons2:sequencer")
+		local number = tubelib.add_node(pos)
 		local rules = {}
 		for idx = 1,NUM_SLOTS do
 			rules[idx] = {offs = "", num = "", act = 1}
@@ -213,6 +213,7 @@ minetest.register_node("tubelib_addons2:sequencer", {
 		meta:set_int("endless", 0)
 		meta:get_int("running", STOP_STATE)
 		meta:set_string("formspec", formspec(tubelib.STOPPED, rules, 0))
+		meta:set_string("infotext", "Tubelib Sequencer "..number)
 	end,
 
 	on_receive_fields = on_receive_fields,
