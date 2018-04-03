@@ -56,38 +56,6 @@ minetest.register_node("tubelib_addons2:lamp_off", {
 	is_ground_content = false,
 })
 
-tubelib.register_node("tubelib_addons2:lamp", {}, {
-	on_recv_message = function(pos, topic, payload)
-		if topic == "on" then
-			local node = minetest.get_node(pos)
-			switch_on(pos, node, nil)
-		elseif topic == "off" then
-			local node = minetest.get_node(pos)
-			switch_off(pos, node, nil)
-		end
-	end,
-})	
-
-
-minetest.register_craft({
-	output = "tubelib_addons2:lamp 2",
-	recipe = {
-		{"wool:green",       "wool:red",           "wool:blue"},
-		{"tubelib:wlanchip", "default:coal_lump",  "tubelib:wlanchip"},
-		{"group:wood",       "",                   "group:wood"},
-	},
-})
-
-for idx=1,12 do
-	minetest.register_node("tubelib_addons2:lamp"..idx, {
-		description = "Tubelib Color Lamp "..idx,
-		tiles = {"tubelib_addons2_lamp.png"},
-		paramtype = 'light',
-		groups = {choppy=2, cracky=1, not_in_creative_inventory=1},
-		is_ground_content = false,
-		drop = "tubelib_addons2:lamp_off"
-	})
-end
 
 minetest.register_node("tubelib_addons2:lamp_on", {
 	description = "Tubelib Color Lamp",
@@ -102,12 +70,50 @@ minetest.register_node("tubelib_addons2:lamp_on", {
 	
 	on_construct = unifieddyes.on_construct,
 	after_place_node = unifieddyes.recolor_on_place,
-	after_dig_node = unifieddyes.after_dig_node,
+	
+	after_dig_node = function(pos, oldnode, oldmetadata, digger)
+		tubelib.remove_node(pos)
+		unifieddyes.after_dig_node(pos, oldnode, oldmetadata, digger)
+	end,
    
 	light_source = LIGHT_MAX,	
 	is_ground_content = false,
 	drop = "tubelib_addons2:lamp_off"
 })
+
+tubelib.register_node("tubelib_addons2:lamp_off", {"tubelib_addons2:lamp_on"}, {
+	on_recv_message = function(pos, topic, payload)
+		if topic == "on" then
+			local node = minetest.get_node(pos)
+			switch_on(pos, node, nil)
+		elseif topic == "off" then
+			local node = minetest.get_node(pos)
+			switch_off(pos, node, nil)
+		end
+	end,
+})	
+
+minetest.register_craft({
+	type = "shapeless",
+	output = "tubelib_addons2:lamp_off",
+	recipe = {"tubelib:lamp"},
+})
+
+
+--
+-- Convert legacy nodes
+--
+for idx=1,12 do
+	minetest.register_node("tubelib_addons2:lamp"..idx, {
+		description = "Tubelib Color Lamp "..idx,
+		tiles = {"tubelib_addons2_lamp.png"},
+		paramtype = 'light',
+		groups = {choppy=2, cracky=1, not_in_creative_inventory=1},
+		is_ground_content = false,
+		drop = "tubelib_addons2:lamp_off"
+	})
+end
+
 
 minetest.register_lbm({
 	label = "[Tubelib] Color Lamp update",
