@@ -52,7 +52,11 @@ local function switch_off(pos)
 	local own_num = meta:get_string("own_num")
 	local numbers = meta:get_string("numbers")
 	local placer_name = meta:get_string("placer_name")
-	tubelib.send_message(numbers, placer_name, nil, "off", own_num)  -- <<=== tubelib
+	local clicker_name = nil
+	if meta:get_string("public") == "false" then
+		clicker_name = meta:get_string("clicker_name")
+	end
+	tubelib.send_message(numbers, placer_name, clicker_name, "off", own_num)  -- <<=== tubelib
 end
 
 
@@ -159,9 +163,10 @@ minetest.register_node("tubelib:button_active", {
 	paramtype = "light",
 	sunlight_propagates = true,
 	paramtype2 = "facedir",
-	groups = {crumbly=0, not_in_creative_inventory=1},
+	groups = {choppy=2, cracky=2, crumbly=2, not_in_creative_inventory=1},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
+	drop = "tubelib:button",
 })
 
 minetest.register_craft({

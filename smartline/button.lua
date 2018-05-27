@@ -51,7 +51,11 @@ local function switch_off(pos)
 	local own_num = meta:get_string("own_num")
 	local numbers = meta:get_string("numbers")
 	local placer_name = meta:get_string("placer_name")
-	tubelib.send_message(numbers, placer_name, nil, "off", own_num)
+	local clicker_name = nil
+	if meta:get_string("public") == "false" then
+		clicker_name = meta:get_string("clicker_name")
+	end
+	tubelib.send_message(numbers, placer_name, clicker_name, "off", own_num)
 end
 
 

@@ -618,7 +618,7 @@ local function start_controller(pos, number, fs_data)
 	switch_state(pos, tubelib.RUNNING, fs_data)
 end
 
-local function stop_controller(pos, fs_data)
+function smartline.stop_controller(pos, fs_data)
 	switch_state(pos, tubelib.STOPPED, fs_data)
 end
 
@@ -694,6 +694,9 @@ local function edit_command(fs_data, text)
 		cmnd, pos1 = text:match('^(%S)%s(%d+)$')
 	end
 	if cmnd and pos1 and pos2 then
+		pos1 = math.max(1, math.min(pos1, NUM_RULES))
+		pos2 = math.max(1, math.min(pos2, NUM_RULES))
+		
 		if cmnd == "x" then 
 			exchange_rules(fs_data, pos1, pos2) 
 			return "rows "..pos1.." and "..pos2.." exchanged"
@@ -703,6 +706,8 @@ local function edit_command(fs_data, text)
 			return "row "..pos1.." copied to "..pos2
 		end
 	elseif cmnd == "d" and pos1 then
+		pos1 = math.max(1, math.min(pos1, NUM_RULES))
+		
 		delete_rule(fs_data, pos1)
 		return "row "..pos1.." deleted"
 	end
@@ -724,7 +729,7 @@ local function on_receive_fields(pos, formname, fields, player)
 	if fields.ok then
 		if not readonly then	
 			output = edit_command(fs_data, fields.cmnd)
-			stop_controller(pos, fs_data)
+			smartline.stop_controller(pos, fs_data)
 			meta:set_string("formspec", formspec_main(tubelib.STOPPED, fs_data, output))
 			meta:set_string("fs_data", minetest.serialize(fs_data))
 		end
@@ -750,7 +755,7 @@ local function on_receive_fields(pos, formname, fields, player)
 			local number = meta:get_string("number")
 			local state = meta:get_int("state")
 			if state == tubelib.RUNNING then
-				stop_controller(pos, fs_data)
+				smartline.stop_controller(pos, fs_data)
 				meta:set_string("formspec", formspec_main(tubelib.STOPPED, fs_data, sOUTPUT))
 			else
 				formspec2runtime_rule(number, owner, fs_data)
@@ -782,7 +787,7 @@ local function on_receive_fields(pos, formname, fields, player)
 	-- FOURTH: back to main menu
 	if fields._exit_ then
 		meta:set_string("formspec", formspec_main(state, fs_data, sOUTPUT))
---			stop_controller(pos, fs_data)
+--			smartline.stop_controller(pos, fs_data)
 --			meta:set_string("fs_data", minetest.serialize(fs_data))
 --		end
 	end
@@ -932,6 +937,23 @@ local function maintain_dataset(number)
 	end
 end
 
+--
+-- Update formspec data for the case that rules order has changed or new rules were added
+--
+function smartline.update_fs_data(meta, fs_data)
+	local tOld2NewCond, tOld2NewActn = update_node_database(meta)
+	if tOld2NewCond and tOld2NewActn then
+		-- map from old to new indexes
+		for idx = 1,NUM_RULES do
+			fs_data["subm1"..idx.."_cond"] = tOld2NewCond[fs_data["subm1"..idx.."_cond"]]
+			fs_data["subm2"..idx.."_cond"] = tOld2NewCond[fs_data["subm2"..idx.."_cond"]]
+			fs_data["subma"..idx.."_actn"] = tOld2NewActn[fs_data["subma"..idx.."_actn"]]
+		end
+		
+	end
+	return fs_data
+end
+
 minetest.register_lbm({
 	label = "[SmartLine] Controller update",
 	name = "smartline:update",
@@ -939,20 +961,11 @@ minetest.register_lbm({
 	run_at_every_load = true,
 	action = function(pos, node)
 		local meta = minetest.get_meta(pos)
+		
 		local fs_data = minetest.deserialize(meta:get_string("fs_data"))
+		fs_data = smartline.update_fs_data(meta, fs_data)
+		meta:set_string("fs_data", minetest.serialize(fs_data))
 		
-		local tOld2NewCond, tOld2NewActn = update_node_database(meta)
-		
-		if tOld2NewCond and tOld2NewActn then
-			-- map from old to new indexes
-			for idx = 1,NUM_RULES do
-				fs_data["subm1"..idx.."_cond"] = tOld2NewCond[fs_data["subm1"..idx.."_cond"]]
-				fs_data["subm2"..idx.."_cond"] = tOld2NewCond[fs_data["subm2"..idx.."_cond"]]
-				fs_data["subma"..idx.."_actn"] = tOld2NewActn[fs_data["subma"..idx.."_actn"]]
-			end
-			
-			meta:set_string("fs_data", minetest.serialize(fs_data))
-		end
 		local number = meta:get_string("number")
 		local owner = meta:get_string("owner")
 		formspec2runtime_rule(number, owner, fs_data)

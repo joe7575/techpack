@@ -125,6 +125,7 @@ end
 function tubelib.get_node_number(pos)
 	local key = get_key_str(pos)
 	local num = Key2Number[key]
+	print("key", key, "num", num)
 	if num then
 		num = string.format("%.04u", num)
 		if Number2Pos[num] and Number2Pos[num].name then
@@ -247,6 +248,7 @@ end
 
 function tubelib.pull_items(pos, side, player_name)
 	local npos, facedir = get_neighbor_pos(pos, side)
+	if npos == nil then return end
 	local nside, node = get_node_side(npos, facedir)
 	local name = Name2Name[node.name]
 	if tubelib_NodeDef[name] and tubelib_NodeDef[name].on_pull_item then
@@ -257,6 +259,7 @@ end
 
 function tubelib.push_items(pos, side, items, player_name)
 	local npos, facedir = get_neighbor_pos(pos, side)
+	if npos == nil then return end
 	local nside, node = get_node_side(npos, facedir)
 	local name = Name2Name[node.name]
 	if tubelib_NodeDef[name] and tubelib_NodeDef[name].on_push_item then
@@ -270,6 +273,7 @@ end
 
 function tubelib.unpull_items(pos, side, items, player_name)
 	local npos, facedir = get_neighbor_pos(pos, side)
+	if npos == nil then return end
 	local nside, node = get_node_side(npos, facedir)
 	local name = Name2Name[node.name]
 	if tubelib_NodeDef[name] and tubelib_NodeDef[name].on_unpull_item then

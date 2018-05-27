@@ -503,7 +503,7 @@ smartline.register_action("display3", {
 		},
 	},
 	on_execute = function(data, environ, number) 
-		local text = string.gsub(data.text, "*", environ.name or "<unknown>")
+		local text = string.gsub(data.text, "*", environ.state or "<unknown>")
 		tubelib.send_message(data.number, data.owner, nil, "text", text)
 	end,
 	button_label = function(data) 
@@ -652,8 +652,8 @@ smartline.register_condition("playerdetector", {
 	},
 	
 	on_execute = function(data, environ) 
-		environ.name = tubelib.send_request(data.number, "name", nil)
-		return (data.name == "*" and environ.name ~= "") or environ.name == data.name
+		environ.state = tubelib.send_request(data.number, "name", nil)
+		return (data.name == "*" and environ.state ~= "") or environ.state == data.name
 	end,
 	button_label = function(data) 
 		if string.len(data.name) > 6 then
