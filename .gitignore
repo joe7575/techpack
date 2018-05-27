@@ -42,3 +42,4 @@ luac.out
 .buildpath
 .project
 org.eclipse.*
+*.lua.new

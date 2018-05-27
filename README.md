@@ -1,4 +1,4 @@
-# TechPack V1.04
+# TechPack V1.05
 
 TechPack, a Mining, Crafting, &amp; Farming Modpack for Minetest.
 
@@ -25,7 +25,7 @@ TechPack provides:
 - a Distributor node with 4 output channels to sort incoming items
 - a Blackhole node which lets all items disappear
 - Button/switches to send "switch on/off" messages
-- Lamp nodes in different colors (can be switched on/off)
+- Several lamp nodes in different colors (can be switched on/off)
 - a Quarry node to dig for stones and other ground nodes
 - a Harvester node to chop wood, leaves and crops
 - a Grinder node to grind cobble stone to gravel
@@ -77,3 +77,4 @@ Gravelsieve optional: moreores, hopper, pipeworks
 - 2018-03-27  V1.02  * Timer improvements for unloaded areas
 - 2018-03-29  V1.03  * Area protected chest added to tubelib_addons1
 - 2018-03-31  V1.04  * Maintenance, minor issues, Unifieddyes support for Color Lamp, Street Lamp added
+- 2018-04-27  V1.05  * Ceiling lamp added, further improvements
