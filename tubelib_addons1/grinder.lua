@@ -20,6 +20,8 @@ local STOP_STATE = 0
 local STANDBY_STATE = -1
 local FAULT_STATE = -3
 
+-- Grinder recipes
+local Recipes = {}
 
 local function formspec(state)
 	return "size[8,8]"..
@@ -67,14 +69,19 @@ local function allow_metadata_inventory_take(pos, listname, index, stack, player
 	return stack:get_count()
 end
 
-
-local function convert_stone_to_gravel(inv)
-	local cobble = ItemStack("default:cobble")
-	local gravel = ItemStack("default:gravel")
-	if inv:room_for_item("dst", gravel) and inv:contains_item("src", cobble) then
-		inv:add_item("dst", gravel)
-		inv:remove_item("src", cobble)
-		return true
+local function grinding(inv)
+	for _,stack in ipairs(inv:get_list("src")) do
+		if not stack:is_empty() then
+			local name = stack:get_name()
+			if Recipes[name] then
+				local output = Recipes[name]
+				if inv:room_for_item("dst", output) then
+					inv:add_item("dst", output)
+					inv:remove_item("src", ItemStack(name))
+					return true
+				end
+			end
+		end
 	end
 	return false
 end
@@ -137,7 +144,7 @@ local function keep_running(pos, elapsed)
 	local running = meta:get_int("running") - 1
 	--print("running", running)
 	local inv = meta:get_inventory()
-	local busy = convert_stone_to_gravel(inv)
+	local busy = grinding(inv)
 	
 	if busy == true then 
 		if running <= STOP_STATE then
@@ -293,3 +300,30 @@ tubelib.register_node("tubelib_addons1:grinder", {"tubelib_addons1:grinder_activ
 		end
 	end,
 })	
+
+
+if minetest.global_exists("unified_inventory") then
+	unified_inventory.register_craft_type("grinding", {
+		description = "Grinding",
+		icon = 'tubelib_addons1_grinder.png',
+		width = 1,
+		height = 1,
+	})
+end
+
+function tubelib.add_grinder_recipe(recipe)
+	Recipes[recipe.input] =  ItemStack(recipe.output)
+	if minetest.global_exists("unified_inventory") then
+		recipe.items = {recipe.input}
+		recipe.type = "grinding"
+		unified_inventory.register_craft(recipe)
+	end
+end	
+
+
+tubelib.add_grinder_recipe({input="default:cobble", output="default:gravel"})
+tubelib.add_grinder_recipe({input="default:desert_cobble", output="default:gravel"})
+tubelib.add_grinder_recipe({input="default:mossycobble", output="default:gravel"})
+tubelib.add_grinder_recipe({input="default:gravel", output="default:sand"})
+tubelib.add_grinder_recipe({input="default:sand", output="default:clay"})
+

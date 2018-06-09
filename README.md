@@ -1,4 +1,4 @@
-# TechPack V1.05
+# TechPack V1.06
 
 TechPack, a Mining, Crafting, &amp; Farming Modpack for Minetest.
 
@@ -28,7 +28,7 @@ TechPack provides:
 - Several lamp nodes in different colors (can be switched on/off)
 - a Quarry node to dig for stones and other ground nodes
 - a Harvester node to chop wood, leaves and crops
-- a Grinder node to grind cobble stone to gravel
+- a Grinder node to grind all kinds of cobblestone to gravel, gravel to sand, and sand to clay
 - a Gravelsieve node to sieve ores from gravel
 - an Autocrafter node for automated crafting of tools and items
 - a Fermenter node to produce Bio Gas from leaves
@@ -78,3 +78,4 @@ Gravelsieve optional: moreores, hopper, pipeworks
 - 2018-03-29  V1.03  * Area protected chest added to tubelib_addons1
 - 2018-03-31  V1.04  * Maintenance, minor issues, Unifieddyes support for Color Lamp, Street Lamp added
 - 2018-04-27  V1.05  * Ceiling lamp added, further improvements
+- 2018-06-09  V1.06  * Recipes with API to grinder added
