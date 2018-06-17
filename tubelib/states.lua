@@ -29,7 +29,7 @@ tubelib.StatesImg = {
 	"tubelib_inv_button_standby.png", 
 	"tubelib_inv_button_error.png"
 }
-			
+
 -- Return state button image for the node inventory
 function tubelib.state_button(state)
 	if state and state < 5 and state > 0 then
@@ -37,7 +37,10 @@ function tubelib.state_button(state)
 	end
 	return tubelib.StatesImg[tubelib.FAULT]
 end
-			
+
+-- State string based on button states
+tubelib.states = {"stopped", "running", "standby", "fault"}
+	
 
 --
 -- 'running' variable States

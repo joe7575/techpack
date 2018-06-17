@@ -10,85 +10,143 @@
 
 	History:
 	see init.lua
+	
+	Funtions for tube placement/alignment
 
 ]]--
 
+--[[
+	
+Tubes 1..5 can be placed according to 'param2'.
+The two openings point in the directions 'dir',
+(N=1, E=2, S=3, W=4, D=5, U=6) 
+which corresponds to the following tube alignments:
+
+tube No | param2 | dir | alignment 
+--------+--------+-----+-------------
+	1   |   0    | N/S | 1*6 + 3 = 9 
+	1   |   1    | E/W | 2*6 + 4 = 16
+	2   |   0    | D/U | 5*6 + 6 = 36
+	3   |   0    | S/W | 3*6 + 4 = 22 
+	3   |   1    | N/W | 1*6 + 4 = 10
+	3   |   2    | N/E | 1*6 + 2 = 8
+	3   |   3    | E/S | 2*6 + 3 = 15
+	4   |   0    | S/D | 3*6 + 5 = 23
+	4   |   1    | W/D | 4*6 + 5 = 29
+	4   |   2    | N/D | 1*6 + 5 = 11
+	4   |   3    | E/D | 2*6 + 5 = 17
+	5   |   0    | S/U | 3*6 + 6 = 24
+	5   |   1    | W/U | 4*6 + 6 = 30
+	5   |   2    | N/U | 1*6 + 6 = 12
+	5   |   3    | E/U | 2*6 + 6 = 18
+
+]]--
+
+-- debugging 
+local P = minetest.pos_to_string
 
 local MAX_TUBE_LENGTH = 100
 
+-- Conversion from tube alignment to tube number
 local TubeTypes = {
-	0,0,0,0,0,0,1,3,1,3,    -- 01-10
-	4,5,3,1,3,1,4,5,1,3,    -- 11-20
-	1,3,4,5,3,1,3,1,4,5,    -- 21-30
-	2,2,2,2,0,2,2,2,5,2,    -- 31-40
-	5,0,                    -- 40-41
+	0,0,0,0,0, 0,0,3,1,3,    -- 01-10
+	4,5,3,1,3, 1,4,5,1,3,    -- 11-20
+	1,3,4,5,3, 1,3,1,4,5,    -- 21-30
+	2,2,2,2,0, 2,2,2,5,2,    -- 31-40
+	5,0,                     -- 41-42
 }
 
-local TubeFacedir = {
-	0,0,0,0,0,0,0,2,0,1,    -- 01-10
-	2,2,2,1,3,1,3,3,0,3,    -- 11-20
-	0,0,0,0,1,1,0,1,1,1,    -- 21-30
-	0,0,0,0,0,0,0,0,0,0,    -- 31-40
-	0,0,                    -- 40-41
+-- Conversion from tube alignment to param2
+local TubeParam2 = {
+	0,0,0,0,0, 0,0,2,0,1,    -- 01-10
+	2,2,2,1,3, 1,3,3,0,3,    -- 11-20
+	0,0,0,0,1, 1,0,1,1,1,    -- 21-30
+	0,0,0,0,0, 0,0,0,0,0,    -- 31-40
+	0,0,                     -- 41-42
 }
 
-tubelib.knownNodes = {
+
+-- Conversion from  tube number/param2 to tube hole dirs (view from the outside)
+local TubeHoles = {
+	[10] = {1,3},
+	[12] = {1,3},
+	[11] = {2,4},
+	[13] = {2,4},
+	[20] = {5,6},
+	[30] = {1,2},
+	[31] = {3,2},
+	[32] = {3,4},
+	[33] = {1,4},
+	[40] = {1,6},
+	[41] = {2,6},
+	[42] = {3,6},
+	[43] = {4,6},
+	[50] = {1,5},
+	[51] = {2,5},
+	[52] = {3,5},
+	[53] = {4,5},
+}
+
+-- Convertion of 'dir' (view from the outside to inside and vs)
+local Turn180Deg = {3,4,1,2,6,5}
+
+local Dir2Offset = {
+	{x=0,  y=0,  z=1},
+	{x=1,  y=0,  z=0},
+	{x=0,  y=0, z=-1},
+	{x=-1, y=0,  z=0},
+	{x=0,  y=-1, z=0},
+	{x=0,  y=1,  z=0}
+}
+
+local TubeNames = {
 	["tubelib:tube1"] = true,
 	["tubelib:tube2"] = true,
 	["tubelib:tube3"] = true,
 	["tubelib:tube4"] = true,
 	["tubelib:tube5"] = true,
-	["tubelib:tube6"] = true,
-	["default:chest_locked"] = true,
-	["default:chest"] = true,
-	["default:furnace"] = true,
-	["default:furnace_active"] = true,
 }
 
--- Localize functions to avoid table lookups (better performance).
-local string_find = string.find
-local minetest_get_meta = minetest.get_meta
-local minetest_get_node = minetest.get_node
-local KnownNodes = tubelib.knownNodes
-local vector_add = vector.add
-local vector_equals = vector.equals
+-- used for registered nodes
+tubelib.KnownNodes = {
+	["tubelib:tube1"] = true,
+	["tubelib:tube2"] = true,
+	["tubelib:tube3"] = true,
+	["tubelib:tube4"] = true,
+	["tubelib:tube5"] = true,
+}
 
--- Translate from contact side to facedir
+-- Convertion of contact side to facedir
 local SideToFacedir = {B=0, R=1, F=2, L=3, D=4, U=5}
 
--- 6D variant of the facedir to dir conversion 
-local Facedir2Dir = {[0] = 
-	{x=0,  y=0,  z=1},
-	{x=1,  y=0,  z=0},
-	{x=0,  y=0,  z=-1},
-	{x=-1, y=0,  z=0},
-	{x=0,  y=-1, z=0},
-	{x=0,  y=1,  z=0},
-}
 
--- Determine position from and facedir to the node on the other side or the tubes.
--- Param pos: my pos
--- Param npos: neighbor tube pos
-local function remote_node(pos, npos)
-	local dest_pos = minetest.string_to_pos(minetest.get_meta(npos):get_string("dest_pos"))
-	-- two possible reasons, why dest_pos == pos:
-	-- 1)  wrong side of a single tube node
-	-- 2)  node connected with itself. In this case "dest_pos2" is not available
-	if dest_pos and vector_equals(dest_pos, pos) then
-		local dest_pos2 = minetest.string_to_pos(minetest.get_meta(npos):get_string("dest_pos2"))
-		if dest_pos2 == nil then
-			local facedir = minetest.get_meta(npos):get_int("facedir")
-			return pos, facedir                     -- node connected with itself
-		else
-			local facedir2 = minetest.get_meta(npos):get_int("facedir2")
-			return dest_pos2, facedir2              -- one tube connection
-		end
-	else
-		local facedir = minetest.get_meta(npos):get_int("facedir")
-		return dest_pos, facedir                    -- multi tube connection
+-------------------------------------------------------------------------------
+-- Helper functions
+-------------------------------------------------------------------------------
+
+local function in_list(list, x)
+	for _, v in ipairs(list) do
+		if v == x then return true end
 	end
+	return false
 end
 
+-- convert 6D-dir to position
+local function dir_to_pos(pos, dir)
+	return vector.add(pos, Dir2Offset[dir])
+end
+
+-- return all 6 relevant surrounding positions
+local function get_6Pos(pos)
+	return {
+		{x=pos.x  , y=pos.y  , z=pos.z+1},
+		{x=pos.x+1, y=pos.y  , z=pos.z  },
+		{x=pos.x  , y=pos.y  , z=pos.z-1},
+		{x=pos.x-1, y=pos.y  , z=pos.z  },
+		{x=pos.x  , y=pos.y-1, z=pos.z  },
+		{x=pos.x  , y=pos.y+1, z=pos.z  },
+	}
+end
 
 -- Calculate the facedir to the other node, based on both node positions
 local function dir_to_facedir(my_pos, other_pos)
@@ -97,25 +155,12 @@ local function dir_to_facedir(my_pos, other_pos)
 	if my_pos.y > other_pos.y then return 5 else return 4 end
 end
 
--------------------------------------------------------------------------------
--- API functions
--------------------------------------------------------------------------------
-
--- Determine neighbor position and own facedir to the node.
--- based on own pos and contact side 'B' - 'U'.
--- Function considers also tube connections.
-function tubelib.get_neighbor_pos(pos, side)
-	local facedir = SideToFacedir[side]
-	if facedir < 4 then
-		local node = minetest_get_node(pos)
-		facedir = (facedir + node.param2) % 4
-	end
-	local npos = vector_add(pos, Facedir2Dir[facedir])
-	local node = minetest_get_node(npos)
-	if node and string_find(node.name, "tubelib:tube") then
-		npos, facedir = remote_node(pos, npos)
-	end
-	return npos, facedir
+-- The 'oldnode' on 'pos' had two ends and thus two neighbor position. 
+local function nodetype_to_pos(pos, node)
+	local key = (string.byte(node.name, -1) - 48) * 10 + node.param2
+	local pos1 = dir_to_pos(pos, Turn180Deg[TubeHoles[key][1]])
+	local pos2 = dir_to_pos(pos, Turn180Deg[TubeHoles[key][2]])
+	return pos1, pos2
 end
 
 -- use Voxel Manipulator to read the node
@@ -126,193 +171,242 @@ function tubelib.read_node_with_vm(pos)
 	local param2_data = vm:get_param2_data()
 	local area = VoxelArea:new({MinEdge = MinEdge, MaxEdge = MaxEdge})
 	return {
-		name=minetest.get_name_from_content_id(data[area:index(pos.x, pos.y, pos.z)]),
+		name = minetest.get_name_from_content_id(data[area:index(pos.x, pos.y, pos.z)]),
 		param2 = param2_data[area:index(pos.x, pos.y, pos.z)]
 	}
 end
 
-local read_node_with_vm = tubelib.read_node_with_vm
-
--------------------------------------------------------------------------------
--- Tube placement
--------------------------------------------------------------------------------
-
-
--- Return neighbor tubes orientation relative to the given pos.
-local function get_neighbor_tubes_orientation(pos)
-	local orientation = 0
-	local Nodes = {
-		minetest.get_node({x=pos.x  , y=pos.y  , z=pos.z+1}),
-		minetest.get_node({x=pos.x+1, y=pos.y  , z=pos.z  }),
-		minetest.get_node({x=pos.x  , y=pos.y  , z=pos.z-1}),
-		minetest.get_node({x=pos.x-1, y=pos.y  , z=pos.z  }),
-		minetest.get_node({x=pos.x  , y=pos.y-1, z=pos.z  }),
-		minetest.get_node({x=pos.x  , y=pos.y+1, z=pos.z  }),
-	}
-	for side,node in ipairs(Nodes) do
-		if KnownNodes[node.name] then  -- registered node?
-			orientation = orientation * 6 + side
-			if orientation > 6 then 
-				break
-			end
-		end
-	end
-	return orientation
-end	
-
-local function determine_tube_node(pos)
-	local node = minetest.get_node(pos) 
-	if not string.find(node.name, "tubelib:tube") then
-		return nil
-	end
-	local orientation = get_neighbor_tubes_orientation(pos)
-	if orientation > 6 then 
-		node.name = "tubelib:tube"..TubeTypes[orientation]
-		node.param2 = TubeFacedir[orientation]
-		return node
-	elseif orientation > 0 then 
-		orientation = orientation * 6 + (((node.param2 + 2) % 4) + 1)
-		node.name = "tubelib:tube"..TubeTypes[orientation]
-		node.param2 = TubeFacedir[orientation]
-		return node
-	end
-	return nil
-end	
-
-	
-local function update_tube(pos)
-	local node = determine_tube_node(pos)
-	if node then
-		minetest.swap_node(pos, node)
-	end
-end		
-
-local OffsTable = {
-	{2,0},		-- tube1
-	{4,5},		-- tube2
-	{2,3},		-- tube3
-	{2,4},		-- tube4
-	{2,5},		-- tube5
-}
-
-
--- The tube on 'pos1' has two ends and thus two neighbor position. 
--- One is the given 'pos', the other position is returned.
--- Param mpos: my node position
--- Param opos: the other tube position
--- Param node: the tube node
-local function nodetype_to_pos(mpos, opos, node)
-	local idx = string.byte(node.name, -1) - 48
-	local facedir1 = OffsTable[idx][1]
-	local facedir2 = OffsTable[idx][2]
-	if facedir1 < 4 then
-		facedir1 = (facedir1 + node.param2) % 4
-	end
-	if facedir2 < 4 then
-		facedir2 = (facedir2 + node.param2) % 4
-	end
-	local dir1 = Facedir2Dir[facedir1]
-	local dir2 = Facedir2Dir[facedir2]
-	local p1 = vector.add(opos, dir1)
-	local p2 = vector.add(opos, dir2)
-
-	if mpos == nil then
-		return p1, p2
-	elseif vector.equals(p1, mpos) then
-		return p2
-	else
-		return p1
-	end
-end
-
-
 -- Walk to the other end of the tube line, starting at 'pos1'.
 -- Returns: cnt - number of tube nodes
 --          pos - the peer tube node
---          pos1 - the destination position, connected with 'pos'
+--          pos1 - the drop position, next after 'pos'
 local function walk_to_peer(pos, pos1)
 	local node = minetest.get_node(pos1)
-	local pos2
 	local cnt = 0
-	while string.find(node.name, "tubelib:tube") and cnt < MAX_TUBE_LENGTH do
-		pos2 = nodetype_to_pos(pos, pos1, node)
-		pos, pos1 = pos1, pos2
+	while TubeNames[node.name] and cnt < MAX_TUBE_LENGTH do
+		local new_pos1, new_pos2 = nodetype_to_pos(pos1, node)
+		if vector.equals(new_pos1, pos) then
+			pos = pos1
+			pos1 = new_pos2
+		elseif vector.equals(new_pos2, pos) then
+			pos = pos1
+			pos1 = new_pos1
+		end
 		cnt = cnt + 1
-		node = minetest.get_node_or_nil(pos1) or read_node_with_vm(pos1)
+		node = minetest.get_node_or_nil(pos1) or tubelib.read_node_with_vm(pos1)
 	end
 	return cnt, pos, pos1
 end	
-
--- Update head tubes with peer pos and facedir of the other end
--- Needed for StackItem exchange.
-local function update_head_tubes(pos)
-	local node = minetest.get_node(pos)
-	if string.find(node.name, "tubelib:tube") then
-		local pos1, pos2 = nodetype_to_pos(nil, pos, node)
-		local cnt1, peer1, dest1 = walk_to_peer(pos, pos1)
-		local cnt2, peer2, dest2 = walk_to_peer(pos, pos2)
-		
-		if cnt1 == 0 and cnt2 == 0 then  -- first tube node placed?
-			-- we have to store both dest positions
-			minetest.get_meta(peer1):set_string("dest_pos", minetest.pos_to_string(dest1))
-			minetest.get_meta(peer1):set_int("facedir", dir_to_facedir(peer1, dest1))
-			minetest.get_meta(peer1):set_string("dest_pos2", minetest.pos_to_string(dest2))
-			minetest.get_meta(peer1):set_int("facedir2", dir_to_facedir(peer2, dest2))
-		else
-			minetest.get_meta(peer1):set_string("dest_pos", minetest.pos_to_string(dest2))
-			minetest.get_meta(peer1):set_int("facedir", dir_to_facedir(peer2, dest2))
-			minetest.get_meta(peer2):set_string("dest_pos", minetest.pos_to_string(dest1))
-			minetest.get_meta(peer2):set_int("facedir", dir_to_facedir(peer1, dest1))
-		end
-		
-		-- delete meta data from old head nodes
-		if cnt1 > 1 then
-			minetest.get_meta(pos1):from_table(nil)
-		end
-		if cnt2 > 1 then
-			minetest.get_meta(pos2):from_table(nil)
-		end
-		return cnt1 + cnt2
-	end
-	return 0
-end	
-		
--- Update all tubes arround the currently placed tube
-local function update_surrounding_tubes(pos)
-	update_tube({x=pos.x  , y=pos.y  , z=pos.z+1})
-	update_tube({x=pos.x+1, y=pos.y  , z=pos.z  })
-	update_tube({x=pos.x  , y=pos.y  , z=pos.z-1})
-	update_tube({x=pos.x-1, y=pos.y  , z=pos.z  })
-	update_tube({x=pos.x  , y=pos.y-1, z=pos.z  })
-	update_tube({x=pos.x  , y=pos.y+1, z=pos.z  })
-	update_tube(pos)
-	return update_head_tubes(pos) < MAX_TUBE_LENGTH
-end		
-
 	
--- Update tubes after a tube node is removed	
-local function after_tube_removed(pos, node)
-	local pos1, pos2 = nodetype_to_pos(nil, pos, node)
-	update_head_tubes(pos1)
-	update_head_tubes(pos2)
+-- Delete meta data of the peer node
+local function delete_meta_data(pos, node)
+	local pos1, pos2 = nodetype_to_pos(pos, node)
+	if pos1 then
+		local cnt, pos, pos1 = walk_to_peer(pos, pos1)
+		-- delete meta on peer tube
+		if cnt > 0 then
+			minetest.get_meta(pos):from_table(nil)
+		end
+	end
+	if pos2 then
+		local cnt, pos, pos1 = walk_to_peer(pos, pos2)
+		-- delete meta on peer tube
+		if cnt > 0 then
+			minetest.get_meta(pos):from_table(nil)
+		end
+	end
 end
 
--- API function, called from all nodes, which shall be connected to tubes	
-function tubelib.update_tubes(pos)
-	update_tube(      {x=pos.x  , y=pos.y  , z=pos.z+1})
-	update_head_tubes({x=pos.x  , y=pos.y  , z=pos.z+1})
-	update_tube(      {x=pos.x+1, y=pos.y  , z=pos.z  })
-	update_head_tubes({x=pos.x+1, y=pos.y  , z=pos.z  })
-	update_tube(      {x=pos.x  , y=pos.y  , z=pos.z-1})
-	update_head_tubes({x=pos.x  , y=pos.y  , z=pos.z-1})
-	update_tube(      {x=pos.x-1, y=pos.y  , z=pos.z  })
-	update_head_tubes({x=pos.x-1, y=pos.y  , z=pos.z  })
-	update_tube(      {x=pos.x  , y=pos.y-1, z=pos.z  })
-	update_head_tubes({x=pos.x  , y=pos.y-1, z=pos.z  })
-	update_tube(      {x=pos.x  , y=pos.y+1, z=pos.z  })
-	update_head_tubes({x=pos.x  , y=pos.y+1, z=pos.z  })
-end		
+
+-------------------------------------------------------------------------------
+-- Place a tube node
+-------------------------------------------------------------------------------
+
+-- always use the smaller number first
+local function calc_alignment(dir1, dir2)
+	if dir1 < dir2 then
+		return dir1 * 6 + dir2
+	else
+		return dir2 * 6 + dir1
+	end
+end
 	
+-- Determine the tube alignment
+-- based on 2 neighbor tubes, or one neighbour 
+-- and node.param2
+local function get_alignment(pos, lDirs, pitch)
+	if #lDirs == 1 then
+		if pitch > 1 then
+			table.insert(lDirs, {dir = 6})
+		elseif pitch < -1 then
+			table.insert(lDirs, {dir = 5})
+		else
+			local node = minetest.get_node(pos)
+			table.insert(lDirs, {dir = ((node.param2 + 2) % 4) + 1})
+		end
+	end
+	if #lDirs >= 2 then 
+		return calc_alignment(lDirs[1].dir, lDirs[2].dir)
+	end
+end	
+
+-- return number of tubelib compatible nodes on the 6 surrounding positions 
+-- plus their alignment
+local function get_num_conn(pos)
+	local num = 0
+	local lDir = {}
+	for dir,npos in ipairs(get_6Pos(pos)) do
+		local node = minetest.get_node(npos)
+		if tubelib.KnownNodes[node.name] then
+			num = num + 1
+			table.insert(lDir, {dir=dir, almnt=0})
+		end
+	end
+	return num, get_alignment(pos, lDir, 0)
+end
+
+local function open_hole(dir, name, param2)
+	local key = (string.byte(name, -1) - 48) * 10 + param2
+	if in_list(TubeHoles[key], dir) then
+		return true
+	end
+	return false
+end	
+	
+-- Return all tubes with less then 3 connections
+local function get_any_neighbour_tubes(pos)
+	local lAttr= {}				-- used as result
+	for dir,npos in ipairs(get_6Pos(pos)) do
+		local node = minetest.get_node(npos)
+		if TubeNames[node.name] then
+			local num, almnt = get_num_conn(npos)
+			if num < 3 then 
+				table.insert(lAttr, {dir=dir, almnt=almnt})
+			end
+		elseif tubelib.KnownNodes[node.name] then
+			-- chests and other nodes
+			table.insert(lAttr, {dir=dir, almnt=0})
+		end
+	end
+	return lAttr
+end
+
+-- Return all tubes with holes pointing in 'pos' direction
+local function get_tubes_with_visible_holes(pos)
+	local lAttr= {}				-- used as result
+	for dir,npos in ipairs(get_6Pos(pos)) do
+		local node = minetest.get_node(npos)
+		if TubeNames[node.name] then
+			if open_hole(dir, node.name, node.param2) then
+				table.insert(lAttr, {dir=dir})
+			end
+		elseif tubelib.KnownNodes[node.name] then
+			-- chests and other nodes
+			table.insert(lAttr, {dir=dir, almnt=0})
+		end
+	end
+	return lAttr
+end
+
+local function update_tube(pos, dir, almnt)
+	if dir then
+		pos = dir_to_pos(pos, dir)
+	end
+	local node = minetest.get_node(pos)
+	node.name = "tubelib:tube"..TubeTypes[almnt]
+	node.param2 = TubeParam2[almnt]
+	minetest.swap_node(pos, node)
+	delete_meta_data(pos, node)
+end	
+
+-- If tube has surrounding tubes with open ends, 
+-- start the update process of the neighbour tubes and the new tube.
+local function update_tubes(pos, pitch)
+	local lAttr = get_tubes_with_visible_holes(pos)
+	if #lAttr > 0 then
+		local almnt = get_alignment(pos, lAttr, pitch)
+		update_tube(pos, nil, almnt)
+	else
+		lAttr = get_any_neighbour_tubes(pos)
+		if #lAttr == 1 then
+			update_tube(pos, lAttr[1].dir, lAttr[1].almnt)
+			local almnt = get_alignment(pos, lAttr, pitch)
+			update_tube(pos, nil, almnt)
+		end
+	end
+	return true
+end
+	
+	
+-------------------------------------------------------------------------------
+-- Remove a tube node
+-------------------------------------------------------------------------------
+
+-- Update tubes after a tube node is removed	
+local function after_tube_removed(pos, oldnode)
+	local pos1, pos2 = nodetype_to_pos(pos, oldnode)
+	if pos1 then
+		local cnt, pos, pos1 = walk_to_peer(pos, pos1)
+		-- delete meta on peer tube
+		if cnt > 0 then
+			minetest.get_meta(pos):from_table(nil)
+		end
+	end
+	if pos2 then
+		local cnt, pos, pos1 = walk_to_peer(pos, pos2)
+		-- delete meta on peer tube
+		if cnt > 0 then
+			minetest.get_meta(pos):from_table(nil)
+		end
+	end
+end
+
+
+-------------------------------------------------------------------------------
+-- API functions
+-------------------------------------------------------------------------------
+
+local function remote_node(pos, npos)
+	local meta = minetest.get_meta(npos)
+	local dest_pos = meta:get_string("dest_pos")
+	
+	-- data available
+	if dest_pos ~= "" then
+		local npos = minetest.string_to_pos(dest_pos)
+		local facedir =  meta:get_int("facedir")
+		return npos, facedir
+	end	
+		
+	-- determine data
+	_,_, npos = walk_to_peer(pos, npos)
+	local facedir = dir_to_facedir(pos, npos)
+	meta:set_string("dest_pos", minetest.pos_to_string(npos))
+	meta:set_int("facedir", facedir)
+	return npos, facedir
+end	
+	
+-- Determine neighbor position and own facedir to the node.
+-- based on own pos and contact side 'B' - 'U'.
+-- Function considers also tube connections.
+function tubelib.get_neighbor_pos(pos, side)
+	local facedir = SideToFacedir[side]
+	if facedir < 4 then
+		local node = minetest.get_node(pos)
+		facedir = ((facedir + node.param2) % 4)
+	end
+	local npos = dir_to_pos(pos, facedir+1)
+	local node = minetest.get_node(npos)
+	if TubeNames[node.name] then
+		npos, facedir = remote_node(pos, npos)
+	end
+	return npos, facedir
+end
+
+
+-------------------------------------------------------------------------------
+-- Node registration
+-------------------------------------------------------------------------------
+
 local DefNodeboxes = {
 	-- x1   y1    z1     x2   y2   z2
 	{ -1/4, -1/4, -1/4,  1/4, 1/4, 1/4 },
@@ -378,11 +472,12 @@ local TilesData = {
 
 
 for idx,pos in ipairs(DirCorrections) do
-	node_box_data = table.copy(DefNodeboxes)
+	local node_box_data = table.copy(DefNodeboxes)
 	node_box_data[1][pos[1]] = node_box_data[1][pos[1]] * 2
 	node_box_data[2][pos[2]] = node_box_data[2][pos[2]] * 2
 
-	tiles_data = TilesData[idx]
+	local tiles_data = TilesData[idx]
+	local hidden
 	
 	if idx == 1 then
 		hidden = 0
@@ -407,15 +502,11 @@ for idx,pos in ipairs(DirCorrections) do
 		},
 		
 		after_place_node = function(pos, placer, itemstack, pointed_thing)
-			if update_surrounding_tubes(pos) == false then
-				after_tube_removed(pos, minetest.get_node(pos))
-				minetest.remove_node(pos)
-				return itemstack
-			end
+			update_tubes(pos, placer:get_look_vertical())
 		end,
 		
 		after_dig_node = function(pos, oldnode, oldmetadata, digger)
-			after_tube_removed(pos, oldnode)
+			delete_meta_data(pos, oldnode)
 		end,
 		
 		on_rotate = screwdriver.disallow,
@@ -433,8 +524,8 @@ end
 minetest.register_craft({
 	output = "tubelib:tube1 4",
 	recipe = {
-		{"default:steel_ingot", "",    "group:wood"},
-		{"",           "group:wood",   ""},
-		{"group:wood", "",             "default:tin_ingot"},
+		{"default:steel_ingot", "",             "group:wood"},
+		{"",                    "group:wood",   ""},
+		{"group:wood",          "",             "default:tin_ingot"},
 	},
 })

@@ -1,4 +1,4 @@
-# TechPack V1.06
+# TechPack V1.07
 
 TechPack, a Mining, Crafting, &amp; Farming Modpack for Minetest.
 
@@ -79,3 +79,4 @@ Gravelsieve optional: moreores, hopper, pipeworks
 - 2018-03-31  V1.04  * Maintenance, minor issues, Unifieddyes support for Color Lamp, Street Lamp added
 - 2018-04-27  V1.05  * Ceiling lamp added, further improvements
 - 2018-06-09  V1.06  * Recipes with API to grinder added
+- 2018-06-17  V1.07  * Tube placement completely reworked

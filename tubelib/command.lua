@@ -159,7 +159,7 @@ end
 -- Node construction/destruction functions
 -------------------------------------------------------------------
 	
--- Add node to the tubelib lists and update the tube surrounding.
+-- Add node to the tubelib lists.
 -- Function determines and returns the node position number,
 -- needed for message communication.
 function tubelib.add_node(pos, name)
@@ -169,8 +169,6 @@ function tubelib.add_node(pos, name)
 		pos = pos, 
 		name = name,
 	}
-	-- update surrounding tubes
-	tubelib.update_tubes(pos)
 	return number
 end
 
@@ -205,10 +203,10 @@ end
 function tubelib.register_node(name, add_names, node_definition)
 	tubelib_NodeDef[name] = node_definition
 	-- store facedir table for all known node names
-	tubelib.knownNodes[name] = true
+	tubelib.KnownNodes[name] = true
 	Name2Name[name] = name
 	for _,n in ipairs(add_names) do
-		tubelib.knownNodes[n] = true
+		tubelib.KnownNodes[n] = true
 		Name2Name[n] = name
 	end
 end
