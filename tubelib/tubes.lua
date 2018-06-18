@@ -368,9 +368,14 @@ end
 
 local function remote_node(pos, npos)
 	local meta = minetest.get_meta(npos)
-	local dest_pos = meta:get_string("dest_pos")
+	
+	-- legacy tube?
+	if meta:get_string("dest_pos2") ~= "" then
+		meta:from_table(nil)
+	end
 	
 	-- data available
+	local dest_pos = meta:get_string("dest_pos")
 	if dest_pos ~= "" then
 		local npos = minetest.string_to_pos(dest_pos)
 		local facedir =  meta:get_int("facedir")
