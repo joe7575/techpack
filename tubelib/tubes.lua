@@ -73,7 +73,13 @@ local TubeHoles = {
 	[11] = {2,4},
 	[13] = {2,4},
 	[20] = {5,6},
+	[21] = {5,6},
+	[22] = {5,6},
+	[23] = {5,6},
 	[30] = {1,2},
+	[31] = {1,2},
+	[32] = {1,2},
+	[33] = {1,2},
 	[31] = {3,2},
 	[32] = {3,4},
 	[33] = {1,4},
@@ -157,7 +163,7 @@ end
 
 -- The 'oldnode' on 'pos' had two ends and thus two neighbor position. 
 local function nodetype_to_pos(pos, node)
-	local key = (string.byte(node.name, -1) - 48) * 10 + node.param2
+	local key = (string.byte(node.name, -1) - 48) * 10 + (node.param2 % 4)
 	local pos1 = dir_to_pos(pos, Turn180Deg[TubeHoles[key][1]])
 	local pos2 = dir_to_pos(pos, Turn180Deg[TubeHoles[key][2]])
 	return pos1, pos2
