@@ -203,11 +203,16 @@ end
 function tubelib.register_node(name, add_names, node_definition)
 	tubelib_NodeDef[name] = node_definition
 	-- store facedir table for all known node names
-	tubelib.KnownNodes[name] = true
 	Name2Name[name] = name
 	for _,n in ipairs(add_names) do
-		tubelib.KnownNodes[n] = true
 		Name2Name[n] = name
+	end
+	if node_definition.on_pull_item or node_definition.on_push_item or 
+			node_definition.is_pusher then
+		tubelib.KnownNodes[name] = true
+		for _,n in ipairs(add_names) do
+			tubelib.KnownNodes[n] = true
+		end
 	end
 end
 

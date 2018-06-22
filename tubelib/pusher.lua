@@ -226,6 +226,7 @@ tubelib.register_node("tubelib:pusher", {"tubelib:pusher_active"}, {
 	on_pull_item = nil,  		-- pusher has no inventory
 	on_push_item = nil,			-- pusher has no inventory
 	on_unpull_item = nil,		-- pusher has no inventory
+	is_pusher = true,           -- is a pulling/pushing node
 	
 	on_recv_message = function(pos, topic, payload)
 		local node = minetest.get_node(pos)

@@ -141,13 +141,15 @@ function tubelib.get_next_tube(pos, dir)
 	return pos, nil
 end
 
-local function get_next_node(pos, dir)
-	pos = get_tube_pos(pos, dir)
-	local node = minetest.get_node_or_nil(pos) or tubelib.read_node_with_vm(pos)
-	if tubelib.KnownNodes[node.name] then
-		return node
+local function is_known_node(pos, dir)
+	if dir then
+		pos = get_tube_pos(pos, dir)
+		local node = minetest.get_node_or_nil(pos) or tubelib.read_node_with_vm(pos)
+		if tubelib.KnownNodes[node.name] and not tubelib.TubeNames[node.name] then
+			return true
+		end
 	end
-	return nil
+	return false
 end
 
 
@@ -204,7 +206,7 @@ local function is_connected(pos, dir)
 		local dir1,dir2 = get_tube_dirs(pos)
 		-- return true if connected
 		dir = Turn180Deg[dir]
-		return dir == dir1 or dir == dir2
+		return dir == dir1 or dir == dir2 
 	end
 	return false
 end
@@ -222,8 +224,8 @@ end
 local function update_next_tube(dir, pos)
 	-- test if tube is connected with neighbor tubes
 	local dir1, dir2 = get_tube_dirs(pos)
-	local conn1 = is_connected(pos, dir1)
-	local conn2 = is_connected(pos, dir2)
+	local conn1 = is_connected(pos, dir1) or is_known_node(pos, dir1)
+	local conn2 = is_connected(pos, dir2) or is_known_node(pos, dir2)
 	-- already connected or no tube arround?
 	if conn1 == conn2 then
 		return
@@ -246,12 +248,17 @@ local function update_tube(pos, dir)
 	for dir = 1,6 do
 		if not dir1 and is_connected(pos, dir) then
 			dir1 = dir
-		elseif not dir1 and get_next_node(pos, dir) then 
-			dir1 = dir
 		elseif not dir2 and is_connected(pos, dir) then
 			dir2 = dir
-		elseif not dir2 and get_next_node(pos, dir) then 
-			dir2 = dir
+		end
+	end
+	if not dir1 or not dir2 then
+		for dir = 1,6 do
+			if not dir1 and is_known_node(pos, dir) then 
+				dir1 = dir
+			elseif not dir2 and is_known_node(pos, dir) then 
+				dir2 = dir
+			end
 		end
 	end
 	dir1 = dir1 or dir 
