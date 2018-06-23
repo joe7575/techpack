@@ -27,6 +27,11 @@ function display_update(pos, objref)
 							visual_size = {x=0.94, y=0.94} })
 end
 
+local function on_timer(pos)
+	local meta = minetest.get_meta(pos)
+	display_lib.update_entities(pos)
+	return false
+end
 
 local lcd_box = {
 	type = "wallmounted",
@@ -59,6 +64,7 @@ minetest.register_node("smartline:display", {
 		display_lib.update_entities(pos)
 	end,
 
+	on_timer = on_timer,
 	on_place = display_lib.on_place,
 	on_construct = display_lib.on_construct,
 	on_destruct = display_lib.on_destruct,
@@ -121,18 +127,25 @@ end
 tubelib.register_node("smartline:display", {}, {
 	on_recv_message = function(pos, topic, payload)
 		local node = minetest.get_node(pos)
+		local timer = minetest.get_node_timer(pos)
 		if topic == "text" then  -- add one line and scroll if necessary
 			local meta = minetest.get_meta(pos)
 			add_line(meta, payload)
-			display_lib.update_entities(pos)
+			if not timer:is_started() then
+				timer:start(2)
+			end
 		elseif topic == "row" then  -- overwrite the given row
 			local meta = minetest.get_meta(pos)
 			write_row(meta, payload)
-			display_lib.update_entities(pos)
+			if not timer:is_started() then
+				timer:start(2)
+			end
 		elseif topic == "clear" then  -- clear the screen
 			local meta = minetest.get_meta(pos)
 			meta:set_string("text", "")
-			display_lib.update_entities(pos)
+			if not timer:is_started() then
+				timer:start(2)
+			end
 		end
 	end,
 })		

@@ -94,6 +94,20 @@ local function generate_Key2Number()
 	end
 end
 
+local function not_protected(pos, placer_name, clicker_name)
+	local meta = minetest.get_meta(pos)
+	if meta then
+		local cached_name = meta:get_string("tubelib_cached_name")
+		if placer_name and (placer_name == cached_name or not minetest.is_protected(pos, placer_name)) then
+			meta:set_string("tubelib_cached_name", placer_name)
+			if clicker_name == nil or not minetest.is_protected(pos, clicker_name) then
+				return true
+			end
+		end
+	end
+	return false
+end
+
 -------------------------------------------------------------------
 -- API helper functions
 -------------------------------------------------------------------
@@ -224,11 +238,9 @@ function tubelib.send_message(numbers, placer_name, clicker_name, topic, payload
 	for _,num in ipairs(string_split(numbers, " ")) do
 		if Number2Pos[num] and Number2Pos[num].name then
 			local data = Number2Pos[num]
-			if placer_name and not minetest.is_protected(data.pos, placer_name) then
-				if clicker_name == nil or not minetest.is_protected(data.pos, clicker_name) then
-					if tubelib_NodeDef[data.name] and tubelib_NodeDef[data.name].on_recv_message then
-						tubelib_NodeDef[data.name].on_recv_message(data.pos, topic, payload)
-					end
+			if not_protected(data.pos, placer_name, clicker_name) then
+				if tubelib_NodeDef[data.name] and tubelib_NodeDef[data.name].on_recv_message then
+					tubelib_NodeDef[data.name].on_recv_message(data.pos, topic, payload)
 				end
 			end
 		end
