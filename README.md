@@ -1,4 +1,4 @@
-# TechPack V1.07
+# TechPack V1.08
 
 TechPack, a Mining, Crafting, &amp; Farming Modpack for Minetest.
 
@@ -11,6 +11,8 @@ TechPack is a collection of following Mods:
 * tubelib_addons2, a Tubelib extension with control nodes
 * gravelsieve, a Mod to sieve ores from gravel.
 * smartline, a Mod with small and smart sensors, actors and controllers.
+* safer_lua, a subset of the language Lua for safe and secure Lua sandboxes
+* SaferLua Controller - a controller to be programmed in LUA
 
 **A TechPack Tutorial is available as ![Wiki](https://github.com/joe7575/techpack/wiki)**
 
@@ -48,6 +50,7 @@ TechPack provides:
   - sending commands and alarms
   - sending mails or chat messages
   - output on a display
+- a Controller to be programmed in Lua
 - a Signal Tower node showing machine states
 - a Display node for text outputs of the Controller
 
@@ -80,3 +83,4 @@ Gravelsieve optional: moreores, hopper, pipeworks
 - 2018-04-27  V1.05  * Ceiling lamp added, further improvements
 - 2018-06-09  V1.06  * Recipes with API to grinder added
 - 2018-06-17  V1.07  * Tube placement completely reworked
+- 2018-06-22  V1.08  * Lua Controller and SaferLua added
