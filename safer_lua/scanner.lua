@@ -1,3 +1,17 @@
+--[[
+
+	SaferLua [safer_lua]
+	====================
+
+	Copyright (C) 2018 Joachim Stolberg
+
+	LGPLv2.1+
+	See LICENSE.txt for more information
+
+	scanner.lua:
+
+]]--
+
 local function trim(s)
   return (s:gsub("^%s*(.-)%s*$", "%1"))
 end

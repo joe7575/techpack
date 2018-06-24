@@ -10,5 +10,9 @@
 
 ]]--
 
+sl_controller = {}
+
+dofile(minetest.get_modpath("sl_controller") .. "/config.lua")
 dofile(minetest.get_modpath("sl_controller") .. "/controller.lua")
 dofile(minetest.get_modpath("sl_controller") .. "/commands.lua")
+dofile(minetest.get_modpath("sl_controller") .. "/battery.lua")

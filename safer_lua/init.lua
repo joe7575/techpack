@@ -1,12 +1,14 @@
 --[[
 
-	SaferLUA
-	========
-	
+	SaferLua [safer_lua]
+	====================
+
 	Copyright (C) 2018 Joachim Stolberg
 
 	LGPLv2.1+
 	See LICENSE.txt for more information
+
+	environ.lua:
 
 ]]--
 

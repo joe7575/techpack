@@ -12,19 +12,15 @@
 
 ]]--
 
-local sHELP = [[Safer LUA Controller
+local sHELP = [[SaferLua Controller
 
 Safer LUA is a subset of LUA with the following restrictions:
  - No loop keywords like: for, while, repeat,...
- - No table constructions via: { ... }
+ - No table construction {..}
  - Limited set of available functions 
  - Store() as alternative to LUA tables
 
 ]]
-
-local mail_exists = minetest.get_modpath("mail") and mail ~= nil
- 
-sl_controller = {}
 
 local Cache = {}
 
@@ -74,8 +70,10 @@ sl_controller.register_action("print", {
 	cmnd = function(self, text1, text2, text3)
 		_G = self._G
 		local pos = self.meta.pos
-		local text = (text1 or "")..(text2 or "")..(text3 or "")
-		output(pos, text)
+		text1 = tostring(text1 or "")
+		text2 = tostring(text2 or "")
+		text3 = tostring(text3 or "")
+		output(pos, text1..text2..text3)
 	end,
 	help = "$print(text,...)\n"..
 		"Send a text line to the output window.\n"..
@@ -83,6 +81,19 @@ sl_controller.register_action("print", {
 		'e.g. $print("Hello ", name, " !")'
 })
 
+
+local function formspec0(meta)
+	local running = meta:get_int("state") == tubelib.RUNNING
+	local cmnd = running and "stop;Stop" or "start;Start" 
+	local init = meta:get_string("init")
+	init = minetest.formspec_escape(init)
+	return "size[4,3]"..
+	default.gui_bg..
+	default.gui_bg_img..
+	default.gui_slots..
+	"label[0,0;No Battery?]"..
+	"button[1,2;1.8,1;start;Start]"
+end
 
 local function formspec1(meta)
 	local running = meta:get_int("state") == tubelib.RUNNING
@@ -163,6 +174,7 @@ local function error(pos, err)
 	output(pos, err)
 	local meta = minetest.get_meta(pos)
 	local number = meta:get_string("number")
+	meta:set_string("formspec", formspec3(meta))
 	meta:set_string("infotext", "Controller "..number..": error")
 	return false
 end
@@ -182,25 +194,23 @@ local function compile(pos, meta, number)
 	return false
 end
 
-local function on_timer(pos, elapsed)
-	local t = minetest.get_us_time()
-	local meta = minetest.get_meta(pos)
-	local number = meta:get_string("number")
-	if Cache[number] or compile(pos, meta, number) then
-		
-		local code = Cache[number].code
-		local res = safer_lua.run_loop(pos, elapsed, code, error)
-		
-		t = minetest.get_us_time() - t
-		print("time", t)
-		return res
+local function battery(pos)
+	local battery_pos = minetest.find_node_near(pos, 1, {"sl_controller:battery"})
+	if battery_pos then
+		local meta = minetest.get_meta(pos)
+		meta:set_string("battery", minetest.pos_to_string(battery_pos))
+		return true
 	end
 	return false
-end
+end	
 
 local function start_controller(pos)
 	local meta = minetest.get_meta(pos)
 	local number = meta:get_string("number")
+	if not battery(pos) then
+		meta:set_string("formspec", formspec0(meta))
+		return
+	end
 	if compile(pos, meta, number) then
 		meta:set_int("state", tubelib.RUNNING)
 		minetest.get_node_timer(pos):start(1)
@@ -217,6 +227,58 @@ local function stop_controller(pos)
 	minetest.get_node_timer(pos):stop()
 	meta:set_string("infotext", "Controller "..number..": stopped")
 	meta:set_string("formspec", formspec2(meta))
+end
+
+local function no_battery(pos)
+	local meta = minetest.get_meta(pos)
+	local number = meta:get_string("number")
+	meta:set_int("state", tubelib.STOPPED)
+	minetest.get_node_timer(pos):stop()
+	meta:set_string("infotext", "Controller "..number..": No battery")
+	meta:set_string("formspec", formspec0(meta))
+end
+
+local function update_battery(meta, cpu)
+	local pos = minetest.string_to_pos(meta:get_string("battery"))
+	if pos then
+		meta = minetest.get_meta(pos)
+		local content = meta:get_int("content") - cpu
+		print("content", content)
+		if content <= 0 then
+			meta:set_int("content", 0)
+			return false
+		end
+		meta:set_int("content", content)
+		return true
+	end
+end
+
+local function on_timer(pos, elapsed)
+	local t = minetest.get_us_time()
+	local meta = minetest.get_meta(pos)
+	local number = meta:get_string("number")
+	if Cache[number] or compile(pos, meta, number) then
+		
+		local cpu = meta:get_int("cpu") or 0
+		local code = Cache[number].code
+		local res = safer_lua.run_loop(pos, elapsed, code, error)
+		if res then 
+			t = minetest.get_us_time() - t
+			cpu = math.floor(((cpu * 20) + t) / 21)
+			meta:set_int("cpu", cpu)
+			meta:set_string("infotext", "Controller "..number..": running ("..cpu.."us)")
+			if not update_battery(meta, cpu) then
+				no_battery(pos)
+				return false
+			end
+		else
+			stop_controller(pos) 
+		end
+		return res
+	else
+		stop_controller(pos)
+	end
+	return false
 end
 
 local function on_receive_fields(pos, formname, fields, player)
@@ -267,7 +329,7 @@ local function on_receive_fields(pos, formname, fields, player)
 end
 
 minetest.register_node("sl_controller:controller", {
-	description = "SaferLUA Controller",
+	description = "SaferLua Controller",
 	inventory_image = "sl_controller_inventory.png",
 	wield_image = "sl_controller_inventory.png",
 	stack_max = 1,

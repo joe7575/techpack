@@ -1,2 +1,2 @@
-tbd.
+SaferLua Controller - a controller to be programmed in LUA
 

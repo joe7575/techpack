@@ -1,0 +1,6 @@
+.buildpath
+.project
+org.eclipse.*
+
+
+test_*.lua

@@ -17,6 +17,7 @@
 sl_controller.register_function("get_input", {
 	cmnd = function(self, num)
 		_G = self._G
+		num = tostring(num or "")
 		return sl_controller.get_input(self.meta.number, num)
 	end,
 	help = " $get_input(num)  --> 'on', 'off', or nil\n"..
@@ -28,6 +29,7 @@ sl_controller.register_function("get_input", {
 sl_controller.register_function("get_status", {
 	cmnd = function(self, num) 
 		_G = self._G
+		num = tostring(num or "")
 		return tubelib.send_request(num, "state", nil)
 	end,
 	help = " $get_status(num)  --> 'stopped', 'running',\n"..
@@ -65,6 +67,7 @@ sl_controller.register_function("time_as_num", {
 sl_controller.register_function("playerdetector", {
 	cmnd = function(self, num) 
 		_G = self._G
+		num = tostring(num or "")
 		return tubelib.send_request(num, "name", nil)
 	end,
 	help = " $playerdetector(num) --> e.g. 'Joe'\n"..
@@ -75,6 +78,8 @@ sl_controller.register_function("playerdetector", {
 sl_controller.register_action("send_cmnd", {
 	cmnd = function(self, num, text) 
 		_G = self._G
+		num = tostring(num or "")
+		text = tostring(text or "")
 		tubelib.send_message(num, self.meta.owner, nil, text, nil)
 	end,
 	help = " $send_cmnd(num, text)\n"..
@@ -87,8 +92,10 @@ sl_controller.register_action("send_cmnd", {
 sl_controller.register_action("display", {
 	cmnd = function(self, num, row, text1, text2, text3)
 		_G = self._G
-		local text = (text1 or "") .. (text2 or "") .. (text3 or "")
-		tubelib.send_message(num, self.meta.owner, nil, "row", {row = row, str = text})
+		text1 = tostring(text1 or "")
+		text2 = tostring(text2 or "")
+		text3 = tostring(text3 or "")
+		tubelib.send_message(num, self.meta.owner, nil, "row", {row = row, str = text1..text2..text3})
 	end,
 	help = " $display(num, row, text,...)\n"..
 		" Send a text line to the display with number 'num'.\n"..
@@ -100,6 +107,7 @@ sl_controller.register_action("display", {
 sl_controller.register_action("clear_screen", {
 	cmnd = function(self, num) 
 		_G = self._G
+		num = tostring(num or "")
 		tubelib.send_message(num, self.meta.owner, nil, "clear", nil)
 	end,
 	help = " $clear_screen(num)\n"..
@@ -109,18 +117,24 @@ sl_controller.register_action("clear_screen", {
 })
 
 sl_controller.register_action("chat", {
-	cmnd = function(self, text) 
+	cmnd = function(self, text1, text2, text3) 
 		_G = self._G
-		minetest.chat_send_player(self.meta.owner, "[SmartLine Controller] "..text)
+		text1 = tostring(text1 or "")
+		text2 = tostring(text2 or "")
+		text3 = tostring(text3 or "")
+		minetest.chat_send_player(self.meta.owner, "[SmartLine Controller] "..text1..text2..text3)
 	end,
-	help =  " $chat(text)\n"..
+	help =  " $chat(text,...)\n"..
 		" Send yourself a chat message.\n"..
-		' example: $chat("Hello")'
+		" The function accepts up to 3 text parameters\n"..
+		' example: $chat("Hello ", name)'
 })
 
 sl_controller.register_action("door", {
 	cmnd = function(self, pos, text) 
 		_G = self._G
+		pos = tostring(pos or "")
+		text = tostring(text or "")
 		pos = minetest.string_to_pos("("..pos..")")
 		if pos then
 			local door = doors.get(pos)

@@ -1,3 +1,17 @@
+--[[
+
+	SaferLua [safer_lua]
+	====================
+
+	Copyright (C) 2018 Joachim Stolberg
+
+	LGPLv2.1+
+	See LICENSE.txt for more information
+
+	environ.lua:
+
+]]--
+
 safer_lua.MaxCodeSize = 1000    -- size in length of byte code
 safer_lua.MaxTableSize = 1000   -- number of table entries considering string lenghts
 

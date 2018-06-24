@@ -1,3 +1,17 @@
+--[[
+
+	SaferLua [safer_lua]
+	====================
+
+	Copyright (C) 2018 Joachim Stolberg
+
+	LGPLv2.1+
+	See LICENSE.txt for more information
+
+	store.lua:
+
+]]--
+
 safer_lua.StoreHelp = [[
  Store - a secure shell over the LUA table type.
  
