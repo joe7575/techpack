@@ -1,0 +1,371 @@
+--[[
+
+	sl_controller
+	=============
+
+	Copyright (C) 2018 Joachim Stolberg
+
+	LGPLv2.1+
+	See LICENSE.txt for more information
+
+	controller.lua:
+
+]]--
+
+local sHELP = [[Safer LUA Controller
+
+Safer LUA is a subset of LUA with the following restrictions:
+ - No loop keywords like: for, while, repeat,...
+ - No table constructions via: { ... }
+ - Limited set of available functions 
+ - Store() as alternative to LUA tables
+
+]]
+
+local mail_exists = minetest.get_modpath("mail") and mail ~= nil
+ 
+sl_controller = {}
+
+local Cache = {}
+
+local tCommands = {}
+local tFunctions = {" Overview", " Store"}
+local tHelpTexts = {[" Overview"] = sHELP, [" Store"] = safer_lua.StoreHelp}
+local sFunctionList = ""
+local tFunctionIndex = {}
+
+minetest.after(2, function() 
+	sFunctionList = table.concat(tFunctions, ",") 
+	for idx,key in ipairs(tFunctions) do
+		tFunctionIndex[key] = idx
+	end
+end)
+
+local function output(pos, text)
+	local meta = minetest.get_meta(pos)
+	text = meta:get_string("output") .. "\n" .. (text or "")
+	text = text:sub(-500,-1)
+	meta:set_string("output", text)
+end
+
+--
+-- API functions for function/action registrations
+--
+function sl_controller.register_function(key, attr)
+	tCommands[key] = attr.cmnd
+	table.insert(tFunctions, " $"..key)
+	tHelpTexts[" $"..key] = attr.help
+end
+
+function sl_controller.register_action(key, attr)
+	tCommands[key] = attr.cmnd
+	table.insert(tFunctions, " $"..key)
+	tHelpTexts[" $"..key] = attr.help
+end
+
+local function merge(dest, keys, values)
+  for idx,key in ipairs(keys) do
+    dest.env[key] = values[idx]
+  end
+  return dest
+end
+
+sl_controller.register_action("print", {
+	cmnd = function(self, text1, text2, text3)
+		_G = self._G
+		local pos = self.meta.pos
+		local text = (text1 or "")..(text2 or "")..(text3 or "")
+		output(pos, text)
+	end,
+	help = "$print(text,...)\n"..
+		"Send a text line to the output window.\n"..
+		"The function accepts up to 3 text strings\n"..
+		'e.g. $print("Hello ", name, " !")'
+})
+
+
+local function formspec1(meta)
+	local running = meta:get_int("state") == tubelib.RUNNING
+	local cmnd = running and "stop;Stop" or "start;Start" 
+	local init = meta:get_string("init")
+	init = minetest.formspec_escape(init)
+	return "size[10,8]"..
+	default.gui_bg..
+	default.gui_bg_img..
+	default.gui_slots..
+	"tabheader[0,0;tab;init,loop,outp,notes,help;1;;true]"..
+	"textarea[0.3,0.2;10,8.3;init;function init();"..init.."]"..
+	"label[0,7.3;end]"..
+	"button_exit[4.4,7.5;1.8,1;cancel;Cancel]"..
+	"button[6.3,7.5;1.8,1;save;Save]"..
+	"button[8.2,7.5;1.8,1;"..cmnd.."]"
+end
+
+local function formspec2(meta)
+	local running = meta:get_int("state") == tubelib.RUNNING
+	local cmnd = running and "stop;Stop" or "start;Start"
+	local loop = meta:get_string("loop")
+	loop = minetest.formspec_escape(loop)
+	return "size[10,8]"..
+	default.gui_bg..
+	default.gui_bg_img..
+	default.gui_slots..
+	"tabheader[0,0;tab;init,loop,outp,notes,help;2;;true]"..
+	"textarea[0.3,0.2;10,8.3;loop;function loop(ticks, elapsed);"..loop.."]"..
+	"label[0,7.3;end]"..
+	"button_exit[4.4,7.5;1.8,1;cancel;Cancel]"..
+	"button[6.3,7.5;1.8,1;save;Save]"..
+	"button[8.2,7.5;1.8,1;"..cmnd.."]"
+end
+
+local function formspec3(meta)
+	local running = meta:get_int("state") == tubelib.RUNNING
+	local cmnd = running and "stop;Stop" or "start;Start" 
+	local output = meta:get_string("output")
+	output = minetest.formspec_escape(output)
+	return "size[10,8]"..
+	default.gui_bg..
+	default.gui_bg_img..
+	default.gui_slots..
+	"tabheader[0,0;tab;init,loop,outp,notes,help;3;;true]"..
+	"textarea[0.3,0.2;10,8.3;help;Output:;"..output.."]"..
+	"button[4.4,7.5;1.8,1;clear;Clear]"..
+	"button[6.3,7.5;1.8,1;update;Update]"..
+	"button[8.2,7.5;1.8,1;"..cmnd.."]"
+end
+
+local function formspec4(meta)
+	local notes = meta:get_string("notes")
+	notes = minetest.formspec_escape(notes)
+	return "size[10,8]"..
+	default.gui_bg..
+	default.gui_bg_img..
+	default.gui_slots..
+	"tabheader[0,0;tab;init,loop,outp,notes,help;4;;true]"..
+	"textarea[0.3,0.2;10,8.3;notes;Notepad:;"..notes.."]"..
+	"button_exit[6.3,7.5;1.8,1;cancel;Cancel]"..
+	"button[8.2,7.5;1.8,1;save;Save]"
+end
+
+local function formspec5(items, pos, text)
+	text = minetest.formspec_escape(text)
+	return "size[10,8]"..
+	default.gui_bg..
+	default.gui_bg_img..
+	default.gui_slots..
+	"tabheader[0,0;tab;init,loop,outp,notes,help;5;;true]"..
+	"label[0,-0.2;Functions:]"..
+	"dropdown[0.3,0.2;10,8.3;functions;"..items..";"..pos.."]"..
+	"textarea[0.3,1.3;10,8;help;Help:;"..text.."]"
+end
+
+local function error(pos, err)
+	output(pos, err)
+	local meta = minetest.get_meta(pos)
+	local number = meta:get_string("number")
+	meta:set_string("infotext", "Controller "..number..": error")
+	return false
+end
+
+local function compile(pos, meta, number)
+	local init = meta:get_string("init")
+	local loop = meta:get_string("loop")
+	local owner = meta:get_string("owner")
+	local env = table.copy(tCommands)
+	env.meta = {pos=pos, owner=owner, number=number}
+	local code = safer_lua.init(pos, init, loop, env, error)
+	
+	if code then
+		Cache[number] = {code=code, inputs={}}
+		return true
+	end
+	return false
+end
+
+local function on_timer(pos, elapsed)
+	local t = minetest.get_us_time()
+	local meta = minetest.get_meta(pos)
+	local number = meta:get_string("number")
+	if Cache[number] or compile(pos, meta, number) then
+		
+		local code = Cache[number].code
+		local res = safer_lua.run_loop(pos, elapsed, code, error)
+		
+		t = minetest.get_us_time() - t
+		print("time", t)
+		return res
+	end
+	return false
+end
+
+local function start_controller(pos)
+	local meta = minetest.get_meta(pos)
+	local number = meta:get_string("number")
+	if compile(pos, meta, number) then
+		meta:set_int("state", tubelib.RUNNING)
+		minetest.get_node_timer(pos):start(1)
+		meta:set_string("infotext", "Controller "..number..": running")
+	end
+	meta:set_string("output", "<press update>")
+	meta:set_string("formspec", formspec3(meta))
+end
+
+local function stop_controller(pos)
+	local meta = minetest.get_meta(pos)
+	local number = meta:get_string("number")
+	meta:set_int("state", tubelib.STOPPED)
+	minetest.get_node_timer(pos):stop()
+	meta:set_string("infotext", "Controller "..number..": stopped")
+	meta:set_string("formspec", formspec2(meta))
+end
+
+local function on_receive_fields(pos, formname, fields, player)
+	if minetest.is_protected(pos, player:get_player_name()) then
+		return
+	end
+	local meta = minetest.get_meta(pos)
+	
+	--print(dump(fields))
+	if fields.cancel == nil then
+		if fields.init then
+			meta:set_string("init", fields.init)
+			meta:set_string("formspec", formspec1(meta))
+		elseif fields.loop then
+			meta:set_string("loop", fields.loop)
+			meta:set_string("formspec", formspec2(meta))
+		elseif fields.notes then
+			meta:set_string("notes", fields.notes)
+			meta:set_string("formspec", formspec4(meta))
+		end	
+	end
+	
+	if fields.update then
+		meta:set_string("formspec", formspec3(meta))
+	elseif fields.clear then
+		meta:set_string("output", "<press update>")
+		meta:set_string("formspec", formspec3(meta))
+	elseif fields.tab == "1" then
+		meta:set_string("formspec", formspec1(meta))
+	elseif fields.tab == "2" then
+		meta:set_string("formspec", formspec2(meta))
+	elseif fields.tab == "3" then
+		meta:set_string("formspec", formspec3(meta))
+	elseif fields.tab == "4" then
+		meta:set_string("formspec", formspec4(meta))
+	elseif fields.tab == "5" then
+		meta:set_string("formspec", formspec5(sFunctionList, 1, sHELP))
+	elseif fields.start == "Start" then
+		start_controller(pos)
+	elseif fields.stop == "Stop" then
+		stop_controller(pos)
+	elseif fields.functions then
+		local key = fields.functions
+		local text = tHelpTexts[key] or ""
+		local pos = tFunctionIndex[key] or 1
+		meta:set_string("formspec", formspec5(sFunctionList, pos, text))
+	end
+end
+
+minetest.register_node("sl_controller:controller", {
+	description = "SaferLUA Controller",
+	inventory_image = "sl_controller_inventory.png",
+	wield_image = "sl_controller_inventory.png",
+	stack_max = 1,
+	tiles = {
+		-- up, down, right, left, back, front
+		"smartline.png",
+		"smartline.png",
+		"smartline.png",
+		"smartline.png",
+		"smartline.png",
+		"smartline.png^sl_controller.png",
+	},
+
+	drawtype = "nodebox",
+	node_box = {
+		type = "fixed",
+		fixed = {
+			{ -6/32, -6/32, 14/32,  6/32,  6/32, 16/32},
+		},
+	},
+	
+	after_place_node = function(pos, placer)
+		local meta = minetest.get_meta(pos)
+		local number = tubelib.add_node(pos, "sl_controller:controller")
+		meta:set_string("owner", placer:get_player_name())
+		--print("after_place_node", number)
+		meta:set_string("number", number)
+		meta:set_int("state", tubelib.STOPPED)
+		meta:set_string("init", "-- called only once")
+		meta:set_string("loop", "-- called every second")
+		meta:set_string("notes", "For your notes / snippets")
+		meta:set_string("formspec", formspec1(meta))
+		meta:set_string("infotext", "Controller "..number..": stopped")
+	end,
+
+	on_receive_fields = on_receive_fields,
+	
+	on_dig = function(pos, node, puncher, pointed_thing)
+		if minetest.is_protected(pos, puncher:get_player_name()) then
+			return
+		end
+		
+		minetest.node_dig(pos, node, puncher, pointed_thing)
+		tubelib.remove_node(pos)
+	end,
+	
+	on_timer = on_timer,
+	
+	paramtype = "light",
+	sunlight_propagates = true,
+	paramtype2 = "facedir",
+	groups = {choppy=1, cracky=1, crumbly=1},
+	is_ground_content = false,
+	sounds = default.node_sound_stone_defaults(),
+})
+
+
+minetest.register_craft({
+	type = "shapeless",
+	output = "sl_controller:controller",
+	recipe = {"smartline:controller"}
+})
+
+
+local function set_input(number, input, val)
+	if input then 
+		if Cache[number] and Cache[number].inputs then
+			--print("set_input", input, val)
+			Cache[number].inputs[input] = val
+		end
+	end
+end	
+
+function sl_controller.get_input(number, input)
+	--print("get_input", number, input, dump(Cache[number].inputs))
+	if input then 
+		if Cache[number] and Cache[number].inputs then
+			return Cache[number].inputs[input] or "off"
+		end
+	end
+	return "off"
+end	
+
+tubelib.register_node("sl_controller:controller", {}, {
+	on_recv_message = function(pos, topic, payload)
+		-----------------------------------------------------
+		local meta = minetest.get_meta(pos)
+		local number = meta:get_string("number")
+		---------------------------------------------
+		if topic == "on" then
+			set_input(number, payload, topic)
+		elseif topic == "off" then
+			set_input(number, payload, topic)
+		elseif topic == "state" then
+			local state = meta:get_int("state")
+			return tubelib.statestring(state)
+		else
+			return "unsupported"
+		end
+	end,
+})		
