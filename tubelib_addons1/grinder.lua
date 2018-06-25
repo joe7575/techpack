@@ -327,10 +327,14 @@ tubelib.add_grinder_recipe({input="default:mossycobble", output="default:gravel"
 tubelib.add_grinder_recipe({input="default:gravel", output="default:sand"})
 
 if minetest.global_exists("skytest") then
-	tubelib.add_grinder_recipe({input="group:sand", output="skytest:dust"})
+	tubelib.add_grinder_recipe({input="default:desert_sand", output="skytest:dust"})
+	tubelib.add_grinder_recipe({input="default:silver_sand", output="skytest:dust"})
+	tubelib.add_grinder_recipe({input="default:sand", output="skytest:dust"})
 	tubelib.add_grinder_recipe({input="skytest:dust 12", output="skytest:powder"})
 else
-	tubelib.add_grinder_recipe({input="group:sand", output="default:clay"})
+	tubelib.add_grinder_recipe({input="default:desert_sand", output="default:clay"})
+	tubelib.add_grinder_recipe({input="default:silver_sand", output="default:clay"})
+	tubelib.add_grinder_recipe({input="default:sand", output="default:clay"})
 end
 
 tubelib.add_grinder_recipe({input="default:tree", output="default:leaves 8"})
