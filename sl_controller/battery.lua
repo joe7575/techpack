@@ -51,6 +51,7 @@ minetest.register_node("sl_controller:battery", {
 	after_place_node = function(pos, placer)
 		local meta = minetest.get_meta(pos)
 		meta:set_int("content", sl_controller.battery_capacity)
+		on_timer(pos, 1)
 		minetest.get_node_timer(pos):start(30)
 	end,
 	
@@ -60,6 +61,7 @@ minetest.register_node("sl_controller:battery", {
 	sunlight_propagates = true,
 	paramtype2 = "facedir",
 	groups = {choppy=1, cracky=1, crumbly=1},
+	drop = "",
 	is_ground_content = false,
 	sounds = default.node_sound_stone_defaults(),
 })

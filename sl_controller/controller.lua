@@ -20,6 +20,9 @@ SaferLua is a subset of Lua with the following restrictions:
  - Limited set of available functions 
  - Store() as alternative to Lua tables
 
+The controller needs a battery nearby.
+Don't remove the battery, it will be destroyed!
+
 See: goo.gl/WRWZgt
 ]]
 
@@ -261,7 +264,7 @@ end
 local function on_timer(pos, elapsed)
 	local t = minetest.get_us_time()
 	local meta = minetest.get_meta(pos)
-	if meta:get_int("state") ~= "running" then
+	if meta:get_int("state") ~= tubelib.RUNNING then
 		return false
 	end
 	local number = meta:get_string("number")
