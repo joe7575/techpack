@@ -19,8 +19,16 @@ safer_lua.MaxTableSize = 1000   -- number of table entries considering string le
 local BASE_ENV = {
 	Store = safer_lua.Store,
 	math = {
-		floor = math.floor
+		floor = math.floor,
+		abs = math.abs,
+		max = math.max,
+		min = math.min,
+		random = math.random,
+		
 	},
+	tonumber = tonumber,
+	tostring = tostring,
+	type = type,
 	ticks = 0,
 }
 
@@ -62,7 +70,6 @@ function safer_lua.init(pos, init, loop, environ, err_clbk)
 	if code then
 		local env = BASE_ENV
 		env.S = {}
-		env.S._G = _G
 		env.S = map(env.S, environ)
 		setfenv(code, env)
 		local res, err = pcall(code)
@@ -85,7 +92,6 @@ function safer_lua.run_loop(pos, elapsed, code, err_clbk)
 	env.event = false
 	env.ticks = env.ticks + 1
 	env.elapsed = elapsed
-	setfenv(code, env)
 	local res, err = pcall(code)
 	if not res then
 		err = err:gsub("%[string .+%]:", "loop() ")
@@ -98,7 +104,7 @@ end
 function safer_lua.run_event(pos, code, err_clbk)
 	local env = getfenv(code)
 	env.event = true
-	setfenv(code, env)
+	env.elapsed = 0
 	local res, err = pcall(code)
 	if not res then
 		err = err:gsub("%[string .+%]:", "loop() ")

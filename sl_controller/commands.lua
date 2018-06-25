@@ -16,7 +16,6 @@
 
 sl_controller.register_function("get_input", {
 	cmnd = function(self, num)
-		_G = self._G
 		num = tostring(num or "")
 		return sl_controller.get_input(self.meta.number, num)
 	end,
@@ -28,7 +27,6 @@ sl_controller.register_function("get_input", {
 
 sl_controller.register_function("get_status", {
 	cmnd = function(self, num) 
-		_G = self._G
 		num = tostring(num or "")
 		return tubelib.send_request(num, "state", nil)
 	end,
@@ -40,7 +38,6 @@ sl_controller.register_function("get_status", {
 
 sl_controller.register_function("time_as_str", {
 	cmnd = function(self) 
-		_G = self._G
 		local t = minetest.get_timeofday()
 		local h = math.floor(t*24) % 24
 		local m = math.floor(t*1440) % 60
@@ -53,7 +50,6 @@ sl_controller.register_function("time_as_str", {
 
 sl_controller.register_function("time_as_num", {
 	cmnd = function(self, num) 
-		_G = self._G
 		local t = minetest.get_timeofday()
 		local h = math.floor(t*24) % 24
 		local m = math.floor(t*1440) % 60
@@ -66,7 +62,6 @@ sl_controller.register_function("time_as_num", {
 
 sl_controller.register_function("playerdetector", {
 	cmnd = function(self, num) 
-		_G = self._G
 		num = tostring(num or "")
 		return tubelib.send_request(num, "name", nil)
 	end,
@@ -77,7 +72,6 @@ sl_controller.register_function("playerdetector", {
 
 sl_controller.register_action("send_cmnd", {
 	cmnd = function(self, num, text) 
-		_G = self._G
 		num = tostring(num or "")
 		text = tostring(text or "")
 		tubelib.send_message(num, self.meta.owner, nil, text, nil)
@@ -91,7 +85,6 @@ sl_controller.register_action("send_cmnd", {
 
 sl_controller.register_action("display", {
 	cmnd = function(self, num, row, text1, text2, text3)
-		_G = self._G
 		text1 = tostring(text1 or "")
 		text2 = tostring(text2 or "")
 		text3 = tostring(text3 or "")
@@ -106,7 +99,6 @@ sl_controller.register_action("display", {
 
 sl_controller.register_action("clear_screen", {
 	cmnd = function(self, num) 
-		_G = self._G
 		num = tostring(num or "")
 		tubelib.send_message(num, self.meta.owner, nil, "clear", nil)
 	end,
@@ -118,7 +110,6 @@ sl_controller.register_action("clear_screen", {
 
 sl_controller.register_action("chat", {
 	cmnd = function(self, text1, text2, text3) 
-		_G = self._G
 		text1 = tostring(text1 or "")
 		text2 = tostring(text2 or "")
 		text3 = tostring(text3 or "")
@@ -132,7 +123,6 @@ sl_controller.register_action("chat", {
 
 sl_controller.register_action("door", {
 	cmnd = function(self, pos, text) 
-		_G = self._G
 		pos = tostring(pos or "")
 		text = tostring(text or "")
 		pos = minetest.string_to_pos("("..pos..")")

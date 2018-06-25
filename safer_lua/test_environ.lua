@@ -17,7 +17,7 @@ dofile('/home/joachim/minetest/mods/techpack/safer_lua/environ.lua')
 --code = Cache[key]
 
 local function foo(self, val)
-	_G = self._G
+	--_G = self._G
 	print("Hallo", val)
 end	
 
@@ -28,14 +28,15 @@ end
 local init = "init = 5"
 local loop = [[
   $foo("hallo")
-  S.foo("hallo")
-  --S._G.print("Fehler")
+  $foo("hallo")
   $foo(math.floor(5.5))
   $foo("Joe")
   a = Store()
   a.set("a", 123)
   $foo(a.get("a"))  
   $foo(ticks)  
+  if ticks == 10 then $foo("Fehler")
+  
 ]]
 
 local env = {foo = foo}
@@ -43,7 +44,7 @@ local env = {foo = foo}
 
 local code = safer_lua.init(0, init, loop, env, error)
 if code then
-	print(safer_lua.run_loop(0, code, error))
-	safer_lua.run_loop(0, code, error)
-	safer_lua.run_loop(0, code, error)
+	print(safer_lua.run_loop(0, 0, code, error))
+	safer_lua.run_loop(0, 1, code, error)
+	safer_lua.run_loop(0, 2, code, error)
 end

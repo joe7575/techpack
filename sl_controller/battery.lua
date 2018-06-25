@@ -16,7 +16,6 @@ local function on_timer(pos, elapsed)
 	local meta = minetest.get_meta(pos)
 	local percent = (sl_controller.battery_capacity - meta:get_int("content"))
 	percent = 100 - math.floor((percent * 100.0 / sl_controller.battery_capacity))
-	print("percent", percent, meta:get_int("content"))
 	meta:set_string("infotext", "Battery ("..percent.."%)")
 	if percent == 0 then
 		local node = minetest.get_node(pos)
@@ -52,7 +51,7 @@ minetest.register_node("sl_controller:battery", {
 	after_place_node = function(pos, placer)
 		local meta = minetest.get_meta(pos)
 		meta:set_int("content", sl_controller.battery_capacity)
-		minetest.get_node_timer(pos):start(2)
+		minetest.get_node_timer(pos):start(30)
 	end,
 	
 	on_timer = on_timer,

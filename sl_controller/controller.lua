@@ -14,12 +14,13 @@
 
 local sHELP = [[SaferLua Controller
 
-Safer LUA is a subset of LUA with the following restrictions:
+SaferLua is a subset of Lua with the following restrictions:
  - No loop keywords like: for, while, repeat,...
  - No table construction {..}
  - Limited set of available functions 
- - Store() as alternative to LUA tables
+ - Store() as alternative to Lua tables
 
+See: goo.gl/WRWZgt
 ]]
 
 local Cache = {}
@@ -68,7 +69,6 @@ end
 
 sl_controller.register_action("print", {
 	cmnd = function(self, text1, text2, text3)
-		_G = self._G
 		local pos = self.meta.pos
 		text1 = tostring(text1 or "")
 		text2 = tostring(text2 or "")
@@ -176,6 +176,8 @@ local function error(pos, err)
 	local number = meta:get_string("number")
 	meta:set_string("formspec", formspec3(meta))
 	meta:set_string("infotext", "Controller "..number..": error")
+	meta:set_int("state", tubelib.STOPPED)
+	minetest.get_node_timer(pos):stop()
 	return false
 end
 
@@ -209,15 +211,19 @@ local function start_controller(pos)
 	local number = meta:get_string("number")
 	if not battery(pos) then
 		meta:set_string("formspec", formspec0(meta))
-		return
+		return false
 	end
+	
+	meta:set_string("output", "<press update>")
+	meta:set_string("formspec", formspec3(meta))
+	
 	if compile(pos, meta, number) then
 		meta:set_int("state", tubelib.RUNNING)
 		minetest.get_node_timer(pos):start(1)
 		meta:set_string("infotext", "Controller "..number..": running")
+		return true
 	end
-	meta:set_string("output", "<press update>")
-	meta:set_string("formspec", formspec3(meta))
+	return false
 end
 
 local function stop_controller(pos)
@@ -243,7 +249,6 @@ local function update_battery(meta, cpu)
 	if pos then
 		meta = minetest.get_meta(pos)
 		local content = meta:get_int("content") - cpu
-		print("content", content)
 		if content <= 0 then
 			meta:set_int("content", 0)
 			return false
@@ -256,6 +261,9 @@ end
 local function on_timer(pos, elapsed)
 	local t = minetest.get_us_time()
 	local meta = minetest.get_meta(pos)
+	if meta:get_int("state") ~= "running" then
+		return false
+	end
 	local number = meta:get_string("number")
 	if Cache[number] or compile(pos, meta, number) then
 		
