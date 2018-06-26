@@ -35,6 +35,7 @@ safer_lua.StoreHelp = [[
    tbl.set(key, value)   --> add/set a value
    tbl.get(key)	           --> read a value
    tbl.size()                 --> return the table size
+   tbl.capa()                 --> return the max. capacity   
    tbl.insert(pos, value) --> insert into list   
    tbl.remove(pos)       --> return and remove from list
    tbl.sort()                   -- sort list
@@ -79,14 +80,27 @@ function safer_lua.Store(...)
 	end
 	
 	new_t.set = function(k,v)
-		if type(k) == "string" or type(k) == "number" then
-			Count = Count - mt.count(rawget(new_t.__data__, k))
+		if type(k) == "number" then
 			local cnt = mt.count(v)
-			if cnt then
+			cnt = cnt - mt.count(rawget(new_t.__data__, k))
+			if Count + cnt < safer_lua.MaxTableSize then
+				rawset(new_t.__data__,k,v)
 				Count = Count + cnt
-				if Count < safer_lua.MaxTableSize then
-					rawset(new_t.__data__,k,v)
-				end
+			end
+		elseif type(k) == "string" then
+			local cnt = mt.count(rawget(new_t.__data__, k))
+			if cnt == 0 then           -- new entry?
+				cnt = mt.count(v)
+				cnt = cnt + mt.count(k)
+			elseif v == nil then       -- delete entry?
+				cnt = - cnt - mt.count(k)
+			else                       -- overwrite
+				cnt = mt.count(v) - cnt
+			end
+				
+			if Count + cnt < safer_lua.MaxTableSize then
+				rawset(new_t.__data__,k,v)
+				Count = Count + cnt
 			end
 		end
 	end
@@ -99,14 +113,16 @@ function safer_lua.Store(...)
 		return Count
 	end
  
+	new_t.capa = function(t)
+		return safer_lua.MaxTableSize
+	end
+ 
 	new_t.insert = function(v, i)
 		local cnt = mt.count(v)
-		if cnt then
+		if i == nil then i = #new_t.__data__ + 1 end
+		if Count + cnt < safer_lua.MaxTableSize then
+			table.insert(new_t.__data__,i,v)
 			Count = Count + cnt
-			if i == nil then i = #new_t.__data__ + 1 end
-			if Count < safer_lua.MaxTableSize then
-				table.insert(new_t.__data__,i,v)
-			end
 		end
 	end
 	

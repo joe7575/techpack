@@ -14,16 +14,21 @@
 
 local sHELP = [[SaferLua Controller
 
-SaferLua is a subset of Lua with the following restrictions:
- - No loop keywords like: for, while, repeat,...
- - No table construction {..}
- - Limited set of available functions 
- - Store() as alternative to Lua tables
+ SaferLua is a subset of Lua with the following restrictions:
+  - No loop keywords like: for, while, repeat,...
+  - No table construction {..}
+  - Limited set of available functions 
+  - Store() as alternative to Lua tables
 
-The controller needs a battery nearby.
-Don't remove the battery, it will be destroyed!
+ The controller needs a battery nearby.
+ 
+ The controller will be restarted with every 
+ server start. That means, init() will be
+ called again and all variables are reset.
+ To store the data non-volatile, use a Server.
+ commands: $server_read(), $server_write().
 
-See: goo.gl/WRWZgt
+ See: goo.gl/WRWZgt
 ]]
 
 local Cache = {}
@@ -189,7 +194,7 @@ local function compile(pos, meta, number)
 	local loop = meta:get_string("loop")
 	local owner = meta:get_string("owner")
 	local env = table.copy(tCommands)
-	env.meta = {pos=pos, owner=owner, number=number}
+	env.meta = {pos=pos, owner=owner, number=number, error=error}
 	local code = safer_lua.init(pos, init, loop, env, error)
 	
 	if code then
@@ -282,12 +287,8 @@ local function on_timer(pos, elapsed)
 				no_battery(pos)
 				return false
 			end
-		else
-			stop_controller(pos) 
 		end
 		return res
-	else
-		stop_controller(pos)
 	end
 	return false
 end
@@ -329,6 +330,8 @@ local function on_receive_fields(pos, formname, fields, player)
 		meta:set_string("formspec", formspec5(sFunctionList, 1, sHELP))
 	elseif fields.start == "Start" then
 		start_controller(pos)
+		minetest.log("action", player:get_player_name() ..
+			" starts the sl_controller at ".. minetest.pos_to_string(pos))
 	elseif fields.stop == "Stop" then
 		stop_controller(pos)
 	elseif fields.functions then

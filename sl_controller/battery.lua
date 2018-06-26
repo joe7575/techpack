@@ -12,10 +12,15 @@
 
 ]]--
 
+local function calc_percent(content)
+	local val = (sl_controller.battery_capacity - 
+			math.min(content or 0, sl_controller.battery_capacity))
+	return 100 - math.floor((val * 100.0 / sl_controller.battery_capacity))
+end
+
 local function on_timer(pos, elapsed)
 	local meta = minetest.get_meta(pos)
-	local percent = (sl_controller.battery_capacity - meta:get_int("content"))
-	percent = 100 - math.floor((percent * 100.0 / sl_controller.battery_capacity))
+	local percent = calc_percent(meta:get_int("content"))
 	meta:set_string("infotext", "Battery ("..percent.."%)")
 	if percent == 0 then
 		local node = minetest.get_node(pos)
@@ -26,45 +31,76 @@ local function on_timer(pos, elapsed)
 	return true
 end
 
-minetest.register_node("sl_controller:battery", {
-	description = "Battery",
-	inventory_image = 'sl_controller_battery_inventory.png',
-	wield_image = 'sl_controller_battery_inventory.png',
-	tiles = {
-		-- up, down, right, left, back, front
-		"smartline.png",
-		"smartline.png",
-		"smartline.png",
-		"smartline.png",
-		"smartline.png",
-		"smartline.png^sl_controller_battery_green.png",
-	},
-
-	drawtype = "nodebox",
-	node_box = {
-		type = "fixed",
-		fixed = {
-			{ -6/32, -6/32, 14/32,  6/32,  6/32, 16/32},
+local function register_battery(ext, percent)
+	minetest.register_node("sl_controller:battery"..ext, {
+		description = "Battery",
+		inventory_image = 'sl_controller_battery_inventory.png',
+		wield_image = 'sl_controller_battery_inventory.png',
+		tiles = {
+			-- up, down, right, left, back, front
+			"smartline.png",
+			"smartline.png",
+			"smartline.png",
+			"smartline.png",
+			"smartline.png",
+			"smartline.png^sl_controller_battery_green.png",
 		},
-	},
-	
-	after_place_node = function(pos, placer)
-		local meta = minetest.get_meta(pos)
-		meta:set_int("content", sl_controller.battery_capacity)
-		on_timer(pos, 1)
-		minetest.get_node_timer(pos):start(30)
-	end,
-	
-	on_timer = on_timer,
-	
-	paramtype = "light",
-	sunlight_propagates = true,
-	paramtype2 = "facedir",
-	groups = {choppy=1, cracky=1, crumbly=1},
-	drop = "",
-	is_ground_content = false,
-	sounds = default.node_sound_stone_defaults(),
-})
+
+		drawtype = "nodebox",
+		node_box = {
+			type = "fixed",
+			fixed = {
+				{ -6/32, -6/32, 14/32,  6/32,  6/32, 16/32},
+			},
+		},
+		
+		after_place_node = function(pos, placer)
+			local meta = minetest.get_meta(pos)
+			meta:set_int("content", sl_controller.battery_capacity * percent)
+			local node = minetest.get_node(pos)
+			node.name = "sl_controller:battery"
+			minetest.swap_node(pos, node)
+			on_timer(pos, 1)
+			minetest.get_node_timer(pos):start(30)
+		end,
+		
+		on_timer = on_timer,
+		
+		
+		after_dig_node = function(pos, oldnode, oldmetadata, digger)
+			local percent = calc_percent(tonumber(oldmetadata.fields.content))
+			print("percent", percent)
+			local stack
+			if percent > 95 then
+				stack = ItemStack("sl_controller:battery")
+			elseif percent > 75 then
+				stack = ItemStack("sl_controller:battery75")
+			elseif percent > 50 then
+				stack = ItemStack("sl_controller:battery50")
+			elseif percent > 25 then
+				stack = ItemStack("sl_controller:battery25")
+			else
+				return
+			end
+			print("percent", percent)
+			local inv = minetest.get_inventory({type="player", name=digger:get_player_name()})
+			inv:add_item("main", stack)
+		end,
+
+		paramtype = "light",
+		sunlight_propagates = true,
+		paramtype2 = "facedir",
+		groups = {choppy=1, cracky=1, crumbly=1},
+		drop = "",
+		is_ground_content = false,
+		sounds = default.node_sound_stone_defaults(),
+	})
+end
+
+register_battery("", 1.0)
+register_battery("75", 0.75)
+register_battery("50", 0.5)
+register_battery("25", 0.25)
 
 minetest.register_node("sl_controller:battery_empty", {
 	description = "Battery",

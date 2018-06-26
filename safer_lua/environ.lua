@@ -12,7 +12,7 @@
 
 ]]--
 
-safer_lua.MaxCodeSize = 1000    -- size in length of byte code
+safer_lua.MaxCodeSize = 2000    -- size in length of byte code
 safer_lua.MaxTableSize = 1000   -- number of table entries considering string lenghts
 
 

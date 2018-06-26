@@ -1,4 +1,4 @@
-SaferLua Controller [sl_controller] v0.01
+SaferLua Controller [sl_controller] v0.02
 =========================================
 
 
@@ -17,3 +17,4 @@ tubelib, safer_lua
 
 ### History
 - 2018-06-24  v0.01  * first draft
+- 2018-06-26  v0.02  * Battery and Server added
