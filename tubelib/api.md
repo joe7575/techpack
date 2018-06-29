@@ -279,5 +279,5 @@ This file has further helper functions and is recommended for deeper study.
 ## 7. History
 
 2017-10-02  First draft  
-2017-10-29  Commands start/stop replaced by on/off
+2017-10-29  Commands start/stop replaced by on/off  
 2018-03-31  Corrections for 'send_request' and 'add_node'

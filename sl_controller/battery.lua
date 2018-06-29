@@ -33,7 +33,7 @@ end
 
 local function register_battery(ext, percent)
 	minetest.register_node("sl_controller:battery"..ext, {
-		description = "Battery",
+		description = "Battery "..ext,
 		inventory_image = 'sl_controller_battery_inventory.png',
 		wield_image = 'sl_controller_battery_inventory.png',
 		tiles = {

@@ -13,18 +13,24 @@
 ]]--
 
 safer_lua.MaxCodeSize = 2000    -- size in length of byte code
-safer_lua.MaxTableSize = 1000   -- number of table entries considering string lenghts
+safer_lua.MaxTableSize = 1000   -- sum over all table sizes
 
+
+local function memsize()
+	return safer_lua.MaxTableSize
+end
 
 local BASE_ENV = {
+	Array = safer_lua.Array,
 	Store = safer_lua.Store,
+	Set = safer_lua.Set,
+	memsize = memsize,
 	math = {
 		floor = math.floor,
 		abs = math.abs,
 		max = math.max,
 		min = math.min,
 		random = math.random,
-		
 	},
 	tonumber = tonumber,
 	tostring = tostring,
@@ -39,6 +45,16 @@ local function map(dest, source)
   return dest
 end
 
+local function calc_used_mem_size(env)
+	local size = 0
+	for key,val in pairs(env) do
+		if type(val) == "table" and val.size ~= nil then
+			size = size + val.size() or 0
+		end
+	end
+	return size
+end
+
 function safer_lua.config(max_code_size, max_table_size)
 	safer_lua.MaxCodeSize = max_code_size
 	safer_lua.MaxTableSize = max_table_size
@@ -49,7 +65,7 @@ local function compile(pos, text, label, err_clbk)
 		text = text:gsub("%$", "S:")
 		local code, err = loadstring(text)
 		if not code then
-			err = err:gsub("%[string .+%]:", label)
+			err = err:gsub("%(load%):", label)
 			err_clbk(pos, err) 
 		else
 			return code
@@ -89,10 +105,18 @@ end
 
 function safer_lua.run_loop(pos, elapsed, code, err_clbk)
 	local env = getfenv(code)
-	env.event = false
-	env.ticks = env.ticks + 1
 	env.elapsed = elapsed
+	if elapsed < 0 then  -- event?
+		env.event = true
+	else
+		env.event = false
+		env.ticks = env.ticks + 1
+	end
 	local res, err = pcall(code)
+	if calc_used_mem_size(env) > safer_lua.MaxTableSize then 
+		err_clbk("Memory limit exceeded")
+		return false
+	end
 	if not res then
 		err = err:gsub("%[string .+%]:", "loop() ")
 		err_clbk(pos, err)
@@ -100,18 +124,3 @@ function safer_lua.run_loop(pos, elapsed, code, err_clbk)
 	end
 	return true
 end
-
-function safer_lua.run_event(pos, code, err_clbk)
-	local env = getfenv(code)
-	env.event = true
-	env.elapsed = 0
-	local res, err = pcall(code)
-	if not res then
-		err = err:gsub("%[string .+%]:", "loop() ")
-		err_clbk(pos, err)
-		return false
-	end
-	return true
-end
-
-

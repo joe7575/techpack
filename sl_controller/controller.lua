@@ -14,28 +14,22 @@
 
 local sHELP = [[SaferLua Controller
 
- SaferLua is a subset of Lua with the following restrictions:
-  - No loop keywords like: for, while, repeat,...
-  - No table construction {..}
-  - Limited set of available functions 
-  - Store() as alternative to Lua tables
-
- The controller needs a battery nearby.
+ This controller is used to control and monitor 
+ Tubelib/TechPack machines.
+ This controller can be programmed in Lua.
  
- The controller will be restarted with every 
- server start. That means, init() will be
- called again and all variables are reset.
- To store the data non-volatile, use a Server.
- commands: $server_read(), $server_write().
+ See on GitHub for more help: goo.gl/Et8D6n
 
- See: goo.gl/WRWZgt
+ The controller only runs, if a battery is 
+ placed nearby.
+ 
 ]]
 
 local Cache = {}
 
 local tCommands = {}
-local tFunctions = {" Overview", " Store"}
-local tHelpTexts = {[" Overview"] = sHELP, [" Store"] = safer_lua.StoreHelp}
+local tFunctions = {" Overview", " Data structures"}
+local tHelpTexts = {[" Overview"] = sHELP, [" Data structures"] = safer_lua.DataStructHelp}
 local sFunctionList = ""
 local tFunctionIndex = {}
 
@@ -83,10 +77,33 @@ sl_controller.register_action("print", {
 		text3 = tostring(text3 or "")
 		output(pos, text1..text2..text3)
 	end,
-	help = "$print(text,...)\n"..
-		"Send a text line to the output window.\n"..
-		"The function accepts up to 3 text strings\n"..
-		'e.g. $print("Hello ", name, " !")'
+	help = " $print(text,...)\n"..
+		" Send a text line to the output window.\n"..
+		" The function accepts up to 3 text strings\n"..
+		' e.g. $print("Hello ", name, " !")'
+})
+
+sl_controller.register_action("loopcycle", {
+	cmnd = function(self, cycletime)
+		cycletime = math.floor(tonumber(cycletime) or 0)
+		local meta = minetest.get_meta(self.meta.pos)
+		meta:set_int("cycletime", cycletime)
+		meta:set_int("cyclecount", 0)
+	end,
+	help = "$loopcycle(seconds)\n"..
+		" This function allows to change the\n"..
+		" call frequency of the loop() function.\n"..
+		" value is in seconds, 0 = disable\n"..
+		' e.g. $loopcycle(10)'
+})
+
+sl_controller.register_action("events", {
+	cmnd = function(self, event)
+		self.events = event or false
+	end,
+	help = "$events(true/false)\n"..
+		" Enable/disable event handling.\n"..
+		' e.g. $events(true) -- enable events'
 })
 
 
@@ -224,6 +241,9 @@ local function start_controller(pos)
 	
 	meta:set_string("output", "<press update>")
 	meta:set_string("formspec", formspec3(meta))
+	meta:set_int("cycletime", 1)
+	meta:set_int("cyclecount", 0)
+	meta:set_int("cpu", 0)
 	
 	if compile(pos, meta, number) then
 		meta:set_int("state", tubelib.RUNNING)
@@ -266,12 +286,8 @@ local function update_battery(meta, cpu)
 	end
 end
 
-local function on_timer(pos, elapsed)
+local function call_loop(pos, meta, elapsed)
 	local t = minetest.get_us_time()
-	local meta = minetest.get_meta(pos)
-	if meta:get_int("state") ~= tubelib.RUNNING then
-		return false
-	end
 	local number = meta:get_string("number")
 	if Cache[number] or compile(pos, meta, number) then
 		
@@ -291,6 +307,20 @@ local function on_timer(pos, elapsed)
 		return res
 	end
 	return false
+end
+
+local function on_timer(pos, elapsed)
+	local meta = minetest.get_meta(pos)
+	-- considering cycle frequency
+	local cycletime = meta:get_int("cycletime") or 1
+	local cyclecount = (meta:get_int("cyclecount") or 0) + 1
+	if cyclecount < cycletime then
+		meta:set_int("cyclecount", cyclecount)
+		return true
+	end
+	meta:set_int("cyclecount", 0)
+
+	return call_loop(pos, meta, elapsed)
 end
 
 local function on_receive_fields(pos, formname, fields, player)
@@ -369,7 +399,6 @@ minetest.register_node("sl_controller:controller", {
 		local meta = minetest.get_meta(pos)
 		local number = tubelib.add_node(pos, "sl_controller:controller")
 		meta:set_string("owner", placer:get_player_name())
-		--print("after_place_node", number)
 		meta:set_string("number", number)
 		meta:set_int("state", tubelib.STOPPED)
 		meta:set_string("init", "-- called only once")
@@ -407,18 +436,24 @@ minetest.register_craft({
 	recipe = {"smartline:controller"}
 })
 
-
-local function set_input(number, input, val)
+-- write inputs from remote nodes
+local function set_input(pos, number, input, val)
 	if input then 
 		if Cache[number] and Cache[number].inputs then
-			--print("set_input", input, val)
-			Cache[number].inputs[input] = val
+			-- only one event per second
+			local t = minetest.get_us_time()
+			if not Cache[number].last_event or Cache[number].last_event < t then
+				Cache[number].inputs[input] = val
+				local meta = minetest.get_meta(pos)
+				minetest.after(0.1, call_loop, pos, meta, -1)
+				Cache[number].last_event = t + 1000000 -- add one second
+			end
 		end
 	end
 end	
 
+-- used by the command "input"
 function sl_controller.get_input(number, input)
-	--print("get_input", number, input, dump(Cache[number].inputs))
 	if input then 
 		if Cache[number] and Cache[number].inputs then
 			return Cache[number].inputs[input] or "off"
@@ -429,14 +464,13 @@ end
 
 tubelib.register_node("sl_controller:controller", {}, {
 	on_recv_message = function(pos, topic, payload)
-		-----------------------------------------------------
 		local meta = minetest.get_meta(pos)
 		local number = meta:get_string("number")
-		---------------------------------------------
+		
 		if topic == "on" then
-			set_input(number, payload, topic)
+			set_input(pos, number, payload, topic)
 		elseif topic == "off" then
-			set_input(number, payload, topic)
+			set_input(pos, number, payload, topic)
 		elseif topic == "state" then
 			local state = meta:get_int("state")
 			return tubelib.statestring(state)

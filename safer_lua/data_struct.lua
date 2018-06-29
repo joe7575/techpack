@@ -8,41 +8,67 @@
 	LGPLv2.1+
 	See LICENSE.txt for more information
 
-	store.lua:
+	data_struct.lua:
+	
+	see https://github.com/joe7575/techpack/wiki/Data-Structures
 
 ]]--
 
-safer_lua.StoreHelp = [[
- Store - a secure shell over the LUA table type.
+safer_lua.DataStructHelp = [[
+ Data structures as a secure shell over the LUA table type.
+ see https://github.com/joe7575/techpack/wiki/Data-Structures
  
- For records: 
-   tbl = Store()          --> {}
-   tbl.set(key,value)  --> {key=value}
-   tbl.get(key)           --> value
-   
- 'key' can be a number or string
- 'value' can be number, string, boolean, or Store
- Example: tbl.set("a","test")
+ 'Arrays' are lists of elements, which can be addressed 
+ by means of an index:
  
- For lists: 
-   tbl = Store(1,2,3,4)  --> {1,2,3,4}
-   tbl.insert(pos, value)   
-   tbl.remove(pos)   
-   
- 'pos' must be a number
+  a = Array(1,2,3,4)     --> {1,2,3,4}
+  a.add(6)               --> {1,2,3,4,6}
+  a.set(2, 8)            --> {1,8,3,4,6}
+  a.insert(5,7)          --> {1,8,3,4,7,6}
+  a.remove(3)            --> {1,8,4,7,6}
+  a.insert(1, "hello")   --> {"hello",1,8,4,7,6}
+  a.size()               --> function returns 10
+
+ Unlike arrays, which are indexed by a range of numbers, 
+ 'stores' are indexed by keys:
  
- Methods:
-   tbl.set(key, value)   --> add/set a value
-   tbl.get(key)	           --> read a value
-   tbl.size()                 --> return the table size
-   tbl.capa()                 --> return the max. capacity   
-   tbl.insert(pos, value) --> insert into list   
-   tbl.remove(pos)       --> return and remove from list
-   tbl.sort()                   -- sort list
-   tbl.dump()               --> format as string (debugging)   
+  s = Store()            --> {}
+  s.set("val", 12)       --> {val = 12}
+  s.get("val")           --> returns 12
+  s.set(0, "hello")      --> {val = 12, [0] = "hello"}
+  s.del("val")           --> {[0] = "hello"}
+  s.size()               --> function returns 6
+
+ A 'set' is an unordered collection with no duplicate 
+ elements.
+ 
+  s = Set("Tom", "Lucy")     
+                     --> {Tom = true, Lucy = true}
+  s.del("Tom")       --> {Lucy = true}
+  s.add("Susi")      --> {Lucy = true, Susi = true}
+  s.has("Susi")      --> function returns `true`
+  s.has("Mike")      --> function returns `false`
+  s.size()           --> function returns 11
 ]]
 
-function safer_lua.Store(...)
+local function var_count(v)
+	if type(v) == "number" then
+		return 1
+	elseif type(v) == "boolean" then
+		return 1
+	elseif v == nil then
+		return 0
+	elseif type(v) == "string" then
+		return #v
+	elseif type(v) == "table" then
+		return v.size()
+	else
+		return nil
+	end
+end
+
+
+function safer_lua.Store()
 
     local new_t = {__data__ = {}}
     local mt = {}
@@ -52,56 +78,21 @@ function safer_lua.Store(...)
 
     mt.__newindex = function(t, k, v) return end
 	
-	mt.count = function(v)
-		if type(v) == "number" then
-			return 1
-		elseif type(v) == "boolean" then
-			return 1
-		elseif v == nil then
-			return 0
-		elseif type(v) == "string" then
-			return #v
-		elseif type(v) == "table" then
-			return v.size()
-		else
-			return nil
-		end
-	end
-	
-	for idx = 1,select('#',...) do
-		local v = select(idx,...)
-		local cnt = mt.count(v)
-		if cnt then
-			Count = Count + cnt
-			if Count < safer_lua.MaxTableSize then
-				rawset(new_t.__data__,idx, v)
-			end
-		end
-	end
+	mt.count = var_count
 	
 	new_t.set = function(k,v)
 		if type(k) == "number" then
-			local cnt = mt.count(v)
-			cnt = cnt - mt.count(rawget(new_t.__data__, k))
-			if Count + cnt < safer_lua.MaxTableSize then
-				rawset(new_t.__data__,k,v)
-				Count = Count + cnt
-			end
+			Count = Count - mt.count(rawget(new_t.__data__, k))
+			Count = Count + mt.count(v)
+			rawset(new_t.__data__,k,v)
 		elseif type(k) == "string" then
-			local cnt = mt.count(rawget(new_t.__data__, k))
-			if cnt == 0 then           -- new entry?
-				cnt = mt.count(v)
-				cnt = cnt + mt.count(k)
-			elseif v == nil then       -- delete entry?
-				cnt = - cnt - mt.count(k)
-			else                       -- overwrite
-				cnt = mt.count(v) - cnt
+			if rawget(new_t.__data__, k) then  -- has entry?
+				Count = Count - mt.count(rawget(new_t.__data__, k))
+			else
+				Count = Count + mt.count(k)
 			end
-				
-			if Count + cnt < safer_lua.MaxTableSize then
-				rawset(new_t.__data__,k,v)
-				Count = Count + cnt
-			end
+			Count = Count + mt.count(v)
+			rawset(new_t.__data__,k,v)
 		end
 	end
  
@@ -109,34 +100,127 @@ function safer_lua.Store(...)
 		return rawget(new_t.__data__, k)
 	end
 	
+	new_t.del = function(k)
+		Count = Count - mt.count(k)
+		Count = Count - mt.count(rawget(new_t.__data__, k))
+		rawset(new_t.__data__,k,nil)
+	end
+	
 	new_t.size = function(t)
 		return Count
 	end
  
-	new_t.capa = function(t)
-		return safer_lua.MaxTableSize
+	new_t.dump = function(size)
+		size = size or 200
+		local s = dump(new_t.__data__)
+		if #s > size then s = s:sub(1, size).."..." end
+		return s
+	end
+	
+	return setmetatable(new_t, mt)
+end
+
+
+function safer_lua.Array(...)
+
+    local new_t = {__data__ = {}}
+    local mt = {}
+	
+    -- `all` will represent the number of both
+    local Count = 0
+
+    mt.__newindex = function(t, k, v) return end
+	
+	mt.count = var_count
+	
+	for idx = 1,select('#',...) do
+		local v = select(idx,...)
+		local cnt = mt.count(v)
+		if cnt then
+			Count = Count + cnt
+			rawset(new_t.__data__,idx, v)
+		end
+	end
+	
+	new_t.add = function(v)
+		Count = Count + mt.count(v)
+		local i = #new_t.__data__ + 1
+		table.insert(new_t.__data__,i,v)
+	end
+	
+	new_t.set = function(i,v)
+		i = math.min(#new_t.__data__, i) 
+		Count = Count - mt.count(rawget(new_t.__data__, i))
+		Count = Count + mt.count(v)
+		rawset(new_t.__data__,i,v)
 	end
  
-	new_t.insert = function(v, i)
-		local cnt = mt.count(v)
-		if i == nil then i = #new_t.__data__ + 1 end
-		if Count + cnt < safer_lua.MaxTableSize then
-			table.insert(new_t.__data__,i,v)
-			Count = Count + cnt
-		end
+	new_t.insert = function(i, v)
+		Count = Count + mt.count(v)
+		i = math.min(#new_t.__data__, i) 
+		table.insert(new_t.__data__,i,v)
 	end
 	
 	new_t.remove = function(i)
 		local v = table.remove(new_t.__data__,i)
-		local cnt = mt.count(v)
-		Count = Count - cnt
+		Count = Count - mt.count(v)
 		return v
 	end
 	
-	new_t.sort = function()
-		table.sort(new_t.__data__)
+	new_t.size = function(t)
+		return Count
+	end
+ 
+	new_t.dump = function(size)
+		size = size or 200
+		local s = dump(new_t.__data__)
+		if #s > size then s = s:sub(1, size).."..." end
+		return s
 	end
 	
+	return setmetatable(new_t, mt)
+end
+
+
+function safer_lua.Set(...)
+
+    local new_t = {__data__ = {}}
+    local mt = {}
+	
+    -- `all` will represent the number of both
+    local Count = 0
+
+    mt.__newindex = function(t, k, v) return end
+	
+	mt.count = var_count
+	
+	for idx = 1,select('#',...) do
+		local v = select(idx,...)
+		local cnt = mt.count(v)
+		if cnt then
+			Count = Count + cnt
+			rawset(new_t.__data__,v, true)
+		end
+	end
+	
+	new_t.add = function(k)
+		Count = Count + mt.count(k)
+		rawset(new_t.__data__,k, true)
+	end
+	
+	new_t.del = function(k)
+		Count = Count - mt.count(k)
+		rawset(new_t.__data__,k, nil)
+	end
+	
+	new_t.has = function(k)
+		return rawget(new_t.__data__, k) == true
+	end
+	
+	new_t.size = function(t)
+		return Count
+	end
+ 
 	new_t.dump = function(size)
 		size = size or 200
 		local s = dump(new_t.__data__)
@@ -144,5 +228,5 @@ function safer_lua.Store(...)
 		return s
 	end
 
-return setmetatable(new_t, mt)
+	return setmetatable(new_t, mt)
 end

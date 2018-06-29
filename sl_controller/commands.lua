@@ -19,8 +19,8 @@ sl_controller.register_function("get_input", {
 		num = tostring(num or "")
 		return sl_controller.get_input(self.meta.number, num)
 	end,
-	help = " $get_input(num)  --> 'on', 'off', or nil\n"..
-		" Read local input value from device with number 'num'.\n"..
+	help = ' $get_input(num)  --> "on", "off", or nil\n'..
+		' Read local input value from device with number "num".\n'..
 		' example: inp = $get_input("1234")\n'..
 		" The device has to be connected with the controller."
 })
@@ -30,10 +30,21 @@ sl_controller.register_function("get_status", {
 		num = tostring(num or "")
 		return tubelib.send_request(num, "state", nil)
 	end,
-	help = " $get_status(num)  --> 'stopped', 'running',\n"..
-		" 'standby', 'blocked' or 'fault'\n"..
-		" Read status from a remote device.\n"..
+	help = " $get_status(num) ,\n"..
+		" Read status from a remote device. See\n"..
+		" https://github.com/joe7575/techpack/wiki/nodes\n"..
 		' example: sts = $get_status("1234")'
+})
+
+sl_controller.register_function("get_fuel_status", {
+	cmnd = function(self, num) 
+		num = tostring(num or "")
+		return tubelib.send_request(num, "fuel", nil)
+	end,
+	help = " $get_fuel_status(num)\n"..
+		" Read fuel status from Harverster and Quarry.\n"..
+		' Fuel status is one of: "full","empty"\n'..
+		' example: sts = $get_fuel_status("1234")'
 })
 
 sl_controller.register_function("time_as_str", {
@@ -65,8 +76,8 @@ sl_controller.register_function("playerdetector", {
 		num = tostring(num or "")
 		return tubelib.send_request(num, "name", nil)
 	end,
-	help = " $playerdetector(num) --> e.g. 'Joe'\n"..
-		" '' is returned if no layer is nearby.\n"..
+	help = ' $playerdetector(num) --> e.g. "Joe"\n'..
+		' "" is returned if no player is nearby.\n'..
 		' example: name = $playerdetector("1234")'
 })
 
@@ -77,9 +88,9 @@ sl_controller.register_action("send_cmnd", {
 		tubelib.send_message(num, self.meta.owner, nil, text, nil)
 	end,
 	help = " $send_cmnd(num, text)\n"..
-		" Send a command to the device with number 'num'.\n"..
-		" For most devices: 'on', 'off'\n"..
-		" Signal Tower: 'green', 'amber', 'red'\n"..
+		' Send a command to the device with number "num".\n'..
+		" For more help, see:\n"..
+		" https://github.com/joe7575/techpack/wiki/nodes\n"..
 		' example: $send_cmnd("1234", "on")'
 })
 
@@ -91,7 +102,7 @@ sl_controller.register_action("display", {
 		tubelib.send_message(num, self.meta.owner, nil, "row", {row = row, str = text1..text2..text3})
 	end,
 	help = " $display(num, row, text,...)\n"..
-		" Send a text line to the display with number 'num'.\n"..
+		' Send a text line to the display with number "num".\n'..
 		" 'row' is a value from 1..9\n"..
 		" The function accepts up to 3 text parameters\n"..
 		' example: $display("0123", 1, "Hello ", name, " !")'
@@ -103,8 +114,8 @@ sl_controller.register_action("clear_screen", {
 		tubelib.send_message(num, self.meta.owner, nil, "clear", nil)
 	end,
 	help = " $clear_screen(num)\n"..
-		" Clear the screen of the display\n"..
-		" with number 'num'.\n"..
+		' Clear the screen of the display\n'..
+		' with number "num".\n'..
 		' example: $clear_screen("1234")'
 })
 
@@ -140,8 +151,8 @@ sl_controller.register_action("door", {
 			end
 		end
 	end,
-	help =  " %door(pos, text)\n"..
-		" Open/Close a door at position 'pos'\n"..
-		' example: door("123,7,-1200", "close")\n'..
+	help =  " $door(pos, text)\n"..
+		' Open/Close a door at position "pos"\n'..
+		' example: $door("123,7,-1200", "close")\n'..
 		" Hint: Use the Tubelib Programmer to\ndetermine the door position."
 })
