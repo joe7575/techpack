@@ -28,6 +28,7 @@ safer_lua.DataStructHelp = [[
   a.remove(3)            --> {1,8,4,7,6}
   a.insert(1, "hello")   --> {"hello",1,8,4,7,6}
   a.size()               --> function returns 6
+  a.next()               --> for loop iterator function  
 
  Unlike arrays, which are indexed by a range of numbers, 
  'stores' are indexed by keys:
@@ -38,6 +39,7 @@ safer_lua.DataStructHelp = [[
   s.set(0, "hello")      --> {val = 12, [0] = "hello"}
   s.del("val")           --> {[0] = "hello"}
   s.size()               --> function returns 1
+  s.next()               --> for loop iterator function  
 
  A 'set' is an unordered collection with no duplicate 
  elements.
@@ -49,6 +51,7 @@ safer_lua.DataStructHelp = [[
   s.has("Susi")      --> function returns `true`
   s.has("Mike")      --> function returns `false`
   s.size()           --> function returns 2
+  s.next()           --> for loop iterator function  
 ]]
 
 local function var_count(v)
@@ -123,6 +126,13 @@ function safer_lua.Store()
 		return Size
 	end
  
+	new_t.next = function(t)
+		local n = nil
+		return function ()
+			n = next(Data, n)
+			if n then return n, Data[n] end
+		end
+	end
 	new_t.__dump = function()
 		-- remove the not serializable meta data
 		return {Type = "Store", Size = Size, MemSize = MemSize, Data = Data}
@@ -196,6 +206,15 @@ function safer_lua.Array(...)
 		return #Data
 	end
  
+	new_t.next = function(t)
+		local i = 0
+		local n = #Data
+		return function ()
+			i = i + 1
+			if i <= n then return i, Data[i] end
+		end
+	end
+ 
 	new_t.__dump = function()
 		-- remove the not serializable meta data
 		return {Type = "Array", MemSize = MemSize, Data = Data}
@@ -255,6 +274,16 @@ function safer_lua.Set(...)
  
 	new_t.size = function(t)
 		return Size
+	end
+ 
+	new_t.next = function(t)
+		local i = 0
+		local n = nil
+		return function ()
+			i = i + 1
+			n = next(Data, n)
+			if n then return i, n end
+		end
 	end
  
 	new_t.__dump = function()

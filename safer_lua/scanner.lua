@@ -78,7 +78,6 @@ local InvalidKeywords = {
 	["break"] = true, 
 	["until"] = true, 
 	["for"] = true, 
-	["do"] = true, 
 	["function"] = true,
 	["_G"] = true,
 	["__load"] = true,
@@ -95,12 +94,15 @@ function safer_lua:check(text, label, err_clbk)
 	local lToken = self:scanner(text)
 	local lineno = 0
 	local errno = 0
-	for _,token in ipairs(lToken) do
+	for idx,token in ipairs(lToken) do
 		if type(token) == "number" then
 			lineno = token
 		elseif InvalidKeywords[token] then
-			err_clbk(label..lineno..": Invalid keyword '"..token.."'")
-			errno = errno + 1
+			if token ~= "for" or lToken[idx + 3] ~= "in" or 
+					lToken[idx + 5] ~= "next" then -- invalid for statement?
+				err_clbk(label..lineno..": Invalid keyword '"..token.."'")
+				errno = errno + 1
+			end
 		elseif InvalidChars[token] then
 			err_clbk(label..lineno..": Invalid character '"..token.."'")
 			errno = errno + 1

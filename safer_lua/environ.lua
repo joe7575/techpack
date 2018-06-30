@@ -84,7 +84,7 @@ function safer_lua.init(pos, init, loop, environ, err_clbk)
 	end
 	local code = compile(pos, init, "init() ", err_clbk)
 	if code then
-		local env = BASE_ENV
+		local env = table.copy(BASE_ENV)
 		env.S = {}
 		env.S = map(env.S, environ)
 		setfenv(code, env)
