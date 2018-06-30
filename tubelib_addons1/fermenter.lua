@@ -269,7 +269,7 @@ minetest.register_node("tubelib_addons1:fermenter_top", {
 	paramtype2 = "facedir",
 	groups = {crumbly=0, not_in_creative_inventory=1},
 	is_ground_content = false,
-	pointable = true,
+	pointable = false,
 })
 
 minetest.register_craftitem("tubelib_addons1:biogas", {
