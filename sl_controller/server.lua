@@ -105,21 +105,32 @@ local function calc_size(v)
 		return 0
 	elseif type(v) == "string" then
 		return #v
+	elseif v.MemSize then
+		return v.MemSize
 	else
 		return nil
 	end
 end
 
-local function write_value(mem, key, value)
+local function write_value(mem, key, item)
 	if mem and mem.size < SERVER_CAPA then
-		if value == nil then
+		if mem.data[key] then
 			mem.size = mem.size - calc_size(mem.data[key])
-		else
-			mem.size = mem.size - calc_size(mem.data[key])
-			mem.size = mem.size + calc_size(value)
 		end
-		mem.data[key] = value
+		if type(item) == "table" then
+			item = safer_lua.datastruct_to_table(item)
+		end
+		mem.size = mem.size + calc_size(item)
+		mem.data[key] = item
 	end
+end	
+
+local function read_value(mem, key)
+	local item = mem.data[key]
+	if type(item) == "table" then
+		item = safer_lua.table_to_datastruct(item)
+	end
+	return item
 end	
 
 tubelib.register_node("sl_controller:server", {}, {
@@ -129,7 +140,7 @@ tubelib.register_node("sl_controller:server", {}, {
 			local number = meta:get_string("number")
 			local mem = tubelib.get_data(number, "memory") or DEFAULT_MEM
 			if topic == "read" then
-				return mem.data[payload]
+				return read_value(mem, payload)
 			elseif topic == "write" then
 				write_value(mem, payload.key, payload.value)
 				tubelib.set_data(number, "memory", mem)
@@ -157,7 +168,7 @@ sl_controller.register_function("server_read", {
 
 sl_controller.register_action("server_write", {
 	cmnd = function(self, num, key, value)
-		if type(key) == "string" and type(value) == "string" or type(value) == "number" then
+		if type(key) == "string" then
 			tubelib.send_message(num, self.meta.owner, nil, "write", {key=key, value=value})
 		else
 			self.error("Invalid server_write parameter")
@@ -165,8 +176,8 @@ sl_controller.register_action("server_write", {
 	end,
 	help = " $server_write(num, key, value)\n"..
 		" Store a value on the server under the key 'key'.\n"..
-		" 'key' must be a string. 'value' can be\n"..
-		" either a number or a string.\n"..
+		" 'key' must be a string. 'value' can be either a\n"..
+		" number, string, boolean, nil or data structure.\n"..
 		' example: $server_write("0123", "state", state)'
 })
 

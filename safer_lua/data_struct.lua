@@ -27,7 +27,7 @@ safer_lua.DataStructHelp = [[
   a.insert(5,7)          --> {1,8,3,4,7,6}
   a.remove(3)            --> {1,8,4,7,6}
   a.insert(1, "hello")   --> {"hello",1,8,4,7,6}
-  a.size()               --> function returns 10
+  a.size()               --> function returns 6
 
  Unlike arrays, which are indexed by a range of numbers, 
  'stores' are indexed by keys:
@@ -37,7 +37,7 @@ safer_lua.DataStructHelp = [[
   s.get("val")           --> returns 12
   s.set(0, "hello")      --> {val = 12, [0] = "hello"}
   s.del("val")           --> {[0] = "hello"}
-  s.size()               --> function returns 6
+  s.size()               --> function returns 1
 
  A 'set' is an unordered collection with no duplicate 
  elements.
@@ -48,7 +48,7 @@ safer_lua.DataStructHelp = [[
   s.add("Susi")      --> {Lucy = true, Susi = true}
   s.has("Susi")      --> function returns `true`
   s.has("Mike")      --> function returns `false`
-  s.size()           --> function returns 11
+  s.size()           --> function returns 2
 ]]
 
 local function var_count(v)
@@ -61,7 +61,7 @@ local function var_count(v)
 	elseif type(v) == "string" then
 		return #v
 	elseif type(v) == "table" then
-		return v.size()
+		return v.memsize()
 	else
 		return nil
 	end
@@ -70,11 +70,12 @@ end
 
 function safer_lua.Store()
 
-    local new_t = {__data__ = {}}
+    local new_t = {}
     local mt = {}
 	
-    -- `all` will represent the number of both
-    local Count = 0
+    local MemSize = 0
+	local Size = 0
+	local Data = {}
 
     mt.__newindex = function(t, k, v) return end
 	
@@ -82,39 +83,55 @@ function safer_lua.Store()
 	
 	new_t.set = function(k,v)
 		if type(k) == "number" then
-			Count = Count - mt.count(rawget(new_t.__data__, k))
-			Count = Count + mt.count(v)
-			rawset(new_t.__data__,k,v)
-		elseif type(k) == "string" then
-			if rawget(new_t.__data__, k) then  -- has entry?
-				Count = Count - mt.count(rawget(new_t.__data__, k))
+			if rawget(Data, k) then  -- has entry?
+				MemSize = MemSize - mt.count(rawget(Data, k))
 			else
-				Count = Count + mt.count(k)
+				Size = Size + 1
 			end
-			Count = Count + mt.count(v)
-			rawset(new_t.__data__,k,v)
+			MemSize = MemSize + mt.count(v)
+			rawset(Data, k, v)
+		elseif type(k) == "string" then
+			if rawget(Data, k) then  -- has entry?
+				MemSize = MemSize - mt.count(rawget(Data, k))
+			else
+				MemSize = MemSize + mt.count(k)
+				Size = Size + 1
+			end
+			MemSize = MemSize + mt.count(v)
+			rawset(Data, k, v)
 		end
 	end
  
 	new_t.get = function(k)
-		return rawget(new_t.__data__, k)
+		return rawget(Data, k)
 	end
 	
 	new_t.del = function(k)
-		Count = Count - mt.count(k)
-		Count = Count - mt.count(rawget(new_t.__data__, k))
-		rawset(new_t.__data__,k,nil)
+		if rawget(Data, k) then  -- has entry?
+			MemSize = MemSize - mt.count(k)
+			MemSize = MemSize - mt.count(rawget(Data, k))
+			rawset(Data, k, nil)
+			Size = Size - 1
+		end
 	end
 	
-	new_t.size = function(t)
-		return Count
+	new_t.memsize = function(t)
+		return MemSize
 	end
  
-	new_t.dump = function(size)
-		size = size or 200
-		local s = dump(new_t.__data__)
-		if #s > size then s = s:sub(1, size).."..." end
-		return s
+	new_t.size = function(t)
+		return Size
+	end
+ 
+	new_t.__dump = function()
+		-- remove the not serializable meta data
+		return {Type = "Store", Size = Size, MemSize = MemSize, Data = Data}
+	end
+	
+	new_t.__load = function(size, memsize, data)
+		Size = size
+		MemSize = memsize
+		Data = data
 	end
 	
 	return setmetatable(new_t, mt)
@@ -123,11 +140,11 @@ end
 
 function safer_lua.Array(...)
 
-    local new_t = {__data__ = {}}
+    local new_t = {}
     local mt = {}
 	
-    -- `all` will represent the number of both
-    local Count = 0
+    local MemSize = 0
+	local Data = {}
 
     mt.__newindex = function(t, k, v) return end
 	
@@ -137,45 +154,56 @@ function safer_lua.Array(...)
 		local v = select(idx,...)
 		local cnt = mt.count(v)
 		if cnt then
-			Count = Count + cnt
-			rawset(new_t.__data__,idx, v)
+			MemSize = MemSize + cnt
+			rawset(Data, idx, v)
 		end
 	end
 	
 	new_t.add = function(v)
-		Count = Count + mt.count(v)
-		local i = #new_t.__data__ + 1
-		table.insert(new_t.__data__,i,v)
+		MemSize = MemSize + mt.count(v)
+		local i = #Data + 1
+		table.insert(Data, i, v)
 	end
 	
 	new_t.set = function(i,v)
-		i = math.min(#new_t.__data__, i) 
-		Count = Count - mt.count(rawget(new_t.__data__, i))
-		Count = Count + mt.count(v)
-		rawset(new_t.__data__,i,v)
+		i = math.min(#Data, i) 
+		MemSize = MemSize - mt.count(rawget(Data, i))
+		MemSize = MemSize + mt.count(v)
+		rawset(Data, i, v)
+	end
+ 
+	new_t.get = function(i)
+		return Data[i]
 	end
  
 	new_t.insert = function(i, v)
-		Count = Count + mt.count(v)
-		i = math.min(#new_t.__data__, i) 
-		table.insert(new_t.__data__,i,v)
+		MemSize = MemSize + mt.count(v)
+		i = math.min(#Data, i) 
+		table.insert(Data, i, v)
 	end
 	
 	new_t.remove = function(i)
-		local v = table.remove(new_t.__data__,i)
-		Count = Count - mt.count(v)
+		local v = table.remove(Data, i)
+		MemSize = MemSize - mt.count(v)
 		return v
 	end
 	
-	new_t.size = function(t)
-		return Count
+	new_t.memsize = function(t)
+		return MemSize
 	end
  
-	new_t.dump = function(size)
-		size = size or 200
-		local s = dump(new_t.__data__)
-		if #s > size then s = s:sub(1, size).."..." end
-		return s
+	new_t.size = function(t)
+		return #Data
+	end
+ 
+	new_t.__dump = function()
+		-- remove the not serializable meta data
+		return {Type = "Array", MemSize = MemSize, Data = Data}
+	end
+	
+	new_t.__load = function(memsize, data)
+		MemSize = memsize
+		Data = data
 	end
 	
 	return setmetatable(new_t, mt)
@@ -184,11 +212,12 @@ end
 
 function safer_lua.Set(...)
 
-    local new_t = {__data__ = {}}
+    local new_t = {}
     local mt = {}
 	
-    -- `all` will represent the number of both
-    local Count = 0
+    local MemSize = 0
+	local Size = 0
+	local Data = {}
 
     mt.__newindex = function(t, k, v) return end
 	
@@ -198,35 +227,69 @@ function safer_lua.Set(...)
 		local v = select(idx,...)
 		local cnt = mt.count(v)
 		if cnt then
-			Count = Count + cnt
-			rawset(new_t.__data__,v, true)
+			MemSize = MemSize + cnt
+			Size = Size + 1
+			rawset(Data, v, true)
 		end
 	end
 	
 	new_t.add = function(k)
-		Count = Count + mt.count(k)
-		rawset(new_t.__data__,k, true)
+		MemSize = MemSize + mt.count(k)
+		rawset(Data, k, true)
+		Size = Size + 1
 	end
 	
 	new_t.del = function(k)
-		Count = Count - mt.count(k)
-		rawset(new_t.__data__,k, nil)
+		MemSize = MemSize - mt.count(k)
+		rawset(Data, k, nil)
+		Size = Size - 1
 	end
 	
 	new_t.has = function(k)
-		return rawget(new_t.__data__, k) == true
+		return rawget(Data, k) == true
 	end
 	
-	new_t.size = function(t)
-		return Count
+	new_t.memsize = function(t)
+		return MemSize
 	end
  
-	new_t.dump = function(size)
-		size = size or 200
-		local s = dump(new_t.__data__)
-		if #s > size then s = s:sub(1, size).."..." end
-		return s
+	new_t.size = function(t)
+		return Size
 	end
-
+ 
+	new_t.__dump = function()
+		-- remove the not serializable meta data
+		return {Type = "Set", Size = Size, MemSize = MemSize, Data = Data}
+	end
+	
+	new_t.__load = function(size, memsize, data)
+		Size = size
+		MemSize = memsize
+		Data = data
+	end
+	
 	return setmetatable(new_t, mt)
+end
+
+
+-- remove the not serializable meta data
+function safer_lua.datastruct_to_table(ds)
+	return ds.__dump()
+end	
+	
+-- add the not serializable meta data again
+function safer_lua.table_to_datastruct(tbl)
+	if tbl.Type == "Store" then
+		local s = safer_lua.Store()
+		s.__load(tbl.Size, tbl.MemSize, tbl.Data)
+		return s
+	elseif tbl.Type == "Set" then
+		local s = safer_lua.Set()
+		s.__load(tbl.Size, tbl.MemSize, tbl.Data)
+		return s
+	elseif tbl.Type == "Array" then
+		local a = safer_lua.Array()
+		a.__load(tbl.MemSize, tbl.Data)
+		return a
+	end
 end

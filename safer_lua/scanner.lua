@@ -81,6 +81,8 @@ local InvalidKeywords = {
 	["do"] = true, 
 	["function"] = true,
 	["_G"] = true,
+	["__load"] = true,
+	["__dump"] = true,
 }
 
 local InvalidChars = {
