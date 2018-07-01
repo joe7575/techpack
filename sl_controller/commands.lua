@@ -94,6 +94,21 @@ sl_controller.register_action("send_cmnd", {
 		' example: $send_cmnd("1234", "on")'
 })
 
+sl_controller.register_action("set_filter", {
+	cmnd = function(self, num, slot, val) 
+		num = tostring(num or "")
+		slot = tostring(slot or "red")
+		val = tostring(val or "on")
+		tubelib.send_message(num, self.meta.owner, nil, "filter", {slot=slot, val=val})
+	end,
+	help = " $set_filter(num, slot, val)\n"..
+		' Turn on/off a Distributor filter slot.\n'..
+		" For more help, see:\n"..
+		" https://github.com/joe7575/techpack/wiki/nodes\n"..
+		' example: $set_filter("1234", "red", "off")'
+})
+
+
 sl_controller.register_action("display", {
 	cmnd = function(self, num, row, text1, text2, text3)
 		text1 = tostring(text1 or "")

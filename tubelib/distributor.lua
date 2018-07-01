@@ -311,6 +311,24 @@ local function on_receive_fields(pos, formname, fields, player)
 	end
 end
 
+-- tubelib command to turn on/off filter channels
+local function change_filter_settings(pos, slot, val)
+	local slots = {["red"] = 1, ["green"] = 2, ["blue"] = 3, ["yellow"] = 4}
+	local meta = minetest.get_meta(pos)
+	local filter = minetest.deserialize(meta:get_string("filter"))
+	local num = slots[slot] or 1
+	if num >= 1 and num <= 4 then
+		filter[num] = val == "on"
+	end
+	meta:set_string("filter", minetest.serialize(filter))
+	
+	filter_settings(pos)
+	
+	local running = meta:get_int("running")
+	meta:set_string("formspec", distributor_formspec(tubelib.state(running), filter))
+	return true
+end
+
 minetest.register_node("tubelib:distributor", {
 	description = "Tubelib Distributor",
 	tiles = {
@@ -442,6 +460,8 @@ tubelib.register_node("tubelib:distributor", {"tubelib:distributor_active"}, {
 			local meta = minetest.get_meta(pos)
 			local running = meta:get_int("running")
 			return tubelib.statestring(running)
+		elseif topic == "filter" then
+			return change_filter_settings(pos, payload.slot, payload.val)
 		else
 			return "unsupported"
 		end

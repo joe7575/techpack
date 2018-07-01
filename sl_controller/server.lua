@@ -92,9 +92,9 @@ minetest.register_node("sl_controller:server", {
 minetest.register_craft({
 	output = "sl_controller:server",
 	recipe = {
-		{"", "", ""},
-		{"default:mese_crystal_fragment", "tubelib:wlanchip", "default:mese_crystal_fragment"},
-		{"", "default:copper_ingot", ""},
+		{"", "dye:black", ""},
+		{"default:mese_crystal", "tubelib:wlanchip", "default:mese_crystal"},
+		{"default:steel_ingot", "default:copper_ingot", "default:steel_ingot"},
 	},
 })
 
