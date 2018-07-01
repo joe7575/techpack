@@ -132,19 +132,19 @@ tubelib.register_node("smartline:display", {}, {
 			local meta = minetest.get_meta(pos)
 			add_line(meta, payload)
 			if not timer:is_started() then
-				timer:start(2)
+				timer:start(1)
 			end
 		elseif topic == "row" then  -- overwrite the given row
 			local meta = minetest.get_meta(pos)
 			write_row(meta, payload)
 			if not timer:is_started() then
-				timer:start(2)
+				timer:start(1)
 			end
 		elseif topic == "clear" then  -- clear the screen
 			local meta = minetest.get_meta(pos)
 			meta:set_string("text", "")
 			if not timer:is_started() then
-				timer:start(2)
+				timer:start(1)
 			end
 		end
 	end,
