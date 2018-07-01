@@ -61,7 +61,7 @@ function safer_lua.config(max_code_size, max_table_size)
 end	
 
 local function compile(pos, text, label, err_clbk)
-	if safer_lua:check(text, label, err_clbk) == 0 then
+	if safer_lua:check(pos, text, label, err_clbk) == 0 then
 		text = text:gsub("%$", "S:")
 		local code, err = loadstring(text)
 		if not code then

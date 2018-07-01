@@ -106,6 +106,14 @@ sl_controller.register_action("events", {
 		' e.g. $events(true) -- enable events'
 })
 
+sl_controller.register_function("get_ms_time", {
+	cmnd = function(self)
+		return math.floor(minetest.get_us_time() / 1000)
+	end,
+	help = "$get_ms_time()\n"..
+		" returns time with millisecond precision."
+})
+
 
 local function formspec0(meta)
 	local running = meta:get_int("state") == tubelib.RUNNING

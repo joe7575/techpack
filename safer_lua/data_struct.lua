@@ -28,7 +28,9 @@ safer_lua.DataStructHelp = [[
   a.remove(3)            --> {1,8,4,7,6}
   a.insert(1, "hello")   --> {"hello",1,8,4,7,6}
   a.size()               --> function returns 6
+  a.memsize() 			 --> return returns 10
   a.next()               --> for loop iterator function  
+  a.sort(reverse)        --> sort the array elements in place  
 
  Unlike arrays, which are indexed by a range of numbers, 
  'stores' are indexed by keys:
@@ -39,7 +41,9 @@ safer_lua.DataStructHelp = [[
   s.set(0, "hello")      --> {val = 12, [0] = "hello"}
   s.del("val")           --> {[0] = "hello"}
   s.size()               --> function returns 1
+  s.memsize()            --> function returns 6
   s.next()               --> for loop iterator function  
+  s.keys(order)          --> return an array with the keys  
 
  A 'set' is an unordered collection with no duplicate 
  elements.
@@ -51,6 +55,7 @@ safer_lua.DataStructHelp = [[
   s.has("Susi")      --> function returns `true`
   s.has("Mike")      --> function returns `false`
   s.size()           --> function returns 2
+  s.memsize()        --> function returns 8
   s.next()           --> for loop iterator function  
 ]]
 
@@ -133,6 +138,28 @@ function safer_lua.Store()
 			if n then return n, Data[n] end
 		end
 	end
+	
+	new_t.keys = function(order)
+		local keyset = {}
+		local n = 0
+		local size = 0
+
+		for k,v in pairs(Data) do
+			n = n + 1
+			keyset[n] = k
+			size = size + var_count(k)
+		end
+		
+		if order == "up" then
+			table.sort(keyset, function(a,b) return a > b end)
+		elseif order == "down" then
+			table.sort(keyset)
+		end
+		local a = safer_lua.Array()
+		a.__load(size, keyset)
+		return a
+	end
+	
 	new_t.__dump = function()
 		-- remove the not serializable meta data
 		return {Type = "Store", Size = Size, MemSize = MemSize, Data = Data}
@@ -198,6 +225,14 @@ function safer_lua.Array(...)
 		return v
 	end
 	
+	new_t.sort = function(reverse)
+		if reverse then
+			table.sort(Data, function(a,b) return a > b end)
+		else
+			table.sort(Data)
+		end
+	end
+ 
 	new_t.memsize = function(t)
 		return MemSize
 	end
