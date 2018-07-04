@@ -84,7 +84,6 @@ minetest.register_node("sl_controller:server", {
 	sunlight_propagates = true,
 	paramtype2 = "facedir",
 	groups = {choppy=1, cracky=1, crumbly=1},
-	drop = "",
 	is_ground_content = false,
 	sounds = default.node_sound_stone_defaults(),
 })
