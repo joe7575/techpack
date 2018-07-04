@@ -62,6 +62,9 @@ function tubelib.get_neighbor_pos(pos, side)
 		dir = ((facedir + node.param2) % 4) + 1
 	end
 	local npos, ndir = tubelib.get_next_tube(pos, dir)
+	if ndir == nil then
+		return pos, SideToFacedir[side]
+	end
 	local node = minetest.get_node(npos)
 	if tubelib.TubeNames[node.name] then
 		npos, ndir = remote_node(npos, ndir)
