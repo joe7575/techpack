@@ -30,6 +30,9 @@ function safer_lua:string(pttrn)
 	self.pos = self.pos + 1
 	local ch = self.line:sub(self.pos, self.pos)
 	while not ch:match(pttrn) and self.pos < #self.line do
+		if ch == "\\" then
+			self.pos = self.pos + 1
+		end
 		self.pos = self.pos + 1
 		ch = self.line:sub(self.pos, self.pos)
 	end
@@ -86,6 +89,8 @@ local InvalidKeywords = {
 local InvalidChars = {
 	[":"] = true,
 	["{"] = true,
+	["["] = true,
+	["]"] = true,
 	["}"] = true,
 }
 
