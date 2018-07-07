@@ -248,7 +248,6 @@ local function start_controller(pos)
 	end
 	
 	meta:set_string("output", "<press update>")
-	meta:set_string("formspec", formspec3(meta))
 	meta:set_int("cycletime", 1)
 	meta:set_int("cyclecount", 0)
 	meta:set_int("cpu", 0)
@@ -256,6 +255,7 @@ local function start_controller(pos)
 	if compile(pos, meta, number) then
 		meta:set_int("state", tubelib.RUNNING)
 		minetest.get_node_timer(pos):start(1)
+		meta:set_string("formspec", formspec3(meta))
 		meta:set_string("infotext", "Controller "..number..": running")
 		return true
 	end
