@@ -73,7 +73,9 @@ minetest.register_node("sl_controller:server", {
 		if minetest.is_protected(pos, puncher:get_player_name()) then
 			return
 		end
-		
+		local meta = minetest.get_meta(pos)
+		local number = meta:get_string("number")
+		tubelib.set_data(number, "memory", nil)
 		minetest.node_dig(pos, node, puncher, pointed_thing)
 		tubelib.remove_node(pos)
 	end,

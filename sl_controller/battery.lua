@@ -31,7 +31,7 @@ local function on_timer(pos, elapsed)
 	return true
 end
 
-local function register_battery(ext, percent)
+local function register_battery(ext, percent, nici)
 	minetest.register_node("sl_controller:battery"..ext, {
 		description = "Battery "..ext,
 		inventory_image = 'sl_controller_battery_inventory.png',
@@ -90,17 +90,17 @@ local function register_battery(ext, percent)
 		paramtype = "light",
 		sunlight_propagates = true,
 		paramtype2 = "facedir",
-		groups = {choppy=1, cracky=1, crumbly=1},
+		groups = {choppy=1, cracky=1, crumbly=1, not_in_creative_inventory=nici},
 		drop = "",
 		is_ground_content = false,
 		sounds = default.node_sound_stone_defaults(),
 	})
 end
 
-register_battery("", 1.0)
-register_battery("75", 0.75)
-register_battery("50", 0.5)
-register_battery("25", 0.25)
+register_battery("", 1.0, 0)
+register_battery("75", 0.75, 1)
+register_battery("50", 0.5, 1)
+register_battery("25", 0.25, 1)
 
 minetest.register_node("sl_controller:battery_empty", {
 	description = "Battery",
