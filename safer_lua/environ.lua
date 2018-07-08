@@ -117,7 +117,7 @@ function safer_lua.run_loop(pos, elapsed, code, err_clbk)
 	end
 	local res, err = pcall(code)
 	if calc_used_mem_size(env) > safer_lua.MaxTableSize then 
-		err_clbk("Memory limit exceeded")
+		err_clbk(pos, "Memory limit exceeded")
 		return false
 	end
 	if not res then
@@ -131,12 +131,17 @@ end
 -------------------------------------------------------------------------------
 -- Endless/Coroutine controller
 -------------------------------------------------------------------------------
-local function thread(code)
+local function thread(pos, code, err_clbk)
 	while true do
-		code()
+		local res, err = pcall(code)
+		if not res then
+			err = err:gsub("%[string .+%]:", "loop() ")
+			err_clbk(pos, err)
+			return false
+		end
 		local env = getfenv(code)
 		if calc_used_mem_size(env) > safer_lua.MaxTableSize then 
-			err_clbk("Memory limit exceeded")
+			err_clbk(pos, "Memory limit exceeded")
 			return false
 		end
 		coroutine.yield()
@@ -149,7 +154,7 @@ function safer_lua.co_create(pos, init, loop, environ, err_clbk)
 end
 
 function safer_lua.co_resume(pos, co, code, err_clbk)
-	local res, err = coroutine.resume(co, code)
+	local res, err = coroutine.resume(co, pos, code, err_clbk)
 	if not res then
 		err = err:gsub("%[string .+%]:", "loop() ")
 		err_clbk(pos, err)
