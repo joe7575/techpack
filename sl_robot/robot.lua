@@ -61,7 +61,7 @@ end
 
 function sl_robot.remove_robot(pos)	
 	local node = minetest.get_node(pos)
-	if node.name == "sl_robot:robot" or node.name == "sl_robot:robot_dummy" then
+	if node.name == "sl_robot:robot" then
 		minetest.remove_node(pos)
 		local pos1 = {x=pos.x, y=pos.y-1, z=pos.z}
 		node = minetest.get_node(pos1)
@@ -144,7 +144,7 @@ function sl_robot.robot_up(pos, param2)
 			minetest.swap_node(pos, {name="sl_robot:robot_foot"})
 		end
 		minetest.set_node(pos1, {name="sl_robot:robot", param2=param2})
-		minetest.sound_play('sl_robot_step', {pos = new_pos})
+		minetest.sound_play('sl_robot_step', {pos = pos1})
 		return pos1
 	end
 	return nil
@@ -154,21 +154,18 @@ end
 --  [R]  
 --   1
 --   2
+--   3
 function sl_robot.robot_down(pos, param2)
-	if dir == "U" then dir = 1 else dir = -1 end
-	local new_pos = {x=pos.x, y=pos.y-1, z=pos.z}
-	local new_pos_node = minetest.get_node(new_pos)
-	local objects = minetest.get_objects_inside_radius(new_pos, 1)
-	if #objects == 0 and new_pos_node.name == "sl_robot:robot_foot" or 
-				new_pos_node.name == "sl_robot:robot_leg" then
+	local pos1 = {x=pos.x, y=pos.y-1, z=pos.z}
+	local pos2 = {x=pos.x, y=pos.y-2, z=pos.z}
+	local pos3 = {x=pos.x, y=pos.y-3, z=pos.z}
+	local node1 = minetest.get_node_or_nil(pos1) or read_node_with_vm(pos1)
+	if node1.name == "air" and check_pos(pos2, pos3) then
 		minetest.remove_node(pos)
-		minetest.set_node(new_pos, {name="sl_robot:robot", param2=param2})
-		minetest.sound_play('sl_robot_step', {pos = new_pos})
-		return new_pos
+		minetest.set_node(pos2, {name="sl_robot:robot", param2=param2})
+		minetest.sound_play('sl_robot_step', {pos = pos2})
+		return pos2
 	end
-	pos.y = pos.y+1
-	minetest.sound_play('sl_robot_go_away', {pos = pos, gain = 0.6})
-	pos.y = pos.y-1
 	return nil
 end	
 
@@ -201,36 +198,36 @@ minetest.register_node("sl_robot:robot", {
 	sounds = default.node_sound_metal_defaults(),
 })
 
--- dummy robots are used as marker for stucked robots in unloaded areas
-minetest.register_node("sl_robot:robot_dummy", {
-	description = "SaferLua Robot",
-	-- up, down, right, left, back, front
-	tiles = {
-		"sl_robot_robot_top.png^[opacity:127",
-		"sl_robot_robot_bottom.png^[opacity:127",
-		"sl_robot_robot_right.png^[opacity:127",
-		"sl_robot_robot_left.png^[opacity:127",
-		"sl_robot_robot_front.png^[opacity:127",
-		"sl_robot_robot_back.png^[opacity:127",
-	},
-	drawtype = "nodebox",
-	use_texture_alpha = true,
-	node_box = {
-		type = "fixed",
-		fixed = {
-			{ -5/16,  3/16, -5/16,   5/16,  8/16, 5/16},
-			{ -3/16,  2/16, -3/16,   3/16,  3/16, 3/16},
-			{ -6/16, -7/16, -6/16,   6/16,  2/16, 6/16},
-			{ -6/16, -8/16, -3/16,   6/16, -7/16, 3/16},
-		},
-	},
-	paramtype2 = "facedir",
-	is_ground_content = false,
-	walkable = false,
-	drop = "",
-	groups = {cracky = 3},
-	sounds = default.node_sound_metal_defaults(),
-})
+---- dummy robots are used as marker for stucked robots in unloaded areas
+--minetest.register_node("sl_robot:robot_dummy", {
+--	description = "SaferLua Robot",
+--	-- up, down, right, left, back, front
+--	tiles = {
+--		"sl_robot_robot_top.png^[opacity:127",
+--		"sl_robot_robot_bottom.png^[opacity:127",
+--		"sl_robot_robot_right.png^[opacity:127",
+--		"sl_robot_robot_left.png^[opacity:127",
+--		"sl_robot_robot_front.png^[opacity:127",
+--		"sl_robot_robot_back.png^[opacity:127",
+--	},
+--	drawtype = "nodebox",
+--	use_texture_alpha = true,
+--	node_box = {
+--		type = "fixed",
+--		fixed = {
+--			{ -5/16,  3/16, -5/16,   5/16,  8/16, 5/16},
+--			{ -3/16,  2/16, -3/16,   3/16,  3/16, 3/16},
+--			{ -6/16, -7/16, -6/16,   6/16,  2/16, 6/16},
+--			{ -6/16, -8/16, -3/16,   6/16, -7/16, 3/16},
+--		},
+--	},
+--	paramtype2 = "facedir",
+--	is_ground_content = false,
+--	walkable = false,
+--	drop = "",
+--	groups = {cracky = 3},
+--	sounds = default.node_sound_metal_defaults(),
+--})
 
 minetest.register_node("sl_robot:robot_leg", {
 	description = "SaferLua Robot",
@@ -266,17 +263,17 @@ minetest.register_node("sl_robot:robot_foot", {
 })
 
 
-minetest.register_lbm({
-	label = "[sl_robot] Remove Robots",
-	name = "sl_robot:update",
-	nodenames = {"sl_robot:robot", "sl_robot:robot_leg", "sl_robot:robot_foot"},
-	run_at_every_load = true,
-	action = function(pos, node)
-		if node.name == "sl_robot:robot" then
-			minetest.swap_node(pos, {name="sl_robot:robot_dummy", param2 = node.param2})
-		else
-			minetest.remove_node(pos)
-		end
-	end
-})
+--minetest.register_lbm({
+--	label = "[sl_robot] Remove Robots",
+--	name = "sl_robot:update",
+--	nodenames = {"sl_robot:robot", "sl_robot:robot_leg", "sl_robot:robot_foot"},
+--	run_at_every_load = true,
+--	action = function(pos, node)
+--		if node.name == "sl_robot:robot" then
+--			minetest.swap_node(pos, {name="sl_robot:robot_dummy", param2 = node.param2})
+--		else
+--			minetest.remove_node(pos)
+--		end
+--	end
+--})
 

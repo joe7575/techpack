@@ -229,11 +229,13 @@ local function check_fuel(pos, meta)
 end
 
 local function reset_robot(pos, meta)
-	print("robot_pos", meta:get_string("robot_pos"))
 	local robot_pos = minetest.string_to_pos(meta:get_string("robot_pos"))
+	minetest.log("action", "[robby] reset_robot "..meta:get_string("robot_pos"))
+
 	if robot_pos then
-		sl_robot.remove_robot(robot_pos)
+		minetest.after(5, minetest.remove_node, robot_pos)
 	end
+	
 	local param2 = (minetest.get_node(pos).param2 + 1) % 4
 	robot_pos = sl_robot.new_pos(pos, param2, 1)
 	local pos_below = {x=robot_pos.x, y=robot_pos.y-1, z=robot_pos.z}
