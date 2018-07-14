@@ -1,5 +1,5 @@
-SaferLua Controller [sl_controller] v0.02
-=========================================
+SaferLua Controller [sl_controller]
+===================================
 
 
 A tubelib compatible controller to be programmed in LUA
