@@ -103,6 +103,17 @@ local function allow_metadata_inventory_take(pos, listname, index, stack, player
 	return stack:get_count()
 end
 
+local function allow_metadata_inventory_move(pos, from_list, from_index, to_list, to_index, count, player)
+	if minetest.is_protected(pos, player:get_player_name()) then
+		return 0
+	end
+	local meta = minetest.get_meta(pos)
+	if meta:get_int("state") == tubelib.RUNNING then
+		return 0
+	end
+	return count
+end	
+
 local function formspec1(meta)
 	local running = meta:get_int("state") == tubelib.RUNNING
 	local cmnd = running and "stop;Stop" or "start;Start" 
@@ -233,7 +244,7 @@ local function reset_robot(pos, meta)
 	minetest.log("action", "[robby] reset_robot "..meta:get_string("robot_pos"))
 
 	if robot_pos then
-		minetest.after(5, minetest.remove_node, robot_pos)
+		minetest.after(5, minetest.remove_node, table.copy(robot_pos))
 	end
 	
 	local param2 = (minetest.get_node(pos).param2 + 1) % 4
@@ -436,6 +447,7 @@ minetest.register_node("sl_robot:base", {
 	on_timer = on_timer,
 	allow_metadata_inventory_put = allow_metadata_inventory_put,
 	allow_metadata_inventory_take = allow_metadata_inventory_take,
+	allow_metadata_inventory_move = allow_metadata_inventory_move,
 	
 	paramtype = "light",
 	sunlight_propagates = true,

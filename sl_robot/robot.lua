@@ -21,8 +21,76 @@ local Face2Dir = {[0]=
 	{x=0,  y=1,  z=0}
 }
 
+
+local Inventories = {
+	["default:chest"] = {take = "main", add = "main", fuel = "main"},
+	["default:chest_locked"] = {take = "main", add = "main", fuel = "main"},
+	["default:chest_locked"] = {take = "main", add = "main", fuel = "main"},
+	["default:furnace"] = {take = "dst", add = "src", fuel = "fuel"},
+	["default:furnace_active"] = {take = "dst", add = "src", fuel = "fuel"},
+	["tubelib:distributor"] = {take = "src", add = "src", fuel = "src"},
+	["gravelsieve:sieve"] = {take = "dst", add = "src", fuel = "src"},
+	["gravelsieve:auto_sieve0"] = {take = "dst", add = "src", fuel = "src"},
+	["gravelsieve:auto_sieve1"] = {take = "dst", add = "src", fuel = "src"},
+	["gravelsieve:auto_sieve2"] = {take = "dst", add = "src", fuel = "src"},
+	["gravelsieve:auto_sieve3"] = {take = "dst", add = "src", fuel = "src"},
+	["tubelib_addons1:autocrafter"] = {take = "dst", add = "src", fuel = "src"},
+	["tubelib_addons1:autocrafter_active"] = {take = "dst", add = "src", fuel = "src"},
+	["tubelib_addons1:chest"] = {take = "main", add = "main", fuel = "main"},
+	["tubelib_addons1:fermenter"] = {take = "dst", add = "src", fuel = "src"},
+	["tubelib_addons1:reformer"] = {take = "dst", add = "src", fuel = "src"},
+	["tubelib_addons1:funnel"] = {take = "main", add = "main", fuel = "main"},
+	["tubelib_addons1:grinder"] = {take = "dst", add = "src", fuel = "src"},
+	["tubelib_addons1:grinder_active"] = {take = "dst", add = "src", fuel = "src"},
+	["tubelib_addons1:harvester_base"] = {take = "main", add = "main", fuel = "fuel"},
+	["tubelib_addons1:quarry"] = {take = "main", add = "main", fuel = "fuel"},
+	["tubelib_addons1:quarry_active"] = {take = "main", add = "main", fuel = "fuel"},
+--	[""] = {take = "", add = "", fuel = ""},
+--	[""] = {take = "", add = "", fuel = ""},
+--	[""] = {take = "", add = "", fuel = ""},
+--	[""] = {take = "", add = "", fuel = ""},
+--	[""] = {take = "", add = "", fuel = ""},
+--	[""] = {take = "", add = "", fuel = ""},
+--	[""] = {take = "", add = "", fuel = ""},
+--	[""] = {take = "", add = "", fuel = ""},
+--	[""] = {take = "", add = "", fuel = ""},
+--	[""] = {take = "", add = "", fuel = ""},
+}
+
+-- return the largest stack
+local function peek(src_list)
+	local max_val = 0
+	local slot = nil
+	for idx,stack in ipairs(src_list) do
+		if stack:get_count() > max_val then
+			max_val = stack:get_count()
+			slot = idx
+		end
+	end
+	return slot
+end
+	
+-- try to take the number of items from an inventory
+local function take_num_items(src_list, num, dst_stack)
+	local slot = peek(src_list)
+	if slot then
+		local taken = src_list[slot]:take_item(num)
+		if dst_stack:item_fits(taken) then
+			dst_stack:add_item(taken)
+			return true
+		end
+	end
+	return false
+end	
+
 function sl_robot.new_pos(pos, param2, step)
 	return vector.add(pos, vector.multiply(Face2Dir[param2], step))
+end
+
+local function fake_player(name)
+	return {
+		get_player_name = function() return name end,
+	}
 end
 
 -- use Voxel Manipulator to read the node
@@ -169,6 +237,49 @@ function sl_robot.robot_down(pos, param2)
 	return nil
 end	
 
+-- take items from another inventory and put it into the own inventory slot
+function sl_robot.robot_take(base_pos, robot_pos, param2, owner, num, slot)
+	local pos1 = sl_robot.new_pos(robot_pos, param2, 1)
+	if minetest.is_protected(pos1, owner) then
+		return
+	end
+	local node = minetest.get_node(pos1)
+	if Inventories[node.name] then
+		local listname = Inventories[node.name].take
+		local src_inv = minetest.get_inventory({type="node", pos=pos1})
+		if src_inv:is_empty(listname) then
+			return
+		end
+		local src_list = src_inv:get_list(listname)
+		local dst_inv = minetest.get_inventory({type="node", pos=base_pos})
+		local dst_list = dst_inv:get_list("main")
+		if take_num_items(src_list, num, dst_list[slot]) then
+			src_inv:set_list(listname, src_list)
+			dst_inv:set_list("main", dst_list)
+		end
+	end
+end
+
+function sl_robot.robot_add(base_pos, robot_pos, param2, owner, num, slot)
+	local pos1 = sl_robot.new_pos(robot_pos, param2, 1)
+	if minetest.is_protected(pos1, owner) then
+		return
+	end
+	local node = minetest.get_node(pos1)
+	if Inventories[node.name] then
+		local listname = Inventories[node.name].take
+		local dst_inv = minetest.get_inventory({type="node", pos=pos1})
+		local dst_list = dst_inv:get_list(listname)
+		local src_inv = minetest.get_inventory({type="node", pos=base_pos})
+		local src_list = src_inv:get_list("main")
+		local taken = src_list[slot]:take_item(num)
+		if dst_inv:room_for_item(listname, taken) then
+			dst_inv:add_item(listname, taken)
+			src_inv:set_list("main", src_list)
+		end
+	end
+end
+
 
 minetest.register_node("sl_robot:robot", {
 	description = "SaferLua Robot",
@@ -197,37 +308,6 @@ minetest.register_node("sl_robot:robot", {
 	groups = {crumbly=0, not_in_creative_inventory = 1},
 	sounds = default.node_sound_metal_defaults(),
 })
-
----- dummy robots are used as marker for stucked robots in unloaded areas
---minetest.register_node("sl_robot:robot_dummy", {
---	description = "SaferLua Robot",
---	-- up, down, right, left, back, front
---	tiles = {
---		"sl_robot_robot_top.png^[opacity:127",
---		"sl_robot_robot_bottom.png^[opacity:127",
---		"sl_robot_robot_right.png^[opacity:127",
---		"sl_robot_robot_left.png^[opacity:127",
---		"sl_robot_robot_front.png^[opacity:127",
---		"sl_robot_robot_back.png^[opacity:127",
---	},
---	drawtype = "nodebox",
---	use_texture_alpha = true,
---	node_box = {
---		type = "fixed",
---		fixed = {
---			{ -5/16,  3/16, -5/16,   5/16,  8/16, 5/16},
---			{ -3/16,  2/16, -3/16,   3/16,  3/16, 3/16},
---			{ -6/16, -7/16, -6/16,   6/16,  2/16, 6/16},
---			{ -6/16, -8/16, -3/16,   6/16, -7/16, 3/16},
---		},
---	},
---	paramtype2 = "facedir",
---	is_ground_content = false,
---	walkable = false,
---	drop = "",
---	groups = {cracky = 3},
---	sounds = default.node_sound_metal_defaults(),
---})
 
 minetest.register_node("sl_robot:robot_leg", {
 	description = "SaferLua Robot",
@@ -261,19 +341,4 @@ minetest.register_node("sl_robot:robot_foot", {
 	groups = {crumbly=0, not_in_creative_inventory = 1},
 	sounds = default.node_sound_metal_defaults(),
 })
-
-
---minetest.register_lbm({
---	label = "[sl_robot] Remove Robots",
---	name = "sl_robot:update",
---	nodenames = {"sl_robot:robot", "sl_robot:robot_leg", "sl_robot:robot_foot"},
---	run_at_every_load = true,
---	action = function(pos, node)
---		if node.name == "sl_robot:robot" then
---			minetest.swap_node(pos, {name="sl_robot:robot_dummy", param2 = node.param2})
---		else
---			minetest.remove_node(pos)
---		end
---	end
---})
 
