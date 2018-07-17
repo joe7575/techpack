@@ -87,12 +87,6 @@ function sl_robot.new_pos(pos, param2, step)
 	return vector.add(pos, vector.multiply(Face2Dir[param2], step))
 end
 
-local function fake_player(name)
-	return {
-		get_player_name = function() return name end,
-	}
-end
-
 -- use Voxel Manipulator to read the node
 local function read_node_with_vm(pos)
 	local vm = VoxelManip()
@@ -120,6 +114,30 @@ local function check_pos(posA, posB)
 	end
 	return false
 end
+
+local function fake_player(name)
+	return {
+		get_player_name = function() return name end,
+	}
+end
+
+local function place_node(pos, owner, node_name, param2)
+	local under = {x=pos.x, y=pos.y-1, z=pos.z}
+	minetest.set_node(pos, {name=node_name, param2=param2})
+	local pointed_thing = {type="node", under=under, above=pos}
+	local itemstack = ItemStack(node_name)
+	pcall(minetest.after_place_node, pos, fake_player(owner), itemstack, pointed_thing)
+end
+
+local function remove_node(pos)
+	local node = minetest.get_node_or_nil(pos) or read_node_with_vm(pos)
+	if minetest.registered_nodes[node.name].after_dig_node then
+		return -- don't remove nodes with some intelligence
+	end
+	minetest.remove_node(pos)
+	return ItemStack(node.name)
+end
+
 
 function sl_robot.place_robot(pos1, pos2, param2, player_name)	
 	if check_pos(pos1, pos2) then
@@ -224,15 +242,18 @@ end
 --   2
 --   3
 function sl_robot.robot_down(pos, param2)
-	local pos1 = {x=pos.x, y=pos.y-1, z=pos.z}
-	local pos2 = {x=pos.x, y=pos.y-2, z=pos.z}
-	local pos3 = {x=pos.x, y=pos.y-3, z=pos.z}
-	local node1 = minetest.get_node_or_nil(pos1) or read_node_with_vm(pos1)
-	if node1.name == "air" and check_pos(pos2, pos3) then
-		minetest.remove_node(pos)
-		minetest.set_node(pos2, {name="sl_robot:robot", param2=param2})
-		minetest.sound_play('sl_robot_step', {pos = pos2})
-		return pos2
+	local pos1 = {x=pos.x, y=pos.y+1, z=pos.z}
+	local pos2 = {x=pos.x, y=pos.y-1, z=pos.z}
+	if check_pos(pos1, pos2) then
+		local node = minetest.get_node(pos2)
+		if node.name == "sl_robot:robot_foot" then 
+			minetest.swap_node(pos, {name="sl_robot:robot_leg"})
+		else
+			minetest.swap_node(pos, {name="sl_robot:robot_foot"})
+		end
+		minetest.set_node(pos1, {name="sl_robot:robot", param2=param2})
+		minetest.sound_play('sl_robot_step', {pos = pos1})
+		return pos1
 	end
 	return nil
 end	
@@ -280,6 +301,45 @@ function sl_robot.robot_add(base_pos, robot_pos, param2, owner, num, slot)
 	end
 end
 
+function sl_robot.robot_place(base_pos, robot_pos, param2, owner, dir, slot)
+	local pos1
+	if dir == "U" then
+		pos1 = {x=robot_pos.x, y=robot_pos.y+1, z=robot_pos.z} 
+	elseif dir == "D" then
+		pos1 = {x=robot_pos.x, y=robot_pos.y-1, z=robot_pos.z} 
+	else
+		pos1 = sl_robot.new_pos(robot_pos, param2, 1)
+	end
+	if minetest.is_protected(pos1, owner) then
+		return
+	end
+	local src_inv = minetest.get_inventory({type="node", pos=base_pos})
+	local src_list = src_inv:get_list("main")
+	local taken = src_list[slot]:take_item(1)
+	 if taken then
+		place_node(pos1, owner, taken:get_name(), param2)
+	end
+end
+
+function sl_robot.robot_dig(base_pos, robot_pos, param2, owner, dir, slot)
+	local pos1
+	if dir == "U" then
+		pos1 = {x=robot_pos.x, y=robot_pos.y+1, z=robot_pos.z} 
+	elseif dir == "D" then
+		pos1 = {x=robot_pos.x, y=robot_pos.y-1, z=robot_pos.z} 
+	else
+		pos1 = sl_robot.new_pos(robot_pos, param2, 1)
+	end
+	if minetest.is_protected(pos1, owner) then
+		return
+	end
+	local item = remove_node(pos1)
+	if item then
+		local src_inv = minetest.get_inventory({type="node", pos=base_pos})
+		local src_list = src_inv:get_list("main")
+		src_list[slot]:add_item(item)
+	end
+end
 
 minetest.register_node("sl_robot:robot", {
 	description = "SaferLua Robot",
