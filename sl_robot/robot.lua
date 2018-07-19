@@ -146,15 +146,15 @@ function sl_robot.place_robot(pos1, pos2, param2, player_name)
 end
 
 function sl_robot.remove_robot(pos)	
-	local node = minetest.get_node(pos)
+	local node = minetest.get_node_or_nil(pos) or read_node_with_vm(pos)
 	if node.name == "sl_robot:robot" then
 		minetest.remove_node(pos)
 		local pos1 = {x=pos.x, y=pos.y-1, z=pos.z}
-		node = minetest.get_node(pos1)
+		node = minetest.get_node_or_nil(pos1) or read_node_with_vm(pos1)
 		if node.name == "sl_robot:robot_foot" or node.name == "sl_robot:robot_leg" then
 			minetest.remove_node(pos1)
 			pos1 = {x=pos.x, y=pos.y-2, z=pos.z}
-			node = minetest.get_node(pos1)
+			node = minetest.get_node_or_nil(pos1) or read_node_with_vm(pos1)
 			if node.name == "sl_robot:robot_foot" then
 				minetest.remove_node(pos1)
 			end
@@ -190,10 +190,10 @@ function sl_robot.move_robot(pos, param2, step)
 	else
 		return nil -- blocked
 	end
-	local node4 = minetest.get_node(pos4)
+	local node4 = minetest.get_node_or_nil(pos4) or read_node_with_vm(pos4)
 	if node4.name == "sl_robot:robot_foot" or node4.name == "sl_robot:robot_leg" then
 		minetest.remove_node(pos4)
-		local node5 = minetest.get_node(pos5)
+		local node5 = minetest.get_node_or_nil(pos5) or read_node_with_vm(pos5)
 		if node5.name == "sl_robot:robot_foot" then
 			minetest.remove_node(pos5)
 		end
@@ -223,7 +223,7 @@ function sl_robot.robot_up(pos, param2)
 	local pos1 = {x=pos.x, y=pos.y+1, z=pos.z}
 	local pos2 = {x=pos.x, y=pos.y-1, z=pos.z}
 	if check_pos(pos1, pos2) then
-		local node = minetest.get_node(pos2)
+		local node = minetest.get_node_or_nil(pos2) or read_node_with_vm(pos2)
 		if node.name == "sl_robot:robot_foot" then 
 			minetest.swap_node(pos, {name="sl_robot:robot_leg"})
 		else
@@ -242,15 +242,14 @@ end
 --   2
 --   3
 function sl_robot.robot_down(pos, param2)
-	local pos1 = {x=pos.x, y=pos.y+1, z=pos.z}
-	local pos2 = {x=pos.x, y=pos.y-1, z=pos.z}
-	if check_pos(pos1, pos2) then
-		local node = minetest.get_node(pos2)
-		if node.name == "sl_robot:robot_foot" then 
-			minetest.swap_node(pos, {name="sl_robot:robot_leg"})
-		else
-			minetest.swap_node(pos, {name="sl_robot:robot_foot"})
-		end
+	local pos1 = {x=pos.x, y=pos.y-1, z=pos.z}
+	local pos2 = {x=pos.x, y=pos.y-2, z=pos.z}
+	local pos3 = {x=pos.x, y=pos.y-3, z=pos.z}
+	local node1 = minetest.get_node_or_nil(pos1) or read_node_with_vm(pos1)
+	if check_pos(pos1, pos2) 
+	or (node1.name == "air" and check_pos(pos2, pos3))
+	or (node1.name == "sl_robot:robot_leg" or node1.name == "sl_robot:robot_foot") then
+		remove_node(pos)
 		minetest.set_node(pos1, {name="sl_robot:robot", param2=param2})
 		minetest.sound_play('sl_robot_step', {pos = pos1})
 		return pos1
@@ -264,7 +263,7 @@ function sl_robot.robot_take(base_pos, robot_pos, param2, owner, num, slot)
 	if minetest.is_protected(pos1, owner) then
 		return
 	end
-	local node = minetest.get_node(pos1)
+	local node = minetest.get_node_or_nil(pos1) or read_node_with_vm(pos1)
 	if Inventories[node.name] then
 		local listname = Inventories[node.name].take
 		local src_inv = minetest.get_inventory({type="node", pos=pos1})
@@ -286,7 +285,7 @@ function sl_robot.robot_add(base_pos, robot_pos, param2, owner, num, slot)
 	if minetest.is_protected(pos1, owner) then
 		return
 	end
-	local node = minetest.get_node(pos1)
+	local node = minetest.get_node_or_nil(pos1) or read_node_with_vm(pos1)
 	if Inventories[node.name] then
 		local listname = Inventories[node.name].take
 		local dst_inv = minetest.get_inventory({type="node", pos=pos1})
@@ -316,8 +315,18 @@ function sl_robot.robot_place(base_pos, robot_pos, param2, owner, dir, slot)
 	local src_inv = minetest.get_inventory({type="node", pos=base_pos})
 	local src_list = src_inv:get_list("main")
 	local taken = src_list[slot]:take_item(1)
-	 if taken then
+	if taken and taken:get_count() > 0 then
+		local node1 = minetest.get_node_or_nil(pos1) or read_node_with_vm(pos1)
+		if node1.name == "sl_robot:robot_leg" then
+			local pos2 = {x=pos1.x, y=pos1.y-1, z=pos1.z}
+			remove_node(pos2)  -- remove foot
+		elseif node1.name == "sl_robot:robot_foot" then
+			remove_node(pos1)
+		elseif minetest.registered_nodes[node1.name].walkable then
+			return
+		end
 		place_node(pos1, owner, taken:get_name(), param2)
+		src_inv:set_list("main", src_list)
 	end
 end
 
