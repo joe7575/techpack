@@ -1,6 +1,7 @@
 SaferLua Robot [sl_robot]
 =========================
 
+##THIS IS WORK IN PROGRESS!
 
 A tubelib compatible robot to be programmed in LUA
 
