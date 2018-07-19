@@ -158,9 +158,9 @@ sl_controller.register_action("door", {
 				local player = {
 					get_player_name = function() return self.meta.owner end,
 				}
-				if state == "open" then
+				if text == "open" then
 					door:open(player)
-				elseif state == "close" then
+				elseif text == "close" then
 					door:close(player)
 				end
 			end
