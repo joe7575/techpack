@@ -213,8 +213,8 @@ local function keep_running(pos, elapsed)
 	local inv = meta:get_inventory()
 	local list = inv:get_list("src")
 	local kvSrc = invlist_content_as_kvlist(list)
-	local counter = minetest.deserialize(meta:get_string("item_counter") or 
-			{red=0, green=0, blue=0, yellow=0})
+	local counter = minetest.deserialize(meta:get_string("item_counter")) or 
+			{red=0, green=0, blue=0, yellow=0}
 	
 	-- calculate the filter settings only once
 	local hash = minetest.hash_node_position(pos)
@@ -470,8 +470,8 @@ tubelib.register_node("tubelib:distributor", {"tubelib:distributor_active"}, {
 			return change_filter_settings(pos, payload.slot, payload.val)
 		elseif topic == "counter" then
 			local meta = minetest.get_meta(pos)
-			return minetest.deserialize(meta:get_string("item_counter") or 
-					{red=0, green=0, blue=0, yellow=0})
+			return minetest.deserialize(meta:get_string("item_counter")) or 
+					{red=0, green=0, blue=0, yellow=0}
 		elseif topic == "clear_counter" then
 			local meta = minetest.get_meta(pos)
 			meta:set_string("item_counter", minetest.serialize({red=0, green=0, blue=0, yellow=0}))
