@@ -25,7 +25,7 @@ sl_robot.register_action("get_ms_time", {
 
 sl_robot.register_action("forward", {
 	cmnd = function(self, steps)
-		steps = math.min(tonumber(steps or 1), 9)
+		steps = math.min(tonumber(steps or 1), 100)
 		local idx = 1
 		while idx <= steps do
 			local meta = minetest.get_meta(self.meta.pos)
@@ -49,7 +49,7 @@ sl_robot.register_action("forward", {
 
 sl_robot.register_action("backward", {
 	cmnd = function(self, steps)
-		steps = math.min(tonumber(steps or 1), 9)
+		steps = math.min(tonumber(steps or 1), 100)
 		local idx = 1
 		while idx <= steps do
 			local meta = minetest.get_meta(self.meta.pos)
@@ -216,3 +216,16 @@ sl_robot.register_action("stop", {
 	help = "tbd"
 })
 
+--sl_robot.register_action("run", {
+--	cmnd = function(self, sCmd, reverse)
+--		slot = math.min(tonumber(slot or 1), 8)
+--		local meta = minetest.get_meta(self.meta.pos)
+--		local robot_pos = minetest.string_to_pos(meta:get_string("robot_pos"))
+--		local robot_param2 = meta:get_int("robot_param2")
+		
+--		for cmnd in sCmd:gmatch("%w+") do
+--			if cmnd:byte()
+--		end
+--	end,
+--	help = " "
+--})

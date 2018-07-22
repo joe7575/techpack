@@ -347,6 +347,7 @@ function sl_robot.robot_dig(base_pos, robot_pos, param2, owner, dir, slot)
 		local src_inv = minetest.get_inventory({type="node", pos=base_pos})
 		local src_list = src_inv:get_list("main")
 		src_list[slot]:add_item(item)
+		src_inv:set_list("main", src_list)
 	end
 end
 
@@ -373,6 +374,8 @@ minetest.register_node("sl_robot:robot", {
 		},
 	},
 	paramtype2 = "facedir",
+	paramtype = "light",
+	sunlight_propagates = true,
 	is_ground_content = false,
 	groups = {crumbly=0, not_in_creative_inventory = 1},
 	sounds = default.node_sound_metal_defaults(),
@@ -389,6 +392,8 @@ minetest.register_node("sl_robot:robot_leg", {
 		},
 	},
 	paramtype2 = "facedir",
+	paramtype = "light",
+	sunlight_propagates = true,
 	is_ground_content = false,
 	groups = {crumbly=0, not_in_creative_inventory = 1},
 	sounds = default.node_sound_metal_defaults(),
@@ -406,6 +411,8 @@ minetest.register_node("sl_robot:robot_foot", {
 		},
 	},
 	paramtype2 = "facedir",
+	paramtype = "light",
+	sunlight_propagates = true,
 	is_ground_content = false,
 	groups = {crumbly=0, not_in_creative_inventory = 1},
 	sounds = default.node_sound_metal_defaults(),

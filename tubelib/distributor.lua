@@ -213,6 +213,8 @@ local function keep_running(pos, elapsed)
 	local inv = meta:get_inventory()
 	local list = inv:get_list("src")
 	local kvSrc = invlist_content_as_kvlist(list)
+	local counter = minetest.deserialize(meta:get_string("item_counter") or 
+			{red=0, green=0, blue=0, yellow=0})
 	
 	-- calculate the filter settings only once
 	local hash = minetest.hash_node_position(pos)
@@ -241,6 +243,7 @@ local function keep_running(pos, elapsed)
 					if not tubelib.push_items(pos, side, item, player_name) then -- <<=== tubelib
 						tubelib.put_item(meta, "src", item)
 					else
+						counter[listname] = counter[listname] + 1
 						busy = true
 					end
 				end
@@ -257,6 +260,7 @@ local function keep_running(pos, elapsed)
 					if not tubelib.push_items(pos, side, item, player_name) then -- <<=== tubelib
 						tubelib.put_item(meta, "src", item)
 					else
+						counter[listname] = counter[listname] + 1
 						busy = true
 					end
 				end
@@ -276,6 +280,7 @@ local function keep_running(pos, elapsed)
 		end
 	end
 	
+	meta:set_string("item_counter", minetest.serialize(counter))
 	meta:set_int("running", running)
 	return true
 end
@@ -357,6 +362,7 @@ minetest.register_node("tubelib:distributor", {
 		inv:set_size('green', 6)
 		inv:set_size('red', 6)
 		inv:set_size('blue', 6)
+		meta:set_string("item_counter", minetest.serialize({red=0, green=0, blue=0, yellow=0}))
 	end,
 
 	on_receive_fields = on_receive_fields,
@@ -462,6 +468,13 @@ tubelib.register_node("tubelib:distributor", {"tubelib:distributor_active"}, {
 			return tubelib.statestring(running)
 		elseif topic == "filter" then
 			return change_filter_settings(pos, payload.slot, payload.val)
+		elseif topic == "counter" then
+			local meta = minetest.get_meta(pos)
+			return minetest.deserialize(meta:get_string("item_counter") or 
+					{red=0, green=0, blue=0, yellow=0})
+		elseif topic == "clear_counter" then
+			local meta = minetest.get_meta(pos)
+			meta:set_string("item_counter", minetest.serialize({red=0, green=0, blue=0, yellow=0}))
 		else
 			return "unsupported"
 		end

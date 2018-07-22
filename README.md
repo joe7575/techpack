@@ -1,4 +1,4 @@
-# TechPack V1.08
+# TechPack V1.09
 
 TechPack, a Mining, Crafting, &amp; Farming Modpack for Minetest.
 
@@ -84,3 +84,4 @@ Gravelsieve optional: moreores, hopper, pipeworks
 - 2018-06-09  V1.06  * Recipes with API to grinder added
 - 2018-06-17  V1.07  * Tube placement completely reworked
 - 2018-06-22  V1.08  * Lua Controller and SaferLua added
+- 2018-07-22  V1.09  * Item counters for Pusher/Distributor and tubelib commands for Autocrafter added

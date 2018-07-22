@@ -88,6 +88,7 @@ local function keep_running(pos, elapsed)
 			local node = minetest.get_node(pos)
 			return goto_blocked(pos, node)
 		end
+		meta:set_int("item_counter", meta:get_int("item_counter") + 1)
 		if running <= 0 then
 			local node = minetest.get_node(pos)
 			return switch_on(pos, node)
@@ -123,6 +124,7 @@ minetest.register_node("tubelib_addons1:pusher_fast", {
 		local number = tubelib.add_node(pos, "tubelib_addons1:pusher_fast")
 		meta:set_string("number", number)
 		meta:set_string("infotext", "Pusher "..number..": stopped")
+		meta:set_int("item_counter", 0)
 	end,
 
 	on_rightclick = function(pos, node, clicker)
@@ -238,6 +240,12 @@ tubelib.register_node("tubelib_addons1:pusher_fast", {"tubelib_addons1:pusher_fa
 			local meta = minetest.get_meta(pos)
 			local running = meta:get_int("running") or tubelib.STATE_STOPPED
 			return tubelib.statestring(running)
+		elseif topic == "counter" then
+			local meta = minetest.get_meta(pos)
+			return meta:get_int("item_counter")
+		elseif topic == "clear_counter" then
+			local meta = minetest.get_meta(pos)
+			return meta:set_int("item_counter", 0)
 		else
 			return "not supported"
 		end

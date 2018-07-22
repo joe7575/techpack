@@ -36,6 +36,30 @@ sl_controller.register_function("get_status", {
 		' example: sts = $get_status("1234")'
 })
 
+sl_controller.register_function("get_counter", {
+	cmnd = function(self, num) 
+		num = tostring(num or "")
+		return tubelib.send_request(num, "counter", nil)
+	end,
+	help = " $get_counter(num)\n"..
+		" Read number of pushed items from a\n"..
+		" Pusher/Distributor node.\n"..
+		" The Pusher returns a single value (number)\n"..
+		" The Distributor returns a list with 4 values\n"..
+		" like: {red=1, green=0, blue=8, yellow=0}\n"..
+		' example: cnt = $get_counter("1234")\n'
+})
+
+sl_controller.register_function("clear_counter", {
+	cmnd = function(self, num) 
+		num = tostring(num or "")
+		return tubelib.send_request(num, "clear_counter", nil)
+	end,
+	help = " $clear_counter(num)\n"..
+		" Set counter(s) from Pusher/Distributor to zero.\n"..
+		' example: $clear_counter("1234")'
+})
+
 sl_controller.register_function("get_fuel_status", {
 	cmnd = function(self, num) 
 		num = tostring(num or "")

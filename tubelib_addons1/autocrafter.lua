@@ -164,6 +164,8 @@ local function run_autocrafter(pos, elapsed)
 		return true
 	end
 	
+	meta:set_int("item_counter", meta:get_int("item_counter") + output_item:get_count())
+	
 	if running <= 0 then
 		return start_crafter(pos)
 	else
@@ -381,6 +383,7 @@ minetest.register_node("tubelib_addons1:autocrafter", {
 		inv:set_size("output", 1)
 		meta:set_string("number", number)
 		meta:set_int("running", 0)
+		meta:set_int("item_counter", 0)
 		update_meta(meta, tubelib.STOPPED)
 	end,
 	
@@ -463,5 +466,24 @@ tubelib.register_node("tubelib_addons1:autocrafter", {"tubelib_addons1:autocraft
 	on_unpull_item = function(pos, side, item)
 		local meta = minetest.get_meta(pos)
 		return tubelib.put_item(meta, "dst", item)
+	end,
+	on_recv_message = function(pos, topic, payload)
+		if topic == "on" then
+			return start_crafter(pos)
+		elseif topic == "off" then
+			return stop_crafter(pos)
+		elseif topic == "state" then
+			local meta = minetest.get_meta(pos)
+			local running = meta:get_int("running")
+			return tubelib.statestring(running)
+		elseif topic == "counter" then
+			local meta = minetest.get_meta(pos)
+			return meta:get_int("item_counter")
+		elseif topic == "clear_counter" then
+			local meta = minetest.get_meta(pos)
+			return meta:set_int("item_counter", 0)
+		else
+			return "unsupported"
+		end
 	end,
 })	

@@ -23,13 +23,14 @@ local Version = minetest.deserialize(storage:get_string("Version")) or 1
 local Number2Pos = minetest.deserialize(storage:get_string("Number2Pos")) or {}
 
 local function update_mod_storage()
+	minetest.log("action", "[Tubelib] Store data...")
 	storage:set_string("NextNumber", minetest.serialize(NextNumber))
 	storage:set_string("Version", minetest.serialize(Version))
 	storage:set_string("Number2Pos", minetest.serialize(Number2Pos))
 	storage:set_string("Key2Number", nil) -- not used any more 
 	-- store data each hour
 	minetest.after(60*60, update_mod_storage)
-	print("[Tubelib] Data stored")
+	minetest.log("action", "[Tubelib] Data stored")
 end
 
 minetest.register_on_shutdown(function()
