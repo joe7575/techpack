@@ -124,7 +124,7 @@ minetest.register_node("sl_controller:battery_empty", {
 	
 	after_place_node = function(pos, placer)
 		local meta = minetest.get_meta(pos)
-		meta:set_int("content", nil)
+		meta:set_int("content", 0)
 	end,
 	
 	paramtype = "light",
