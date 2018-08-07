@@ -23,39 +23,37 @@ local Face2Dir = {[0]=
 
 
 local Inventories = {
-	["default:chest"] = {take = "main", add = "main", fuel = "main"},
-	["default:chest_locked"] = {take = "main", add = "main", fuel = "main"},
-	["default:chest_locked"] = {take = "main", add = "main", fuel = "main"},
-	["default:furnace"] = {take = "dst", add = "src", fuel = "fuel"},
-	["default:furnace_active"] = {take = "dst", add = "src", fuel = "fuel"},
-	["tubelib:distributor"] = {take = "src", add = "src", fuel = "src"},
-	["gravelsieve:sieve"] = {take = "dst", add = "src", fuel = "src"},
-	["gravelsieve:auto_sieve0"] = {take = "dst", add = "src", fuel = "src"},
-	["gravelsieve:auto_sieve1"] = {take = "dst", add = "src", fuel = "src"},
-	["gravelsieve:auto_sieve2"] = {take = "dst", add = "src", fuel = "src"},
-	["gravelsieve:auto_sieve3"] = {take = "dst", add = "src", fuel = "src"},
-	["tubelib_addons1:autocrafter"] = {take = "dst", add = "src", fuel = "src"},
-	["tubelib_addons1:autocrafter_active"] = {take = "dst", add = "src", fuel = "src"},
-	["tubelib_addons1:chest"] = {take = "main", add = "main", fuel = "main"},
-	["tubelib_addons1:fermenter"] = {take = "dst", add = "src", fuel = "src"},
-	["tubelib_addons1:reformer"] = {take = "dst", add = "src", fuel = "src"},
-	["tubelib_addons1:funnel"] = {take = "main", add = "main", fuel = "main"},
-	["tubelib_addons1:grinder"] = {take = "dst", add = "src", fuel = "src"},
-	["tubelib_addons1:grinder_active"] = {take = "dst", add = "src", fuel = "src"},
-	["tubelib_addons1:harvester_base"] = {take = "main", add = "main", fuel = "fuel"},
-	["tubelib_addons1:quarry"] = {take = "main", add = "main", fuel = "fuel"},
-	["tubelib_addons1:quarry_active"] = {take = "main", add = "main", fuel = "fuel"},
---	[""] = {take = "", add = "", fuel = ""},
---	[""] = {take = "", add = "", fuel = ""},
---	[""] = {take = "", add = "", fuel = ""},
---	[""] = {take = "", add = "", fuel = ""},
---	[""] = {take = "", add = "", fuel = ""},
---	[""] = {take = "", add = "", fuel = ""},
---	[""] = {take = "", add = "", fuel = ""},
---	[""] = {take = "", add = "", fuel = ""},
---	[""] = {take = "", add = "", fuel = ""},
---	[""] = {take = "", add = "", fuel = ""},
+	["tubelib:distributor"] = {take = "src", add = "src"},
+	["tubelib_addons1:harvester_base"] = {take = "main", add = "fuel"},
+	["tubelib_addons1:quarry"] = {take = "main", add = "fuel"},
+	["tubelib_addons1:quarry_active"] = {take = "main", add = "fuel"},
+--	[""] = {take = "", add = ""},
+--	[""] = {take = "", add = ""},
+--	[""] = {take = "", add = ""},
 }
+
+local function inv_list_add(inv, name)
+	if Inventories[name] then
+		return inv:get_list(Inventories[name].add)
+	elseif inv:get_list("src") then
+		return inv:get_list("src")
+	elseif inv:get_list("main") then
+		return inv:get_list("main")
+	end	
+	return nil
+end
+
+local function inv_list_take(inv, name)
+	if Inventories[name] then
+		return inv:get_list(Inventories[name].take)
+	elseif inv:get_list("dst") then
+		return inv:get_list("dst")
+	elseif inv:get_list("main") then
+		return inv:get_list("main")
+	end	
+	return nil
+end
+
 
 -- return the largest stack
 local function peek(src_list)
@@ -264,19 +262,13 @@ function sl_robot.robot_take(base_pos, robot_pos, param2, owner, num, slot)
 		return
 	end
 	local node = minetest.get_node_or_nil(pos1) or read_node_with_vm(pos1)
-	if Inventories[node.name] then
-		local listname = Inventories[node.name].take
-		local src_inv = minetest.get_inventory({type="node", pos=pos1})
-		if src_inv:is_empty(listname) then
-			return
-		end
-		local src_list = src_inv:get_list(listname)
-		local dst_inv = minetest.get_inventory({type="node", pos=base_pos})
-		local dst_list = dst_inv:get_list("main")
-		if take_num_items(src_list, num, dst_list[slot]) then
-			src_inv:set_list(listname, src_list)
-			dst_inv:set_list("main", dst_list)
-		end
+	local src_inv = minetest.get_inventory({type="node", pos=pos1})
+	local src_list = inv_list_take(src_inv, node.name)
+	local dst_inv = minetest.get_inventory({type="node", pos=base_pos})
+	local dst_list = dst_inv:get_list("main")
+	if src_list and take_num_items(src_list, num, dst_list[slot]) then
+		src_inv:set_list(listname, src_list)
+		dst_inv:set_list("main", dst_list)
 	end
 end
 
@@ -286,12 +278,11 @@ function sl_robot.robot_add(base_pos, robot_pos, param2, owner, num, slot)
 		return
 	end
 	local node = minetest.get_node_or_nil(pos1) or read_node_with_vm(pos1)
-	if Inventories[node.name] then
-		local listname = Inventories[node.name].take
-		local dst_inv = minetest.get_inventory({type="node", pos=pos1})
-		local dst_list = dst_inv:get_list(listname)
-		local src_inv = minetest.get_inventory({type="node", pos=base_pos})
-		local src_list = src_inv:get_list("main")
+	local dst_inv = minetest.get_inventory({type="node", pos=pos1})
+	local dst_list = inv_list_add(dst_inv, node.name)
+	local src_inv = minetest.get_inventory({type="node", pos=base_pos})
+	local src_list = src_inv:get_list("main")
+	if dst_list then
 		local taken = src_list[slot]:take_item(num)
 		if dst_inv:room_for_item(listname, taken) then
 			dst_inv:add_item(listname, taken)

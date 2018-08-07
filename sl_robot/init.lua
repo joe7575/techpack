@@ -16,3 +16,4 @@ sl_robot = {}
 dofile(minetest.get_modpath("sl_robot") .. "/robot.lua")
 dofile(minetest.get_modpath("sl_robot") .. "/base.lua")
 dofile(minetest.get_modpath("sl_robot") .. "/commands.lua")
+dofile(minetest.get_modpath("sl_robot") .. "/run_cmnd.lua")

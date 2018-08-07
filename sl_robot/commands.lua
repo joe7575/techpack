@@ -14,6 +14,15 @@
 
 ]]--
 
+-- constrict value to the given range
+local function range(val, min, max)
+	val = tonumber(val)
+	if val < min then return min end
+	if val > max then return max end
+	return val
+end
+
+
 
 sl_robot.register_action("get_ms_time", {
 	cmnd = function(self)
@@ -25,7 +34,7 @@ sl_robot.register_action("get_ms_time", {
 
 sl_robot.register_action("forward", {
 	cmnd = function(self, steps)
-		steps = math.min(tonumber(steps or 1), 100)
+		steps = range(steps, 1, 100)
 		local idx = 1
 		while idx <= steps do
 			local meta = minetest.get_meta(self.meta.pos)
@@ -49,7 +58,7 @@ sl_robot.register_action("forward", {
 
 sl_robot.register_action("backward", {
 	cmnd = function(self, steps)
-		steps = math.min(tonumber(steps or 1), 100)
+		steps = range(steps, 1, 100)
 		local idx = 1
 		while idx <= steps do
 			local meta = minetest.get_meta(self.meta.pos)
@@ -140,8 +149,8 @@ sl_robot.register_action("down", {
 
 sl_robot.register_action("take", {
 	cmnd = function(self, num, slot)
-		num = math.min(tonumber(num or 1), 99)
-		slot = math.min(tonumber(slot or 1), 8)
+		num = range(num, 1, 99)
+		slot = range(slot, 1, 8)
 		local meta = minetest.get_meta(self.meta.pos)
 		local robot_pos = minetest.string_to_pos(meta:get_string("robot_pos"))
 		local robot_param2 = meta:get_int("robot_param2")
@@ -159,8 +168,8 @@ sl_robot.register_action("take", {
 
 sl_robot.register_action("add", {
 	cmnd = function(self, num, slot)
-		num = math.min(tonumber(num or 1), 99)
-		slot = math.min(tonumber(slot or 1), 8)
+		num = range(num, 1, 99)
+		slot = range(slot, 1, 8)
 		local meta = minetest.get_meta(self.meta.pos)
 		local robot_pos = minetest.string_to_pos(meta:get_string("robot_pos"))
 		local robot_param2 = meta:get_int("robot_param2")
@@ -177,7 +186,7 @@ sl_robot.register_action("add", {
 
 sl_robot.register_action("place", {
 	cmnd = function(self, slot, dir)
-		slot = math.min(tonumber(slot or 1), 8)
+		slot = range(slot, 1, 8)
 		local meta = minetest.get_meta(self.meta.pos)
 		local robot_pos = minetest.string_to_pos(meta:get_string("robot_pos"))
 		local robot_param2 = meta:get_int("robot_param2")
@@ -193,7 +202,7 @@ sl_robot.register_action("place", {
 
 sl_robot.register_action("dig", {
 	cmnd = function(self, slot, dir)
-		slot = math.min(tonumber(slot or 1), 8)
+		slot = range(slot, 1, 8)
 		local meta = minetest.get_meta(self.meta.pos)
 		local robot_pos = minetest.string_to_pos(meta:get_string("robot_pos"))
 		local robot_param2 = meta:get_int("robot_param2")
@@ -215,17 +224,3 @@ sl_robot.register_action("stop", {
 	end,
 	help = "tbd"
 })
-
---sl_robot.register_action("run", {
---	cmnd = function(self, sCmd, reverse)
---		slot = math.min(tonumber(slot or 1), 8)
---		local meta = minetest.get_meta(self.meta.pos)
---		local robot_pos = minetest.string_to_pos(meta:get_string("robot_pos"))
---		local robot_param2 = meta:get_int("robot_param2")
-		
---		for cmnd in sCmd:gmatch("%w+") do
---			if cmnd:byte()
---		end
---	end,
---	help = " "
---})
