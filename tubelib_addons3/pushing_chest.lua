@@ -187,7 +187,11 @@ tubelib.register_node("tubelib_addons3:pushing_chest", {}, {
 	on_push_item = function(pos, side, item)
 		local meta = minetest.get_meta(pos)
 		if configured(pos, item) then
-			return tubelib.put_item(meta, "main", item)
+			if tubelib.put_item(meta, "main", item) then
+				return true
+			else
+				return tubelib.put_item(meta, "shift", item)
+			end
 		else
 			return tubelib.put_item(meta, "shift", item)
 		end
