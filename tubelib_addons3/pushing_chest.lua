@@ -45,6 +45,12 @@ local function allow_metadata_inventory_move(pos, from_list, from_index, to_list
 	return count
 end	
 
+local function set_state(meta, state)
+	local number = meta:get_string("number")
+	meta:set_string("infotext", "HighPerf Pushing Chest "..number..": "..state)
+	meta:set_string("state", state)
+end	
+
 local function configured(pos, item)
 	local meta = minetest.get_meta(pos)
 	local inv = meta:get_inventory()
@@ -73,6 +79,8 @@ local function shift_items(pos, elapsed)
 				if tubelib.push_items(pos, "R", stack, player_name) then
 					inv:set_stack("shift", idx, nil)
 					return true
+				else
+					set_state(meta, "blocked")
 				end
 			end
 		end
@@ -129,7 +137,7 @@ minetest.register_node("tubelib_addons3:pushing_chest", {
 		meta:set_string("player_name", placer:get_player_name())
 		meta:set_string("number", number)
 		meta:set_string("formspec", formspec())
-		meta:set_string("infotext", "HighPerf Pushing Chest "..number)
+		set_state(meta, "empty")
 		minetest.get_node_timer(pos):start(2)
 	end,
 
@@ -172,6 +180,19 @@ minetest.register_craft({
 })
 
 tubelib.register_node("tubelib_addons3:pushing_chest", {}, {
+	on_recv_message = function(pos, topic, payload)
+		local node = minetest.get_node(pos)
+		if topic == "state" then
+			local meta = minetest.get_meta(pos)
+			local inv = meta:get_inventory()
+			if inv:is_empty("main") then 
+				return "empty"
+			end
+			return meta:get_string("state")
+		else
+			return "not supported"
+		end
+	end,
 	on_pull_item = function(pos, side)
 		local meta = minetest.get_meta(pos)
 		local item = tubelib.get_item(meta, "main")
@@ -188,8 +209,10 @@ tubelib.register_node("tubelib_addons3:pushing_chest", {}, {
 		local meta = minetest.get_meta(pos)
 		if configured(pos, item) then
 			if tubelib.put_item(meta, "main", item) then
+				set_state(meta, "loaded")
 				return true
 			else
+				set_state(meta, "full")
 				return tubelib.put_item(meta, "shift", item)
 			end
 		else
