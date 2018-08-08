@@ -298,6 +298,20 @@ function tubelib.unpull_items(pos, side, items, player_name)
 	return false
 end
 	
+function tubelib.pull_stack(pos, side, player_name)
+	local npos, facedir = get_neighbor_pos(pos, side)
+	if npos == nil then return end
+	local nside, node = get_node_side(npos, facedir)
+	local name = Name2Name[node.name]
+	if tubelib_NodeDef[name] then
+		if tubelib_NodeDef[name].on_pull_stack then
+			return tubelib_NodeDef[name].on_pull_stack(npos, nside, player_name)
+		elseif tubelib_NodeDef[name].on_pull_item then
+			return tubelib_NodeDef[name].on_pull_item(npos, nside, player_name)
+		end
+	end
+	return nil
+end
 
 -------------------------------------------------------------------
 -- Server side helper functions
@@ -377,6 +391,20 @@ function tubelib.get_num_items(meta, listname, num)
 		end
 	end
 	return nil
+end
+
+function tubelib.get_stack(meta, listname)
+	local inv = meta:get_inventory()
+	local item = tubelib.get_item(meta, listname)
+	if item and inv:contains_item(listname, item) then
+		-- try to remove a complete stack
+		item:set_count(98)
+		local taken = inv:remove_item(listname, item)
+		-- add the already removed
+		taken:set_count(taken:get_count() + 1)
+		return taken
+	end
+	return item 
 end
 
 -- Return "full", "loaded", or "empty" depending

@@ -446,9 +446,9 @@ minetest.register_node("tubelib_addons3:distributor_active", {
 minetest.register_craft({
 	output = "tubelib_addons3:distributor",
 	recipe = {
-		{"", "default:steel_ingot", ""},
-		{"default:gold_ingot", "tubelib:distributor", "default:tin_ingot"},
-		{"", "default:steel_ingot", ""},
+		{"default:tin_ingot", "tubelib:distributor", ""},
+		{"tubelib:distributor", "default:gold_ingot", ""},
+		{"", "", ""},
 	},
 })
 

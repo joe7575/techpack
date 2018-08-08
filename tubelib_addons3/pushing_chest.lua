@@ -100,7 +100,7 @@ minetest.register_node("tubelib_addons3:pushing_chest", {
 	tiles = {
 		-- up, down, right, left, back, front
 		{
-			image = "tubelib_addons3_pushing_chest.png",
+			image = "tubelib_addons3_pusher_active.png",
 			backface_culling = false,
 			animation = {
 				type = "vertical_frames",
@@ -165,10 +165,10 @@ minetest.register_node("tubelib_addons3:pushing_chest", {
 minetest.register_craft({
 	output = "tubelib_addons3:pushing_chest",
 	recipe = {
-		{ "", "default:tin_ingot", ""},
-		{"default:chest", "default:gold_ingot", "tubelib:distributor"},
-		{"", "default:steel_ingot", ""},
-	}
+		{"default:tin_ingot", "tubelib_addons3:pusher", ""},
+		{"tubelib_addons1:chest", "default:gold_ingot", ""},
+		{"", "", ""},
+	},
 })
 
 tubelib.register_node("tubelib_addons3:pushing_chest", {}, {

@@ -33,21 +33,6 @@ local function allow_metadata_inventory_take(pos, listname, index, stack, player
 	return stack:get_count()
 end
 
-local function get_stack(meta, list)
-	local inv = meta:get_inventory()
-	local item = tubelib.get_item(meta, list)
-	if item and inv:contains_item(list, item) then
-		-- try to remove a complete stack
-		item:set_count(98)
-		local taken = inv:remove_item(list, item)
-		-- add the already removed
-		taken:set_count(taken:get_count() + 1)
-		return taken
-	end
-	return item 
-end
-
-
 local function formspec()
 	return "size[12,10]"..
 	default.gui_bg..
@@ -111,16 +96,20 @@ minetest.register_node("tubelib_addons3:chest", {
 minetest.register_craft({
 	output = "tubelib_addons3:chest",
 	recipe = {
-		{"", "default:steel_ingot", ""},
-		{"tubelib_addons1:chest", "default:gold_ingot", "tubelib_addons1:chest"},
-		{"", "default:tin_ingot", ""},
-	}
+		{"default:tin_ingot", "tubelib_addons1:chest", ""},
+		{"tubelib_addons1:chest", "default:gold_ingot", ""},
+		{"", "", ""},
+	},
 })
 
 tubelib.register_node("tubelib_addons3:chest", {}, {
+	on_pull_stack = function(pos, side)
+		local meta = minetest.get_meta(pos)
+		return tubelib.get_stack(meta, "main")
+	end,
 	on_pull_item = function(pos, side)
 		local meta = minetest.get_meta(pos)
-		return get_stack(meta, "main")
+		return tubelib.get_item(meta, "main")
 	end,
 	on_push_item = function(pos, side, item)
 		local meta = minetest.get_meta(pos)

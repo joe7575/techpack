@@ -10,6 +10,7 @@
 
 ]]--
 
-dofile(minetest.get_modpath("tubelib_addons3") .. '/pushing_chest.lua')
 dofile(minetest.get_modpath("tubelib_addons3") .. '/chest.lua')
+dofile(minetest.get_modpath("tubelib_addons3") .. '/pusher.lua')
 dofile(minetest.get_modpath("tubelib_addons3") .. '/distributor.lua')
+dofile(minetest.get_modpath("tubelib_addons3") .. '/pushing_chest.lua')
