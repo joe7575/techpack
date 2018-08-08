@@ -113,7 +113,7 @@ tubelib.register_node("tubelib_addons3:chest", {}, {
 	end,
 	on_push_item = function(pos, side, item)
 		local meta = minetest.get_meta(pos)
-		tubelib.put_item(meta, "main", item)
+		return tubelib.put_item(meta, "main", item)
 	end,
 	on_unpull_item = function(pos, side, item)
 		local meta = minetest.get_meta(pos)
