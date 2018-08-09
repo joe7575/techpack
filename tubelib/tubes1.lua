@@ -174,20 +174,20 @@ end
 function tubelib.delete_meta_data(pos, node)
 	local dir1, dir2 = get_tube_dirs(pos, node)
 	local cnt1 = 0
-	local dir
+	local dir, npos
 	if dir1 then
-		cnt1, pos, dir = tubelib.walk_to_peer(pos, dir1)
+		cnt1, npos, dir = tubelib.walk_to_peer(pos, dir1)
 		-- delete meta on peer tube
 		if cnt1 > 0 then
-			minetest.get_meta(pos):from_table(nil)
+			minetest.get_meta(npos):from_table(nil)
 		end
 	end
 	local cnt2 = 0
 	if dir2 then
-		cnt2, pos, dir = tubelib.walk_to_peer(pos, dir2)
+		cnt2, npos, dir = tubelib.walk_to_peer(pos, dir2)
 		-- delete meta on peer tube
 		if cnt2 > 0 then
-			minetest.get_meta(pos):from_table(nil)
+			minetest.get_meta(npos):from_table(nil)
 		end
 	end
 	return cnt1 + cnt2
