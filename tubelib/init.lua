@@ -19,7 +19,11 @@
 	2017-11-02  v0.08  Data base changed, aging of node positions added
 	2017-11-04  v0.09  functions set_data/get_data added
 	2018-01-27  v0.10  WLAN Chip added, recipes reviced, Pusher state 'blocked' added, 
-                     function send_request changed
+                       function send_request changed
+	2018-08-09  v1.00  Extracted from TechPack to be used as standalone mod
+	                   - new tubing algorithm
+	                   - tubelib.pull_stack()/tubelib.get_stack() added
+	                   - item counter for pusher/distributor added
 	
 ]]--
 
@@ -28,7 +32,7 @@ tubelib = {
 	NodeDef = {},		-- node registration info
 }
 
-tubelib.version = 0.10
+tubelib.version = 1.00
 
 
 --------------------------- conversion to v0.04

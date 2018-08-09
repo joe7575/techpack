@@ -140,7 +140,6 @@ end
 function tubelib.get_node_number(pos)
 	local key = get_key_str(pos)
 	local num = Key2Number[key]
-	print("key", key, "num", num)
 	if num then
 		num = string.format("%.04u", num)
 		if Number2Pos[num] and Number2Pos[num].name then
