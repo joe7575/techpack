@@ -76,11 +76,11 @@ minetest.register_node("tubelib:button", {
 		local meta = minetest.get_meta(pos)
 		local own_num = tubelib.add_node(pos, "tubelib:button")
 		meta:set_string("own_num", own_num)
-		meta:set_string("formspec", "size[5,6]"..
+		meta:set_string("formspec", "size[7.5,6]"..
 		"dropdown[0.2,0;3;type;switch,button 2s,button 4s,button 8s,button 16s;1]".. 
-		"field[0.5,2;3,1;numbers;Insert destination block number(s);]" ..
+		"field[0.5,2;7,1;numbers;Insert destination node number(s);]" ..
 		"checkbox[1,3;public;public;false]"..
-		"button_exit[1,4;2,1;exit;Save]")
+		"button_exit[2,4;3,1;exit;Save]")
 		meta:set_string("placer_name", placer:get_player_name())
 		meta:set_string("public", "false")
 		meta:set_int("cycle_time", 0)

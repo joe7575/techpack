@@ -1,4 +1,4 @@
-# TechPack V1.10
+# TechPack V1.11
 
 TechPack, a Mining, Crafting, &amp; Farming Modpack for Minetest.
 
@@ -39,6 +39,7 @@ TechPack provides:
 - a Funnel node to collect dropped items
 - two Timer nodes for a daytime controlled sending of commands (on/off)
 - two Sequencer nodes for a waiting time controlled sending of commands (on/off)
+- a item Detector node sending commands (on/off)
 - a Repeater node to distribute received commands to connected nodes
 - Gate/Door nodes in different textures to be controlled via on/off commands
 - an Access Lock node with number key field 
