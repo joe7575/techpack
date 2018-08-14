@@ -85,11 +85,15 @@ minetest.register_node("tubelib_addons3:teleporter", {
 	on_destruct = function(pos)
 		-- unpair peer node
 		local meta = minetest.get_meta(pos)
-		local peer_pos = minetest.string_to_pos(meta:get_string("peer"))
-		local peer_meta = minetest.get_meta(peer_pos)
-		peer_meta:set_string("channel", nil)
-		peer_meta:set_string("formspec", sForm)
-		peer_meta:set_string("infotext", "Tubelib Teleporter, unconfigured")
+		local peer = meta:get_string("peer")
+		if peer ~= "" then
+			local peer_pos = minetest.string_to_pos(peer)
+			local peer_meta = minetest.get_meta(peer_pos)
+			peer_meta:set_string("channel", nil)
+			peer_meta:set_string("peer", nil)
+			peer_meta:set_string("formspec", sForm)
+			peer_meta:set_string("infotext", "Tubelib Teleporter, unconfigured")
+		end
 	end,
 	
 	on_rotate = screwdriver.disallow,
