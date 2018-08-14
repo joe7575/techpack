@@ -69,7 +69,6 @@ local function register_battery(ext, percent, nici)
 		
 		after_dig_node = function(pos, oldnode, oldmetadata, digger)
 			local percent = calc_percent(tonumber(oldmetadata.fields.content))
-			print("percent", percent)
 			local stack
 			if percent > 95 then
 				stack = ItemStack("sl_controller:battery")
@@ -82,7 +81,6 @@ local function register_battery(ext, percent, nici)
 			else
 				return
 			end
-			print("percent", percent)
 			local inv = minetest.get_inventory({type="player", name=digger:get_player_name()})
 			inv:add_item("main", stack)
 		end,
