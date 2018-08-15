@@ -41,7 +41,7 @@ local function formspec(state, rules, endless)
 		default.gui_slots..
 		"label[0,0;Number(s)]label[2.1,0;Command]label[6.4,0;Offset/s]"}
 		
-	for idx, rule in ipairs(rules) do
+	for idx, rule in ipairs(rules or {}) do
 		tbl[#tbl+1] = "field[0.2,"..(-0.2+idx)..";2,1;num"..idx..";;"..(rule.num or "").."]"
 		tbl[#tbl+1] = "dropdown[2,"..(-0.4+idx)..";3.9,1;act"..idx..";"..sAction..";"..(rule.act or "").."]"
 		tbl[#tbl+1] = "field[6.2,"..(-0.2+idx)..";2,1;offs"..idx..";;"..(rule.offs or "").."]"
