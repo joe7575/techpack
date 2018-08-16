@@ -247,8 +247,8 @@ topic related payload.
 	if items ~= nil then
 		if tubelib.push_items(pos, "R", items, player_name) == false then
 			tubelib.unpull_items(pos, "L", items, player_name)
-        end
-    end
+		end
+	end
 ```
 
 ### Message communication (from 'button.lua')
