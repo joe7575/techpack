@@ -74,6 +74,7 @@ Tubelib Color Lamps optional: unifieddyes
 SmartLine Display optional: display_lib, font_lib  
 SmartLine Controller optional: mail  
 Gravelsieve optional: moreores, hopper, pipeworks  
+tubelib_addons1 optional: unified_inventory
 
 
 ### History

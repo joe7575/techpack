@@ -8,4 +8,4 @@ A Tutorial to this Mod is available as ![Wiki](https://github.com/joe7575/techpa
 
 ## Dependencies
 tubelib, default  
-
+opt. unified_inventory
