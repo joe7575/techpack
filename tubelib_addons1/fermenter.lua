@@ -277,6 +277,31 @@ minetest.register_craftitem("tubelib_addons1:biogas", {
 	inventory_image = "tubelib_addons1_biogas.png",
 })
 
+if minetest.global_exists("unified_inventory") then
+	unified_inventory.register_craft_type("fermenting", {
+		description = "Fermenter",
+		icon = "tubelib_addons1_fermenter_inventory.png",
+		width = 2,
+		height = 2,
+	})
+	unified_inventory.register_craft_type("reforming", {
+		description = "Reformer",
+		icon = "tubelib_addons1_reformer_inventory.png",
+		width = 2,
+		height = 2,
+	})
+	unified_inventory.register_craft({
+		items = {"group:leaves", "group:leaves"}, 
+		output = "tubelib_addons1:biogas", 
+		type = "fermenting"
+	})
+	unified_inventory.register_craft({
+		items = {"tubelib_addons1:biogas", "tubelib_addons1:biogas", 
+				"tubelib_addons1:biogas", "tubelib_addons1:biogas"}, 
+		output = "tubelib_addons1:biofuel", 
+		type = "reforming"
+	})
+end
 
 minetest.register_craft({
 	output = "tubelib_addons1:fermenter",

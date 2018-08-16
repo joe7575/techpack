@@ -4,3 +4,4 @@ stairs?
 moreores?
 farming?
 ethereal?
+unified_inventory?
