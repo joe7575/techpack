@@ -21,6 +21,9 @@ end
 local function switch_off(pos, node)
 	node.name = "tubelib_addons2:ceilinglamp"
 	minetest.swap_node(pos, node)
+	local pos1 = {x=pos.x-5, y=pos.y-5, z=pos.z-5}
+	local pos2 = {x=pos.x+5, y=pos.y+5, z=pos.z+5}
+	minetest.fix_light(pos1, pos2)
 end	
 
 minetest.register_node("tubelib_addons2:ceilinglamp", {
@@ -108,7 +111,7 @@ minetest.register_node("tubelib_addons2:ceilinglamp_on", {
 	paramtype2 = "wallmounted",
 	groups = {crumbly=0, not_in_creative_inventory=1},
 	is_ground_content = false,
-	sounds = default.node_sound_wood_defaults(),
+	sounds = default.node_sound_glass_defaults(),
 })
 
 minetest.register_craft({
