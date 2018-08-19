@@ -20,34 +20,6 @@ local CYCLE_TIME = 2
 local STOP_STATE = 0
 local STANDBY_STATE = -1
 
--- Get one item-stack from the given ItemList, specified by stack number (1..n).
--- Returns nil if ItemList is empty.
-local function get_this_stack(meta, listname, number)
-	if meta == nil or meta.get_inventory == nil then return nil end
-	local inv = meta:get_inventory()
-	if inv:is_empty(listname) then
-		return nil
-	end
-	
-	local items = inv:get_stack(listname, number)
-	if items:get_count() > 0 then
-		return inv:remove_item(listname, items)
-	end
-	return nil
-end
-
--- Return a key/value table with all items and the corresponding stack numbers
-local function invlist_content_as_kvlist(list)
-	local res = {}
-	for idx,items in ipairs(list) do
-		local name = items:get_name()
-		if name ~= "" then
-			res[name] = idx
-		end
-	end
-	return res
-end
-
 -- Return the total number of list entries
 local function invlist_num_entries(list)
 	local res = 0
@@ -75,10 +47,9 @@ local function invlist_entries_as_list(list)
 	return res
 end
 
-
-local function AddToTbl(kvTbl, new_items)
+local function AddToTbl(kvTbl, new_items, val)
 	for _, l in ipairs(new_items) do 
-		kvTbl[l] = true 
+		kvTbl[l] = val 
 	end
 	return kvTbl
 end
@@ -139,6 +110,7 @@ local function allow_metadata_inventory_move(pos, from_list, from_index, to_list
 	return allow_metadata_inventory_put(pos, to_list, to_index, stack, player)
 end
 
+local Side2Color = {B="red", L="green", F="blue", R="yellow"}
 local SlotColors = {"red", "green", "blue", "yellow"}
 local Num2Ascii = {"B", "L", "F", "R"} -- color to side translation
 local FilterCache = {} -- local cache for filter settings
@@ -148,8 +120,8 @@ local function filter_settings(pos)
 	local meta = minetest.get_meta(pos)
 	local inv = meta:get_inventory()
 	local filter = minetest.deserialize(meta:get_string("filter")) or {false,false,false,false}
-	local kvFilterItemNames = {} -- {<item:name> = true,...}
-	local kvSide2ItemNames = {} -- {"F" = {<item:name>,...},...}
+	local kvFilterItemNames = {}  -- {<item:name> = side,...}
+	local kvOpenPorts = {}  -- {side = true, ...}
 	
 	-- collect all filter settings
 	for idx,slot in ipairs(SlotColors) do
@@ -157,14 +129,16 @@ local function filter_settings(pos)
 		if filter[idx] == true then
 			local list = inv:get_list(slot)
 			local filter = invlist_entries_as_list(list)
-			AddToTbl(kvFilterItemNames, filter)
-			kvSide2ItemNames[side] = filter
+			AddToTbl(kvFilterItemNames, filter, side)
+			if not next(filter) then
+				kvOpenPorts[side] = true
+			end
 		end
 	end
 	
 	FilterCache[hash] = {
 		kvFilterItemNames = kvFilterItemNames, 
-		kvSide2ItemNames = kvSide2ItemNames
+		kvOpenPorts = kvOpenPorts,
 	}
 end
 
@@ -215,14 +189,6 @@ local function keep_running(pos, elapsed)
 	local meta = minetest.get_meta(pos)
 	local running = meta:get_int("running") - 1
 	local player_name = meta:get_string("player_name")
-	--print("running", running)
-	local slot_idx = meta:get_int("slot_idx") or 1
-	meta:set_int("slot_idx", (slot_idx + 1) % NUM_FILTER_SLOTS)
-	local side = Num2Ascii[slot_idx+1]
-	local listname = SlotColors[slot_idx+1]
-	local inv = meta:get_inventory()
-	local list = inv:get_list("src")
-	local kvSrc = invlist_content_as_kvlist(list)
 	local counter = minetest.deserialize(meta:get_string("item_counter")) or 
 			{red=0, green=0, blue=0, yellow=0}
 	
@@ -233,51 +199,59 @@ local function keep_running(pos, elapsed)
 	end
 	
 	-- read data from Cache 
-	-- all filter items as key/value  {<item:name> = true,...}
 	local kvFilterItemNames = FilterCache[hash].kvFilterItemNames
-	-- filter items of one slot as list  {<item:name>,...}
-	local names = FilterCache[hash].kvSide2ItemNames[side]
+	local open_ports = table.copy(FilterCache[hash].kvOpenPorts)
 	
-	if names == nil then
-		-- this slot is empty
+	-- no filter configured?
+	if next(kvFilterItemNames) == nil then
 		return true
 	end
 	
 	local busy = false
-	-- move items from configured filters to the output
-	if next(names) then
-		for _,name in ipairs(names) do
-			if kvSrc[name] then
-				local item = get_this_stack(meta, "src", kvSrc[name])
-				if item then
-					if not tubelib.push_items(pos, side, item, player_name) then
-						tubelib.put_item(meta, "src", item)
+	local unused_outputs = {B=true, L=true, F=true, R=true}
+	
+	local inv = meta:get_inventory()
+	local list = inv:get_list("src")
+	for _,stack in ipairs(list) do
+		if stack:get_count() > 0 then
+			local name = stack:get_name()
+			local second_try = false
+			
+			-- try configured output ports
+			local side = kvFilterItemNames[name]
+			if side then  -- configured
+				if unused_outputs[side] then
+					if tubelib.push_items(pos, side, stack, player_name) then
+						stack:set_count(0)
+						unused_outputs[side] = false
+						local color = Side2Color[side]
+						counter[color] = counter[color] + 1
+						busy = true
 					else
-						counter[listname] = counter[listname] + 1
+						second_try = true  -- port blocked
+					end
+				end
+			else
+				second_try = true  -- not configured
+			end
+			
+			-- try unconfigured open output ports
+			if second_try then
+				side,_ = next(open_ports)
+				if side then
+					if tubelib.push_items(pos, side, stack, player_name) then
+						stack:set_count(0)
+						open_ports[side] = nil
+						local color = Side2Color[side]
+						counter[color] = counter[color] + 1
 						busy = true
 					end
 				end
 			end
 		end
 	end
-	
-	-- move additional items from unconfigured filters to the output
-	if next(names) == nil then
-		for name,_ in pairs(kvSrc) do
-			if kvFilterItemNames[name] == nil then  -- not in the filter so far?
-				local item = get_this_stack(meta, "src", kvSrc[name])
-				if item then
-					if not tubelib.push_items(pos, side, item, player_name) then
-						tubelib.put_item(meta, "src", item)
-					else
-						counter[listname] = counter[listname] + 1
-						busy = true
-					end
-				end
-			end
-		end
-	end
-	
+	inv:set_list("src", list)
+				
 	if busy == true then 
 		if running <= 0 then
 			return start_the_machine(pos)
