@@ -275,7 +275,7 @@ local function on_receive_fields(pos, formname, fields, player)
 	
 	local running = meta:get_int("running") or STOP_STATE
 	if fields.button ~= nil then
-		if running > STOP_STATE or running == FAULT_STATE then
+		if running > STOP_STATE then
 			stop_the_machine(pos)
 		else
 			start_the_machine(pos)

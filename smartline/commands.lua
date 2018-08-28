@@ -584,6 +584,7 @@ local function door_toggle(pos, owner, state)
 		if door then
 			local player = {
 				get_player_name = function() return owner end,
+				is_player = function() return true end,
 			}
 			if state == "open" then
 				door:open(player)

@@ -230,7 +230,7 @@ local function compile(pos, meta, number)
 end
 
 local function battery(pos)
-	local battery_pos = minetest.find_node_near(pos, 1, {"sl_controller:battery"})
+	local battery_pos = minetest.find_node_near(pos, 1, {"sl_controller:battery", "smartline:battery"})
 	if battery_pos then
 		local meta = minetest.get_meta(pos)
 		meta:set_string("battery", minetest.pos_to_string(battery_pos))
@@ -448,13 +448,13 @@ minetest.register_craft({
 local function set_input(pos, number, input, val)
 	if input then 
 		if Cache[number] and Cache[number].inputs then
+			Cache[number].inputs[input] = val
 			-- only one event per second
 			local t = minetest.get_us_time()
 			if not Cache[number].last_event or Cache[number].last_event < t then
-				Cache[number].inputs[input] = val
 				local meta = minetest.get_meta(pos)
-				minetest.after(0.1, call_loop, pos, meta, -1)
-				Cache[number].last_event = t + 1000000 -- add one second
+				minetest.after(0.01, call_loop, pos, meta, -1)
+				Cache[number].last_event = t + 500000 -- add 500 ms
 			end
 		end
 	end

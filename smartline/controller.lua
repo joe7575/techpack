@@ -10,6 +10,7 @@
 
 	controller.lua:
 
+	REPLACED BY SMARTLINE CONTROLLER2 !!!
 ]]--
 
 
@@ -63,7 +64,6 @@ The colors show, if conditions are true or false and
 if actions were already executed or not.
 It has a 'update' button to update the view.
 
-For more information, see: goo.gl/fF5ap6
 ]]
 
 local sOUTPUT = "Press 'help' for edit commands" 
@@ -116,8 +116,6 @@ end
 local function exec_action(data, environ, number)
 	ActnRunTimeHandlers[data.__idx__](data, environ, number)
 end
-
-smartline = {}
 
 --
 -- API functions for condition/action registrations
@@ -845,9 +843,10 @@ minetest.register_node("smartline:controller", {
 	paramtype = "light",
 	sunlight_propagates = true,
 	paramtype2 = "facedir",
-	groups = {choppy=1, cracky=1, crumbly=1},
+	groups = {choppy=1, cracky=1, crumbly=1, not_in_creative_inventory=1},
 	is_ground_content = false,
 	sounds = default.node_sound_stone_defaults(),
+  drop = "smartline:controller2",
 })
 
 

@@ -1,23 +1,22 @@
 --[[
 
-	sl_controller
-	=============
+	ICTA Controller
+	===============
 
 	Copyright (C) 2018 Joachim Stolberg
 
 	LGPLv2.1+
 	See LICENSE.txt for more information
 
-	battery.lua:
-	
-	REPLACED BY SMARTLINE BATTERY !!!
+	battery.lua
 
 ]]--
 
+local BATTERY_CAPACITY = 5000000
+
 local function calc_percent(content)
-	local val = (sl_controller.battery_capacity - 
-			math.min(content or 0, sl_controller.battery_capacity))
-	return 100 - math.floor((val * 100.0 / sl_controller.battery_capacity))
+	local val = (BATTERY_CAPACITY - math.min(content or 0, BATTERY_CAPACITY))
+	return 100 - math.floor((val * 100.0 / BATTERY_CAPACITY))
 end
 
 local function on_timer(pos, elapsed)
@@ -26,7 +25,7 @@ local function on_timer(pos, elapsed)
 	meta:set_string("infotext", "Battery ("..percent.."%)")
 	if percent == 0 then
 		local node = minetest.get_node(pos)
-		node.name = "sl_controller:battery_empty"
+		node.name = "smartline:battery_empty"
 		minetest.swap_node(pos, node)
 		return false
 	end
@@ -34,10 +33,10 @@ local function on_timer(pos, elapsed)
 end
 
 local function register_battery(ext, percent, nici)
-	minetest.register_node("sl_controller:battery"..ext, {
+	minetest.register_node("smartline:battery"..ext, {
 		description = "Battery "..ext,
-		inventory_image = 'sl_controller_battery_inventory.png',
-		wield_image = 'sl_controller_battery_inventory.png',
+		inventory_image = 'smartline_battery_inventory.png',
+		wield_image = 'smartline_battery_inventory.png',
 		tiles = {
 			-- up, down, right, left, back, front
 			"smartline.png",
@@ -45,7 +44,7 @@ local function register_battery(ext, percent, nici)
 			"smartline.png",
 			"smartline.png",
 			"smartline.png",
-			"smartline.png^sl_controller_battery_green.png",
+			"smartline.png^smartline_battery_green.png",
 		},
 
 		drawtype = "nodebox",
@@ -58,9 +57,9 @@ local function register_battery(ext, percent, nici)
 		
 		after_place_node = function(pos, placer)
 			local meta = minetest.get_meta(pos)
-			meta:set_int("content", sl_controller.battery_capacity * percent)
+			meta:set_int("content", BATTERY_CAPACITY * percent)
 			local node = minetest.get_node(pos)
-			node.name = "sl_controller:battery"
+			node.name = "smartline:battery"
 			minetest.swap_node(pos, node)
 			on_timer(pos, 1)
 			minetest.get_node_timer(pos):start(30)
@@ -97,12 +96,12 @@ local function register_battery(ext, percent, nici)
 	})
 end
 
-register_battery("", 1.0, 1)
+register_battery("", 1.0, 0)
 register_battery("75", 0.75, 1)
 register_battery("50", 0.5, 1)
 register_battery("25", 0.25, 1)
 
-minetest.register_node("sl_controller:battery_empty", {
+minetest.register_node("smartline:battery_empty", {
 	description = "Battery",
 	tiles = {
 		-- up, down, right, left, back, front
@@ -111,7 +110,7 @@ minetest.register_node("sl_controller:battery_empty", {
 		"smartline.png",
 		"smartline.png",
 		"smartline.png",
-		"smartline.png^sl_controller_battery_red.png",
+		"smartline.png^smartline_battery_red.png",
 	},
 
 	drawtype = "nodebox",
@@ -137,22 +136,23 @@ minetest.register_node("sl_controller:battery_empty", {
 })
 
 
---if minetest.global_exists("moreores") then
---	minetest.register_craft({
---		output = "sl_controller:battery 2",
---		recipe = {
---			{"", "moreores:silver_ingot", ""},
---			{"", "default:copper_ingot", ""},
---			{"", "moreores:silver_ingot", ""},
---		}
---	})
---else
---	minetest.register_craft({
---		output = "sl_controller:battery 2",
---		recipe = {
---			{"", "default:tin_ingot", ""},
---			{"", "default:copper_ingot", ""},
---			{"", "default:tin_ingot", ""},
---		}
---	})
---end
+if minetest.global_exists("moreores") then
+	minetest.register_craft({
+		output = "smartline:battery 2",
+		recipe = {
+			{"", "moreores:silver_ingot", ""},
+			{"", "default:copper_ingot", ""},
+			{"", "moreores:silver_ingot", ""},
+		}
+	})
+else
+	minetest.register_craft({
+		output = "smartline:battery 2",
+		recipe = {
+			{"", "default:tin_ingot", ""},
+			{"", "default:copper_ingot", ""},
+			{"", "default:tin_ingot", ""},
+		}
+	})
+end
+

@@ -45,3 +45,5 @@ org.eclipse.*
 *.lua.new
 
 test_*.lua
+
+shrink.py

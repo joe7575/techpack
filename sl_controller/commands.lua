@@ -181,6 +181,7 @@ sl_controller.register_action("door", {
 			if door then
 				local player = {
 					get_player_name = function() return self.meta.owner end,
+					is_player = function() return true end,
 				}
 				if text == "open" then
 					door:open(player)

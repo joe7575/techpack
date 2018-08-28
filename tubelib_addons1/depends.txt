@@ -1,5 +1,6 @@
 tubelib
 default
+bucket
 stairs?
 moreores?
 farming?

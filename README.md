@@ -1,4 +1,4 @@
-# TechPack V1.12
+# TechPack V1.13
 
 TechPack, a Mining, Crafting, &amp; Farming Modpack for Minetest.
 
@@ -77,7 +77,7 @@ Gravelsieve optional: moreores, hopper, pipeworks
 tubelib_addons1 optional: unified_inventory
 
 
-### History
+### History 
 - 2018-03-18  V1.00  * Tubelib, tubelib_addons1, tubelib_addons2, smartline, and gravelsieve combined to one modpack.
 - 2018-03-24  V1.01  * Support for Ethereal added
 - 2018-03-27  V1.02  * Timer improvements for unloaded areas
@@ -91,3 +91,6 @@ tubelib_addons1 optional: unified_inventory
 - 2018-08-08  V1.10  * tubelib_addon3 with high performance nodes added
 - 2018-08-13  V1.11  * Detector node added
 - 2018-08-14  V1.12  * Teleporter node added
+- 2018-08-28  V1.13  * Smartline Controller completely revised. Liquid Sampler added
+
+See releasenotes.txt for further information
