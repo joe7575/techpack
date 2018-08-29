@@ -28,6 +28,7 @@ end
 
 -- '#' is used as placeholder for rule numbers and has to be escaped
 function smartline.escape(s)
+	s = tostring(s)
 	return s:gsub("#", '"..string.char(35).."')
 end
 
