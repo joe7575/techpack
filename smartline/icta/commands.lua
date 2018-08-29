@@ -339,7 +339,7 @@ smartline.icta_register_action("display", {
 		},
 	},
 	code = function(data, environ) 
-		local s1 = string.format('local text = string.gsub("%s", "*", env.result[#])', smartline.escape(data.text))
+		local s1 = string.format('local text = string.gsub("%s", "*", tostring(env.result[#]))', smartline.escape(data.text))
 		local s2 = string.format('local payload = {row = %s, str = text}', data.row)
 		local s3 = string.format('tubelib.send_message("%s", "%s", nil, "row", payload)', data.number, environ.owner)
 		return s1.."\n\t"..s2.."\n\t"..s3
