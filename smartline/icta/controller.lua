@@ -419,14 +419,14 @@ minetest.register_node("smartline:controller2", {
 })
 
 
---minetest.register_craft({
---	output = "smartline:controller2",
---	recipe = {
---		{"",         "default:mese_crystal", ""},
---		{"dye:blue", "default:copper_ingot", "tubelib:wlanchip"},
---		{"",         "default:mese_crystal", ""},
---	},
---})
+minetest.register_craft({
+	output = "smartline:controller2",
+	recipe = {
+		{"",         "default:mese_crystal", ""},
+		{"dye:blue", "default:copper_ingot", "tubelib:wlanchip"},
+		{"",         "default:mese_crystal", ""},
+	},
+})
 
 -- write inputs from remote nodes
 local function set_input(pos, own_number, rmt_number, val)
