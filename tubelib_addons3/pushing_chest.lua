@@ -77,7 +77,12 @@ local function shift_items(pos, elapsed)
 			local stack = inv:get_stack("shift", idx)
 			if stack:get_count() > 0 then
 				if tubelib.push_items(pos, "R", stack, player_name) then
-					inv:set_stack("shift", idx, nil)
+					-- The effort is needed here for the case the 
+					-- pusher pushes into its own chest.
+					local num = stack:get_count()
+					stack = inv:get_stack("shift", idx)
+					stack:take_item(num)
+					inv:set_stack("shift", idx, stack)
 					return true
 				else
 					set_state(meta, "blocked")

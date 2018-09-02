@@ -237,6 +237,9 @@ tubelib.register_node("tubelib_addons1:pusher_fast", {"tubelib_addons1:pusher_fa
 		elseif topic == "off" then
 			return switch_off(pos, node)
 		elseif topic == "state" then
+			if node.name == "ignore" then  -- unloaded pusher?
+				return "blocked"
+			end
 			local meta = minetest.get_meta(pos)
 			local running = meta:get_int("running") or tubelib.STATE_STOPPED
 			return tubelib.statestring(running)
