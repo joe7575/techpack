@@ -441,7 +441,7 @@ minetest.register_node("sl_controller:controller", {
 minetest.register_craft({
 	type = "shapeless",
 	output = "sl_controller:controller",
-	recipe = {"smartline:controller"}
+	recipe = {"smartline:controller2"}
 })
 
 -- write inputs from remote nodes
