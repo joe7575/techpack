@@ -119,7 +119,6 @@ end
 
 local function start_the_machine(pos, this, meta)
 	this.running = RUNNING
-	this.idx = 0
 	this.working_pos = working_start_pos(pos)
 	meta:set_string("infotext", "Tubelib Harvester "..this.number..": running")
 	meta:set_string("formspec", formspec(this, tubelib.RUNNING))
@@ -130,6 +129,7 @@ end
 
 local function stop_the_machine(pos, this, meta)
 	this.running = STOP_STATE
+	this.idx = 0
 	meta:set_string("infotext", "Tubelib Harvester "..this.number..": stopped")
 	meta:set_string("formspec", formspec(this, tubelib.STOPPED))
 	minetest.get_node_timer(pos):stop()
@@ -188,7 +188,7 @@ local function remove_or_replace_node(pos, inv, node, order)
 				-- be used.
 				minetest.get_node_timer(pos):start(math.random(order.t1, order.t2))
 			end
-		remove_all_sapling_items(pos)
+			remove_all_sapling_items(pos)
 		end
 	end
 	return true
@@ -312,7 +312,7 @@ local function on_receive_fields(pos, formname, fields, player)
 	end
 	
 	if fields.button ~= nil then
-		if this.running > STOP_STATE or this.running == FAULT_STATE then
+		if this.running > STOP_STATE then
 			stop_the_machine(pos, this, meta)
 		else
 			start_the_machine(pos, this, meta)
@@ -350,7 +350,7 @@ minetest.register_node("tubelib_addons1:harvester_base", {
 			running = STOP_STATE,
 			endless = 0,
 			radius = 6,
-			idx = 1,
+			idx = 0,
 			max = (6+1+6) * (6+1+6)
 		}
 		meta:set_string("this", minetest.serialize(this))
