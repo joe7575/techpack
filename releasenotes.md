@@ -7,6 +7,8 @@
 ### Changes
 - Harvester now continues now at that position, where it last switched to faulty.
 
+### Fixes
+- Recipe bug for SaferLua Controller fixed
 
 ## V1.13.1 Beta (2018-09-02)
 
