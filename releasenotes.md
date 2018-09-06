@@ -4,6 +4,9 @@
 
 ## V1.13.3 Beta (2018-09-06)
 
+### Additions
+- Sieved Gravel to Grinder recipes added
+
 ### Fixes
 - Parameter 'side' bugfix (used e.g. for on_push_item(...)) 
 
