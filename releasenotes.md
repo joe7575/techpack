@@ -2,10 +2,16 @@
 
 
 
+## V1.13.3 Beta (2018-09-06)
+
+### Fixes
+- Parameter 'side' bugfix (used e.g. for on_push_item(...)) 
+
+
 ## V1.13.2 Beta (2018-09-05)
 
 ### Changes
-- Harvester now continues now at that position, where it last switched to faulty.
+- Harvester continues now at that position, where it last switched to faulty.
 
 ### Fixes
 - Recipe bug for SaferLua Controller fixed
@@ -41,6 +47,7 @@
 
 ### Fixes
 - bug in open/close door command for Minetest v0.4.17+ fixed
+
 
 
 
