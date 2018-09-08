@@ -31,20 +31,23 @@ local function add_controls_to_table(tbl, kvDefinition, kvSelect)
 	if kvDefinition[kvSelect.choice] then
 		local lControls = kvDefinition[kvSelect.choice].formspec
 		for idx,elem in ipairs(lControls) do
-			if elem.label and elem.label ~= "" then
-				tbl[#tbl+1] = "label[0,"..offs..";"..elem.label.."]"
+			if elem.type == "label" then
+				tbl[#tbl+1] = "label[0,"..offs..";Description:\n"..elem.label.."]"
+				offs = offs + 0.4
+			elseif elem.label and elem.label ~= "" then
+				tbl[#tbl+1] = "label[0,"..offs..";"..elem.label..":]"
 				offs = offs + 0.4
 			end
 			if elem.type == "numbers" or elem.type == "digits" or elem.type == "letters" 
 					or elem.type == "ascii" then
 				val = kvSelect[elem.name] or elem.default
 				tbl[#tbl+1] = "field[0.3,"..(offs+0.2)..";8,1;"..elem.name..";;"..val.."]"
-				offs = offs + 1
+				offs = offs + 0.9
 			elseif elem.type == "textlist" then
 				local l = elem.choices:split(",")
 				val = index(l, kvSelect[elem.name]) or elem.default
 				tbl[#tbl+1] = "dropdown[0.0,"..(offs)..";8.5,1.4;"..elem.name..";"..elem.choices..";"..val.."]"
-				offs = offs + 1
+				offs = offs + 0.9
 			end
 		end
 	end
@@ -161,9 +164,9 @@ function smartline.submenu_generate_formspec(row, col, title, lKeys, lChoice, kv
 		kvSelect = {choice = "default"}
 	end
 	local tbl = {"size[8.2,9]"..
-		--default.gui_bg..   TODO
-		--default.gui_bg_img..
-		--default.gui_slots..
+		default.gui_bg..
+		default.gui_bg_img..
+		default.gui_slots..
 		"field[0,0;0,0;_row_;;"..row.."]"..
 		"field[0,0;0,0;_col_;;"..col.."]"}
 	
@@ -172,7 +175,7 @@ function smartline.submenu_generate_formspec(row, col, title, lKeys, lChoice, kv
 	tbl[#tbl+1] = "label[0,0;"..title..":]"
 	tbl[#tbl+1] = "dropdown[0,0.5;8.5,1;choice;"..sChoice..";"..idx.."]"
 	tbl = add_controls_to_table(tbl, kvDefinition, kvSelect)
-	tbl[#tbl+1] = "field[0.2,8.7;4,1;_button_;Button text;"..(kvSelect._button_ or "").."]"
+	tbl[#tbl+1] = "field[0.2,8.7;4,1;_button_;Alternative button text;"..(kvSelect._button_ or "").."]"
 	tbl[#tbl+1] = "button[4,8.4;2,1;_cancel_;cancel]"
 	tbl[#tbl+1] = "button[6,8.4;2,1;_exit_;ok]"
 	return table.concat(tbl)

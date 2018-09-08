@@ -44,10 +44,12 @@ local Cache = {}
 local FS_DATA = gen_table(smartline.NUM_RULES, {})
 
 
-local function output(pos, text)
+local function output(pos, text, flush_buffer)
 	local meta = minetest.get_meta(pos)
-	text = meta:get_string("output") .. "\n" .. (text or "")
-	text = text:sub(-500,-1)
+	if not flush_buffer then 
+		text = meta:get_string("output") .. "\n" .. (text or "")
+		text = text:sub(-500,-1)
+	end
 	meta:set_string("output", text)
 	meta:set_string("formspec", smartline.formspecOutput(meta))
 end
@@ -336,6 +338,10 @@ local function on_receive_fields(pos, formname, fields, player)
 	elseif fields.clear then
 		meta:set_string("output", "<press update>")
 		meta:set_string("formspec", smartline.formspecOutput(meta))
+	elseif fields.list then
+		local fs_data = minetest.deserialize(meta:get_string("fs_data")) or FS_DATA
+		local s = smartline.listing(fs_data)
+		output(pos, s, true)
 	elseif fields.tab == "1" then
 		local fs_data = minetest.deserialize(meta:get_string("fs_data")) or FS_DATA
 		meta:set_string("formspec", smartline.formspecRules(meta, fs_data, sOUTPUT))

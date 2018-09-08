@@ -29,36 +29,36 @@ function smartline.balancer_condition(number1, number2, ratio1, ratio2, owner)
 end
 
 smartline.icta_register_condition("ratio", {
-	title = "Balancer ratio",
+	title = "balancer ratio",
 	formspec = {
 		{
 			type = "numbers", 
 			name = "number1", 
-			label = "Pusher1", 
+			label = "Pusher1 number", 
 			default = "",
 		},
 		{
 			type = "digits", 
 			name = "ratio1", 
-			label = "Ratio1", 
+			label = "Ratio1 value", 
 			default = "",
 		},
 		{
 			type = "numbers", 
 			name = "number2", 
-			label = "Pusher2", 
+			label = "Pusher2 number", 
 			default = "",
 		},
 		{
 			type = "digits", 
 			name = "ratio2", 
-			label = "Ratio1", 
+			label = "Ratio1 value", 
 			default = "",
 		},
 		{
 			type = "label", 
 			name = "lbl", 
-			label = "Hint: Pusher1:Pusher2 shall have a\nitem counter ratio of Ratio1:Ratio2.", 
+			label = "Hint: Pusher1:Pusher2 shall have an\nitem counter ratio of Ratio1:Ratio2.", 
 		},
 	},
 	-- Return two chunks of executable Lua code for the controller, according:
@@ -68,17 +68,18 @@ smartline.icta_register_condition("ratio", {
 		return s:format(data.number1, data.number2, data.ratio1, data.ratio2, environ.owner), '~= nil'
 	end,
 	button = function(data, environ) 
-		return "ratio("..(data.ratio1 or "???").."/"..(data.ratio2 or "???")..")" 
+		return "ratio("..smartline.fmt_number(data.number1)..","..
+			smartline.fmt_number(data.number2)..","..data.ratio1..":"..data.ratio2..')'
 	end,
 })
 
 smartline.icta_register_action("balancer", {
-	title = "Balancer Control",
+	title = "balancer action",
 	formspec = {
 		{
 			type = "label", 
 			name = "lbl", 
-			label = "Hint: Stop one Pusher and start\nit again after 'after' seconds.", 
+			label = "Hint: Action part of the balancer rule.", 
 		},
 	},
 	button = function(data, environ) 
@@ -91,28 +92,29 @@ smartline.icta_register_action("balancer", {
 })
 
 smartline.icta_register_action("clearcounter", {
-	title = "Balancer clear counter",
+	title = "balancer clear counter",
 	formspec = {
 		{
 			type = "numbers", 
 			name = "number1", 
-			label = "Pusher1", 
+			label = "Pusher1 number", 
 			default = "",
 		},
 		{
 			type = "numbers", 
 			name = "number2", 
-			label = "Pusher2", 
+			label = "Pusher2 number", 
 			default = "",
 		},
 		{
 			type = "label", 
 			name = "lbl", 
-			label = "Hint: Clear both Pusher counters.", 
+			label = "Hint: Clear both Pusher counters\ne.g. after controller start.", 
 		},
 	},
 	button = function(data, environ) 
-		return 'balancer()'
+		return 'clear cnt('..smartline.fmt_number(data.number1)..","..
+			smartline.fmt_number(data.number2)..')'
 	end,
 	code = function(data, environ)
 		local s = [[tubelib.send_message("%s", "%s", nil, "clear_counter", nil)

@@ -90,11 +90,11 @@ sl.icta_register_action("print", {
 		{
 			type = "label", 
 			name = "lbl", 
-			label = "Hint: Use a '*' character as reference to any\ncondition state", 
+			label = "Use a '*' character as reference to any\ncondition state", 
 		},
 	},
 	button = function(data, environ) 
-		return 'print(...)'
+		return 'print("'..data.text:sub(1,12)..'")'
 	end,
 	code = function(data, environ)
 		local s1 = 'local text = string.gsub("'..(smartline.escape(data.text))..'", "*", env.result[#])'

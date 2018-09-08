@@ -38,12 +38,12 @@ Actions are:
 The controller executes all rules cyclically.
 The cycle time for each rule is configurable
 (1..1000 sec). 
-0 means, the rule will only be called, when
+0 means, the rule will only be called, if
 the controller received a command from
-another node, like buttons.
+another node, such as buttons.
 
-Actions can be deleyed. Therefore, the
-after value can be set (0..1000 sec).
+Actions can be delayed. Therefore, the
+'after' value can be set (0..1000 sec).
 
 Edit command examples:
  - 'x 1 8'  exchange rows 1 with row 8
@@ -97,17 +97,27 @@ local function button(data)
 	end
 end
 
+function smartline.listing(fs_data)
+	local tbl = {}
+		
+	for idx = 1,smartline.NUM_RULES do
+		tbl[#tbl+1] = idx.." ("..fs_data[idx].cycle.."s): IF "..button(fs_data[idx].cond)
+		tbl[#tbl+1] = " THEN "..button(fs_data[idx].actn).." after "..fs_data[idx].after.."s\n"
+	end
+	return table.concat(tbl)
+end
+
 local function formspec_rules(fs_data)
 	local tbl = {"field[0,0;0,0;_type_;;main]"..
-		"label[0.8,0;Cycle/s:]label[2.8,0;IF  cond:]label[7,0;THEN  action:]label[11.4,0;after/s:]"}
+		"label[0.4,0;Cycle/s:]label[2.5,0;IF  cond:]label[7,0;THEN  action:]label[11.5,0;after/s:]"}
 		
 	for idx = 1,smartline.NUM_RULES do
 		local ypos = idx * 0.75 - 0.4
 		tbl[#tbl+1] = "label[0,"..(0.2+ypos)..";"..idx.."]"
-		tbl[#tbl+1] = "field[0.9,"..(0.3+ypos)..";1.8,1;cycle"..idx..";;"..(fs_data[idx].cycle or "").."]"
-		tbl[#tbl+1] = "button[2.5,"..ypos..";4.3,1;cond"..idx..";"..button(fs_data[idx].cond).."]"
-		tbl[#tbl+1] = "button[6.8,"..ypos..";4.3,1;actn"..idx..";"..button(fs_data[idx].actn).."]"
-		tbl[#tbl+1] = "field[11.4,"..(0.3+ypos)..";1.8,1;after"..idx..";;"..(fs_data[idx].after or "").."]"
+		tbl[#tbl+1] = "field[0.7,"..(0.3+ypos)..";1.4,1;cycle"..idx..";;"..(fs_data[idx].cycle or "").."]"
+		tbl[#tbl+1] = "button[1.9,"..ypos..";4.9,1;cond"..idx..";"..minetest.formspec_escape(button(fs_data[idx].cond)).."]"
+		tbl[#tbl+1] = "button[6.8,"..ypos..";4.9,1;actn"..idx..";"..minetest.formspec_escape(button(fs_data[idx].actn)).."]"
+		tbl[#tbl+1] = "field[12,"..(0.3+ypos)..";1.4,1;after"..idx..";;"..(fs_data[idx].after or "").."]"
 	end
 	return table.concat(tbl)
 end
@@ -198,6 +208,7 @@ function smartline.formspecOutput(meta)
 	default.gui_slots..
 	"tabheader[0,0;tab;rules,outp,notes,help;2;;true]"..
 	"textarea[0.3,0.2;13,8.3;output;Output:;"..output.."]"..
+	"button[5.5,7.5;1.8,1;list;List]"..
 	"button[7.4,7.5;1.8,1;clear;Clear]"..
 	"button[9.3,7.5;1.8,1;update;Update]"..
 	"button[11.2,7.5;1.8,1;"..cmnd.."]"
@@ -229,132 +240,3 @@ function smartline.formspecHelp(offs)
 	--"label[0.2,0;test]"..
 	"scrollbar[12,1;0.5,7;vertical;sb_help;"..offs.."]"
 end
-
-
-
---local function my_on_receive_fields(pos, formname, fields, player)
---	local meta = minetest.get_meta(pos)
---	local owner = meta:get_string("owner")
---	local state = meta:get_int("state")
---	if not player or not player:is_player() then
---		return
---	end
---	local fs_data = minetest.deserialize(meta:get_string("fs_data")) or {}
---	local output = ""
---	local readonly = player:get_player_name() ~= owner
-	
---	print("fields", dump(fields))
-	
---	-- FIRST: test if command entered?
---	if fields.ok then
---		if not readonly then	
---			output = edit_command(fs_data, fields.cmnd)
---			smartline.stop_controller(pos, fs_data)
---			meta:set_string("formspec", formspec_main(tubelib.STOPPED, fs_data, output))
---			meta:set_string("fs_data", minetest.serialize(fs_data))
---		end
---	-- SECOND: eval none edit events (events based in __type__)?
---	elseif fields.help then
---		meta:set_string("formspec", formspec_help(1))
-----	elseif fields.state then
-----		meta:set_string("formspec", formspec_state(meta, fs_data))
-----	elseif fields.update then
-----		meta:set_string("formspec", formspec_state(meta, fs_data))
---	elseif fields._cancel_ then
---		fs_data = minetest.deserialize(meta:get_string("fs_old"))
---		meta:set_string("formspec", formspec_main(state, fs_data, sOUTPUT))
---	elseif fields.close then
---		meta:set_string("formspec", formspec_main(state, fs_data, sOUTPUT))
-----	elseif fields.sb_help then
-----		local evt = minetest.explode_scrollbar_event(fields.sb_help)
-----		if evt.type == "CHG" then
-----			meta:set_string("formspec", formspec_help(evt.value))
-----		end
-----	elseif fields.button then
-----		if not readonly then
-----			local number = meta:get_string("number")
-----			local state = meta:get_int("state")
-----			if state == tubelib.RUNNING then
-----				smartline.stop_controller(pos, fs_data)
-----				meta:set_string("formspec", formspec_main(tubelib.STOPPED, fs_data, sOUTPUT))
-----			else
-----				formspec2runtime_rule(number, owner, fs_data)
-----				start_controller(pos, number, fs_data)
-----				meta:set_string("formspec", formspec_main(tubelib.RUNNING, fs_data, sOUTPUT))
-----			end
-----		end
-----	-- THIRD: evaluate edit events from sub-menus
---	elseif fields._col_ == "cond" then
---		local row = tonumber(fields._row_ or 1)
---		fs_data["cond"..row] = smartline.cond_eval_input(fs_data["cond"..row], fields)
---		meta:set_string("formspec", smartline.cond_formspec(row, fs_data["cond"..row]))
---		meta:set_string("fs_data", minetest.serialize(fs_data))
---	elseif fields._type_ == "main" then
---		fs_data = eval_formspec_main(meta, fs_data, fields, readonly)
---		meta:set_string("fs_data", minetest.serialize(fs_data))
-----	elseif fields._type_ == "label" then
-----		fs_data = eval_formspec_label(meta, fs_data, fields, readonly)
-----		meta:set_string("fs_data", minetest.serialize(fs_data))
-----	elseif fields._type_ == "cond" then
-----		fs_data = eval_formspec_cond(meta, fs_data, fields, readonly)
-----		meta:set_string("fs_data", minetest.serialize(fs_data))
-----	elseif fields._type_ == "oprnd" then
-----		fs_data = eval_formspec_oprnd(meta, fs_data, fields, readonly)
-----		meta:set_string("fs_data", minetest.serialize(fs_data))
-----	elseif fields._type_ == "actn" then
-----		fs_data = eval_formspec_actn(meta, fs_data, fields, readonly)
-----		meta:set_string("fs_data", minetest.serialize(fs_data))
-----	elseif fields._type_ == "help" then
-----		meta:set_string("formspec", formspec_main(state, fs_data, sOUTPUT))
-----	elseif fields._type_ == "state" then
-----		meta:set_string("formspec", formspec_main(state, fs_data, sOUTPUT))
---	end
---	-- FOURTH: back to main menu
---	if fields._exit_ then
---		meta:set_string("formspec", formspec_main(state, fs_data, sOUTPUT))
---	end
---end
-
---function smartline.on_receive_fields(pos, formname, fields, player)
---	local meta = minetest.get_meta(pos)
---	local owner = meta:get_string("owner")
---	if not player or not player:is_player() then
---		return
---	end
---	local readonly = player:get_player_name() ~= owner
-	
---	print("fields", dump(fields))
-	
---	if fields.cancel == nil then
---		if fields.rules then
---			--meta:set_string("rules", fields.rules)
---			meta:set_string("formspec", smartline.formspecRules(meta))
---		elseif fields.notes then
---			meta:set_string("notes", fields.notes)
---			meta:set_string("formspec", formspecNotes(meta))
---		end	
---	end
-	
---	if fields.update then
---		meta:set_string("formspec", formspecOutput(meta))
---	elseif fields.clear then
---		meta:set_string("output", "<press update>")
---		meta:set_string("formspec", formspecOutput(meta))
---	elseif fields.tab == "1" then
---		meta:set_string("formspec", smartline.formspecRules(meta))
---	elseif fields.tab == "2" then
---		meta:set_string("formspec", formspecOutput(meta))
---	elseif fields.tab == "3" then
---		meta:set_string("formspec", formspecNotes(meta))
---	elseif fields.tab == "4" then
---		meta:set_string("formspec", formspecHelp(1))
---	elseif fields.start == "Start" then
---		start_controller(pos)
---		minetest.log("action", player:get_player_name() ..
---			" starts the sl_controller at ".. minetest.pos_to_string(pos))
---	elseif fields.stop == "Stop" then
---		stop_controller(pos)
---	end
---end
-
-

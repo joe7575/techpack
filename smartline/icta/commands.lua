@@ -26,6 +26,14 @@ function sl.operand(s)
 	end
 end
 
+function sl.fmt_number(num)
+	local mtch = num:match('^(%d+).*')
+	if mtch and num ~= mtch then
+		return mtch.."..."
+	end
+	return num
+end
+
 -- '#' is used as placeholder for rule numbers and has to be escaped
 function smartline.escape(s)
 	s = tostring(s)
@@ -33,13 +41,13 @@ function smartline.escape(s)
 end
 
 
-smartline.icta_register_condition("once", {
-	title = "once",
+smartline.icta_register_condition("initial", {
+	title = "initial",
 	formspec = {
 		{
 			type = "label", 
 			name = "lbl", 
-			label = "Hint: Once after start.", 
+			label = "Condition is true only after\ncontroller start.", 
 		},
 	},
 	-- Return two chunks of executable Lua code for the controller, according:
@@ -47,7 +55,7 @@ smartline.icta_register_condition("once", {
 	code = function(data, environ) 
 		return 'env.ticks', '== 1'
 	end,
-	button = function(data, environ) return "once" end,
+	button = function(data, environ) return "Initial after start" end,
 })
 
 smartline.icta_register_condition("true", {
@@ -56,7 +64,7 @@ smartline.icta_register_condition("true", {
 		{
 			type = "label", 
 			name = "lbl", 
-			label = "Hint: Condition is always true.", 
+			label = "Condition is always true.", 
 		},
 	},
 	code = function(data, environ) 
@@ -66,25 +74,26 @@ smartline.icta_register_condition("true", {
 })
 
 smartline.icta_register_condition("condition", {
-	title = "Condition",
+	title = "condition",
 	formspec = {
 		{
 			type = "textlist", 
 			name = "condition",
-			label = "the action is executed, if",      
-			choices = "condition 1,condition 2,condition 3,condition 4,condition 5,condition 6,condition 7,condition 8", 
+			label = "condition row number",      
+			choices = "1,2,3,4,5,6,7,8", 
 			default = "",
 		},
 		{
 			type = "textlist",
 			name = "operand",
+			label = "condition",      
 			choices = "was true, was not true",
 			default = "was true",
 		},
 		{
 			type = "label", 
 			name = "lbl", 
-			label = "Hint: Execute two or several actions\nbased on one condition.", 
+			label = "Used to execute two or several\nactions based on one condition.", 
 		},
 	},
 	code = function(data, environ) 
@@ -95,7 +104,7 @@ smartline.icta_register_condition("condition", {
 		end
 		return "env.condition["..idx.."]", expected_result
 	end,
-	button = function(data, environ) return data.condition or "???" end,
+	button = function(data, environ) return "cond("..data.condition:sub(-1,-1)..","..data.operand..")" end,
 })
 
 smartline.icta_register_condition("input", {
@@ -104,7 +113,7 @@ smartline.icta_register_condition("input", {
 		{
 			type = "digits",
 			name = "number",
-			label = "input from node with number",
+			label = "node number",
 			default = "",
 		},
 		{
@@ -122,11 +131,11 @@ smartline.icta_register_condition("input", {
 		{
 			type = "label", 
 			name = "lbl", 
-			label = "Hint: An input is only available,\nif a nodes sends on/of\ncommands to the controller.", 
+			label = "An input is only available,\nif a nodes sends on/off\ncommands to the controller.", 
 		},
 	},
 	button = function(data, environ)  -- default button label
-		return 'input('..(data.number or "???")..')'
+		return 'inp('..sl.fmt_number(data.number)..','..data.operand.." "..data.value..')'
 	end,
 	code = function(data, environ)  
 		return 'env.input["'..data.number..'"]',
@@ -140,7 +149,7 @@ smartline.icta_register_condition("state", {
 		{
 			type = "digits",
 			name = "number",
-			label = "state from node with number",
+			label = "node number",
 			default = "",
 		},
 		{
@@ -160,11 +169,12 @@ smartline.icta_register_condition("state", {
 		{
 			type = "label", 
 			name = "lbl", 
-			label = "Hint: Read the state from another node.\nWorks for Pusher, Harvester, Quarry,\nand others.", 
+			label = "Read the state from a node.\nWorks for Pusher, Harvester, Quarry,\n"..
+				"and other similar nodes.", 
 		},
 	},
 	button = function(data, environ)  -- default button label
-		return 'state('..(data.number or "???")..')'
+		return 'sts('..sl.fmt_number(data.number)..","..data.operand..' '..data.value..')'
 	end,
 	code = function(data, environ) 
 		return 'tubelib.send_request("'..data.number..'", "state", "")',
@@ -178,7 +188,7 @@ smartline.icta_register_condition("fuel", {
 		{
 			type = "digits",
 			name = "number",
-			label = "fuel state from node with number",
+			label = "node number",
 			default = "",
 		},
 		{
@@ -198,11 +208,12 @@ smartline.icta_register_condition("fuel", {
 		{
 			type = "label", 
 			name = "lbl", 
-			label = "Hint: Read the fuel state from another node.\nWorks for Harvester and Quarry", 
+			label = "Read the fuel state from a node.\nWorks for Harvester, Quarry,\n"..
+				"and other fuel consuming nodes.", 
 		},
 	},
 	button = function(data, environ) 
-		return 'fuel('..(data.number or "???")..')'
+		return 'fuel('..sl.fmt_number(data.number)..","..data.operand..' '..data.value..')'
 	end,
 	code = function(data, environ) 
 		return 'tubelib.send_request("'..data.number..'", "fuel", "")',
@@ -216,31 +227,29 @@ smartline.icta_register_condition("signaltower", {
 		{
 			type = "digits",
 			name = "number",
-			label = "state from Signal Tower with number",
+			label = "Signal Tower number",
 			default = "",
 		},
 		{
 			type = "textlist",
 			name = "operand",
-			label = "",
 			choices = "is,is not",
 			default = "is",
 		},
 		{
 			type = "textlist",
 			name = "value",
-			label = "",
 			choices = "off,green,amber,red",
 			default = "off",
 		},
 		{
 			type = "label", 
 			name = "lbl", 
-			label = "Hint: Read the state from a Signal Tower.", 
+			label = "Read the color state\nfrom a Signal Tower.", 
 		},
 	},
 	button = function(data, environ)  -- default button label
-		return 'tower('..(data.number or "???")..')'
+		return 'tower('..sl.fmt_number(data.number)..","..data.operand..' '..data.value..')'
 	end,
 	code = function(data, environ) 
 		return 'tubelib.send_request("'..data.number..'", "state", "")',
@@ -254,24 +263,24 @@ smartline.icta_register_action("signaltower", {
 		{
 			type = "numbers", 
 			name = "number", 
-			label = "set Signal Tower with number", 
+			label = "Signal Tower number", 
 			default = "",
 		},
 		{
 			type = "textlist", 
 			name = "value",
-			label = "to color",      
+			label = "lamp color",      
 			choices = "off,green,amber,red", 
 			default = "red",
 		},
 		{
 			type = "label", 
 			name = "lbl", 
-			label = "Hint: Turn on a lamp from a Signal Tower.", 
+			label = "Turn on/off a Signal Tower lamp.", 
 		},
 	},
 	button = function(data, environ) 
-		return 'tower('..(data.value or "???")..')'
+		return 'tower('..sl.fmt_number(data.number)..","..data.value..')'
 	end,
 	code = function(data, environ)
 		local s = 'tubelib.send_message("%s", "%s", nil, "%s", nil)'
@@ -280,29 +289,29 @@ smartline.icta_register_action("signaltower", {
 })
 
 smartline.icta_register_action("switch", {
-	title = "node on/off command",
+	title = "turn node on/off",
 	formspec = {
 		{
 			type = "numbers", 
 			name = "number", 
-			label = "set node with number", 
+			label = "node number(s)", 
 			default = "",
 		},
 		{
 			type = "textlist", 
 			name = "value",
-			label = "to state",      
+			label = "state",      
 			choices = "on,off", 
 			default = "on",
 		},
 		{
 			type = "label", 
 			name = "lbl", 
-			label = "Hint: Used for pushers, lamps, machines, gates,...", 
+			label = "Used for pushers, lamps, machines, gates,...", 
 		},
 	},
 	button = function(data, environ) 
-		return 'turn('..(data.value or "???")..')'
+		return 'turn('..sl.fmt_number(data.number)..","..data.value..')'
 	end,
 	code = function(data, environ)
 		local s = 'tubelib.send_message("%s", "%s", nil, "%s", nil)'
@@ -316,7 +325,7 @@ smartline.icta_register_action("display", {
 		{
 			type = "numbers", 
 			name = "number", 
-			label = "output to Display with number", 
+			label = "Display number", 
 			default = "",
 		},
 		{
@@ -329,13 +338,13 @@ smartline.icta_register_action("display", {
 		{
 			type = "ascii", 
 			name = "text",
-			label = "the following text",      
+			label = "text",      
 			default = "",
 		},
 		{
 			type = "label", 
 			name = "lbl", 
-			label = "Hint: Use a '*' character as reference to any\ncondition state", 
+			label = "Use a '*' character as reference\nto any condition result", 
 		},
 	},
 	code = function(data, environ) 
@@ -345,7 +354,7 @@ smartline.icta_register_action("display", {
 		return s1.."\n\t"..s2.."\n\t"..s3
 	end,
 	button = function(data, environ) 
-		return "display("..(data.number or "???")..")"
+		return "lcd("..sl.fmt_number(data.number)..","..data.row..',"'..data.text..'")'
 	end,
 })
 
@@ -363,7 +372,7 @@ smartline.icta_register_action("cleardisplay", {
 		return 'tubelib.send_message("'..data.number..'", "'..environ.owner..'", nil, "clear", nil)'
 	end,
 	button = function(data, environ) 
-		return "clear("..(data.number or "???")..")"
+		return "clear lcd("..sl.fmt_number(data.number)..")"
 	end,
 })
 
@@ -373,20 +382,20 @@ smartline.icta_register_action("chat", {
 		{
 			type = "ascii", 
 			name = "text",
-			label = "send the message",      
+			label = "message",      
 			default = "",
 		},
 		{
 			type = "label", 
 			name = "lbl", 
-			label = "Hint: The chat message is send to the\nController owner, only.", 
+			label = "The chat message is send to the\nController owner, only.", 
 		},
 	},
 	code = function(data, environ) 
 		return 'minetest.chat_send_player("'..environ.owner..'", "[SmartLine Controller] '..data.text..'")'
 	end,
 	button = function(data, environ) 
-		return "chat(...)"
+		return 'chat("'..data.text:sub(1,12)..'")'
 	end,
 })
 
@@ -420,56 +429,52 @@ smartline.icta_register_action("door", {
 		{
 			type = "textlist", 
 			name = "door_state",
-			label = "set",      
+			label = "door state",      
 			choices = "open,close", 
 			default = "open",
 		},
 		{
 			type = "label", 
-			name = "lbl1", 
-			label = "For standard doors like the Steel Doors.", 
-		},
-		{
-			type = "label", 
-			name = "lbl2", 
-			label = "Hint: Use the Tubelib Programmer to\ndetermine the door position.", 
+			name = "lbl", 
+			label = "For standard doors like the Steel Doors.\n"..
+				"Use the Tubelib Programmer to\neasily determine a door position.", 
 		},
 	},
 	code = function(data, environ) 
 		return 'smartline.icta_door_toggle("'..data.pos..'", "'..environ.owner..'", "'..data.door_state..'")'
 	end,
 	button = function(data, environ) 
-		return "door("..(data.door_state or "???")..")"
+		return 'door("'..data.pos..'",'..data.door_state..")"
 	end,
 })
 
 function smartline.icta_player_detect(number, name)
 	local state = tubelib.send_request(number, "name", nil)
-	if (name == "*" and state ~= "") or state == name then
+	if (name == "*" and state ~= "") or string.find(name, state) then
 		return state
 	end
 	return nil
 end
 
 smartline.icta_register_condition("playerdetector", {
-	title = "Player Detector: name request",
+	title = "Player Detector name request",
 	formspec = {
 		{
 			type = "digits",
 			name = "number",
-			label = "name from player detector with number",
+			label = "Player Detector number",
 			default = "",
 		},
 		{
 			type = "ascii",
 			name = "name",
-			label = "is",
+			label = "player name(s) or * for all",
 			default = "",
 		},
 		{
 			type = "label", 
 			name = "lbl", 
-			label = "Hint: Read and check the name\nfrom a Player Detector.\n Use a '*' character for all player names.", 
+			label = "Read and check the name\nfrom a Player Detector.\n Use a '*' character for all player names.", 
 		},
 	},
 	
@@ -477,6 +482,6 @@ smartline.icta_register_condition("playerdetector", {
 		return 'smartline.icta_player_detect("'..data.number..'", "'..data.name..'")', "~= nil"
 	end,
 	button = function(data, environ) 
-		return "detector()"
+		return "detector("..sl.fmt_number(data.number)..","..data.name:sub(1,8)..")"
 	end,
 })
