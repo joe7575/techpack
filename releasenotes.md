@@ -2,6 +2,12 @@
 
 
 
+## V1.13.4 Beta (2018-09-08)
+
+### Changes
+- SmartLine Controller got some form/submenu updates
+
+
 ## V1.13.3 Beta (2018-09-06)
 
 ### Additions
