@@ -1,11 +1,25 @@
 # Release Notes of the ModPack TechPack [techpack]
 
 
+## V1.14 Beta (2018-09-10)
+
+### Additions
+- The Tubelib chests now provide the states ("empty"/"loaded")
+- The SmartLine Controller got the command "chest state request" for Tubelib chests
+- Minetest fuel recipe for Bio Fuel added
+
+### Changes
+- The Distributor is now able to push up to 20 items per slot and phase (instead of 6).
+- The Distributor now uses an unconfigured port for blocked/rejected items.
+- The Tubelib Protected Chest got a new texture.
+- The Harvester is now HighPerf Pusher compatible.
+
 
 ## V1.13.4 Beta (2018-09-08)
 
 ### Changes
 - SmartLine Controller got some form/submenu updates
+
 
 
 ## V1.13.3 Beta (2018-09-06)
@@ -17,6 +31,7 @@
 - Parameter 'side' bugfix (used e.g. for on_push_item(...)) 
 
 
+
 ## V1.13.2 Beta (2018-09-05)
 
 ### Changes
@@ -24,6 +39,8 @@
 
 ### Fixes
 - Recipe bug for SaferLua Controller fixed
+
+
 
 ## V1.13.1 Beta (2018-09-02)
 
@@ -34,6 +51,7 @@
 ### Fixes
 - Bug in the "HighPerf Pushing Chest" fixed. For the case the node pushes items
   in its own chest, the items went lost.
+
 
 
 ## V1.13 Beta (2018-08-28)

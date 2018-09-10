@@ -92,5 +92,7 @@ tubelib_addons1 optional: unified_inventory
 - 2018-08-13  V1.11  * Detector node added
 - 2018-08-14  V1.12  * Teleporter node added
 - 2018-08-28  V1.13  * Smartline Controller completely revised. Liquid Sampler added
+- 2018-09-10  V1.14  * Distributor performance improved, chest commands added
+
 
 See ![releasenotes.txt](https://github.com/joe7575/techpack/blob/master/releasenotes.md) for further information

@@ -45,12 +45,12 @@ minetest.register_node("tubelib_addons1:chest", {
 	description = "Tubelib Protected Chest",
 	tiles = {
 		-- up, down, right, left, back, front
-		"default_chest_top.png",
-		"default_chest_top.png",
-		"default_chest_side.png",
-		"default_chest_side.png",
-		"default_chest_side.png",
-		"default_chest_lock.png",
+		"default_chest_top.png^tubelib_addons1_frame.png",
+		"default_chest_top.png^tubelib_addons1_frame.png",
+		"default_chest_side.png^tubelib_addons1_frame.png",
+		"default_chest_side.png^tubelib_addons1_frame.png",
+		"default_chest_side.png^tubelib_addons1_frame.png",
+		"default_chest_lock.png^tubelib_addons1_frame.png",
 	},
 
 	on_construct = function(pos)
@@ -61,8 +61,10 @@ minetest.register_node("tubelib_addons1:chest", {
 	
 	after_place_node = function(pos, placer)
 		local meta = minetest.get_meta(pos)
+		local number = tubelib.add_node(pos, "tubelib_addons1:chest")
+		meta:set_string("number", number)
 		meta:set_string("formspec", formspec())
-		meta:set_string("infotext", "Tubelib Protected Chest")
+		meta:set_string("infotext", "Tubelib Protected Chest "..number)
 	end,
 
 	can_dig = function(pos,player)
@@ -76,6 +78,7 @@ minetest.register_node("tubelib_addons1:chest", {
 	
 	on_dig = function(pos, node, puncher, pointed_thing)
 		minetest.node_dig(pos, node, puncher, pointed_thing)
+		tubelib.remove_node(pos)
 	end,
 
 	allow_metadata_inventory_put = allow_metadata_inventory_put,
@@ -111,6 +114,11 @@ tubelib.register_node("tubelib_addons1:chest", {}, {
 	end,
 	
 	on_recv_message = function(pos, topic, payload)
-		return "unsupported"
+		if topic == "state" then
+			local meta = minetest.get_meta(pos)
+			return tubelib.fuelstate(meta, "main")
+		else
+			return "unsupported"
+		end
 	end,
 })	

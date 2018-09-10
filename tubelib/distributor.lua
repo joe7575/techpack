@@ -19,6 +19,7 @@
 	   response is "running", "stopped", "standby", or "not supported"
 ]]--
 
+local MAX_NUM_PER_CYC = 20 -- maximum number of items, which can be pushed per slot
 local NUM_FILTER_ELEM = 6
 local NUM_FILTER_SLOTS = 4
 local TICKS_TO_SLEEP = 5
@@ -50,16 +51,12 @@ local function invlist_num_entries(list)
 	return res
 end
 
--- Return a flat table with all items
+-- Return a gapless table with all items
 local function invlist_entries_as_list(list)
 	local res = {}
 	for _,items in ipairs(list) do
-		local name = items:get_name()
-		local count = items:get_count()
-		if name ~= "" then
-			for i = 1,count do
-				res[#res+1] = name
-			end
+		if items:get_count() > 0 then
+			res[#res+1] = {items:get_name(), items:get_count()}
 		end
 	end
 	return res
@@ -68,14 +65,27 @@ end
 
 local function AddToTbl(kvTbl, new_items)
 	for _, l in ipairs(new_items) do 
-		kvTbl[l] = true 
+		kvTbl[l[1]] = true 
 	end
 	return kvTbl
 end
 
-
+-- return the number of items to be pushed to an unconfigured slot
+local function num_items(moved_items, name, filter_item_names, rejected_item_names)
+	if filter_item_names[name] == nil then  -- not configured in one filter?
+		if moved_items < MAX_NUM_PER_CYC then
+			return math.min(4, MAX_NUM_PER_CYC - moved_items)
+		end
+	end
+	if rejected_item_names[name] then  -- rejected item from another slot?
+		if moved_items < MAX_NUM_PER_CYC then
+			return math.min(rejected_item_names[name], MAX_NUM_PER_CYC - moved_items)
+		end
+	end
+end
+				
 local function distributor_formspec(state, filter)
-	return "size[10,8.5]"..
+	return "size[10.5,8.5]"..
 	default.gui_bg..
 	default.gui_bg_img..
 	default.gui_slots..
@@ -86,15 +96,15 @@ local function distributor_formspec(state, filter)
 	"checkbox[3,1;filter2;On;"..dump(filter[2]).."]"..
 	"checkbox[3,2;filter3;On;"..dump(filter[3]).."]"..
 	"checkbox[3,3;filter4;On;"..dump(filter[4]).."]"..
-	"image[3.6,0;0.3,1;tubelib_red.png]"..
-	"image[3.6,1;0.3,1;tubelib_green.png]"..
-	"image[3.6,2;0.3,1;tubelib_blue.png]"..
-	"image[3.6,3;0.3,1;tubelib_yellow.png]"..
-	"list[context;red;4,0;6,1;]"..
-	"list[context;green;4,1;6,1;]"..
-	"list[context;blue;4,2;6,1;]"..
-	"list[context;yellow;4,3;6,1;]"..
-	"list[current_player;main;1,4.5;8,4;]"..
+	"image[4,0;0.3,1;tubelib_red.png]"..
+	"image[4,1;0.3,1;tubelib_green.png]"..
+	"image[4,2;0.3,1;tubelib_blue.png]"..
+	"image[4,3;0.3,1;tubelib_yellow.png]"..
+	"list[context;red;4.5,0;6,1;]"..
+	"list[context;green;4.5,1;6,1;]"..
+	"list[context;blue;4.5,2;6,1;]"..
+	"list[context;yellow;4.5,3;6,1;]"..
+	"list[current_player;main;1.25,4.5;8,4;]"..
 	"listring[context;src]"..
 	"listring[current_player;main]"
 end
@@ -109,8 +119,8 @@ local function allow_metadata_inventory_put(pos, listname, index, stack, player)
 	end
 	if listname == "src" then
 		return stack:get_count()
-	elseif invlist_num_entries(list) < NUM_FILTER_ELEM then
-		return 1
+	elseif invlist_num_entries(list) < MAX_NUM_PER_CYC then
+		return stack:get_count()
 	end
 	return 0
 end
@@ -154,7 +164,8 @@ local function filter_settings(pos)
 	
 	FilterCache[hash] = {
 		kvFilterItemNames = kvFilterItemNames, 
-		kvSide2ItemNames = kvSide2ItemNames
+		kvSide2ItemNames = kvSide2ItemNames,
+		kvRejectedItemNames = {},
 	}
 end
 
@@ -225,25 +236,29 @@ local function keep_running(pos, elapsed)
 	-- read data from Cache 
 	-- all filter items as key/value  {<item:name> = true,...}
 	local kvFilterItemNames = FilterCache[hash].kvFilterItemNames
-	-- filter items of one slot as list  {<item:name>,...}
-	local names = FilterCache[hash].kvSide2ItemNames[side]
+	-- filter items of one slot as list  {{<item:name>, <num-items>},...}
+	local items = FilterCache[hash].kvSide2ItemNames[side]
+	-- rejected items from other filter slots
+	local rejected = FilterCache[hash].kvRejectedItemNames
 	
-	if names == nil then
+	if items == nil then
 		-- this slot is empty
 		return true
 	end
 	
 	local busy = false
 	-- move items from configured filters to the output
-	if next(names) then
-		for _,name in ipairs(names) do
+	if next(items) then
+		for _,item in ipairs(items) do
+			local name, num = item[1], item[2]
 			if kvSrc[name] then
-				local item = tubelib.get_this_item(meta, "src", kvSrc[name]) -- <<=== tubelib
+				local item = tubelib.get_this_item(meta, "src", kvSrc[name], num) -- <<=== tubelib
 				if item then
 					if not tubelib.push_items(pos, side, item, player_name) then -- <<=== tubelib
 						tubelib.put_item(meta, "src", item)
+						rejected[name] = num
 					else
-						counter[listname] = counter[listname] + 1
+						counter[listname] = counter[listname] + num
 						busy = true
 					end
 				end
@@ -252,19 +267,26 @@ local function keep_running(pos, elapsed)
 	end
 	
 	-- move additional items from unconfigured filters to the output
-	if next(names) == nil then
+	if next(items) == nil then
+		local moved_items = 0
 		for name,_ in pairs(kvSrc) do
-			if kvFilterItemNames[name] == nil then  -- not in the filter so far?
-				local item = tubelib.get_this_item(meta, "src", kvSrc[name]) -- <<=== tubelib
+			local num = num_items(moved_items, name, kvFilterItemNames, rejected)
+			if num then
+				local item = tubelib.get_this_item(meta, "src", kvSrc[name], num) -- <<=== tubelib
 				if item then
 					if not tubelib.push_items(pos, side, item, player_name) then -- <<=== tubelib
 						tubelib.put_item(meta, "src", item)
 					else
 						counter[listname] = counter[listname] + 1
+						moved_items = moved_items + num
 						busy = true
 					end
 				end
 			end
+		end
+		-- delete list for next slot round
+		if moved_items > 0 then
+			FilterCache[hash].kvRejectedItemNames = {}
 		end
 	end
 	

@@ -341,19 +341,20 @@ function tubelib.get_item(meta, listname)
 	return nil
 end
 
--- Get one item from the given ItemList, specified by stack number (1..n).
+-- Get one (or more) item(s) from the given ItemList, specified by stack number (1..n).
 -- Returns nil if ItemList is empty.
-function tubelib.get_this_item(meta, listname, number)
+function tubelib.get_this_item(meta, listname, list_number, num_items)
 	if meta == nil or meta.get_inventory == nil then return nil end
 	local inv = meta:get_inventory()
 	if inv:is_empty(listname) then
 		return nil
 	end
 	
-	local items = inv:get_stack(listname, number)
+	if num_items == nil then num_items = 1 end
+	local items = inv:get_stack(listname, list_number)
 	if items:get_count() > 0 then
-		local taken = items:take_item(1)
-		inv:set_stack(listname, number, items)
+		local taken = items:take_item(num_items)
+		inv:set_stack(listname, list_number, items)
 		return taken
 	end
 	return nil

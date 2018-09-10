@@ -221,6 +221,45 @@ smartline.icta_register_condition("fuel", {
 	end,
 })
 
+smartline.icta_register_condition("chest", {
+	title = "chest state request",
+	formspec = {
+		{
+			type = "digits",
+			name = "number",
+			label = "chest number",
+			default = "",
+		},
+		{
+			type = "textlist",
+			name = "operand",
+			label = "",
+			choices = "is,is not",
+			default = "is",
+		},
+		{
+			type = "textlist",
+			name = "value",
+			label = "",
+			choices = "empty,loaded",
+			default = "empty",
+		},
+		{
+			type = "label", 
+			name = "lbl", 
+			label = "Read the state from a Tubelib chest\n"..
+				"and other similar nodes.", 
+		},
+	},
+	button = function(data, environ)  -- default button label
+		return 'sts('..sl.fmt_number(data.number)..","..data.operand..' '..data.value..')'
+	end,
+	code = function(data, environ) 
+		return 'tubelib.send_request("'..data.number..'", "state", "")',
+			sl.operand(data.operand)..'"'..data.value..'"'
+	end,
+})
+
 smartline.icta_register_condition("signaltower", {
 	title = "Signal Tower state request",
 	formspec = {

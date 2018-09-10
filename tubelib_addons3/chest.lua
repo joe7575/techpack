@@ -64,8 +64,10 @@ minetest.register_node("tubelib_addons3:chest", {
 	
 	after_place_node = function(pos, placer)
 		local meta = minetest.get_meta(pos)
+		local number = tubelib.add_node(pos, "tubelib_addons3:chest")
+		meta:set_string("number", number)
 		meta:set_string("formspec", formspec())
-		meta:set_string("infotext", "HighPerf Chest")
+		meta:set_string("infotext", "HighPerf Chest "..number)
 	end,
 
 	can_dig = function(pos,player)
@@ -79,6 +81,7 @@ minetest.register_node("tubelib_addons3:chest", {
 	
 	on_dig = function(pos, node, puncher, pointed_thing)
 		minetest.node_dig(pos, node, puncher, pointed_thing)
+		tubelib.remove_node(pos)
 	end,
 
 	allow_metadata_inventory_put = allow_metadata_inventory_put,
@@ -121,6 +124,11 @@ tubelib.register_node("tubelib_addons3:chest", {}, {
 	end,
 	
 	on_recv_message = function(pos, topic, payload)
-		return "unsupported"
+		if topic == "state" then
+			local meta = minetest.get_meta(pos)
+			return tubelib.fuelstate(meta, "main")
+		else
+			return "unsupported"
+		end
 	end,
 })	

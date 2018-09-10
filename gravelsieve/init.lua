@@ -459,8 +459,9 @@ minetest.register_craft({
 
 minetest.register_craft({
 	output = "gravelsieve:auto_sieve",
+	type = "shapeless",
 	recipe = {
-		{"gravelsieve:sieve", "default:mese_crystal",  "default:mese_crystal"},
+		"gravelsieve:sieve", "default:mese_crystal",  "default:mese_crystal",
 	},
 })
 

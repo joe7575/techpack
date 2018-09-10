@@ -271,6 +271,12 @@ minetest.register_craftitem("tubelib_addons1:biofuel", {
 	inventory_image = "tubelib_addons1_biofuel.png",
 })
 
+minetest.register_craft({
+	type = "fuel",
+	recipe = "tubelib_addons1:biofuel",
+	burntime = 12,
+})
+
 
 minetest.register_craft({
 	output = "tubelib_addons1:reformer",
