@@ -524,3 +524,43 @@ smartline.icta_register_condition("playerdetector", {
 		return "detector("..sl.fmt_number(data.number)..","..data.name:sub(1,8)..")"
 	end,
 })
+
+smartline.icta_register_action("set_filter", {
+	title = "turn Distributor filter on/off",
+	formspec = {
+		{
+			type = "numbers", 
+			name = "number", 
+			label = "distri number", 
+			default = "",
+		},
+		{
+			type = "textlist", 
+			name = "color",
+			label = "filter port",      
+			choices = "red,green,blue,yellow", 
+			default = "red",
+		},
+		{
+			type = "textlist", 
+			name = "value",
+			label = "state",      
+			choices = "on,off", 
+			default = "on",
+		},
+		{
+			type = "label", 
+			name = "lbl", 
+			label = "turn Distributor filter port on/off\n", 
+		},
+	},
+	button = function(data, environ) 
+		return 'turn('..sl.fmt_number(data.number)..","..data.color..","..data.value..')'
+	end,
+	code = function(data, environ)
+		local payload = '{slot = "'..data.color..'", val = "'..data.value..'"}'
+		local s = 'tubelib.send_message("%s", "%s", nil, "filter", %s)'
+		return string.format(s, data.number, environ.owner, payload)
+	end,
+})
+

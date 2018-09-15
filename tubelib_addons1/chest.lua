@@ -12,12 +12,44 @@
 
 ]]--
 
+local PlayerActions = {}
+local InventoryState = {}
+
+
+local function store_action(pos, player, action, stack)
+	local meta = minetest.get_meta(pos)
+	local name = player and player:get_player_name() or ""
+	local number = meta:get_string("number")
+	local item = stack:get_name().." "..stack:get_count()
+	PlayerActions[number] = {name, action, item}
+end	
+
+local function send_off_command(pos)
+	local meta = minetest.get_meta(pos)
+	local dest_num = meta:get_string("dest_num")
+	local own_num = meta:get_string("number")
+	local owner = meta:get_string("owner")
+	tubelib.send_message(dest_num, owner, nil, "off", own_num)
+end
+
+
+local function send_command(pos)
+	local meta = minetest.get_meta(pos)
+	local dest_num = meta:get_string("dest_num")
+	if dest_num ~= "" then
+		local own_num = meta:get_string("number")
+		local owner = meta:get_string("owner")
+		tubelib.send_message(dest_num, owner, nil, "on", own_num)
+		minetest.after(1, send_off_command, pos)
+	end
+end
+
 local function allow_metadata_inventory_put(pos, listname, index, stack, player)
 	if minetest.is_protected(pos, player:get_player_name()) then
 		return 0
 	end
-	minetest.log("action", player:get_player_name().." moves "..stack:get_name()..
-			" to chest at "..minetest.pos_to_string(pos))
+	store_action(pos, player, "put", stack)
+	send_command(pos)
 	return stack:get_count()
 end
 
@@ -25,8 +57,8 @@ local function allow_metadata_inventory_take(pos, listname, index, stack, player
 	if minetest.is_protected(pos, player:get_player_name()) then
 		return 0
 	end
-	minetest.log("action", player:get_player_name().." takes "..stack:get_name()..
-			" from chest at "..minetest.pos_to_string(pos))
+	store_action(pos, player, "take", stack)
+	send_command(pos)
 	return stack:get_count()
 end
 
@@ -63,6 +95,7 @@ minetest.register_node("tubelib_addons1:chest", {
 		local meta = minetest.get_meta(pos)
 		local number = tubelib.add_node(pos, "tubelib_addons1:chest")
 		meta:set_string("number", number)
+		meta:set_string("owner", placer:get_player_name())
 		meta:set_string("formspec", formspec())
 		meta:set_string("infotext", "Tubelib Protected Chest "..number)
 	end,
@@ -71,7 +104,7 @@ minetest.register_node("tubelib_addons1:chest", {
 		if minetest.is_protected(pos, player:get_player_name()) then
 			return false
 		end
-		local meta = minetest.get_meta(pos);
+		local meta = minetest.get_meta(pos)
 		local inv = meta:get_inventory()
 		return inv:is_empty("main")
 	end,
@@ -116,7 +149,19 @@ tubelib.register_node("tubelib_addons1:chest", {}, {
 	on_recv_message = function(pos, topic, payload)
 		if topic == "state" then
 			local meta = minetest.get_meta(pos)
-			return tubelib.fuelstate(meta, "main")
+			return tubelib.get_inv_state(meta, "main")
+		elseif topic == "player_action" then
+			local meta = minetest.get_meta(pos)
+			local number = meta:get_string("number")
+			return PlayerActions[number]
+		elseif topic == "set_numbers" then
+			if tubelib.check_numbers(payload) then
+				local meta = minetest.get_meta(pos)
+				meta:set_string("dest_num", payload)
+				local number = meta:get_string("number")
+				meta:set_string("infotext", "Tubelib Protected Chest "..number.." connected with "..payload)
+				return true
+			end
 		else
 			return "unsupported"
 		end

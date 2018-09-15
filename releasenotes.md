@@ -1,6 +1,25 @@
 # Release Notes of the ModPack TechPack [techpack]
 
 
+## V1.15 (2018-09-15)
+
+### Additions
+- Tubelib has a new helper function "get_inv_state()" used by the chests.
+- The Lua Controller got a new command "$get_player_action()" to read the chest player state.
+- SmartLine Controller got a new command to turn Distributor filter ports on/off.
+- Chests send on/off commands for each player interaction to a node with a predefined number.
+- Chests support the "player_action" command request.
+- Chests support the "set_number" Programmer command to program a node number.
+
+### Changes
+- Chests now return the state "empty", loader" **and** "full".  
+  "full" is returned, when no empty stack is available.
+
+### Fixes
+- Distributor and HighPerf Distributor item counter bugfixes.
+
+
+
 ## V1.14 Beta (2018-09-10)
 
 ### Additions

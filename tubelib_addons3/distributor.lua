@@ -74,7 +74,7 @@ local function random_list_elem(list)
 end
 
 local function distributor_formspec(state, filter)
-	return "size[10,8.5]"..
+	return "size[10.5,8.5]"..
 	default.gui_bg..
 	default.gui_bg_img..
 	default.gui_slots..
@@ -85,15 +85,15 @@ local function distributor_formspec(state, filter)
 	"checkbox[3,1;filter2;On;"..dump(filter[2]).."]"..
 	"checkbox[3,2;filter3;On;"..dump(filter[3]).."]"..
 	"checkbox[3,3;filter4;On;"..dump(filter[4]).."]"..
-	"image[3.6,0;0.3,1;tubelib_red.png]"..
-	"image[3.6,1;0.3,1;tubelib_green.png]"..
-	"image[3.6,2;0.3,1;tubelib_blue.png]"..
-	"image[3.6,3;0.3,1;tubelib_yellow.png]"..
-	"list[context;red;4,0;6,1;]"..
-	"list[context;green;4,1;6,1;]"..
-	"list[context;blue;4,2;6,1;]"..
-	"list[context;yellow;4,3;6,1;]"..
-	"list[current_player;main;1,4.5;8,4;]"..
+	"image[4,0;0.3,1;tubelib_red.png]"..
+	"image[4,1;0.3,1;tubelib_green.png]"..
+	"image[4,2;0.3,1;tubelib_blue.png]"..
+	"image[4,3;0.3,1;tubelib_yellow.png]"..
+	"list[context;red;4.5,0;6,1;]"..
+	"list[context;green;4.5,1;6,1;]"..
+	"list[context;blue;4.5,2;6,1;]"..
+	"list[context;yellow;4.5,3;6,1;]"..
+	"list[current_player;main;1.25,4.5;8,4;]"..
 	"listring[context;src]"..
 	"listring[current_player;main]"
 end
@@ -240,6 +240,7 @@ local function keep_running(pos, elapsed)
 	
 	if stack:get_count() > 0 then
 		local name = stack:get_name()
+		local num = stack:get_count()
 		local second_try = false
 		-- try configured output ports
 		local side = random_list_elem(kvFilterItemNames[name])
@@ -247,7 +248,7 @@ local function keep_running(pos, elapsed)
 			if tubelib.push_items(pos, side, stack, player_name) then
 				stack:set_count(0)
 				local color = Side2Color[side]
-				counter[color] = counter[color] + 1
+				counter[color] = counter[color] + num
 				busy = true
 			else
 				second_try = true  -- port blocked
@@ -263,7 +264,7 @@ local function keep_running(pos, elapsed)
 				if tubelib.push_items(pos, side, stack, player_name) then
 					stack:set_count(0)
 					local color = Side2Color[side]
-					counter[color] = counter[color] + 1
+					counter[color] = counter[color] + num
 					busy = true
 				end
 			end

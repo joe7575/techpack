@@ -36,6 +36,17 @@ sl_controller.register_function("get_status", {
 		' example: sts = $get_status("1234")'
 })
 
+sl_controller.register_function("get_player_action", {
+	cmnd = function(self, num) 
+		num = tostring(num or "")
+		return unpack(tubelib.send_request(num, "player_action", nil) or {"","",""})
+	end,
+	help = " $get_player_action(num) ,\n"..
+		" Read player action status from a Tubelib chest. See\n"..
+		" https://github.com/joe7575/techpack/wiki/nodes\n"..
+		' example: player, action, item = $get_player_action("1234")'
+})
+
 sl_controller.register_function("get_counter", {
 	cmnd = function(self, num) 
 		num = tostring(num or "")

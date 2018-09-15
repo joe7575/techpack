@@ -1,4 +1,4 @@
-# TechPack V1.14
+# TechPack V1.15
 
 TechPack, a Mining, Crafting, &amp; Farming Modpack for Minetest.
 
@@ -93,6 +93,7 @@ tubelib_addons1 optional: unified_inventory
 - 2018-08-14  V1.12  * Teleporter node added
 - 2018-08-28  V1.13  * Smartline Controller completely revised. Liquid Sampler added
 - 2018-09-10  V1.14  * Distributor performance improved, chest commands added
+- 2018-09-15  V1.15  * Smartline Controller command added, chest commands improved
 
 
 See ![releasenotes.txt](https://github.com/joe7575/techpack/blob/master/releasenotes.md) for further information

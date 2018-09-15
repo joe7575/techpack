@@ -424,6 +424,27 @@ function tubelib.fuelstate(meta, listname, item)
 	end
 end
 	
+-- Return "full", "loaded", or "empty" depending
+-- on the inventory load.
+-- Full is returned, when no empty stack is available.
+function tubelib.get_inv_state(meta, listname)
+	if meta == nil or meta.get_inventory == nil then return nil end
+	local inv = meta:get_inventory()
+	local state
+    if inv:is_empty(listname) then
+        state = "empty"
+    else
+        local list = inv:get_list(listname)
+        state = "full"
+        local num = 0
+        for i, item in ipairs(list) do
+            if item:is_empty() then
+                return "loaded"
+            end
+        end
+    end
+    return state
+end
 
 
 -------------------------------------------------------------------------------

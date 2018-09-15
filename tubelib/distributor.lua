@@ -277,7 +277,7 @@ local function keep_running(pos, elapsed)
 					if not tubelib.push_items(pos, side, item, player_name) then -- <<=== tubelib
 						tubelib.put_item(meta, "src", item)
 					else
-						counter[listname] = counter[listname] + 1
+						counter[listname] = counter[listname] + num
 						moved_items = moved_items + num
 						busy = true
 					end
