@@ -1,6 +1,13 @@
 # Release Notes of the ModPack TechPack [techpack]
 
 
+## V1.15.1 (2018-09-17)
+
+### Fixes
+- Button bug (detected in the video of Nathan) fixed
+
+
+
 ## V1.15 (2018-09-15)
 
 ### Additions
