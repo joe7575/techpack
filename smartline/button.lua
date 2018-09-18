@@ -129,7 +129,7 @@ minetest.register_node("smartline:button", {
 	
 	on_rightclick = function(pos, node, clicker)
 		local meta = minetest.get_meta(pos)
-		if meta:get_string("numbers") ~= "" then
+		if meta:get_string("numbers") ~= "" and meta:get_string("numbers") ~= nil then
 			meta:set_string("clicker_name", clicker:get_player_name())
 			switch_on(pos, node)
 		end
