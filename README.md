@@ -54,7 +54,7 @@ TechPack provides:
   - output on a display
 - a Controller to be programmed in Lua
 - a Signal Tower node showing machine states
-- a Display node for text outputs of the Controller
+- a Display node for text outputs of the Controller (depends on display_lib & font_lib)
 
 TechPack supports the following mods:
 - Farming Redo (Harvester, Fermenter)
@@ -70,8 +70,8 @@ Textures: CC BY-SA 3.0
 
 ### Dependencies 
 default, doors.  
+SmartLine Display: display_lib, font_lib  
 Tubelib Color Lamps optional: unifieddyes  
-SmartLine Display optional: display_lib, font_lib  
 SmartLine Controller optional: mail  
 Gravelsieve optional: moreores, hopper, pipeworks  
 tubelib_addons1 optional: unified_inventory
