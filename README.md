@@ -1,4 +1,4 @@
-# TechPack V1.15
+# TechPack V1.16
 
 TechPack, a Mining, Crafting, &amp; Farming Modpack for Minetest.
 
@@ -14,6 +14,8 @@ TechPack is a collection of following Mods:
 * smartline, a Mod with small and smart sensors, actors and controllers.
 * safer_lua, a subset of the language Lua for safe and secure Lua sandboxes
 * SaferLua Controller - a controller to be programmed in LUA
+* lcdlib - a display lib used by smartline
+
 
 **A TechPack Tutorial is available as ![Wiki](https://github.com/joe7575/techpack/wiki)**
 
@@ -54,7 +56,7 @@ TechPack provides:
   - output on a display
 - a Controller to be programmed in Lua
 - a Signal Tower node showing machine states
-- a Display node for text outputs of the Controller (depends on display_lib & font_lib)
+- a Display node for text outputs of the Controller
 
 TechPack supports the following mods:
 - Farming Redo (Harvester, Fermenter)
@@ -70,7 +72,6 @@ Textures: CC BY-SA 3.0
 
 ### Dependencies 
 default, doors.  
-SmartLine Display: display_lib, font_lib  
 Tubelib Color Lamps optional: unifieddyes  
 SmartLine Controller optional: mail  
 Gravelsieve optional: moreores, hopper, pipeworks  
@@ -94,6 +95,6 @@ tubelib_addons1 optional: unified_inventory
 - 2018-08-28  V1.13  * Smartline Controller completely revised. Liquid Sampler added
 - 2018-09-10  V1.14  * Distributor performance improved, chest commands added
 - 2018-09-15  V1.15  * Smartline Controller command added, chest commands improved
-
+- 2018-09-20  V1.16  * Switched from "Display mod pack" to lcdlib
 
 See ![releasenotes.txt](https://github.com/joe7575/techpack/blob/master/releasenotes.md) for further information

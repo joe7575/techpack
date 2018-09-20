@@ -1,6 +1,18 @@
 # Release Notes of the ModPack TechPack [techpack]
 
 
+## V1.16 (2018-09-20)
+
+### Changes
+- Switched from "Display mod pack" to an internal lcdlib, based
+  on a former version of the Display mod pack. This was necessary
+  due to extensive and ongoing changes on the Display mod pack API.
+
+### Additions
+- Added three kinds of sandstone to the grinder.
+
+
+
 ## V1.15.1 (2018-09-17)
 
 ### Fixes
