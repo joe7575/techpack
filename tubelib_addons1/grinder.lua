@@ -339,6 +339,10 @@ else
 	tubelib.add_grinder_recipe({input="default:sand", output="default:clay"})
 end
 
+tubelib.add_grinder_recipe({input="default:sandstone", output="default:sand"})
+tubelib.add_grinder_recipe({input="default:desert_sandstone", output="default:desert_sand"})
+tubelib.add_grinder_recipe({input="default:silver_sandstone", output="default:silver_sand"})
+
 tubelib.add_grinder_recipe({input="default:tree", output="default:leaves 8"})
 tubelib.add_grinder_recipe({input="default:jungletree", output="default:jungleleaves 8"})
 tubelib.add_grinder_recipe({input="default:pine_tree", output="default:pine_needles 8"})
