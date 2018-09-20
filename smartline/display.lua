@@ -14,13 +14,13 @@
 
   
   
-display_lib.register_display_entity("smartline:entity")
+lcdlib.register_display_entity("smartline:entity")
 
-function display_update(pos, objref) 
+local function display_update(pos, objref) 
 	local meta = minetest.get_meta(pos)
 	local text = meta:get_string("text") or ""
 	text = string.gsub(text, "|", " \n")
-	local texture = font_lib.make_multiline_texture(
+	local texture = lcdlib.make_multiline_texture(
 		"default", text,
 		120, 120, 9, "top", "#000")
 	objref:set_properties({ textures = {texture},
@@ -29,7 +29,7 @@ end
 
 local function on_timer(pos)
 	local meta = minetest.get_meta(pos)
-	display_lib.update_entities(pos)
+	lcdlib.update_entities(pos)
 	return false
 end
 
@@ -61,14 +61,14 @@ minetest.register_node("smartline:display", {
 		meta:set_string("number", number)
 		meta:set_string("text", " \n \nMinetest\nSmartLine Tools\n \nDisplay\nNumber: "..number)
 		meta:set_int("startscreen", 1)
-		display_lib.update_entities(pos)
+		lcdlib.update_entities(pos)
 	end,
 
 	on_timer = on_timer,
-	on_place = display_lib.on_place,
-	on_construct = display_lib.on_construct,
-	on_destruct = display_lib.on_destruct,
-	on_rotate = display_lib.on_rotate,
+	on_place = lcdlib.on_place,
+	on_construct = lcdlib.on_construct,
+	on_destruct = lcdlib.on_destruct,
+	on_rotate = lcdlib.on_rotate,
 	groups = {cracky=2, crumbly=2},
 	is_ground_content = false,
 	sounds = default.node_sound_glass_defaults(),

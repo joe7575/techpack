@@ -14,10 +14,7 @@ smartline = {}
 
 local MP = minetest.get_modpath("smartline")
 
-if minetest.get_modpath("display_lib") and display_lib ~= nil and
-				minetest.get_modpath("font_lib") and font_lib ~= nil then
-	dofile(MP.."/display.lua")
-end
+dofile(MP.."/display.lua")
 dofile(MP.."/button.lua")
 dofile(MP.."/signaltower.lua")
 dofile(MP.."/playerdetector.lua")
