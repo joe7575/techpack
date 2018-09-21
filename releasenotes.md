@@ -1,6 +1,18 @@
 # Release Notes of the ModPack TechPack [techpack]
 
 
+
+## V1.16.1 (2018-09-21)
+
+
+### Additions
+- Straight ahead tubes can be placed my means of the "sneak" button
+
+### Fixes
+- Minor tube placing bug fixed
+
+
+
 ## V1.16 (2018-09-20)
 
 ### Changes

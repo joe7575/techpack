@@ -58,6 +58,7 @@ end
 
 -- Convertion of 'dir' (view from the outside to inside and vs)
 local Turn180Deg = {3,4,1,2,6,5}
+local Turn90Deg = {2,3,4,5,6,1}
 
 local Dir2Offset = {
 	{x=0,  y=0,  z=1},
@@ -227,10 +228,12 @@ local function update_next_tube(dir, pos)
 	local conn1 = is_connected(pos, dir1) or is_known_node(pos, dir1)
 	local conn2 = is_connected(pos, dir2) or is_known_node(pos, dir2)
 	-- already connected or no tube arround?
-	if conn1 == conn2 then
+	if (conn1 and conn2) or (not dir1 and not dir2) then
 		return
-	end
-	if conn1 then 
+	elseif not conn1 and not conn2 then
+		dir1 = Turn90Deg[dir1] 
+		dir2 = Turn180Deg[dir1]
+	elseif conn1 then 
 		dir2 = Turn180Deg[dir]
 	else
 		dir1 = Turn180Deg[dir]
@@ -267,7 +270,7 @@ local function update_tube(pos, dir)
 	swap_node(pos, node_num, param2)
 end
 
-function tubelib.update_tubes(pos, dir)
+function tubelib.update_tubes(pos, dir, straight_ahead)
 	-- Update all tubes arround the currently placed tube
 	update_next_tube(1, {x=pos.x  , y=pos.y  , z=pos.z+1})
 	update_next_tube(2, {x=pos.x+1, y=pos.y  , z=pos.z  })
@@ -275,8 +278,10 @@ function tubelib.update_tubes(pos, dir)
 	update_next_tube(4, {x=pos.x-1, y=pos.y  , z=pos.z  })
 	update_next_tube(5, {x=pos.x  , y=pos.y-1, z=pos.z  })
 	update_next_tube(6, {x=pos.x  , y=pos.y+1, z=pos.z  })
-	-- Update the placed tube
-	update_tube(pos, dir)
+	if not straight_ahead then
+		-- Update the placed tube
+		update_tube(pos, dir)
+	end
 	return tubelib.delete_meta_data(pos, minetest.get_node(pos)) < MAX_TUBE_LENGTH
 end		
 

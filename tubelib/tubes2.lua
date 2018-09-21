@@ -174,14 +174,15 @@ for idx,pos in ipairs(DirCorrections) do
 		after_place_node = function(pos, placer, itemstack, pointed_thing)
 			local res
 			local pitch = placer:get_look_pitch()
+			local straight_ahead = placer:get_player_control().sneak
 			if pitch > 1 then
-				res = tubelib.update_tubes(pos, 6)
+				res = tubelib.update_tubes(pos, 6, straight_ahead)
 			elseif pitch < -1 then
-				res = tubelib.update_tubes(pos, 5)
+				res = tubelib.update_tubes(pos, 5, straight_ahead)
 			else
 				local dir = placer:get_look_dir()
 				local facedir = minetest.dir_to_facedir(dir)
-				res = tubelib.update_tubes(pos, facedir + 1)
+				res = tubelib.update_tubes(pos, facedir + 1, straight_ahead)
 			end
 			if res == false then
 				tubelib.delete_meta_data(pos, minetest.get_node(pos))

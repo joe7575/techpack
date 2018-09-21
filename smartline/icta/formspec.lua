@@ -217,7 +217,7 @@ end
 function smartline.formspecNotes(meta)
 	local running = meta:get_int("state") == tubelib.RUNNING
 	local cmnd = running and "stop;Stop" or "start;Start" 
-	local notes = meta:get_string("notes")
+	local notes = meta:get_string("notes") or ""
 	if notes == "" then notes = "<space for your notes>" end
 	notes = minetest.formspec_escape(notes)
 	return SIZE..
