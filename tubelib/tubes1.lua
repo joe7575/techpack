@@ -250,30 +250,28 @@ local function update_tube(pos, dir, force_dir)
 	local dir2 = nil
 	-- use the predefined direction?
 	if force_dir then
-		dir1 = Turn180Deg[dir]
-		dir2 = force_dir
-	else
-		-- search on all 6 pos for up to 2 tubes with open holes or 
-		-- other tubelib compatible nodes
+		dir1 = force_dir
+	end
+	-- search on all 6 pos for up to 2 tubes with open holes or 
+	-- other tubelib compatible nodes
+	for ndir = 1,6 do
+		if not dir1 and is_connected(pos, ndir) then
+			dir1 = ndir
+		elseif not dir2 and is_connected(pos, ndir) and ndir ~= dir1 then
+			dir2 = ndir
+		end
+	end
+	if not force_dir and (not dir1 or not dir2) then
 		for ndir = 1,6 do
-			if not dir1 and is_connected(pos, ndir) then
+			if not dir1 and is_known_node(pos, ndir) then 
 				dir1 = ndir
-			elseif not dir2 and is_connected(pos, ndir) then
+			elseif not dir2 and is_known_node(pos, ndir) and ndir ~= dir1  then 
 				dir2 = ndir
 			end
 		end
-		if not dir1 or not dir2 then
-			for ndir = 1,6 do
-				if not dir1 and is_known_node(pos, ndir) then 
-					dir1 = ndir
-				elseif not dir2 and is_known_node(pos, ndir) then 
-					dir2 = ndir
-				end
-			end
-		end
-		dir1 = dir1 or dir 
-		dir2 = dir2 or Turn180Deg[dir]
 	end
+	dir1 = dir1 or dir 
+	dir2 = dir2 or Turn180Deg[dir]
 	local node_num, param2 = get_tube_number_and_param2(dir1, dir2)
 	swap_node(pos, node_num, param2)
 end
