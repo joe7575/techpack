@@ -51,6 +51,16 @@ local function remote_node(pos, dir)
 	return pos1, dir
 end	
 	
+local function is_known_node(pointed_thing)
+	if pointed_thing.type == "node" then
+		local node = minetest.get_node(pointed_thing.under)
+		if tubelib.KnownNodes[node.name] and not tubelib.TubeNames[node.name] then
+			return pointed_thing.under
+		end
+	end
+	return nil
+end
+
 -- Determine neighbor position and own facedir to the node.
 -- based on own pos and contact side 'B' - 'U'.
 -- Function considers also tube connections.
@@ -172,19 +182,22 @@ for idx,pos in ipairs(DirCorrections) do
 		},
 		
 		after_place_node = function(pos, placer, itemstack, pointed_thing)
-			local res
+			local dir1 = nil
+			local dir2 = nil
 			local pitch = placer:get_look_pitch()
-			local straight_ahead = placer:get_player_control().sneak
-			if pitch > 1 then
-				res = tubelib.update_tubes(pos, 6, straight_ahead)
-			elseif pitch < -1 then
-				res = tubelib.update_tubes(pos, 5, straight_ahead)
-			else
-				local dir = placer:get_look_dir()
-				local facedir = minetest.dir_to_facedir(dir)
-				res = tubelib.update_tubes(pos, facedir + 1, straight_ahead)
+			local known_pos = is_known_node(pointed_thing)
+			local straight_ahead = placer:get_player_control().sneak and not known_pos
+			if known_pos then -- placer pointed to a known node (chest)
+				dir2 = dir_to_facedir(pos, known_pos) + 1
 			end
-			if res == false then
+			if pitch > 1 then -- up?
+				dir1 = 6
+			elseif pitch < -1 then -- down?
+				dir1 = 5
+			else
+				dir1 = minetest.dir_to_facedir(placer:get_look_dir()) + 1
+			end
+			if not tubelib.update_tubes(pos, dir1, dir2, straight_ahead) then
 				tubelib.delete_meta_data(pos, minetest.get_node(pos))
 				minetest.remove_node(pos)
 				return itemstack
