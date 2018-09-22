@@ -2,6 +2,14 @@
 
 
 
+## V1.16.2 (2018-09-22)
+
+
+### Changes
+- Futher improvement of the "sneak" button usage
+
+
+
 ## V1.16.1 (2018-09-21)
 
 
