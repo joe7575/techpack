@@ -54,7 +54,7 @@ end
 local function is_known_node(pointed_thing)
 	if pointed_thing.type == "node" then
 		local node = minetest.get_node(pointed_thing.under)
-		if tubelib.KnownNodes[node.name] and not tubelib.TubeNames[node.name] then
+		if tubelib.KnownNodes[node.name] then
 			return pointed_thing.under
 		end
 	end
