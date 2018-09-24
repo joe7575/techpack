@@ -187,7 +187,7 @@ for idx,pos in ipairs(DirCorrections) do
 			local pitch = placer:get_look_pitch()
 			local known_pos = is_known_node(pointed_thing)
 			local straight_ahead = placer:get_player_control().sneak and not known_pos
-			if known_pos then -- placer pointed to a known node (chest)
+			if known_pos and placer:get_player_control().sneak then -- placer pointed to a known node (chest)
 				dir2 = dir_to_facedir(pos, known_pos) + 1
 			end
 			if pitch > 1 then -- up?
