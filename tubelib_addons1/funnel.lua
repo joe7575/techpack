@@ -147,7 +147,13 @@ tubelib.register_node("tubelib_addons1:funnel", {}, {
 	end,
 	
 	on_recv_message = function(pos, topic, payload)
-		return "unsupported"
+		if topic == "state" then
+			local meta = minetest.get_meta(pos)
+			return tubelib.get_inv_state(meta, "main")
+		else
+			return "unsupported"
+		end
 	end,
 })	
+
 

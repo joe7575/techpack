@@ -92,7 +92,7 @@ for _,color in ipairs({"green", "amber", "red"}) do
 		end,
 
 		paramtype = "light",
-		light_source = LIGHT_MAX,	
+		light_source = 10,	
 		sunlight_propagates = true,
 		paramtype2 = "facedir",
 		groups = {crumbly=0, not_in_creative_inventory=1},
