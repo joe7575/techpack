@@ -2,6 +2,14 @@
 
 
 
+## V1.16.3 (2018-09-26)
+
+
+### Changes
+- Added further textures to the Gate Block
+
+
+
 ## V1.16.2 (2018-09-22)
 
 
