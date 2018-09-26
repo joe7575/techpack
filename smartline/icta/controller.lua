@@ -39,7 +39,7 @@ local function integer(s, min, max)
 	return min
 end
 
-local sOUTPUT = "Edit commands" 
+local sOUTPUT = "Edit commands (see help)" 
 local Cache = {}
 local FS_DATA = gen_table(smartline.NUM_RULES, {})
 
@@ -70,6 +70,22 @@ end
 --		<action>
 --		env.blocked[1] = false
 --	end
+
+--  -- Callback variant
+--	if env.blocked[1] == false and env.ticks % <cycle> == 0 then
+--		env.result[1], env.blocked[1] = <callback>
+--		if env.blocked[1] then
+--			env.timer[1] = env.ticks + <after>
+--		end
+--		env.conditions[1] = env.blocked[1]	
+--	else
+--		env.conditions[1] = false
+--	end
+--	if env.blocked[1] and env.timer[1] == env.ticks then
+--		<action>
+--		env.blocked[1] = false
+--	end
+
 
 -- cyclic execution
 local TemplCyc = [[
@@ -109,6 +125,24 @@ if env.blocked[#] and env.timer[#] == env.ticks then
 end
 ]]
 
+-- event based execution of callback function
+local TemplEvtClbk = [[
+-- Rule #
+if env.blocked[#] == false and env.event then
+	env.result[#], env.blocked[#] = %s(env, %s)
+	if env.blocked[#] then
+		env.timer[#] = env.ticks + %s
+	end
+	env.condition[#] = env.blocked[#]	
+else
+	env.condition[#] = false
+end
+if env.blocked[#] and env.timer[#] == env.ticks then
+	%s
+	env.blocked[#] = false
+end
+]]
+
 -- generate the Lua code from the NUM_RULES rules
 local function generate(pos, meta, environ)
 	local fs_data = minetest.deserialize(meta:get_string("fs_data")) or FS_DATA
@@ -124,7 +158,12 @@ local function generate(pos, meta, environ)
 			-- add rule number
 			local s
 			if cycle == 0 then  -- event?
-				s = string.format(TemplEvt, cond, result, after, actn)
+				if result then
+					s = string.format(TemplEvt, cond, result, after, actn)
+				else -- callback function
+					local data = dump(fs_data[idx].cond)
+					s = string.format(TemplEvtClbk, cond, data, after, actn)
+				end
 			else  -- cyclic
 				s = string.format(TemplCyc, cycle, cond, result, after, actn)
 			end
@@ -216,7 +255,8 @@ local function start_controller(pos, meta)
 	if compile(pos, meta, number) then
 		meta:set_int("state", tubelib.RUNNING)
 		minetest.get_node_timer(pos):start(1)
-		meta:set_string("formspec", smartline.formspecOutput(meta))
+		local fs_data = minetest.deserialize(meta:get_string("fs_data")) or FS_DATA
+		meta:set_string("formspec", smartline.formspecRules(meta, fs_data, sOUTPUT))
 		meta:set_string("infotext", "Controller "..number..": running")
 		return true
 	end
@@ -280,7 +320,9 @@ local function on_receive_fields(pos, formname, fields, player)
 	if not player or not player:is_player() then
 		return
 	end
-	local readonly = player:get_player_name() ~= owner
+	if player:get_player_name() ~= owner then
+		return
+	end
 	
 	--print("fields", dump(fields))
 	if fields.quit then  -- cancel button
@@ -290,18 +332,14 @@ local function on_receive_fields(pos, formname, fields, player)
 		meta:set_string("notes", fields.notes)
 	end
 	if fields.go then
-		if not readonly then	
-			local fs_data = minetest.deserialize(meta:get_string("fs_data")) or FS_DATA
-			local output = smartline.edit_command(fs_data, fields.cmnd)
-			stop_controller(pos, meta)
-			meta:set_string("formspec", smartline.formspecRules(meta, fs_data, output))
-			meta:set_string("fs_data", minetest.serialize(fs_data))
-		end
+		local fs_data = minetest.deserialize(meta:get_string("fs_data")) or FS_DATA
+		local output = smartline.edit_command(fs_data, fields.cmnd)
+		stop_controller(pos, meta)
+		meta:set_string("formspec", smartline.formspecRules(meta, fs_data, output))
+		meta:set_string("fs_data", minetest.serialize(fs_data))
 	end
 	if fields._type_ == "main" then
-		if not readonly then
-			smartline.store_main_form_data(meta, fields)
-		end
+		smartline.store_main_form_data(meta, fields)
 		local key = smartline.main_form_button_pressed(fields)
 		if key then
 			-- store data before going into sub-menu
@@ -438,9 +476,10 @@ minetest.register_craft({
 local function set_input(pos, own_number, rmt_number, val)
 	if rmt_number then 
 		if Cache[own_number] and Cache[own_number].env.input then
-			Cache[own_number].env.input[rmt_number] = val
-			-- only two events per second
 			local t = minetest.get_us_time()
+			Cache[own_number].env.input[rmt_number] = val
+			Cache[own_number].env.last_event = t
+			-- only two events per second
 			if not Cache[own_number].last_event or Cache[own_number].last_event < t then
 				minetest.after(0.01, on_timer, pos, -1)
 				Cache[own_number].last_event = t + 500000 -- add 500 ms
@@ -453,10 +492,11 @@ tubelib.register_node("smartline:controller2", {}, {
 	on_recv_message = function(pos, topic, payload)
 		local meta = minetest.get_meta(pos)
 		local number = meta:get_string("number")
+		local state = meta:get_int("state")
 		
-		if topic == "on" then
+		if state == tubelib.RUNNING and topic == "on" then
 			set_input(pos, number, payload, topic)
-		elseif topic == "off" then
+		elseif state == tubelib.RUNNING and topic == "off" then
 			set_input(pos, number, payload, topic)
 		elseif topic == "state" then
 			local state = meta:get_int("state")

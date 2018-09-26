@@ -2,6 +2,17 @@
 
 
 
+## V1.16.4 (2018-09-26)
+
+
+### Additions
+- Stopwatch function to SmartLine Controller added
+- Display supports now left oriented text outputs via prefix '<'
+
+### Fixes
+- Owner bugfix for the SmartLine Controller
+
+
 ## V1.16.3 (2018-09-26)
 
 

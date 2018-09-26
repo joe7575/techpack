@@ -182,10 +182,15 @@ function lcdlib.make_multiline_texture(font_name, text, width, height,
 	local lines = {}
     local textheight = 0
 	local y, w, h
+	h = get_font(font_name).height
     
     for num, line in pairs(split_lines(text, maxlines)) do
-        w, h = lcdlib.get_text_size(font_name, line)
-        lines[num] = { text = line, width = w, height = h, }
+		if line:byte(1) == 60 then  -- '<'
+			lines[num] = { text = line:sub(2,-1), width = width - 4, height = h, }
+		else
+			w, h = lcdlib.get_text_size(font_name, line)
+			lines[num] = { text = line, width = w, height = h, }
+		end	
         textheight = textheight + h
     end
     
