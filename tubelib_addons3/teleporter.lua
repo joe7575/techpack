@@ -21,7 +21,7 @@ local sForm = "size[7.5,3]"..
 	"button_exit[2,2;3,1;exit;Save]"
 
 local function pairing(pos, channel)
-	if PairingList[channel] and pos ~= PairingList[channel] then
+	if PairingList[channel] and not vector.equals(pos, PairingList[channel]) then
 		-- store peer position on both nodes
 		local meta1 = minetest.get_meta(pos)
 		local peer = minetest.pos_to_string(PairingList[channel])
@@ -115,14 +115,19 @@ minetest.register_craft({
 	},
 })
 
+-- recursion detection
+local LastPeerPos = nil
 
 tubelib.register_node("tubelib_addons3:teleporter", {}, {
 	on_push_item = function(pos, side, item)
 		-- push on peer side
 		local meta = minetest.get_meta(pos)
 		local peer = meta:get_string("peer")
-		if peer ~= "" then
-			return tubelib.push_items(minetest.string_to_pos(peer), "R", item, nil)
+		if peer ~= "" and peer ~= LastPeerPos then
+			LastPeerPos = peer
+			local res = tubelib.push_items(minetest.string_to_pos(peer), "R", item, nil)
+			LastPeerPos = nil
+			return res
 		end
 		return false
 	end,

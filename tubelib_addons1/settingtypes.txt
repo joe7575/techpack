@@ -1,0 +1,3 @@
+# Cobble generator enabled (true/false)
+tubelib_addons1_cobble_generator_enabled (Enable cobblestone generation) bool true
+

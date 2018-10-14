@@ -77,7 +77,7 @@ function tubelib.get_neighbor_pos(pos, side)
 		if ndir then
 			npos, ndir = remote_node(npos, ndir)
 		end
-		return npos, ndir-1
+		return npos, (ndir or 1) -1
 	end
 	return npos, facedir
 end

@@ -193,7 +193,7 @@ function tubelib.remove_node(pos)
 		Number2Pos[number] = {
 			pos = pos, 
 			name = nil,
-			time = minetest.get_day_count() -- used for aging
+			time = minetest.get_day_count() -- used for reservation timeout
 		}
 	end
 end

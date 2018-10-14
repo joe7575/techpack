@@ -2,8 +2,18 @@
 
 
 
-## V1.16.4 (2018-09-26)
+## V1.16.5 (2018-10-14)
 
+### Additions
+- Cobblestone generation can be disabled via configuration
+
+### Fixes
+- Teleporter recursion bugfix
+- tube bugfix
+
+
+
+## V1.16.4 (2018-09-26)
 
 ### Additions
 - Stopwatch function to SmartLine Controller added
@@ -13,8 +23,8 @@
 - Owner bugfix for the SmartLine Controller
 
 
-## V1.16.3 (2018-09-26)
 
+## V1.16.3 (2018-09-26)
 
 ### Changes
 - Added further textures to the Gate Block
@@ -23,14 +33,12 @@
 
 ## V1.16.2 (2018-09-22)
 
-
 ### Changes
 - Futher improvement of the "sneak" button usage
 
 
 
 ## V1.16.1 (2018-09-21)
-
 
 ### Additions
 - Straight ahead tubes can be placed my means of the "sneak" button

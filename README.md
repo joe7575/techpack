@@ -68,6 +68,13 @@ TechPack supports the following mods:
 - Hopper (Gravel Sieve)
 - Mesecon (Mesecon Converter)
 
+
+### Configuration
+- Enable cobblestone generation (true/false)  
+  If set to false, the lava/water cobblestone generator produces Basalt instead, 
+  which can't be used by TechPack.
+
+
 ### License
 Copyright (C) 2017-2018 Joachim Stolberg  
 Code: Licensed under the GNU LGPL version 2.1 or later. See LICENSE.txt  
