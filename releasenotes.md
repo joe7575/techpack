@@ -2,6 +2,13 @@
 
 
 
+## V1.16.6 (2018-10-20)
+
+### Fixes
+- 'minetest.LIGHT_MAX' bugfix (Minetest 5.0.0)
+
+
+
 ## V1.16.5 (2018-10-14)
 
 ### Additions
