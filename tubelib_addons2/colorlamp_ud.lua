@@ -76,7 +76,7 @@ minetest.register_node("tubelib_addons2:lamp_on", {
 		unifieddyes.after_dig_node(pos, oldnode, oldmetadata, digger)
 	end,
    
-	light_source = LIGHT_MAX,	
+	light_source = minetest.LIGHT_MAX,	
 	is_ground_content = false,
 	drop = "tubelib_addons2:lamp_off"
 })

@@ -101,7 +101,7 @@ minetest.register_node("tubelib_addons2:streetlamp_on", {
 	end,
 
 	paramtype = "light",
-	light_source = LIGHT_MAX,	
+	light_source = minetest.LIGHT_MAX,	
 	sunlight_propagates = true,
 	paramtype2 = "facedir",
 	groups = {crumbly=0, not_in_creative_inventory=1},

@@ -11,7 +11,7 @@
 	History:
 	see init.lua
 	
-	tubes2.lua: Node registration and API function to move items via tubes
+	tubes2.lua: Node registration and API functions to move items via tubes
 
 ]]--
 
