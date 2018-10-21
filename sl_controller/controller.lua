@@ -116,8 +116,8 @@ sl_controller.register_function("get_ms_time", {
 
 
 local function formspec0(meta)
-	local running = meta:get_int("state") == tubelib.RUNNING
-	local cmnd = running and "stop;Stop" or "start;Start" 
+	local state = meta:get_int("state") == tubelib.RUNNING
+	local cmnd = state and "stop;Stop" or "start;Start"
 	local init = meta:get_string("init")
 	init = minetest.formspec_escape(init)
 	return "size[4,3]"..
@@ -129,8 +129,8 @@ local function formspec0(meta)
 end
 
 local function formspec1(meta)
-	local running = meta:get_int("state") == tubelib.RUNNING
-	local cmnd = running and "stop;Stop" or "start;Start" 
+	local state = meta:get_int("state") == tubelib.RUNNING
+	local cmnd = state and "stop;Stop" or "start;Start"
 	local init = meta:get_string("init")
 	init = minetest.formspec_escape(init)
 	return "size[10,8]"..
@@ -146,8 +146,8 @@ local function formspec1(meta)
 end
 
 local function formspec2(meta)
-	local running = meta:get_int("state") == tubelib.RUNNING
-	local cmnd = running and "stop;Stop" or "start;Start"
+	local state = meta:get_int("state") == tubelib.RUNNING
+	local cmnd = state and "stop;Stop" or "start;Start"
 	local loop = meta:get_string("loop")
 	loop = minetest.formspec_escape(loop)
 	return "size[10,8]"..
@@ -163,8 +163,8 @@ local function formspec2(meta)
 end
 
 local function formspec3(meta)
-	local running = meta:get_int("state") == tubelib.RUNNING
-	local cmnd = running and "stop;Stop" or "start;Start" 
+	local state = meta:get_int("state") == tubelib.RUNNING
+	local cmnd = state and "stop;Stop" or "start;Start"
 	local output = meta:get_string("output")
 	output = minetest.formspec_escape(output)
 	return "size[10,8]"..
@@ -210,6 +210,7 @@ local function error(pos, err)
 	meta:set_string("formspec", formspec3(meta))
 	meta:set_string("infotext", "Controller "..number..": error")
 	meta:set_int("state", tubelib.STOPPED)
+	meta:set_int("running", tubelib.STATE_STOPPED)
 	minetest.get_node_timer(pos):stop()
 	return false
 end
@@ -254,6 +255,7 @@ local function start_controller(pos)
 	
 	if compile(pos, meta, number) then
 		meta:set_int("state", tubelib.RUNNING)
+		meta:set_int("running", tubelib.STATE_RUNNING)
 		minetest.get_node_timer(pos):start(1)
 		meta:set_string("formspec", formspec3(meta))
 		meta:set_string("infotext", "Controller "..number..": running")
@@ -266,6 +268,7 @@ local function stop_controller(pos)
 	local meta = minetest.get_meta(pos)
 	local number = meta:get_string("number")
 	meta:set_int("state", tubelib.STOPPED)
+	meta:set_int("running", tubelib.STATE_STOPPED)
 	minetest.get_node_timer(pos):stop()
 	meta:set_string("infotext", "Controller "..number..": stopped")
 	meta:set_string("formspec", formspec2(meta))
@@ -275,6 +278,7 @@ local function no_battery(pos)
 	local meta = minetest.get_meta(pos)
 	local number = meta:get_string("number")
 	meta:set_int("state", tubelib.STOPPED)
+	meta:set_int("running", tubelib.STATE_STOPPED)
 	minetest.get_node_timer(pos):stop()
 	meta:set_string("infotext", "Controller "..number..": No battery")
 	meta:set_string("formspec", formspec0(meta))
@@ -409,6 +413,7 @@ minetest.register_node("sl_controller:controller", {
 		meta:set_string("owner", placer:get_player_name())
 		meta:set_string("number", number)
 		meta:set_int("state", tubelib.STOPPED)
+		meta:set_int("running", tubelib.STATE_STOPPED)
 		meta:set_string("init", "-- called only once")
 		meta:set_string("loop", "-- called every second")
 		meta:set_string("notes", "For your notes / snippets")
@@ -480,8 +485,8 @@ tubelib.register_node("sl_controller:controller", {}, {
 		elseif topic == "off" then
 			set_input(pos, number, payload, topic)
 		elseif topic == "state" then
-			local state = meta:get_int("state")
-			return tubelib.statestring(state)
+			local running = meta:get_int("running") or tubelib.STATE_STOPPED
+			return tubelib.statestring(running)
 		else
 			return "unsupported"
 		end
