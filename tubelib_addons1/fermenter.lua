@@ -91,17 +91,31 @@ local function convert_leaves_to_biogas(meta)
 	local inv = meta:get_inventory()
 	local biogas = ItemStack("tubelib_addons1:biogas")
 	if inv:room_for_item("dst", biogas) then					-- enough output space?
-		local items = tubelib.get_num_items(meta, "src", 2)
-		if items then											-- input available?
-			if is_leaves(items:get_name()) then
-				inv:add_item("dst", biogas)
-				return true
+		local items = {}
+		local fault = false
+		for i = 1, 2 do
+			items[i] = tubelib.get_num_items(meta, "src", 1)
+			if items[i] then						-- input available?
+				if not is_leaves(items[i]:get_name()) then
+					fault = true
+					break
+				end
 			else
-				inv:add_item("src", items)
-				return nil  -- error
+				break
 			end
+		end
+		if #items == 2 then
+			inv:add_item("dst", biogas)
+			return true
 		else
-			return false  -- standby
+			for i = 1, #items do
+				inv:add_item("src", items[i])
+			end
+			if fault then
+				return nil  -- error
+			else
+				return false  -- standby
+			end
 		end
 	else
 		return false  -- standby
