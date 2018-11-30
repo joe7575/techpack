@@ -93,6 +93,11 @@ minetest.register_node("tubelib_addons3:teleporter", {
 			peer_meta:set_string("peer", nil)
 			peer_meta:set_string("formspec", sForm)
 			peer_meta:set_string("infotext", "Tubelib Teleporter, unconfigured")
+		else
+			local channel = meta:get_string("channel")
+			if channel then
+				PairingList[channel] = nil
+			end
 		end
 	end,
 	
