@@ -2,6 +2,16 @@
 
 
 
+## V1.16.7 (2018-11-30)
+
+### Fixes
+- Teleporter channel bug fixed
+
+### Changes
+- Fermenter: Improved input items processing (pull request from micu)
+
+
+
 ## V1.16.6 (2018-10-20)
 
 ### Fixes
