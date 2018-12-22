@@ -15,35 +15,41 @@
 ]]--
 
 --
--- Inventory Button States
+-- Tubelib machine states
 --
-
-tubelib.STOPPED = 1		-- not operational
-tubelib.RUNNING = 2		-- in normal operation
-tubelib.STANDBY = 3		-- nothing to do or blocked anyhow
-tubelib.FAULT   = 4		-- any fault state, which has to be fixed by the player
+tubelib.STOPPED = 1	-- not operational/turned off
+tubelib.RUNNING = 2	-- in normal operation/turned on
+tubelib.STANDBY = 3	-- nothing to do (e.g. no input items), or blocked anyhow (output jammed),
+                    -- or node (world) not loaded
+tubelib.FAULT   = 4	-- any fault state (e.g. no fuel), which can be fixed by the player
+tubelib.BLOCKED = 5 -- a pushing node is blocked due to a full destination inventory
+tubelib.DEFECT  = 6	-- a defect (broken), which has to be repaired by the player
 
 tubelib.StatesImg = {
 	"tubelib_inv_button_off.png", 
 	"tubelib_inv_button_on.png", 
 	"tubelib_inv_button_standby.png", 
-	"tubelib_inv_button_error.png"
+	"tubelib_inv_button_error.png",
+	"tubelib_inv_button_error.png",
+	"tubelib_inv_button_off.png",
 }
 
 -- Return state button image for the node inventory
 function tubelib.state_button(state)
-	if state and state < 5 and state > 0 then
+	if state and state < 7 and state > 0 then
 		return tubelib.StatesImg[state]
 	end
-	return tubelib.StatesImg[tubelib.FAULT]
+	return "tubelib_inv_button_off.png"
 end
 
 -- State string based on button states
-tubelib.states = {"stopped", "running", "standby", "fault"}
+tubelib.StateStrings = {"stopped", "running", "standby", "fault", "blocked", "defect"}
 	
 
+
+
 --
--- 'running' variable States
+-- 'running' variable States (deprecated)
 --
 
 tubelib.STATE_RUNNING = 1		-- in normal operation

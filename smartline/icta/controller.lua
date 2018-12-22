@@ -505,5 +505,11 @@ tubelib.register_node("smartline:controller2", {}, {
 			return "unsupported"
 		end
 	end,
+	on_node_load = function(pos)
+		local meta = minetest.get_meta(pos)
+		if meta:get_int("state") == tubelib.RUNNING then
+			minetest.get_node_timer(pos):start(1)
+		end
+	end,
 })		
 

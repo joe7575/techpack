@@ -449,6 +449,15 @@ tubelib.register_node("tubelib_addons1:harvester_base", {}, {
 			return "unsupported"
 		end
 	end,
+	on_node_load = function(pos)
+		local meta = minetest.get_meta(pos)
+		local this = minetest.deserialize(meta:get_string("this"))
+		if this and this.running ~= tubelib.STATE_STOPPED then
+			this.running = tubelib.STATE_STANDBY
+			meta:set_string("this", minetest.serialize(this))
+			minetest.get_node_timer(pos):start(CYCLE_TIME * TICKS_TO_SLEEP)
+		end
+	end,
 })	
 
 

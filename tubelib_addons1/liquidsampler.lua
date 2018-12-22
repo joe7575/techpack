@@ -304,5 +304,12 @@ tubelib.register_node("tubelib_addons1:liquidsampler", {"tubelib_addons1:liquids
 			return "not supported"
 		end
 	end,
+	on_node_load = function(pos)
+		local meta = minetest.get_meta(pos)
+		if meta:get_int("running") ~= tubelib.STATE_STOPPED then
+			meta:set_int("running", tubelib.STATE_STANDBY)
+			minetest.get_node_timer(pos):start(20)
+		end
+	end,
 })	
 --------------------------------------------------------------- tubelib

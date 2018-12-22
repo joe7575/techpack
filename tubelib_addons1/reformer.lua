@@ -314,4 +314,11 @@ tubelib.register_node("tubelib_addons1:reformer", {}, {
 			return "unsupported"
 		end
 	end,
+	on_node_load = function(pos)
+		local meta = minetest.get_meta(pos)
+		if meta:get_int("running") ~= STOP_STATE then
+			meta:set_int("running", STANDBY_STATE)
+			minetest.get_node_timer(pos):start(CYCLE_TIME * TICKS_TO_SLEEP)
+		end
+	end,
 })	

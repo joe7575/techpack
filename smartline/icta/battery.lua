@@ -156,3 +156,10 @@ else
 	})
 end
 
+tubelib.register_node("smartline:battery", 
+	{"smartline:battery25", "smartline:battery50", "smartline:battery75"}, 
+	{
+		on_node_load = function(pos)
+			minetest.get_node_timer(pos):start(30)
+		end,
+})

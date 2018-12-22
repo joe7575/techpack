@@ -215,6 +215,17 @@ minetest.register_node("smartline:timer", {
 	is_ground_content = false,
 })
 
+tubelib.register_node("smartline:timer", {}, {
+	on_node_load = function(pos)
+		local meta = minetest.get_meta(pos)
+		minetest.get_node_timer(pos):start(CYCLE_TIME)
+		-- check rules for just loaded areas
+		local done = {false,false,false,false,false,false}
+		meta:set_string("done",  minetest.serialize(done))
+		check_rules(pos,0)
+	end,
+})
+
 
 minetest.register_craft({
 	output = "smartline:timer",
@@ -224,20 +235,3 @@ minetest.register_craft({
 		{"",         "default:mese_crystal", ""},
 	},
 })
-
-minetest.register_lbm({
-	label = "[SmartLine] Timer update",
-	name = "smartline:update",
-	nodenames = {"smartline:timer"},
-	run_at_every_load = true,
-	action = function(pos, node)
-		local meta = minetest.get_meta(pos)
-		-- check rules for just loaded areas
-		local done = {false,false,false,false,false,false}
-		meta:set_string("done",  minetest.serialize(done))
-		check_rules(pos,0)
-	end
-})
-
-
-

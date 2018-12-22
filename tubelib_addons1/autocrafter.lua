@@ -116,7 +116,7 @@ local function stop_crafter(pos)
 	local node = minetest.get_node(pos)
 	local meta = minetest.get_meta(pos)
 	local number = meta:get_string("number") or ""
-	meta:set_int("running", 0)
+	meta:set_int("running", tubelib.STATE_STOPPED)
 	meta:set_string("formspec",formspec(tubelib.STOPPED))
 	meta:set_string("infotext", "Tubelib Autocrafter "..number..": stopped")
 	node.name = "tubelib_addons1:autocrafter"
@@ -129,7 +129,7 @@ local function goto_sleep(pos)
 	local node = minetest.get_node(pos)
 	local meta = minetest.get_meta(pos)
 	local number = meta:get_string("number") or ""
-	meta:set_int("running", -1)
+	meta:set_int("running", tubelib.STATE_STANDBY)
 	meta:set_string("formspec",formspec(tubelib.STANDBY))
 	meta:set_string("infotext", "Tubelib Autocrafter "..number..": standby")
 	node.name = "tubelib_addons1:autocrafter"
@@ -149,7 +149,7 @@ local function run_autocrafter(pos, elapsed)
 	
 	-- only use crafts that have an actual result
 	if output_item:is_empty() then
-		if running <= 0 then
+		if running <= tubelib.STATE_STOPPED then
 			return goto_sleep(pos)
 		end
 		meta:set_int("running", running)
@@ -157,7 +157,7 @@ local function run_autocrafter(pos, elapsed)
 	end
 
 	if not autocraft(inventory, craft) then
-		if running <= 0 then
+		if running <= tubelib.STATE_STOPPED then
 			return goto_sleep(pos)
 		end
 		meta:set_int("running", running)
@@ -166,7 +166,7 @@ local function run_autocrafter(pos, elapsed)
 	
 	meta:set_int("item_counter", meta:get_int("item_counter") + output_item:get_count())
 	
-	if running <= 0 then
+	if running <= tubelib.STATE_STOPPED then
 		return start_crafter(pos)
 	else
 		running = SLEEP_CNT_START_VAL
@@ -351,17 +351,17 @@ local function on_receive_fields(pos, formname, fields, sender)
 	local meta = minetest.get_meta(pos)
 	local running = meta:get_int("running")
 	if fields.button ~= nil then
-		if running > 0 then
+		if running > tubelib.STATE_STOPPED then
 			update_meta(meta, tubelib.STOPPED)
 			stop_crafter(pos)
-			meta:set_int("running", 0)
+			meta:set_int("running", tubelib.STATE_STOPPED)
 		else
 			if update_meta(meta, tubelib.RUNNING) then
-				meta:set_int("running", 1)
+				meta:set_int("running", tubelib.STATE_RUNNING)
 				start_crafter(pos)
 			else
 				stop_crafter(pos)
-				meta:set_int("running", 0)
+				meta:set_int("running", tubelib.STATE_STOPPED)
 			end
 		end
 	end
@@ -484,6 +484,13 @@ tubelib.register_node("tubelib_addons1:autocrafter", {"tubelib_addons1:autocraft
 			return meta:set_int("item_counter", 0)
 		else
 			return "unsupported"
+		end
+	end,
+	on_server_restart = function(pos)
+		local meta = minetest.get_meta(pos)
+		if meta:get_int("running") ~= tubelib.STATE_STOPPED then
+			meta:set_int("running", tubelib.STATE_STANDBY)
+			minetest.get_node_timer(pos):start(craft_time*SLEEP_CNT_START_VAL)
 		end
 	end,
 })	

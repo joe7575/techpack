@@ -124,4 +124,7 @@ tubelib.register_node("smartline:repeater", {}, {
 			return tubelib.send_message(numbers, owner, nil, topic, payload)
 		end
 	end,
+	on_node_load = function(pos)
+		minetest.get_node_timer(pos):start(1)
+	end,
 })		

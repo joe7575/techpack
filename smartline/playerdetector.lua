@@ -220,5 +220,8 @@ tubelib.register_node("smartline:playerdetector", {"smartline:playerdetector_act
 			return meta:get_string("player_name")
 		end
 	end,
+	on_node_load = function(pos)
+		minetest.get_node_timer(pos):start(1.0)
+	end,
 })		
 

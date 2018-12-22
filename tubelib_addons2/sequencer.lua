@@ -261,4 +261,11 @@ tubelib.register_node("tubelib_addons2:sequencer", {}, {
 			meta:set_int("endless", 0)
 		end
 	end,
+	on_node_load = function(pos)
+		local meta = minetest.get_meta(pos)
+		if meta:get_int("running") ~= STOP_STATE then
+			meta:set_int("running", RUNNING_STATE)
+			minetest.get_node_timer(pos):start(1)
+		end
+	end,
 })		

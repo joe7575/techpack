@@ -424,12 +424,8 @@ if minetest.global_exists("tubelib") then
 			local meta = minetest.get_meta(pos)
 			return tubelib.put_item(meta, "dst", item)
 		end,
-		on_recv_message = function(pos, topic, payload)
-			if topic == "on" then
-				start_the_machine(pos)
-			elseif topic == "off" then
-				stop_the_machine(pos)
-			end
+		on_node_load = function(pos)
+			minetest.get_node_timer(pos):start(1.0)
 		end,
 	})	
 end

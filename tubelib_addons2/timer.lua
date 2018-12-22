@@ -186,34 +186,14 @@ minetest.register_craft({
 	},
 })
 
-minetest.register_lbm({
-	label = "[Tubelib] Timer update",
-	name = "tubelib_addons2:update",
-	nodenames = {"tubelib_addons2:timer"},
-	run_at_every_load = true,
-	action = function(pos, node)
+tubelib.register_node("tubelib_addons2:timer", {}, {
+	on_node_load = function(pos)
 		local meta = minetest.get_meta(pos)
+		minetest.get_node_timer(pos):start(CYCLE_TIME)
 		-- check rules for just loaded areas
 		local done = {false,false,false,false,false,false}
 		meta:set_string("done",  minetest.serialize(done))
 		check_rules(pos,0)
-		
-		local events = minetest.deserialize(meta:get_string("events"))
-		local numbers = minetest.deserialize(meta:get_string("numbers"))
-		local actions = {}
-		for _,a in ipairs(minetest.deserialize(meta:get_string("actions"))) do
-			if a == "start" then
-				actions[#actions+1] = "on"
-			elseif a == "stop" then
-				actions[#actions+1] = "off"
-			else
-				actions[#actions+1] = a
-			end
-		end
-		meta:set_string("actions", minetest.serialize(actions))
-		meta:set_string("formspec", formspec(events, numbers, actions))
-	end
+	end,
 })
-
-
 

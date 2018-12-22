@@ -232,4 +232,7 @@ tubelib.register_node("tubelib_addons3:pushing_chest", {}, {
 	on_recv_message = function(pos, topic, payload)
 		return "unsupported"
 	end,
+	on_node_load = function(pos)
+		minetest.get_node_timer(pos):start(2)
+	end,
 })	

@@ -150,6 +150,9 @@ tubelib.register_node("sl_controller:server", {}, {
 			end
 		end
 	end,
+	on_node_load = function(pos)
+		minetest.get_node_timer(pos):start(20)
+	end,
 })		
 
 

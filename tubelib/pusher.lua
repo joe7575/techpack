@@ -13,7 +13,7 @@
 	Simple node for push/pull operation of StackItems from chests or other
 	inventory/server nodes to tubes or other inventory/server nodes.
 	
-	The Pusher supports the following messages:
+	The Pusher is based on the class NodeStates and supports the following messages:
 	 - topic = "on", payload  = nil
 	 - topic = "off", payload  = nil
 	 - topic = "state", payload  = nil, 
@@ -29,82 +29,47 @@
 --               |        |/
 --               +--------+
 
-local RUNNING_STATE = 10 
+-- for lazy programmers
+local S = function(pos) if pos then return minetest.pos_to_string(pos) end end
+local P = minetest.string_to_pos
+local M = minetest.get_meta
 
-local function switch_on(pos, node)
-	local meta = minetest.get_meta(pos)
-	local number = meta:get_string("number")
-	meta:set_int("running", RUNNING_STATE)
-	meta:set_string("infotext", "Pusher "..number..": running")
-	node.name = "tubelib:pusher_active"
-	minetest.swap_node(pos, node)
-	minetest.get_node_timer(pos):start(2)
-	return false
-end	
+local STANDBY_TICKS = 5
+local COUNTDOWN_TICKS = 5
+local CYCLE_TIME = 2
 
-local function switch_off(pos, node)
-	local meta = minetest.get_meta(pos)
-	local number = meta:get_string("number")
-	meta:set_int("running", tubelib.STATE_STOPPED)
-	meta:set_string("infotext", "Pusher "..number..": stopped")
-	node.name = "tubelib:pusher"
-	minetest.swap_node(pos, node)
-	minetest.get_node_timer(pos):stop()
-	return false
-end	
+local State = tubelib.NodeStates:new({
+	node_name_passive = "tubelib:pusher",
+	node_name_active = "tubelib:pusher_active",
+	node_name_defect = "tubelib:pusher_defect",
+	infotext_name = "Tubelib Pusher",
+	cycle_time = CYCLE_TIME,
+	standby_ticks = STANDBY_TICKS,
+	has_item_meter = true,
+	aging_factor = 10,
+})
 
-local function goto_standby(pos, node)
-	local meta = minetest.get_meta(pos)
-	local number = meta:get_string("number")
-	meta:set_int("running", tubelib.STATE_STANDBY)
-	meta:set_string("infotext", "Pusher "..number..": standby")
-	node.name = "tubelib:pusher"
-	minetest.swap_node(pos, node)
-	minetest.get_node_timer(pos):start(20)
-	return false
-end	
-
-local function goto_blocked(pos, node)
-	local meta = minetest.get_meta(pos)
-	local number = meta:get_string("number")
-	meta:set_int("running", tubelib.STATE_BLOCKED)
-	meta:set_string("infotext", "Pusher "..number..": blocked")
-	node.name = "tubelib:pusher"
-	minetest.swap_node(pos, node)
-	minetest.get_node_timer(pos):start(20)
-	return false
-end	
-
-local function keep_running(pos, elapsed)
-	local meta = minetest.get_meta(pos)
-	local number = meta:get_string("number")
-	local running = meta:get_int("running") - 1
+local function pushing(pos, meta)
 	local player_name = meta:get_string("player_name")
 	local items = tubelib.pull_items(pos, "L", player_name) -- <<=== tubelib
 	if items ~= nil then
 		if tubelib.push_items(pos, "R", items, player_name) == false then -- <<=== tubelib
 			-- place item back
 			tubelib.unpull_items(pos, "L", items, player_name) -- <<=== tubelib
-			local node = minetest.get_node(pos)
-			return goto_blocked(pos, node)
+			State:blocked(pos, meta)
+			return
 		end
-		meta:set_int("item_counter", meta:get_int("item_counter") + 1)
-		if running <= 0 then
-			local node = minetest.get_node(pos)
-			return switch_on(pos, node)
-		else
-			-- reload running state
-			running = RUNNING_STATE
-		end
-	else
-		if running <= 0 then
-			local node = minetest.get_node(pos)
-			return goto_standby(pos, node)
-		end
+		State:keep_running(pos, meta, COUNTDOWN_TICKS)
+		return
 	end
-	meta:set_int("running", running)
-	return true
+	State:idle(pos, meta)
 end
+
+local function keep_running(pos, elapsed)
+	local meta = M(pos)
+	pushing(pos, meta)
+	return State:is_active(meta)
+end	
 
 minetest.register_node("tubelib:pusher", {
 	description = "Tubelib Pusher",
@@ -122,24 +87,24 @@ minetest.register_node("tubelib:pusher", {
 		local meta = minetest.get_meta(pos)
 		meta:set_string("player_name", placer:get_player_name())
 		local number = tubelib.add_node(pos, "tubelib:pusher") -- <<=== tubelib
-		meta:set_string("number", number)
-		meta:set_string("infotext", "Pusher "..number..": stopped")
-		meta:set_int("item_counter", 0)
+		State:node_init(pos, number)
 	end,
 
 	on_rightclick = function(pos, node, clicker)
 		if not minetest.is_protected(pos, clicker:get_player_name()) then
-			switch_on(pos, node)
+			State:start(pos, M(pos))
 		end
 	end,
 
-	after_dig_node = function(pos)
+	after_dig_node = function(pos, oldnode, oldmetadata, digger)
 		tubelib.remove_node(pos) -- <<=== tubelib
+		State:after_dig_node(pos, oldnode, oldmetadata, digger)
 	end,
 	
 	on_timer = keep_running,
 	on_rotate = screwdriver.disallow,
 
+	drop = "",
 	paramtype = "light",
 	sunlight_propagates = true,
 	paramtype2 = "facedir",
@@ -199,7 +164,7 @@ minetest.register_node("tubelib:pusher_active", {
 
 	on_rightclick = function(pos, node, clicker)
 		if not minetest.is_protected(pos, clicker:get_player_name()) then
-			switch_off(pos, node)
+			State:stop(pos, M(pos))
 		end
 	end,
 	
@@ -214,6 +179,42 @@ minetest.register_node("tubelib:pusher_active", {
 	sounds = default.node_sound_wood_defaults(),
 })
 
+minetest.register_node("tubelib:pusher_defect", {
+	description = "Tubelib Pusher",
+	tiles = {
+		-- up, down, right, left, back, front
+		'tubelib_pusher1.png',
+		'tubelib_pusher1.png',
+		'tubelib_outp.png^tubelib_defect.png',
+		'tubelib_inp.png^tubelib_defect.png',
+		"tubelib_pusher1.png^[transformR180]^tubelib_defect.png",
+		"tubelib_pusher1.png^tubelib_defect.png",
+	},
+
+	after_place_node = function(pos, placer)
+		local meta = minetest.get_meta(pos)
+		meta:set_string("player_name", placer:get_player_name())
+		local number = tubelib.add_node(pos, "tubelib:pusher") -- <<=== tubelib
+		State:node_init(pos, number)
+		State:defect(pos, meta)
+	end,
+
+	after_dig_node = function(pos)
+		tubelib.remove_node(pos) -- <<=== tubelib
+	end,
+	
+	on_timer = keep_running,
+	on_rotate = screwdriver.disallow,
+
+	paramtype = "light",
+	sunlight_propagates = true,
+	paramtype2 = "facedir",
+	groups = {choppy=2, cracky=2, crumbly=2, not_in_creative_inventory=1},
+	is_ground_content = false,
+	sounds = default.node_sound_wood_defaults(),
+})
+
+
 minetest.register_craft({
 	output = "tubelib:pusher 2",
 	recipe = {
@@ -224,34 +225,26 @@ minetest.register_craft({
 })
 
 --------------------------------------------------------------- tubelib
-tubelib.register_node("tubelib:pusher", {"tubelib:pusher_active"}, {
+tubelib.register_node("tubelib:pusher", 
+	{"tubelib:pusher_active", "tubelib:pusher_defect"}, {
 	on_pull_item = nil,  		-- pusher has no inventory
 	on_push_item = nil,			-- pusher has no inventory
 	on_unpull_item = nil,		-- pusher has no inventory
 	is_pusher = true,           -- is a pulling/pushing node
 	
 	on_recv_message = function(pos, topic, payload)
-		local node = minetest.get_node(pos)
-		if topic == "on" then
-			return switch_on(pos, node)
-		elseif topic == "off" then
-			return switch_off(pos, node)
-		elseif topic == "state" then
-			if node.name == "ignore" then  -- unloaded pusher?
-				return "blocked"
-			end
-			local meta = minetest.get_meta(pos)
-			local running = meta:get_int("running") or tubelib.STATE_STOPPED
-			return tubelib.statestring(running)
-		elseif topic == "counter" then
-			local meta = minetest.get_meta(pos)
-			return meta:get_int("item_counter")
-		elseif topic == "clear_counter" then
-			local meta = minetest.get_meta(pos)
-			return meta:set_int("item_counter", 0)
+		local resp = State:on_receive_message(pos, topic, payload)
+		if resp then
+			return resp
 		else
-			return "not supported"
+			return "unsupported"
 		end
+	end,
+	on_node_load = function(pos)
+		State:on_node_load(pos)
+	end,
+	on_node_repair = function(pos)
+		return State:on_node_repair(pos)
 	end,
 })	
 --------------------------------------------------------------- tubelib

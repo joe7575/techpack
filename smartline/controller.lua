@@ -885,6 +885,12 @@ tubelib.register_node("smartline:controller", {}, {
 			return "unsupported"
 		end
 	end,
+	on_node_load = function(pos)
+		local meta = minetest.get_meta(pos)
+		if meta:get_int("state") == tubelib.RUNNING then
+			minetest.get_node_timer(pos):start(1)
+		end
+	end,
 })		
 
 -- List of Controller actions and conditions is dependent on loaded mods.

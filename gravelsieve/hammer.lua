@@ -3,16 +3,6 @@
 	Gravel Sieve Mod
 	================
 
-	v0.01 by JoSt
-	Derived from the work of RealBadAngel, Maciej Kasatkin (screwdriver)
-
-	Copyright (C) 2017 Joachim Stolberg
-	Copyright (C) 2013-2016 RealBadAngel, Maciej Kasatkin
-	Copyright (C) 2013-2016 Various Minetest developers and contributors
-
-	LGPLv2.1+
-	See LICENSE.txt for more information
-
 ]]--
 
 
@@ -45,6 +35,7 @@ gravelsieve.handler = function(itemstack, user, pointed_thing)
 			loop=false})
 	end
 
+	itemstack:add_wear(65535 / (500 - 1))
 	return itemstack
 end
 
@@ -52,8 +43,7 @@ minetest.register_tool("gravelsieve:hammer", {
 	description = "Hammer converts Cobblestone into Gravel",
 	inventory_image = "gravelsieve_hammer.png",
 	on_use = function(itemstack, user, pointed_thing)
-		gravelsieve.handler(itemstack, user, pointed_thing)
-		return itemstack
+		return gravelsieve.handler(itemstack, user, pointed_thing)
 	end,
 })
 

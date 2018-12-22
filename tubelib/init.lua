@@ -24,6 +24,7 @@
 	                   - new tubing algorithm
 	                   - tubelib.pull_stack()/tubelib.get_stack() added
 	                   - item counter for pusher/distributor added
+	2018-12-21  v2.00  Switch to tubelib2, "defect" nodes and "repair kit" added
 	
 ]]--
 
@@ -32,7 +33,7 @@ tubelib = {
 	NodeDef = {},		-- node registration info
 }
 
-tubelib.version = 1.00
+tubelib.version = 2.00
 
 
 --------------------------- conversion to v0.04
@@ -87,14 +88,17 @@ minetest.register_craft({
 })
 
 
-dofile(minetest.get_modpath("tubelib") .. "/tubes1.lua")
-dofile(minetest.get_modpath("tubelib") .. "/tubes2.lua")
+dofile(minetest.get_modpath("tubelib") .. "/tubes.lua")
 dofile(minetest.get_modpath("tubelib") .. "/command.lua")
+-- conversion from v1.16 to v2.00
+dofile(minetest.get_modpath("tubelib") .. "/migrate.lua")
 dofile(minetest.get_modpath("tubelib") .. "/states.lua")
+dofile(minetest.get_modpath("tubelib") .. "/node_states.lua")
 dofile(minetest.get_modpath("tubelib") .. "/pusher.lua")
 dofile(minetest.get_modpath("tubelib") .. "/blackhole.lua")
 dofile(minetest.get_modpath("tubelib") .. "/button.lua")
 dofile(minetest.get_modpath("tubelib") .. "/lamp.lua")
 dofile(minetest.get_modpath("tubelib") .. "/distributor.lua")
 dofile(minetest.get_modpath("tubelib") .. "/legacy_nodes.lua")
+dofile(minetest.get_modpath("tubelib") .. "/repairkit.lua")
 

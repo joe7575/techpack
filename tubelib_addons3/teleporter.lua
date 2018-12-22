@@ -14,37 +14,11 @@
 
 ]]--
 
-local PairingList = {}
+local Tube = tubelib.Tube
 
-local sForm = "size[7.5,3]"..
+local sFormspec = "size[7.5,3]"..
 	"field[0.5,1;7,1;channel;Enter channel string;]" ..
 	"button_exit[2,2;3,1;exit;Save]"
-
-local function pairing(pos, channel)
-	if PairingList[channel] and not vector.equals(pos, PairingList[channel]) then
-		-- store peer position on both nodes
-		local meta1 = minetest.get_meta(pos)
-		local peer = minetest.pos_to_string(PairingList[channel])
-		meta1:set_string("peer", peer)
-		meta1:set_string("infotext", "Tubelib Teleporter, connected "..peer)
-		meta1:set_string("channel", nil)
-		meta1:set_string("formspec", nil)
-		
-		local meta2 = minetest.get_meta(PairingList[channel])
-		local peer = minetest.pos_to_string(pos)
-		meta2:set_string("peer", peer)
-		meta2:set_string("infotext", "Tubelib Teleporter, connected "..peer)
-		meta2:set_string("channel", nil)
-		meta2:set_string("formspec", nil)
-		
-		PairingList[channel] = nil
-		return true
-	else
-		PairingList[channel] = pos
-		minetest.get_meta(pos):set_string("channel", channel)
-		return false
-	end
-end
 
 minetest.register_node("tubelib_addons3:teleporter", {
 	description = "Tubelib Teleporter",
@@ -59,46 +33,23 @@ minetest.register_node("tubelib_addons3:teleporter", {
 	},
 
 	after_place_node = function(pos, placer)
-		local meta = minetest.get_meta(pos)
 		tubelib.add_node(pos, "tubelib_addons3:teleporter")
-		meta:set_string("formspec", sForm)
-		meta:set_string("infotext", "Tubelib Teleporter, unconfigured")
+		-- determine the tube side
+		local tube_dir = ((minetest.dir_to_facedir(placer:get_look_dir()) + 1) % 4) + 1
+		Tube:prepare_pairing(pos, tube_dir, sFormspec)
+		Tube:after_place_node(pos, {tube_dir})
 	end,
 
 	on_receive_fields = function(pos, formname, fields, player)
-		local meta = minetest.get_meta(pos)
 		if fields.channel ~= nil then
-			if not pairing(pos, fields.channel) then
-				meta:set_string("formspec", "size[7.5,3]"..
-				"field[0.5,1;7,1;channel;Enter channel string;"..fields.channel.."]" ..
-				"button_exit[2,2;3,1;exit;Save]")
-			else
-				local peer_pos = minetest.string_to_pos(meta:get_string("peer"))
-				minetest.log("action", player:get_player_name()..
-					" pairs Tubelib Teleporter nodes at "..
-					minetest.pos_to_string(pos)..
-					" and at "..minetest.pos_to_string(peer_pos))
-			end
+			Tube:pairing(pos, fields.channel)
 		end
 	end,
 	
-	on_destruct = function(pos)
-		-- unpair peer node
-		local meta = minetest.get_meta(pos)
-		local peer = meta:get_string("peer")
-		if peer ~= "" then
-			local peer_pos = minetest.string_to_pos(peer)
-			local peer_meta = minetest.get_meta(peer_pos)
-			peer_meta:set_string("channel", nil)
-			peer_meta:set_string("peer", nil)
-			peer_meta:set_string("formspec", sForm)
-			peer_meta:set_string("infotext", "Tubelib Teleporter, unconfigured")
-		else
-			local channel = meta:get_string("channel")
-			if channel then
-				PairingList[channel] = nil
-			end
-		end
+	after_dig_node = function(pos, oldnode, oldmetadata, digger)
+		Tube:stop_pairing(pos, oldmetadata, sFormspec)
+		local tube_dir = tonumber(oldmetadata.fields.tube_dir or 0)
+		Tube:after_dig_node(pos, {tube_dir})
 	end,
 	
 	on_rotate = screwdriver.disallow,
@@ -120,22 +71,4 @@ minetest.register_craft({
 	},
 })
 
--- recursion detection
-local LastPeerPos = nil
-
-tubelib.register_node("tubelib_addons3:teleporter", {}, {
-	on_push_item = function(pos, side, item)
-		-- push on peer side
-		local meta = minetest.get_meta(pos)
-		local peer = meta:get_string("peer")
-		if peer ~= "" and peer ~= LastPeerPos then
-			LastPeerPos = peer
-			local res = tubelib.push_items(minetest.string_to_pos(peer), "R", item, nil)
-			LastPeerPos = nil
-			return res
-		end
-		return false
-	end,
-	is_pusher = true,
-})	
-
+Tube:add_secondary_node_names({"tubelib_addons3:teleporter"})

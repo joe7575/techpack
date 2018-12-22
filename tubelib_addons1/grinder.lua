@@ -14,16 +14,31 @@
 	
 ]]--
 
-local TICKS_TO_SLEEP = 10
+-- for lazy programmers
+local S = function(pos) if pos then return minetest.pos_to_string(pos) end end
+local P = minetest.string_to_pos
+local M = minetest.get_meta
+
+local STANDBY_TICKS = 4
+local COUNTDOWN_TICKS = 4
 local CYCLE_TIME = 2
-local STOP_STATE = 0
-local STANDBY_STATE = -1
-local FAULT_STATE = -3
+
 
 -- Grinder recipes
 local Recipes = {}
 
-local function formspec(state)
+local State = tubelib.NodeStates:new({
+	node_name_passive = "tubelib_addons1:grinder",
+	node_name_active = "tubelib_addons1:grinder_active",
+	node_name_defect = "tubelib_addons1:grinder_defect",
+	infotext_name = "Tubelib Grinder",
+	cycle_time = CYCLE_TIME,
+	standby_ticks = STANDBY_TICKS,
+	has_item_meter = true,
+	aging_factor = 10,
+})
+
+local function formspec(pos, meta)
 	return "size[8,8]"..
 	default.gui_bg..
 	default.gui_bg_img..
@@ -31,7 +46,7 @@ local function formspec(state)
 	"list[context;src;0,0;3,3;]"..
 	"item_image[0,0;1,1;default:cobble]"..
 	"image[3.5,1;1,1;tubelib_gui_arrow.png]"..
-	"image_button[3.5,2;1,1;".. tubelib.state_button(state) ..";button;]"..
+	"image_button[3.5,2;1,1;".. State:get_state_button_image(meta) ..";state_button;]"..
 	"list[context;dst;5,0;3,3;]"..
 	"item_image[5,0;1,1;default:gravel]"..
 	"list[current_player;main;0,4;8,4;]"..
@@ -41,23 +56,21 @@ local function formspec(state)
 	"listring[current_player;main]"
 end
 
+State:register_formspec_func(formspec)
+
 local function allow_metadata_inventory_put(pos, listname, index, stack, player)
 	if minetest.is_protected(pos, player:get_player_name()) then
 		return 0
 	end
-	local meta = minetest.get_meta(pos)
-	local inv = meta:get_inventory()
-	if listname == "src" then
-		return stack:get_count()
-	elseif listname == "dst" then
-		return 0
+	local inv = M(pos):get_inventory()
+	if listname == "src" and State:get_state(M(pos)) == tubelib.STANDBY then
+		State:start(pos, M(pos))
 	end
-	return 0
+	return stack:get_count()
 end
 
 local function allow_metadata_inventory_move(pos, from_list, from_index, to_list, to_index, count, player)
-	local meta = minetest.get_meta(pos)
-	local inv = meta:get_inventory()
+	local inv = M(pos):get_inventory()
 	local stack = inv:get_stack(from_list, from_index)
 	return allow_metadata_inventory_put(pos, to_list, to_index, stack, player)
 end
@@ -69,7 +82,7 @@ local function allow_metadata_inventory_take(pos, listname, index, stack, player
 	return stack:get_count()
 end
 
-local function grinding(inv)
+local function grinding(pos, meta, inv)
 	for _,stack in ipairs(inv:get_list("src")) do
 		if not stack:is_empty() then
 			local name = stack:get_name()
@@ -78,104 +91,31 @@ local function grinding(inv)
 				if inv:room_for_item("dst", output) then
 					inv:add_item("dst", output)
 					inv:remove_item("src", ItemStack(name))
-					return true
+					State:keep_running(pos, meta, COUNTDOWN_TICKS)
+				else
+					State:blocked(pos, meta)
 				end
+			else
+				State:fault(pos, meta)
 			end
+			return
 		end
 	end
-	return false
-end
-
-
-local function start_the_machine(pos)
-	local meta = minetest.get_meta(pos)
-	local node = minetest.get_node(pos)
-	local number = meta:get_string("number")
-	meta:set_int("running", TICKS_TO_SLEEP)
-	meta:set_string("infotext", "Tubelib Grinder "..number..": running")
-	meta:set_string("formspec", formspec(tubelib.RUNNING))
-	node.name = "tubelib_addons1:grinder_active"
-	minetest.swap_node(pos, node)
-	minetest.get_node_timer(pos):start(CYCLE_TIME)
-	return false
-end
-
-local function stop_the_machine(pos)
-	local meta = minetest.get_meta(pos)
-	local node = minetest.get_node(pos)
-	local number = meta:get_string("number")
-	meta:set_int("running", STOP_STATE)
-	meta:set_string("infotext", "Tubelib Grinder "..number..": stopped")
-	meta:set_string("formspec", formspec(tubelib.STOPPED))
-	node.name = "tubelib_addons1:grinder"
-	minetest.swap_node(pos, node)
-	minetest.get_node_timer(pos):stop()
-	return false
-end
-
-local function goto_sleep(pos)
-	local meta = minetest.get_meta(pos)
-	local node = minetest.get_node(pos)
-	local number = meta:get_string("number")
-	meta:set_int("running", STANDBY_STATE)
-	meta:set_string("infotext", "Tubelib Grinder "..number..": standby")
-	meta:set_string("formspec", formspec(tubelib.STANDBY))
-	node.name = "tubelib_addons1:grinder"
-	minetest.swap_node(pos, node)
-	minetest.get_node_timer(pos):start(CYCLE_TIME * TICKS_TO_SLEEP)
-	return false
-end
-
-local function goto_fault(pos)
-	local meta = minetest.get_meta(pos)
-	local node = minetest.get_node(pos)
-	local number = meta:get_string("number")
-	meta:set_int("running", FAULT_STATE)
-	meta:set_string("infotext", "Tubelib Grinder "..number..": fault")
-	meta:set_string("formspec", formspec(tubelib.FAULT))
-	node.name = "tubelib_addons1:grinder"
-	minetest.swap_node(pos, node)
-	minetest.get_node_timer(pos):stop()
-	return false
+	State:idle(pos, meta)
 end
 
 local function keep_running(pos, elapsed)
-	local meta = minetest.get_meta(pos)
-	local running = meta:get_int("running") - 1
-	--print("running", running)
+	local meta = M(pos)
 	local inv = meta:get_inventory()
-	local busy = grinding(inv)
-	
-	if busy == true then 
-		if running <= STOP_STATE then
-			return start_the_machine(pos)
-		else
-			running = TICKS_TO_SLEEP
-		end
-	elseif not inv:is_empty("src") then
-		return goto_fault(pos)
-	else
-		if running <= STOP_STATE then
-			return goto_sleep(pos)
-		end
-	end
-	meta:set_int("running", running)
-	return true
+	grinding(pos, meta, inv)
+	return State:is_active(meta)
 end
 
 local function on_receive_fields(pos, formname, fields, player)
 	if minetest.is_protected(pos, player:get_player_name()) then
 		return
 	end
-	local meta = minetest.get_meta(pos)
-	local running = meta:get_int("running") or 1
-	if fields.button ~= nil then
-		if running > STOP_STATE or running == FAULT_STATE then
-			stop_the_machine(pos)
-		else
-			start_the_machine(pos)
-		end
-	end
+	State:state_button_event(pos, fields)
 end
 
 minetest.register_node("tubelib_addons1:grinder", {
@@ -192,17 +132,15 @@ minetest.register_node("tubelib_addons1:grinder", {
 
 	after_place_node = function(pos, placer)
 		local number = tubelib.add_node(pos, "tubelib_addons1:grinder")
-		local meta = minetest.get_meta(pos)
+		State:node_init(pos, number)
+		local meta = M(pos)
 		local inv = meta:get_inventory()
 		inv:set_size('src', 9)
 		inv:set_size('dst', 9)
-		meta:set_string("number", number)
-		meta:set_string("infotext", "Tubelib Grinder "..number..": stopped")
-		meta:set_string("formspec", formspec(tubelib.STOPPED))
 	end,
 
 	on_dig = function(pos, node, puncher, pointed_thing)
-		local meta = minetest.get_meta(pos)
+		local meta = M(pos)
 		local inv = meta:get_inventory()
 		if inv:is_empty("dst") and inv:is_empty("src") then
 			minetest.node_dig(pos, node, puncher, pointed_thing)
@@ -210,6 +148,10 @@ minetest.register_node("tubelib_addons1:grinder", {
 		end
 	end,
 
+	after_dig_node = function(pos, oldnode, oldmetadata, digger)
+		State:after_dig_node(pos, oldnode, oldmetadata, digger)
+	end,
+	
 	on_rotate = screwdriver.disallow,
 	on_timer = keep_running,
 	on_receive_fields = on_receive_fields,
@@ -217,6 +159,7 @@ minetest.register_node("tubelib_addons1:grinder", {
 	allow_metadata_inventory_move = allow_metadata_inventory_move,
 	allow_metadata_inventory_take = allow_metadata_inventory_take,
 
+	drop = "",
 	paramtype = "light",
 	sunlight_propagates = true,
 	paramtype2 = "facedir",
@@ -263,6 +206,49 @@ minetest.register_node("tubelib_addons1:grinder_active", {
 	sounds = default.node_sound_wood_defaults(),
 })
 
+minetest.register_node("tubelib_addons1:grinder_defect", {
+	description = "Tubelib Grinder",
+	tiles = {
+		-- up, down, right, left, back, front
+		'tubelib_addons1_grinder.png',
+		'tubelib_front.png^tubelib_defect.png',
+		'tubelib_front.png^tubelib_defect.png',
+		'tubelib_front.png^tubelib_defect.png',
+		"tubelib_front.png^tubelib_defect.png",
+		"tubelib_front.png^tubelib_defect.png",
+	},
+
+	after_place_node = function(pos, placer)
+		local number = tubelib.add_node(pos, "tubelib_addons1:grinder")
+		State:node_init(pos, number)
+		local meta = M(pos)
+		local inv = meta:get_inventory()
+		inv:set_size('src', 9)
+		inv:set_size('dst', 9)
+		State:defect(pos, meta)
+	end,
+
+	on_dig = function(pos, node, puncher, pointed_thing)
+		local meta = M(pos)
+		local inv = meta:get_inventory()
+		if inv:is_empty("dst") and inv:is_empty("src") then
+			minetest.node_dig(pos, node, puncher, pointed_thing)
+			tubelib.remove_node(pos)
+		end
+	end,
+
+	allow_metadata_inventory_put = allow_metadata_inventory_put,
+	allow_metadata_inventory_move = allow_metadata_inventory_move,
+	allow_metadata_inventory_take = allow_metadata_inventory_take,
+
+	paramtype = "light",
+	sunlight_propagates = true,
+	paramtype2 = "facedir",
+	groups = {choppy=2, cracky=2, crumbly=2, not_in_creative_inventory=1},
+	is_ground_content = false,
+	sounds = default.node_sound_wood_defaults(),
+})
+
 minetest.register_craft({
 	output = "tubelib_addons1:grinder",
 	recipe = {
@@ -273,31 +259,32 @@ minetest.register_craft({
 })
 
 
-tubelib.register_node("tubelib_addons1:grinder", {"tubelib_addons1:grinder_active"}, {
+tubelib.register_node("tubelib_addons1:grinder", 
+	{"tubelib_addons1:grinder_active", "tubelib_addons1:grinder_defect"}, {
 	on_pull_item = function(pos, side)
-		local meta = minetest.get_meta(pos)
-		return tubelib.get_item(meta, "dst")
+		return tubelib.get_item(M(pos), "dst")
 	end,
 	on_push_item = function(pos, side, item)
-		local meta = minetest.get_meta(pos)
-		return tubelib.put_item(meta, "src", item)
+		return tubelib.put_item(M(pos), "src", item)
 	end,
 	on_unpull_item = function(pos, side, item)
-		local meta = minetest.get_meta(pos)
-		return tubelib.put_item(meta, "dst", item)
+		return tubelib.put_item(M(pos), "dst", item)
 	end,
 	on_recv_message = function(pos, topic, payload)
-		if topic == "on" then
-			start_the_machine(pos)
-		elseif topic == "off" then
-			stop_the_machine(pos)
-		elseif topic == "state" then
-			local meta = minetest.get_meta(pos)
-			local running = meta:get_int("running")
-			return tubelib.statestring(running)
+		local resp = State:on_receive_message(pos, topic, payload)
+		if resp then
+			return resp
 		else
 			return "unsupported"
 		end
+	end,
+	on_node_load = function(pos)
+		print("on_node_load")
+		return State:on_node_load(pos)
+	end,
+	on_node_repair = function(pos)
+		print("on_node_repair")
+		return State:on_node_repair(pos)
 	end,
 })	
 

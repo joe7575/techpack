@@ -154,6 +154,10 @@ tubelib.register_node("tubelib_addons1:funnel", {}, {
 			return "unsupported"
 		end
 	end,
+	on_node_load = function(pos)
+		minetest.get_node_timer(pos):start(1)
+	end,
+
 })	
 
 

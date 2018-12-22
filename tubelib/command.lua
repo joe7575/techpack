@@ -14,7 +14,12 @@
 
 ]]--
 
--------------------------------------------------------------------
+--- for lazy programmers
+local S = function(pos) if pos then return minetest.pos_to_string(pos) end end
+local P = minetest.string_to_pos
+local M = minetest.get_meta
+
+------------------------------------------------------------------
 -- Data base storage
 -------------------------------------------------------------------
 local storage = minetest.get_mod_storage()
@@ -53,12 +58,7 @@ local Name2Name = {}		-- translation table
 local string_find = string.find
 local string_split = string.split
 local tubelib_NodeDef = tubelib.NodeDef
-local get_neighbor_pos = tubelib.get_neighbor_pos
-local read_node_with_vm = tubelib.read_node_with_vm
-
--- Translate from facedir to contact side of the other node
--- (left for one is right for the other node)
-local FacedirToSide = {[0] = "F", "L", "B", "R", "U", "D"}
+local Tube = tubelib.Tube
 
 -- Generate a key string based on the given pos table,
 -- Used internaly as table key,
@@ -75,16 +75,6 @@ local function get_number(pos)
 		NextNumber = NextNumber + 1
 	end
 	return string.format("%.04u", Key2Number[key])
-end
-
--- Determine the contact side of the node at the given pos
--- param facedir: facedir to the node
-local function get_node_side(npos, facedir)	
-	local node = minetest.get_node_or_nil(npos) or read_node_with_vm(npos)
-	if facedir < 4 then
-		facedir = (facedir - node.param2 + 4) % 4
-	end
-	return FacedirToSide[facedir], node
 end
 
 local function generate_Key2Number()
@@ -109,6 +99,50 @@ local function not_protected(pos, placer_name, clicker_name)
 	return false
 end
 
+local function register_lbm(name, nodenames)
+	minetest.register_lbm({
+		label = "[Tubelib] Node update",
+		name = name.."update",
+		nodenames = nodenames,
+		run_at_every_load = true,
+		action = function(pos, node)
+			local name = Name2Name[node.name]
+			if tubelib_NodeDef[name] and tubelib_NodeDef[name].on_node_load then
+				tubelib_NodeDef[name].on_node_load(pos)
+			end
+		end
+	})
+end
+
+
+local DirToSide = {"B", "R", "F", "L", "D", "U"}
+
+local function dir_to_side(dir, param2)
+	if dir < 5 then
+		dir = (((dir - 1) - (param2 % 4)) % 4) + 1
+	end
+	return DirToSide[dir]
+end
+
+local SideToDir = {B=1, R=2, F=3, L=4, D=5, U=6}
+
+local function side_to_dir(side, param2)
+	local dir = SideToDir[side]
+	if dir < 5 then
+		dir = (((dir - 1) + (param2 % 4)) % 4) + 1
+	end
+	return dir
+end
+
+local function get_dest_node(pos, side)
+	local _,node = Tube:get_node(pos)
+	local dir = side_to_dir(side, node.param2)
+	local spos, sdir = Tube:get_connected_node_pos(pos, dir)
+	_,node = Tube:get_node(spos)
+	local in_side = dir_to_side(sdir, node.param2)
+	return spos, in_side, Name2Name[node.name] or node.name 
+end
+	
 -------------------------------------------------------------------
 -- API helper functions
 -------------------------------------------------------------------
@@ -213,6 +247,8 @@ end
 --        on_push_item = func(pos, side, item, player_name),
 --        on_unpull_item = func(pos, side, item, player_name),
 --        on_recv_message = func(pos, topic, payload),
+--        on_node_load = func(pos),  -- LBM function
+--        on_node_repair = func(pos),  -- repair defect (feature!) nodes
 --    }
 function tubelib.register_node(name, add_names, node_definition)
 	tubelib_NodeDef[name] = node_definition
@@ -223,10 +259,21 @@ function tubelib.register_node(name, add_names, node_definition)
 	end
 	if node_definition.on_pull_item or node_definition.on_push_item or 
 			node_definition.is_pusher then
+		Tube:add_secondary_node_names({name})
+		Tube:add_secondary_node_names(add_names)
+		
 		tubelib.KnownNodes[name] = true
 		for _,n in ipairs(add_names) do
 			tubelib.KnownNodes[n] = true
 		end
+	end
+	-- register LBM
+	if node_definition.on_node_load then
+		local nodenames = {name}
+		for _,n in ipairs(add_names) do
+			nodenames[#nodenames + 1] = n
+		end
+		register_lbm(name, nodenames)
 	end
 end
 
@@ -257,15 +304,23 @@ function tubelib.send_request(number, topic, payload)
 	return false
 end		
 
+-- for defect nodes
+function tubelib.repair_node(pos)
+	local node = minetest.get_node(pos)
+	local name = Name2Name[node.name]
+	if tubelib_NodeDef[name] and tubelib_NodeDef[name].on_node_repair then
+		return tubelib_NodeDef[name].on_node_repair(pos)
+	end
+	return false
+end
+
 -------------------------------------------------------------------
 -- Client side Push/Pull item functions
 -------------------------------------------------------------------
 
 function tubelib.pull_items(pos, side, player_name)
-	local npos, facedir = get_neighbor_pos(pos, side)
+	local npos, nside, name = get_dest_node(pos, side)
 	if npos == nil then return end
-	local nside, node = get_node_side(npos, facedir)
-	local name = Name2Name[node.name]
 	if tubelib_NodeDef[name] and tubelib_NodeDef[name].on_pull_item then
 		return tubelib_NodeDef[name].on_pull_item(npos, nside, player_name)
 	end
@@ -273,13 +328,11 @@ function tubelib.pull_items(pos, side, player_name)
 end
 
 function tubelib.push_items(pos, side, items, player_name)
-	local npos, facedir = get_neighbor_pos(pos, side)
+	local npos, nside, name = get_dest_node(pos, side)
 	if npos == nil then return end
-	local nside, node = get_node_side(npos, facedir)
-	local name = Name2Name[node.name]
 	if tubelib_NodeDef[name] and tubelib_NodeDef[name].on_push_item then
 		return tubelib_NodeDef[name].on_push_item(npos, nside, items, player_name)	
-	elseif node.name == "air" then
+	elseif name == "air" then
 		minetest.add_item(npos, items)
 		return true 
 	end
@@ -287,10 +340,8 @@ function tubelib.push_items(pos, side, items, player_name)
 end
 
 function tubelib.unpull_items(pos, side, items, player_name)
-	local npos, facedir = get_neighbor_pos(pos, side)
+	local npos, nside, name = get_dest_node(pos, side)
 	if npos == nil then return end
-	local nside, node = get_node_side(npos, facedir)
-	local name = Name2Name[node.name]
 	if tubelib_NodeDef[name] and tubelib_NodeDef[name].on_unpull_item then
 		return tubelib_NodeDef[name].on_unpull_item(npos, nside, items, player_name)
 	end
@@ -298,10 +349,8 @@ function tubelib.unpull_items(pos, side, items, player_name)
 end
 	
 function tubelib.pull_stack(pos, side, player_name)
-	local npos, facedir = get_neighbor_pos(pos, side)
+	local npos, nside, name = get_dest_node(pos, side)
 	if npos == nil then return end
-	local nside, node = get_node_side(npos, facedir)
-	local name = Name2Name[node.name]
 	if tubelib_NodeDef[name] then
 		if tubelib_NodeDef[name].on_pull_stack then
 			return tubelib_NodeDef[name].on_pull_stack(npos, nside, player_name)
@@ -483,6 +532,6 @@ generate_Key2Number()
 
 -- maintain data after one minute
 -- (minetest.get_day_count() will not be valid at start time)
-minetest.after(60, data_maintenance)
+minetest.after(5, data_maintenance)
 
 

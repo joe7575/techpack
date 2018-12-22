@@ -137,7 +137,7 @@ local function start_the_sequencer(pos)
 	local node = minetest.get_node(pos)
 	local meta = minetest.get_meta(pos)
 	local number = meta:get_string("number")
-	meta:set_int("running", 1)
+	meta:set_int("running", RUNNING_STATE)
 	meta:set_int("index", 1)
 	meta:set_string("infotext", "SmartLine Sequencer "..number..": running (1/"..NUM_SLOTS..")")
 	local rules = minetest.deserialize(meta:get_string("rules"))
@@ -280,6 +280,13 @@ tubelib.register_node("smartline:sequencer", {}, {
 			-- do not stop immediately
 			local meta = minetest.get_meta(pos)
 			meta:set_int("endless", 0)
+		end
+	end,
+	on_node_load = function(pos)
+		local meta = minetest.get_meta(pos)
+		if meta:get_int("running") ~= STOP_STATE then
+			meta:set_int("running", RUNNING_STATE)
+			minetest.get_node_timer(pos):start(1)
 		end
 	end,
 })		

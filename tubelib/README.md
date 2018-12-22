@@ -29,12 +29,11 @@ Download: ![GitHub](https://github.com/joe7575/Minetest-Tubelib/archive/master.z
 
 ## Dependencies
 default  
+tubelib2
+basic_materials
+
 
 # License
 Copyright (C) 2017-2018 Joachim Stolberg  
 Code: Licensed under the GNU LGPL version 2.1 or later. See LICENSE.txt and http://www.gnu.org/licenses/lgpl-2.1.txt  
 Textures: CC0
-
-## Dependencies
-default  
-

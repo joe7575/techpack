@@ -94,6 +94,7 @@ minetest.register_node("tubelib_addons2:accesscontrol", {
 				if tubelib.check_numbers(fields.numbers) then
 					meta:set_string("numbers", fields.numbers)
 					meta:set_string("code", fields.code)
+					meta:mark_as_private("code")
 					meta:set_string("infotext", "Tubelib Access Lock, Enter access code")
 					meta:set_string("formspec", formspec2(""))
 				end

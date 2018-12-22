@@ -491,4 +491,10 @@ tubelib.register_node("sl_controller:controller", {}, {
 			return "unsupported"
 		end
 	end,
+	on_node_load = function(pos)
+		local meta = minetest.get_meta(pos)
+		if meta:get_int("running") ~= tubelib.STATE_STOPPED then
+			minetest.get_node_timer(pos):start(1)
+		end
+	end,
 })		
