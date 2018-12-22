@@ -19,7 +19,7 @@
 - The Repair Kit is available and can be used to repair defect machines.
 - The mod 'basic_materials' is now needed for the Repair Kit.
 - Due to server crashes I can happen that all loaded nodes loose their timers. Therefore, all "timed" nodes got an "on_node_load" function, which is used to restart the timer. 
-
+- Forceload block (16x16x16) added
 
 
 

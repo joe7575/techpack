@@ -24,7 +24,8 @@
 	                   - new tubing algorithm
 	                   - tubelib.pull_stack()/tubelib.get_stack() added
 	                   - item counter for pusher/distributor added
-	2018-12-21  v2.00  Switch to tubelib2, "defect" nodes and "repair kit" added
+	2018-12-21  v2.00  Switch to tubelib2, "defect" nodes and "repair kit" added,
+                       Forceload block added,
 	
 ]]--
 
@@ -34,6 +35,7 @@ tubelib = {
 }
 
 tubelib.version = 2.00
+tubelib.max_num_forceload_blocks = 10
 
 
 --------------------------- conversion to v0.04
@@ -101,4 +103,5 @@ dofile(minetest.get_modpath("tubelib") .. "/lamp.lua")
 dofile(minetest.get_modpath("tubelib") .. "/distributor.lua")
 dofile(minetest.get_modpath("tubelib") .. "/legacy_nodes.lua")
 dofile(minetest.get_modpath("tubelib") .. "/repairkit.lua")
+dofile(minetest.get_modpath("tubelib") .. "/forceload.lua")
 

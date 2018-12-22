@@ -28,8 +28,8 @@ Download: ![GitHub](https://github.com/joe7575/Minetest-Tubelib/archive/master.z
 
 
 ## Dependencies
-default  
-tubelib2
+default   
+tubelib2  
 basic_materials
 
 
