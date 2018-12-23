@@ -175,6 +175,12 @@ gn("default:coral_orange",    "default:coral_skeleton")
 gn("default:coral_brown",     "default:coral_skeleton")
 
 -------------------------------------------------------------------------------
+-- tubelib Ground
+-------------------------------------------------------------------------------
+
+gn("tubelib:basalt_stone",     "tubelib:basalt_stone")
+
+-------------------------------------------------------------------------------
 -- Moreores Ground
 -------------------------------------------------------------------------------
 gn("moreores:mineral_silver",     "moreores:silver_lump")

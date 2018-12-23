@@ -54,7 +54,8 @@ minetest.register_lbm({
 				local peer_pos = P(peer)
 				local _,node = Tube:get_node(peer_pos)
 				local tube_dir = ((3 + (node.param2 % 4)) % 4) + 1
-				print("migration", peer, tube_dir)
+				print("migrate "..node.name.." at "..S(pos))
+				meta:set_string("peer", nil)
 				if tube_dir then
 					meta:set_int("tube_dir", tube_dir)
 				end
@@ -64,6 +65,7 @@ minetest.register_lbm({
 		else
 			local items = TubesTranslation[node.name][node.param2]
 			if items then
+				print("migrate "..node.name.." at "..S(pos))
 				local param2, ntype = items[1], items[2]
 				minetest.set_node(pos, {name = "tubelib:tube"..ntype, param2 = param2})
 			end

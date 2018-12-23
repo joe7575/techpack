@@ -26,7 +26,7 @@ local TICKS_TO_SLEEP = 5
 local STOP_STATE = 0
 local FAULT_STATE = -3
 
-local Depth2Idx = {[1]=1 ,[2]=2, [3]=3, [5]=4, [10]=5, [15]=6, [20]=7, [25]=8}
+local Depth2Idx = {[1]=1 ,[2]=2, [3]=3, [5]=4, [10]=5, [15]=6, [20]=7, [25]=8, [50]=9, [100]=10}
 local Level2Idx = {[2]=1, [1]=2, [0]=3, [-1]=4, [-2]=5, [-3]=6, 
 				   [-5]=7, [-10]=8, [-15]=9, [-20]=10}
 
@@ -49,7 +49,7 @@ local function quarry_formspec(meta, state)
 	default.gui_slots..
 	"dropdown[0,0;1.5;level;2,1,0,-1,-2,-3,-5,-10,-15,-20;"..Level2Idx[start_level].."]".. 
 	"label[1.6,0.2;Start level]"..
-	"dropdown[0,1;1.5;depth;1,2,3,5,10,15,20,25;"..Depth2Idx[depth].."]".. 
+	"dropdown[0,1;1.5;depth;1,2,3,5,10,15,20,25,50,100;"..Depth2Idx[depth].."]".. 
 	"label[1.6,1.2;Digging depth]"..
 	"checkbox[0,2;endless;Run endless;"..endless.."]"..
 	"list[context;main;5,0;4,4;]"..
@@ -70,6 +70,24 @@ local function get_pos(pos, facedir, side)
 	local dir = minetest.facedir_to_dir(facedir)
 	return vector.add(dst_pos, dir)
 end	
+
+local function get_node_lvm(pos)
+	local node = minetest.get_node_or_nil(pos)
+	if node then
+		return node
+	end
+	local vm = minetest.get_voxel_manip()
+	local MinEdge, MaxEdge = vm:read_from_map(pos, pos)
+	local data = vm:get_data()
+	local param2_data = vm:get_param2_data()
+	local area = VoxelArea:new({MinEdge = MinEdge, MaxEdge = MaxEdge})
+	local idx = area:index(pos.x, pos.y, pos.z)
+	node = {
+		name = minetest.get_name_from_content_id(data[idx]),
+		param2 = param2_data[idx]
+	}
+	return node
+end
 
 local function allow_metadata_inventory_put(pos, listname, index, stack, player)
 	if minetest.is_protected(pos, player:get_player_name()) then
@@ -184,7 +202,7 @@ local function quarry_next_node(pos, meta)
 		return nil			-- fault
 	end
 
-	local node = minetest.get_node_or_nil(quarry_pos)
+	local node = get_node_lvm(quarry_pos)
 	if node == nil then
 		return true
 	end

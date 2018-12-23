@@ -279,11 +279,9 @@ tubelib.register_node("tubelib_addons1:grinder",
 		end
 	end,
 	on_node_load = function(pos)
-		print("on_node_load")
 		return State:on_node_load(pos)
 	end,
 	on_node_repair = function(pos)
-		print("on_node_repair")
 		return State:on_node_repair(pos)
 	end,
 })	
@@ -314,6 +312,7 @@ tubelib.add_grinder_recipe({input="default:mossycobble", output="default:gravel"
 tubelib.add_grinder_recipe({input="default:gravel", output="default:sand"})
 tubelib.add_grinder_recipe({input="gravelsieve:sieved_gravel", output="default:sand"})
 tubelib.add_grinder_recipe({input="default:coral_skeleton", output="default:silver_sand"})
+tubelib.add_grinder_recipe({input="tubelib:basalt_stone", output="default:silver_sand"})
 
 if minetest.global_exists("skytest") then
 	tubelib.add_grinder_recipe({input="default:desert_sand", output="skytest:dust"})

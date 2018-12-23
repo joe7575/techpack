@@ -12,14 +12,22 @@
 - add a tubelib Repair Kit for defect blocks
 - Forceload block as part of tubelib
 - support for intllib
+- optionally disable the cobble/ore generation
 
 ## Current state
 - Switch to tubelib2 is done (not fully tested).
 - Pusher, Distributor, and Grinder already support the new state 'defect'. The AGING_VALUE is currently much to low. This is for testing only.
 - The Repair Kit is available and can be used to repair defect machines.
-- The mod 'basic_materials' is now needed for the Repair Kit.
+- The mod 'basic_materials' is now needed for some new recipes.
 - Due to server crashes I can happen that all loaded nodes loose their timers. Therefore, all "timed" nodes got an "on_node_load" function, which is used to restart the timer. 
 - Forceload block (16x16x16) added
+- switch 'tubelib_addons1_cobble_generator_enabled' activated, so that the automated cobble/ore generation can be disabled.
+  The cobble generation produces Basalt Stone which can be crafted to Basalt Stone Blocks and Basalt Stone Bricks
+- Quarry now uses LVM techniques to go down up to 100 meter
+
+## To Do
+- adapt API.md
+- 
 
 
 

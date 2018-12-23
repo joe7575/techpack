@@ -3,7 +3,7 @@
 	Tube Library
 	============
 
-	Copyright (C) 2017 Joachim Stolberg
+	Copyright (C) 2017-2019 Joachim Stolberg
 
 	LGPLv2.1+
 	See LICENSE.txt for more information
@@ -127,22 +127,23 @@ minetest.register_node("tubelib:forceload", {
 
 	paramtype = "light",
 	sunlight_propagates = true,
-	groups = {choppy=2, cracky=2, crumbly=2},
+	groups = {choppy=2, cracky=2, crumbly=2, 
+		not_in_creative_inventory = tubelib.max_num_forceload_blocks == 0 and 1 or 0},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
 })
 
 
-
-minetest.register_craft({
-	output = "tubelib:forceload",
-	recipe = {
-		{"group:wood", "", "group:wood"},
-		{"", "basic_materials:energy_crystal_simple", ""},
-		{"group:wood", "", "group:wood"},
-	},
-})
-
+if tubelib.max_num_forceload_blocks > 0 then
+	minetest.register_craft({
+		output = "tubelib:forceload",
+		recipe = {
+			{"group:wood", "", "group:wood"},
+			{"", "basic_materials:energy_crystal_simple", ""},
+			{"group:wood", "tubelib:wlanchip", "group:wood"},
+		},
+	})
+end
 
 minetest.register_on_joinplayer(function(player)
 	for _,pos in ipairs(get_pos_list(player)) do

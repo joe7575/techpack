@@ -3,7 +3,7 @@
 	Tube Library
 	============
 
-	Copyright (C) 2017 Joachim Stolberg
+	Copyright (C) 2017-2019 Joachim Stolberg
 
 	LGPLv2.1+
 	See LICENSE.txt for more information
@@ -34,7 +34,7 @@ local function update_mod_storage()
 	storage:set_string("Number2Pos", minetest.serialize(Number2Pos))
 	storage:set_string("Key2Number", nil) -- not used any more 
 	-- store data each hour
-	minetest.after(60*60, update_mod_storage)
+	minetest.after(60*59, update_mod_storage)
 	minetest.log("action", "[Tubelib] Data stored")
 end
 
@@ -43,7 +43,7 @@ minetest.register_on_shutdown(function()
 end)
 
 -- store data after one hour
-minetest.after(60*60, update_mod_storage)
+minetest.after(60*59, update_mod_storage)
 
 -- Key2Number will be generated at runtine
 local Key2Number = {} 

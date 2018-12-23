@@ -57,7 +57,6 @@ local P = minetest.string_to_pos
 local M = minetest.get_meta
 
 
-local AGING_VALUE = 10  -- start aging value
 local AGING_FACTOR = 3  -- defect random factor
 
 --
@@ -90,8 +89,8 @@ function NodeStates:new(attr)
 		infotext_name = attr.infotext_name,
 	}
 	if attr.aging_factor then
-		o.aging_level1 = attr.aging_factor * AGING_VALUE
-		o.aging_level2 = attr.aging_factor * AGING_VALUE * AGING_FACTOR
+		o.aging_level1 = attr.aging_factor * tubelib.machine_aging_value
+		o.aging_level2 = attr.aging_factor * tubelib.machine_aging_value * AGING_FACTOR
 	end
 	setmetatable(o, self)
 	self.__index = self
@@ -415,6 +414,7 @@ function NodeStates:on_node_repair(pos)
 	return false
 end	
 
+-- Return working or defect machine, depending on machine lifetime
 function NodeStates:after_dig_node(pos, oldnode, oldmetadata, digger)
 	local inv = minetest.get_inventory({type="player", name=digger:get_player_name()})
 	local cnt = oldmetadata.fields.tubelib_aging and tonumber(oldmetadata.fields.tubelib_aging) or 0

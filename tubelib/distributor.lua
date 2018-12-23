@@ -3,7 +3,7 @@
 	Tube Library
 	============
 
-	Copyright (C) 2017 Joachim Stolberg
+	Copyright (C) 2017-2019 Joachim Stolberg
 
 	LGPLv2.1+
 	See LICENSE.txt for more information
@@ -16,7 +16,7 @@
 	 - topic = "on", payload  = nil
 	 - topic = "off" , payload  = nil
 	 - topic = "state", payload  = nil, 
-	   response is "running", "stopped", "standby", or "not supported"
+	   response is "running", "stopped", "standby", "defect", or "not supported"
 ]]--
 
 -- for lazy programmers
@@ -372,6 +372,7 @@ minetest.register_node("tubelib:distributor", {
 	on_timer = keep_running,
 	on_rotate = screwdriver.disallow,
 	
+	drop = "",
 	paramtype = "light",
 	sunlight_propagates = true,
 	paramtype2 = "facedir",
@@ -460,7 +461,7 @@ minetest.register_node("tubelib:distributor_defect", {
 	paramtype = "light",
 	sunlight_propagates = true,
 	paramtype2 = "facedir",
-	groups = {crumbly=0, not_in_creative_inventory=1},
+	groups = {choppy=2, cracky=2, crumbly=2, not_in_creative_inventory=1},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
 })

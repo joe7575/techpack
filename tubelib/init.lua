@@ -3,7 +3,7 @@
 	Tube Library
 	============
 
-	Copyright (C) 2017,2018 Joachim Stolberg
+	Copyright (C) 2017-2019 Joachim Stolberg
 
 	LGPLv2.1+
 	See LICENSE.txt for more information
@@ -24,8 +24,8 @@
 	                   - new tubing algorithm
 	                   - tubelib.pull_stack()/tubelib.get_stack() added
 	                   - item counter for pusher/distributor added
-	2018-12-21  v2.00  Switch to tubelib2, "defect" nodes and "repair kit" added,
-                       Forceload block added,
+	2018-12-21  v2.00  Switch to tubelib2, "defect" nodes and "Repair Kit" added,
+                       Forceload block added, Basalt as Cobble Stone alternative added
 	
 ]]--
 
@@ -35,7 +35,10 @@ tubelib = {
 }
 
 tubelib.version = 2.00
-tubelib.max_num_forceload_blocks = 10
+
+tubelib.max_num_forceload_blocks = tonumber(minetest.setting_get("tubelib_max_num_forceload_blocks")) or 10
+tubelib.basalt_stone_enabled = minetest.setting_get("tubelib_basalt_stone_enabled") == "true"
+tubelib.machine_aging_value = tonumber(minetest.setting_get("tubelib_machine_aging_value")) or 100
 
 
 --------------------------- conversion to v0.04
@@ -105,4 +108,5 @@ dofile(minetest.get_modpath("tubelib") .. "/legacy_nodes.lua")
 dofile(minetest.get_modpath("tubelib") .. "/repairkit.lua")
 dofile(minetest.get_modpath("tubelib") .. "/mark.lua")
 dofile(minetest.get_modpath("tubelib") .. "/forceload.lua")
+dofile(minetest.get_modpath("tubelib") .. "/basalt.lua")
 

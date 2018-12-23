@@ -39,9 +39,9 @@ local COUNTDOWN_TICKS = 5
 local CYCLE_TIME = 1
 
 local State = tubelib.NodeStates:new({
-	node_name_passive = "tubelib_addons1:pusher",
-	node_name_active = "tubelib_addons1:pusher_active",
-	node_name_defect = "tubelib_addons1:pusher_defect",
+	node_name_passive = "tubelib_addons1:pusher_fast",
+	node_name_active = "tubelib_addons1:pusher_fast_active",
+	node_name_defect = "tubelib_addons1:pusher_fast_defect",
 	infotext_name = "Fast Pusher",
 	cycle_time = CYCLE_TIME,
 	standby_ticks = STANDBY_TICKS,
