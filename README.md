@@ -30,7 +30,8 @@
 
 ## To Do
 - adapt API.md
-- 
+- revise Wiki
+- expand controllers by the state defect
 
 
 
