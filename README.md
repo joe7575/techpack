@@ -14,9 +14,10 @@
 - support for intllib
 - optionally disable the cobble/ore generation
 
+
 ## Current state
 - Switch to tubelib2 is done (not fully tested).
-- Pusher, Distributor, and Grinder already support the new state 'defect'. The AGING_VALUE is currently much to low. This is for testing only.
+- Pusher, Distributor, and Grinder already support the new state 'defect'.
 - The Repair Kit is available and can be used to repair defect machines.
 - The mod 'basic_materials' is now needed for some new recipes.
 - Due to server crashes I can happen that all loaded nodes loose their timers. Therefore, all "timed" nodes got an "on_node_load" function, which is used to restart the timer. 
@@ -24,6 +25,8 @@
 - switch 'tubelib_addons1_cobble_generator_enabled' activated, so that the automated cobble/ore generation can be disabled.
   The cobble generation produces Basalt Stone which can be crafted to Basalt Stone Blocks and Basalt Stone Bricks
 - Quarry now uses LVM techniques to go down up to 100 meter
+- settingtypes introduced with the following settings: tubelib_max_num_forceload_blocks, tubelib_basalt_stone_enabled, tubelib_machine_aging_value
+
 
 ## To Do
 - adapt API.md
@@ -101,9 +104,9 @@ TechPack supports the following mods:
 
 
 ### Configuration
-- Enable cobblestone generation (true/false)  
-  If set to false, the lava/water cobblestone generator produces Basalt instead, 
-  which can't be used by TechPack.
+- Maximim number of Forceload Blocks per player
+- Enable Basalt Stone (and disable ore generation via cobble generator)
+- machine aging value to calculate the lifetime of machines
 
 
 ### License
@@ -111,8 +114,9 @@ Copyright (C) 2017-2018 Joachim Stolberg
 Code: Licensed under the GNU LGPL version 2.1 or later. See LICENSE.txt  
 Textures: CC BY-SA 3.0
 
+
 ### Dependencies 
-default, doors.  
+default, doors, intllib, basic_materials  
 Tubelib Color Lamps optional: unifieddyes  
 SmartLine Controller optional: mail  
 Gravelsieve optional: moreores, hopper, pipeworks  
@@ -137,5 +141,7 @@ tubelib_addons1 optional: unified_inventory
 - 2018-09-10  V1.14  * Distributor performance improved, chest commands added
 - 2018-09-15  V1.15  * Smartline Controller command added, chest commands improved
 - 2018-09-20  V1.16  * Switched from "Display mod pack" to lcdlib
+- 2018-12-23  V2.xx  * on the way to v2
+
 
 See ![releasenotes.txt](https://github.com/joe7575/techpack/blob/master/releasenotes.md) for further information
