@@ -102,8 +102,11 @@ minetest.register_node("tubelib:forceload", {
 		if add_pos(pos, placer) then
 			minetest.forceload_block(pos, true)
 			local pos1, pos2, num, max = get_data(pos, placer)
-			M(pos):set_string("infotext", "Area "..S(pos1).." to "..S(pos2).." loaded!")
+			M(pos):set_string("infotext", "Area "..S(pos1).." to "..S(pos2).." loaded!\n"..
+				"Punch the block to make the area visible.")
 			chat(placer, "Area ("..num.."/"..max..") "..S(pos1).." to "..S(pos2).." loaded!")
+			tubelib.mark_region(placer:get_player_name(), pos1, pos2)
+			M(pos):set_string("owner", placer:get_player_name())
 		else
 			chat(placer, "Max. number of Forceload Blocks reached!")
 			minetest.remove_node(pos)
@@ -114,6 +117,12 @@ minetest.register_node("tubelib:forceload", {
 	after_dig_node = function(pos, oldnode, oldmetadata, digger)
 		del_pos(pos, digger)
 		minetest.forceload_free_block(pos, true)
+		tubelib.unmark_region(oldmetadata.fields.owner)
+	end,
+	
+	on_punch = function(pos, node, puncher, pointed_thing)
+		local pos1, pos2 = calc_area(pos)
+		tubelib.switch_region(puncher:get_player_name(), pos1, pos2)
 	end,
 
 	paramtype = "light",

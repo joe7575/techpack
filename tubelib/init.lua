@@ -103,5 +103,6 @@ dofile(minetest.get_modpath("tubelib") .. "/lamp.lua")
 dofile(minetest.get_modpath("tubelib") .. "/distributor.lua")
 dofile(minetest.get_modpath("tubelib") .. "/legacy_nodes.lua")
 dofile(minetest.get_modpath("tubelib") .. "/repairkit.lua")
+dofile(minetest.get_modpath("tubelib") .. "/mark.lua")
 dofile(minetest.get_modpath("tubelib") .. "/forceload.lua")
 
