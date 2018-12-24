@@ -3,7 +3,7 @@
 	Tubelib Addons
 	==============
 
-	Copyright (C) 2017 Joachim Stolberg
+	Copyright (C) 2017-2019 Joachim Stolberg
 
 	LGPLv2.1+
 	See LICENSE.txt for more information
@@ -15,12 +15,54 @@
 	
 ]]--
 
+-- for lazy programmers
+local S = function(pos) if pos then return minetest.pos_to_string(pos) end end
+local P = minetest.string_to_pos
+local M = minetest.get_meta
 
-local autocrafterCache = {}  -- caches some recipe data to avoid to call the slow function minetest.get_craft_result() every second
+local STANDBY_TICKS = 6
+local COUNTDOWN_TICKS = 6
+local CYCLE_TIME = 2
 
-local SLEEP_CNT_START_VAL = 10
+local State = tubelib.NodeStates:new({
+	node_name_passive = "tubelib_addons1:autocrafter",
+	node_name_active = "tubelib_addons1:autocrafter_active",
+	node_name_defect = "tubelib_addons1:autocrafter_defect",
+	infotext_name = "Tubelib Autocrafter",
+	cycle_time = CYCLE_TIME,
+	standby_ticks = STANDBY_TICKS,
+	has_item_meter = true,
+	aging_factor = 10,
+	start_condition_fullfilled = function(pos, meta)
+		local output = meta:get_inventory():get_stack("output", 1)
+		if output:is_empty() then -- no recipe?
+			return false
+		end
+		return true
+	end,
+})
 
-local craft_time = 2
+local function formspec(pos, meta)
+	return "size[8,9.2]"..
+		default.gui_bg..
+		default.gui_bg_img..
+		default.gui_slots..
+		"list[context;recipe;0,0;3,3;]"..
+		"image[2.8,1;1,1;tubelib_gui_arrow.png]"..
+		"list[context;output;3.5,1;1,1;]"..
+		"image_button[3.5,2;1,1;".. State:get_state_button_image(meta) ..";state_button;]"..
+		"list[context;src;0,3.2;8,2;]"..
+		"list[context;dst;5,0;3,3;]"..
+		"list[current_player;main;0,5.4;8,4;]" ..
+		"listring[current_player;main]"..
+		"listring[context;src]" ..
+		"listring[current_player;main]"..
+		"listring[context;dst]" ..
+		"listring[current_player;main]"
+end
+
+State:register_formspec_func(formspec)
+
 
 local function count_index(invlist)
 	local index = {}
@@ -33,36 +75,40 @@ local function count_index(invlist)
 	return index
 end
 
-local function get_item_info(stack)
-	local name = stack:get_name()
-	local def = minetest.registered_items[name]
-	local description = def and def.description or "Unknown item"
-	return description, name
-end
+-- caches some recipe data
+local autocrafterCache = {}  
 
 local function get_craft(pos, inventory, hash)
-	local hash = hash or minetest.hash_node_position(pos)
+	hash = hash or minetest.hash_node_position(pos)
 	local craft = autocrafterCache[hash]
 	if not craft then
 		local recipe = inventory:get_list("recipe")
-		local output, decremented_input = minetest.get_craft_result({method = "normal", width = 3, items = recipe})
-		craft = {recipe = recipe, consumption=count_index(recipe), output = output, decremented_input = decremented_input}
+		local output, decremented_input = minetest.get_craft_result(
+				{method = "normal", width = 3, items = recipe})
+		craft = {recipe = recipe, consumption=count_index(recipe), 
+				output = output, decremented_input = decremented_input}
 		autocrafterCache[hash] = craft
 	end
 	return craft
 end
 
-local function autocraft(inventory, craft)
+local function autocraft(pos, meta, inventory, craft)
 	if not craft then return false end
 	local output_item = craft.output.item
 
 	-- check if we have enough room in dst
-	if not inventory:room_for_item("dst", output_item) then	return false end
+	if not inventory:room_for_item("dst", output_item) then	
+		State:blocked(pos, meta)
+		return
+	end
 	local consumption = craft.consumption
 	local inv_index = count_index(inventory:get_list("src"))
 	-- check if we have enough material available
 	for itemname, number in pairs(consumption) do
-		if (not inv_index[itemname]) or inv_index[itemname] < number then return false end
+		if (not inv_index[itemname]) or inv_index[itemname] < number then 
+			State:idle(pos, meta)
+			return 
+		end
 	end
 	-- consume material
 	for itemname, number in pairs(consumption) do
@@ -76,116 +122,28 @@ local function autocraft(inventory, craft)
 	for i = 1, 9 do
 		inventory:add_item("dst", craft.decremented_input.items[i])
 	end
-	return true
+	State:keep_running(pos, meta, COUNTDOWN_TICKS)
 end
 
-local function formspec(state)
-	return "size[8,9.2]"..		-- 9.2 is the max. for mobile devices
-		"list[context;recipe;0,0;3,3;]"..
-		"image[2.8,1;1,1;tubelib_gui_arrow.png]"..
-		"list[context;output;3.5,1;1,1;]"..
-		"image_button[3.5,2;1,1;".. tubelib.state_button(state) ..";button;]"..
-		"list[context;src;0,3.2;8,2;]"..
-		"list[context;dst;5,0;3,3;]"..
-		default.gui_bg..
-		default.gui_bg_img..
-		default.gui_slots..
-		"list[current_player;main;0,5.4;8,4;]" ..
-		"listring[current_player;main]"..
-		"listring[context;src]" ..
-		"listring[current_player;main]"..
-		"listring[context;dst]" ..
-		"listring[current_player;main]"
-end
 
-local function start_crafter(pos)
-	local meta = minetest.get_meta(pos)
-	local node = minetest.get_node(pos)
-	meta:set_int("running", SLEEP_CNT_START_VAL)
-	meta:set_string("formspec",formspec(tubelib.RUNNING))
-	node.name = "tubelib_addons1:autocrafter_active"
-	minetest.swap_node(pos, node)
-	local timer = minetest.get_node_timer(pos)
-	if not timer:is_started() then
-		timer:start(craft_time)
-	end
-	return false
-end
-
-local function stop_crafter(pos)
-	local node = minetest.get_node(pos)
-	local meta = minetest.get_meta(pos)
-	local number = meta:get_string("number") or ""
-	meta:set_int("running", tubelib.STATE_STOPPED)
-	meta:set_string("formspec",formspec(tubelib.STOPPED))
-	meta:set_string("infotext", "Tubelib Autocrafter "..number..": stopped")
-	node.name = "tubelib_addons1:autocrafter"
-	minetest.swap_node(pos, node)
-	minetest.get_node_timer(pos):stop()
-	return false
-end
-
-local function goto_sleep(pos)
-	local node = minetest.get_node(pos)
-	local meta = minetest.get_meta(pos)
-	local number = meta:get_string("number") or ""
-	meta:set_int("running", tubelib.STATE_STANDBY)
-	meta:set_string("formspec",formspec(tubelib.STANDBY))
-	meta:set_string("infotext", "Tubelib Autocrafter "..number..": standby")
-	node.name = "tubelib_addons1:autocrafter"
-	minetest.swap_node(pos, node)
-	minetest.get_node_timer(pos):start(craft_time*SLEEP_CNT_START_VAL)
-	return false
-end
-
--- returns false to stop the timer, true to continue running
--- is started only from start_autocrafter(pos) after sanity checks and cached recipe
-local function run_autocrafter(pos, elapsed)
-	local meta = minetest.get_meta(pos)
-	local running = meta:get_int("running") - 1
-	local inventory = meta:get_inventory()
-	local craft = get_craft(pos, inventory)
+local function keep_running(pos, elapsed)
+	local meta = M(pos)
+	local inv = meta:get_inventory()
+	local craft = get_craft(pos, inv)
 	local output_item = craft.output.item
-	
-	-- only use crafts that have an actual result
-	if output_item:is_empty() then
-		if running <= tubelib.STATE_STOPPED then
-			return goto_sleep(pos)
-		end
-		meta:set_int("running", running)
-		return true
-	end
-
-	if not autocraft(inventory, craft) then
-		if running <= tubelib.STATE_STOPPED then
-			return goto_sleep(pos)
-		end
-		meta:set_int("running", running)
-		return true
-	end
-	
-	meta:set_int("item_counter", meta:get_int("item_counter") + output_item:get_count())
-	
-	if running <= tubelib.STATE_STOPPED then
-		return start_crafter(pos)
-	else
-		running = SLEEP_CNT_START_VAL
-	end
-	meta:set_int("running", running)
-	return true
+	autocraft(pos, meta, inv, craft)
+	return State:is_active(meta)
 end
 
 -- note, that this function assumes allready being updated to virtual items
 -- and doesn't handle recipes with stacksizes > 1
 local function after_recipe_change(pos, inventory)
-	local meta = minetest.get_meta(pos)
+	local meta = M(pos)
 	-- if we emptied the grid, there's no point in keeping it running or cached
 	if inventory:is_empty("recipe") then
-		minetest.get_node_timer(pos):stop()
 		autocrafterCache[minetest.hash_node_position(pos)] = nil
-		local number = meta:get_string("number")
-		meta:set_string("infotext", "unconfigured Autocrafter: "..number)
 		inventory:set_stack("output", 1, "")
+		State:stop(pos, meta)
 		return
 	end
 	local recipe_changed = false
@@ -208,10 +166,8 @@ local function after_recipe_change(pos, inventory)
 
 	craft = craft or get_craft(pos, inventory, hash)
 	local output_item = craft.output.item
-	local description, name = get_item_info(output_item)
-	local number = meta:get_string("number")
-	meta:set_string("infotext", string.format("'%s' Tubelib Autocrafter "..number.."(%s)", description, name))
 	inventory:set_stack("output", 1, output_item)
+	State:stop(pos, meta)
 end
 
 -- clean out unknown items and groups, which would be handled like unknown items in the crafting grid
@@ -264,6 +220,8 @@ local function allow_metadata_inventory_put(pos, listname, index, stack, player)
 	elseif listname == "output" then
 		on_output_change(pos, inv, stack)
 		return 0
+	elseif listname == "src" and State:get_state(M(pos)) == tubelib.STANDBY then
+		State:start(pos, M(pos))
 	end
 	return stack:get_count()
 end
@@ -317,104 +275,61 @@ local function allow_metadata_inventory_move(pos, from_list, from_index, to_list
 	return count
 end
 
-
-
--- returns false if we shouldn't bother attempting to start the timer again after this
-local function update_meta(meta, state)
-	-- toggling the button doesn't quite call for running a recipe change check
-	-- so instead we run a minimal version for infotext setting only
-	-- this might be more written code, but actually executes less
-	local number = meta:get_string("number")
-	local output = meta:get_inventory():get_stack("output", 1)
-	if output:is_empty() then -- doesn't matter if paused or not
-		meta:set_string("infotext", "unconfigured Autocrafter "..number)
-		meta:set_string("formspec",formspec(tubelib.STOPPED))
-		return false
-	end	
-	
-	local infotext
-	local description, name = get_item_info(output)
-	if state == tubelib.RUNNING then
-		infotext = string.format("'%s' Autocrafter %s (%s)", description, number, name)
-	else
-		infotext = string.format("stopped '%s' Autocrafter %s", description, number)
-	end
-	meta:set_string("infotext", infotext)
-	meta:set_string("formspec",formspec(state))
-	return state == tubelib.RUNNING
-end
-
-local function on_receive_fields(pos, formname, fields, sender)
-	if minetest.is_protected(pos, sender:get_player_name()) then
+local function on_receive_fields(pos, formname, fields, player)
+	if minetest.is_protected(pos, player:get_player_name()) then
 		return
 	end
-	local meta = minetest.get_meta(pos)
-	local running = meta:get_int("running")
-	if fields.button ~= nil then
-		if running > tubelib.STATE_STOPPED then
-			update_meta(meta, tubelib.STOPPED)
-			stop_crafter(pos)
-			meta:set_int("running", tubelib.STATE_STOPPED)
-		else
-			if update_meta(meta, tubelib.RUNNING) then
-				meta:set_int("running", tubelib.STATE_RUNNING)
-				start_crafter(pos)
-			else
-				stop_crafter(pos)
-				meta:set_int("running", tubelib.STATE_STOPPED)
-			end
-		end
-	end
+	State:state_button_event(pos, fields)
 end
 
 
 minetest.register_node("tubelib_addons1:autocrafter", {
-	description = "Autocrafter",
+	description = "Tubelib Autocrafter",
 	drawtype = "normal",
 	tiles = {'tubelib_front.png', 'tubelib_addons1_autocrafter.png'},
 	
-	on_construct = function(pos)
-		local meta = minetest.get_meta(pos)
+	after_place_node = function(pos, placer)
 		local number = tubelib.add_node(pos, "tubelib_addons1:autocrafter")
-		local inv = meta:get_inventory()
+		State:node_init(pos, number)
+		local inv = M(pos):get_inventory()
 		inv:set_size("src", 2*8)
 		inv:set_size("recipe", 3*3)
 		inv:set_size("dst", 3*3)
 		inv:set_size("output", 1)
-		meta:set_string("number", number)
-		meta:set_int("running", 0)
-		meta:set_int("item_counter", 0)
-		update_meta(meta, tubelib.STOPPED)
 	end,
 	
+	on_dig = function(pos, node, puncher, pointed_thing)
+		local inv = M(pos):get_inventory()
+		if inv:is_empty("dst") and inv:is_empty("src") then
+			minetest.node_dig(pos, node, puncher, pointed_thing)
+			tubelib.remove_node(pos)
+			autocrafterCache[minetest.hash_node_position(pos)] = nil
+		end
+	end,
+
+	after_dig_node = function(pos, oldnode, oldmetadata, digger)
+		State:after_dig_node(pos, oldnode, oldmetadata, digger)
+	end,
+	
+	on_rotate = screwdriver.disallow,
+	on_timer = keep_running,
 	on_receive_fields = on_receive_fields,
-	
-	can_dig = function(pos, player)
-		--upgrade_autocrafter(pos)
-		local meta = minetest.get_meta(pos)
-		local inv = meta:get_inventory()
-		return (inv:is_empty("src") and inv:is_empty("dst"))
-	end,
-	
-	on_destruct = function(pos)
-		autocrafterCache[minetest.hash_node_position(pos)] = nil
-		tubelib.remove_node(pos)
-	end,
 	
 	allow_metadata_inventory_put = allow_metadata_inventory_put,
 	allow_metadata_inventory_take = allow_metadata_inventory_take,
 	allow_metadata_inventory_move = allow_metadata_inventory_move,
-	on_timer = run_autocrafter,
 
+	drop = "",
 	paramtype = "light",
 	sunlight_propagates = true,
+	paramtype2 = "facedir",
 	groups = {choppy=2, cracky=2, crumbly=2},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
 })
 
 minetest.register_node("tubelib_addons1:autocrafter_active", {
-	description = "Autocrafter",
+	description = "Tubelib Autocrafter",
 	drawtype = "normal",
 	tiles = {
 		'tubelib_front.png', 
@@ -430,16 +345,55 @@ minetest.register_node("tubelib_addons1:autocrafter_active", {
 		},
 	},
 	
+	on_rotate = screwdriver.disallow,
+	on_timer = keep_running,
 	on_receive_fields = on_receive_fields,
-	
 	allow_metadata_inventory_put = allow_metadata_inventory_put,
 	allow_metadata_inventory_take = allow_metadata_inventory_take,
 	allow_metadata_inventory_move = allow_metadata_inventory_move,
-	on_timer = run_autocrafter,
 
 	paramtype = "light",
 	sunlight_propagates = true,
+	paramtype2 = "facedir",
 	groups = {crumbly=0, not_in_creative_inventory=1},
+	is_ground_content = false,
+	sounds = default.node_sound_wood_defaults(),
+})
+
+minetest.register_node("tubelib_addons1:autocrafter_defect", {
+	description = "Tubelib Autocrafter",
+	drawtype = "normal",
+	tiles = {'tubelib_front.png', 'tubelib_addons1_autocrafter.png'},
+	
+	after_place_node = function(pos, placer)
+		local number = tubelib.add_node(pos, "tubelib_addons1:autocrafter")
+		State:node_init(pos, number)
+		local meta = M(pos)
+		local inv = meta:get_inventory()
+		inv:set_size("src", 2*8)
+		inv:set_size("recipe", 3*3)
+		inv:set_size("dst", 3*3)
+		inv:set_size("output", 1)
+		State:defect(pos, meta)
+	end,
+	
+	on_dig = function(pos, node, puncher, pointed_thing)
+		local inv = M(pos):get_inventory()
+		if inv:is_empty("dst") and inv:is_empty("src") then
+			minetest.node_dig(pos, node, puncher, pointed_thing)
+			tubelib.remove_node(pos)
+			autocrafterCache[minetest.hash_node_position(pos)] = nil
+		end
+	end,
+
+	allow_metadata_inventory_put = allow_metadata_inventory_put,
+	allow_metadata_inventory_take = allow_metadata_inventory_take,
+	allow_metadata_inventory_move = allow_metadata_inventory_move,
+
+	paramtype = "light",
+	sunlight_propagates = true,
+	paramtype2 = "facedir",
+	groups = {choppy=2, cracky=2, crumbly=2, not_in_creative_inventory=1},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
 })
@@ -454,43 +408,29 @@ minetest.register_craft({
 })
 
 
-tubelib.register_node("tubelib_addons1:autocrafter", {"tubelib_addons1:autocrafter_active"}, {
+tubelib.register_node("tubelib_addons1:autocrafter", 
+	{"tubelib_addons1:autocrafter_active", "tubelib_addons1:autocrafter_defect"}, {
 	on_pull_item = function(pos, side)
-		local meta = minetest.get_meta(pos)
-		return tubelib.get_item(meta, "dst")
+		return tubelib.get_item(M(pos), "dst")
 	end,
 	on_push_item = function(pos, side, item)
-		local meta = minetest.get_meta(pos)
-		return tubelib.put_item(meta, "src", item)
+		return tubelib.put_item(M(pos), "src", item)
 	end,
 	on_unpull_item = function(pos, side, item)
-		local meta = minetest.get_meta(pos)
-		return tubelib.put_item(meta, "dst", item)
+		return tubelib.put_item(M(pos), "dst", item)
 	end,
 	on_recv_message = function(pos, topic, payload)
-		if topic == "on" then
-			return start_crafter(pos)
-		elseif topic == "off" then
-			return stop_crafter(pos)
-		elseif topic == "state" then
-			local meta = minetest.get_meta(pos)
-			local running = meta:get_int("running")
-			return tubelib.statestring(running)
-		elseif topic == "counter" then
-			local meta = minetest.get_meta(pos)
-			return meta:get_int("item_counter")
-		elseif topic == "clear_counter" then
-			local meta = minetest.get_meta(pos)
-			return meta:set_int("item_counter", 0)
+		local resp = State:on_receive_message(pos, topic, payload)
+		if resp then
+			return resp
 		else
 			return "unsupported"
 		end
 	end,
-	on_server_restart = function(pos)
-		local meta = minetest.get_meta(pos)
-		if meta:get_int("running") ~= tubelib.STATE_STOPPED then
-			meta:set_int("running", tubelib.STATE_STANDBY)
-			minetest.get_node_timer(pos):start(craft_time*SLEEP_CNT_START_VAL)
-		end
+	on_node_load = function(pos)
+		State:on_node_load(pos)
+	end,
+	on_node_repair = function(pos)
+		return State:on_node_repair(pos)
 	end,
 })	

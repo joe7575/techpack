@@ -35,7 +35,6 @@ local function remove_list_elem(list, x)
 	if n then
 		table.remove(list, n)
 	end
-	print(dump(list))
 	return list
 end
 

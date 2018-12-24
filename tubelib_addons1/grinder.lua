@@ -279,7 +279,7 @@ tubelib.register_node("tubelib_addons1:grinder",
 		end
 	end,
 	on_node_load = function(pos)
-		return State:on_node_load(pos)
+		State:on_node_load(pos)
 	end,
 	on_node_repair = function(pos)
 		return State:on_node_repair(pos)

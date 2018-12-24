@@ -76,6 +76,10 @@ local DEFECT  = tubelib.DEFECT
 tubelib.NodeStates = {}
 local NodeStates = tubelib.NodeStates
 
+local function start_condition_fullfilled(pos, meta)
+	return true
+end
+
 function NodeStates:new(attr)
 	local o = {
 		-- mandatory
@@ -87,6 +91,7 @@ function NodeStates:new(attr)
 		node_name_active = attr.node_name_active, 
 		node_name_defect = attr.node_name_defect,
 		infotext_name = attr.infotext_name,
+		start_condition_fullfilled = attr.start_condition_fullfilled or start_condition_fullfilled,
 	}
 	if attr.aging_factor then
 		o.aging_level1 = attr.aging_factor * tubelib.machine_aging_value
@@ -143,6 +148,9 @@ end
 function NodeStates:start(pos, meta, called_from_on_timer)
 	local state = meta:get_int("tubelib_state")
 	if state == STOPPED or state == STANDBY or state == BLOCKED then
+		if not self.start_condition_fullfilled(pos, meta) then
+			return false
+		end
 		meta:set_int("tubelib_state", RUNNING)
 		if called_from_on_timer then
 			-- timer has to be stopped once to be able to be restarted
