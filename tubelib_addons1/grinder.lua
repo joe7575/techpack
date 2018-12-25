@@ -237,6 +237,7 @@ minetest.register_node("tubelib_addons1:grinder_defect", {
 		end
 	end,
 
+	on_rotate = screwdriver.disallow,
 	allow_metadata_inventory_put = allow_metadata_inventory_put,
 	allow_metadata_inventory_move = allow_metadata_inventory_move,
 	allow_metadata_inventory_take = allow_metadata_inventory_take,

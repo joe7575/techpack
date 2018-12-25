@@ -217,12 +217,9 @@ local function distributing(pos, meta)
 	-- rejected items from other filter slots
 	local rejected = FilterCache[hash].kvRejectedItemNames
 	
-	if items == nil then
-		-- this slot is empty
-		return false
-	end
+	if items == nil then return end
 	
-	local busy = false
+	local moved_items_total = 0
 	if next(items) then
 		for _,item in ipairs(items) do
 			local name, num = item[1], item[2]
@@ -234,7 +231,7 @@ local function distributing(pos, meta)
 						rejected[name] = num
 					else
 						counter[listname] = counter[listname] + num
-						busy = true
+						moved_items_total = moved_items_total + num
 					end
 				end
 			end
@@ -254,7 +251,7 @@ local function distributing(pos, meta)
 					else
 						counter[listname] = counter[listname] + num
 						moved_items = moved_items + num
-						busy = true
+						moved_items_total = moved_items_total + num
 					end
 				end
 			end
@@ -265,17 +262,17 @@ local function distributing(pos, meta)
 		end
 	end
 	meta:set_string("item_counter", minetest.serialize(counter))
-	return busy
+	if moved_items_total > 0 then
+		State:keep_running(pos, meta, COUNTDOWN_TICKS, moved_items_total)
+	else
+		State:idle(pos, meta)
+	end
 end
 
 -- move items to the output slots
 local function keep_running(pos, elapsed)
 	local meta = M(pos)
-	if distributing(pos, meta) then
-		State:keep_running(pos, meta, COUNTDOWN_TICKS)
-	else
-		State:idle(pos, meta)
-	end
+	distributing(pos, meta)
 	return State:is_active(meta)
 end
 

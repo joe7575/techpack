@@ -44,7 +44,7 @@ local function pushing(pos, meta)
 			State:blocked(pos, meta)
 			return
 		end
-		State:keep_running(pos, meta, COUNTDOWN_TICKS)
+		State:keep_running(pos, meta, COUNTDOWN_TICKS, items:get_count())
 		return
 	end
 	State:idle(pos, meta)

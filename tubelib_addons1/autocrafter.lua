@@ -122,7 +122,8 @@ local function autocraft(pos, meta, inventory, craft)
 	for i = 1, 9 do
 		inventory:add_item("dst", craft.decremented_input.items[i])
 	end
-	State:keep_running(pos, meta, COUNTDOWN_TICKS)
+	
+	State:keep_running(pos, meta, COUNTDOWN_TICKS, output_item:get_count())
 end
 
 
@@ -286,7 +287,10 @@ end
 minetest.register_node("tubelib_addons1:autocrafter", {
 	description = "Tubelib Autocrafter",
 	drawtype = "normal",
-	tiles = {'tubelib_front.png', 'tubelib_addons1_autocrafter.png'},
+	tiles = {
+		'tubelib_front.png', 
+		'tubelib_front.png', 
+		'tubelib_addons1_autocrafter.png'},
 	
 	after_place_node = function(pos, placer)
 		local number = tubelib.add_node(pos, "tubelib_addons1:autocrafter")
@@ -333,6 +337,7 @@ minetest.register_node("tubelib_addons1:autocrafter_active", {
 	drawtype = "normal",
 	tiles = {
 		'tubelib_front.png', 
+		'tubelib_front.png', 
 		{
 			image = 'tubelib_addons1_autocrafter_active.png',
 			backface_culling = false,
@@ -363,7 +368,11 @@ minetest.register_node("tubelib_addons1:autocrafter_active", {
 minetest.register_node("tubelib_addons1:autocrafter_defect", {
 	description = "Tubelib Autocrafter",
 	drawtype = "normal",
-	tiles = {'tubelib_front.png', 'tubelib_addons1_autocrafter.png'},
+	tiles = {
+		'tubelib_front.png', 
+		'tubelib_front.png',
+		'tubelib_addons1_autocrafter.png^tubelib_defect.png'
+	},
 	
 	after_place_node = function(pos, placer)
 		local number = tubelib.add_node(pos, "tubelib_addons1:autocrafter")

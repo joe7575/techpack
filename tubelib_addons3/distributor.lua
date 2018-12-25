@@ -140,7 +140,7 @@ local function allow_metadata_inventory_take(pos, listname, index, stack, player
 end
 
 local function allow_metadata_inventory_move(pos, from_list, from_index, to_list, to_index, count, player)
-	local meta = minetest.get_meta(pos)
+	local meta = M(pos)
 	local inv = meta:get_inventory()
 	local stack = inv:get_stack(from_list, from_index)
 	return allow_metadata_inventory_put(pos, to_list, to_index, stack, player)
@@ -195,11 +195,9 @@ local function distributing(pos, meta)
 	local open_ports = table.copy(FilterCache[hash].OpenPorts)
 	
 	-- no filter configured?
-	if next(kvFilterItemNames) == nil then
-		return false
-	end
+	if next(kvFilterItemNames) == nil then return end
 	
-	local busy = false
+	local moved_items_total = 0
 	local inv = meta:get_inventory()
 	local list = inv:get_list("src")
 		
@@ -224,7 +222,7 @@ local function distributing(pos, meta)
 				stack:set_count(0)
 				local color = Side2Color[side]
 				counter[color] = counter[color] + num
-				busy = true
+				moved_items_total = moved_items_total + num
 			else
 				second_try = true  -- port blocked
 			end
@@ -240,7 +238,7 @@ local function distributing(pos, meta)
 					stack:set_count(0)
 					local color = Side2Color[side]
 					counter[color] = counter[color] + num
-					busy = true
+					moved_items_total = moved_items_total + num
 				end
 			end
 		end
@@ -248,17 +246,17 @@ local function distributing(pos, meta)
 	inv:set_list("src", list)
 				
 	meta:set_string("item_counter", minetest.serialize(counter))
-	return busy
+	if moved_items_total > 0 then
+		State:keep_running(pos, meta, COUNTDOWN_TICKS, moved_items_total)
+	else
+		State:idle(pos, meta)
+	end
 end
 
 -- move items to the output slots
 local function keep_running(pos, elapsed)
 	local meta = M(pos)
-	if distributing(pos, meta) then
-		State:keep_running(pos, meta, COUNTDOWN_TICKS)
-	else
-		State:idle(pos, meta)
-	end
+	distributing(pos, meta)
 	return State:is_active(meta)
 end
 
