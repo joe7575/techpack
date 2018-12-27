@@ -3,7 +3,7 @@
 	Tubelib Addons 1
 	================
 
-	Copyright (C) 2017,2018 Joachim Stolberg
+	Copyright (C) 2017-2019 Joachim Stolberg
 
 	LGPLv2.1+
 	See LICENSE.txt for more information
@@ -129,9 +129,9 @@ minetest.register_node("tubelib_addons1:funnel", {
 minetest.register_craft({
 	output = "tubelib_addons1:funnel 2",
 	recipe = {
-		{"group:wood", 			"", 					"group:wood"},
+		{"group:wood", "", "group:wood"},
 		{"default:steel_ingot", "default:mese_crystal",	"tubelib:tube1"},
-		{"group:wood", 			"", 					"group:wood"},
+		{"group:wood", "", "group:wood"},
 	},
 })
 

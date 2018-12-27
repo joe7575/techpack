@@ -64,11 +64,11 @@ local function allow_metadata_inventory_put(pos, listname, index, stack, player)
 	if minetest.is_protected(pos, player:get_player_name()) then
 		return 0
 	end
-	local meta = minetest.get_meta(pos)
+	local meta = M(pos)
 	local inv = meta:get_inventory()
 	if listname == "src" and is_leaves(stack:get_name()) then
-		if State:get_state(M(pos)) == tubelib.STANDBY then
-			State:start(pos, M(pos))
+		if State:get_state(meta) == tubelib.STANDBY then
+			State:start(pos, meta)
 		end
 		return stack:get_count()
 	elseif listname == "dst" then
@@ -78,7 +78,7 @@ local function allow_metadata_inventory_put(pos, listname, index, stack, player)
 end
 
 local function allow_metadata_inventory_move(pos, from_list, from_index, to_list, to_index, count, player)
-	local meta = minetest.get_meta(pos)
+	local meta = M(pos)
 	local inv = meta:get_inventory()
 	local stack = inv:get_stack(from_list, from_index)
 	return allow_metadata_inventory_put(pos, to_list, to_index, stack, player)
@@ -142,7 +142,7 @@ local function convert_leaves_to_biogas(pos, meta)
 end
 
 local function keep_running(pos, elapsed)
-	local meta = minetest.get_meta(pos)
+	local meta = M(pos)
 	convert_leaves_to_biogas(pos, meta)
 	return State:is_active(meta)
 end
@@ -173,7 +173,7 @@ minetest.register_node("tubelib_addons1:fermenter", {
 	},
 	
 	on_construct = function(pos)
-		local meta = minetest.get_meta(pos)
+		local meta = M(pos)
 		local inv = meta:get_inventory()
 		inv:set_size('src', 9)
 		inv:set_size('dst', 9)
@@ -190,7 +190,7 @@ minetest.register_node("tubelib_addons1:fermenter", {
 	end,
 
 	on_dig = function(pos, node, puncher, pointed_thing)
-		local meta = minetest.get_meta(pos)
+		local meta = M(pos)
 		local inv = meta:get_inventory()
 		if inv:is_empty("dst") and inv:is_empty("src") then
 			minetest.node_dig(pos, node, puncher, pointed_thing)
@@ -238,7 +238,7 @@ minetest.register_node("tubelib_addons1:fermenter_defect", {
 	},
 	
 	on_construct = function(pos)
-		local meta = minetest.get_meta(pos)
+		local meta = M(pos)
 		local inv = meta:get_inventory()
 		inv:set_size('src', 9)
 		inv:set_size('dst', 9)
@@ -256,7 +256,7 @@ minetest.register_node("tubelib_addons1:fermenter_defect", {
 	end,
 
 	on_dig = function(pos, node, puncher, pointed_thing)
-		local meta = minetest.get_meta(pos)
+		local meta = M(pos)
 		local inv = meta:get_inventory()
 		if inv:is_empty("dst") and inv:is_empty("src") then
 			minetest.node_dig(pos, node, puncher, pointed_thing)
@@ -332,9 +332,9 @@ end
 minetest.register_craft({
 	output = "tubelib_addons1:fermenter",
 	recipe = {
-		{"default:steel_ingot", "default:dirt",  		"default:steel_ingot"},
-		{"tubelib:tube1", 		"default:mese_crystal",	"tubelib:tube1"},
-		{"default:steel_ingot", "group:wood",  			"default:steel_ingot"},
+		{"default:steel_ingot", "default:dirt", "default:steel_ingot"},
+		{"tubelib:tube1", "default:mese_crystal", "tubelib:tube1"},
+		{"default:steel_ingot", "group:wood", "default:steel_ingot"},
 	},
 })
 

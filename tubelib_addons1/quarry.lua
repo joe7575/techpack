@@ -3,7 +3,7 @@
 	Tubelib Addons 1
 	================
 
-	Copyright (C) 2017,2018 Joachim Stolberg
+	Copyright (C) 2017-2019 Joachim Stolberg
 
 	LGPLv2.1+
 	See LICENSE.txt for more information
@@ -12,7 +12,7 @@
 	
 	Quarry machine to dig stones and other ground blocks.
 	
-	The Quarry digs a hole 5x5 blocks large and up to 25 blocks deep.
+	The Quarry digs a hole 5x5 blocks large and up to 100 blocks deep.
 	It starts at the given level (0 is same level as the quarry block,
 	1 is one level higher and so on)) and goes down to the given depth number.
 	It digs one block every 4 seconds.
@@ -20,24 +20,39 @@
 
 ]]--
 
+-- for lazy programmers
+local S = function(pos) if pos then return minetest.pos_to_string(pos) end end
+local P = minetest.string_to_pos
+local M = minetest.get_meta
+
 local CYCLE_TIME = 4
 local BURNING_TIME = 16
-local TICKS_TO_SLEEP = 5
-local STOP_STATE = 0
-local FAULT_STATE = -3
+local STANDBY_TICKS = 4
+local COUNTDOWN_TICKS = 5
 
 local Depth2Idx = {[1]=1 ,[2]=2, [3]=3, [5]=4, [10]=5, [15]=6, [20]=7, [25]=8, [50]=9, [100]=10}
 local Level2Idx = {[2]=1, [1]=2, [0]=3, [-1]=4, [-2]=5, [-3]=6, 
 				   [-5]=7, [-10]=8, [-15]=9, [-20]=10}
 
-local function quarry_formspec(meta, state)
+local State = tubelib.NodeStates:new({
+	node_name_passive = "tubelib_addons1:quarry",
+	node_name_active = "tubelib_addons1:quarry_active",
+	node_name_defect = "tubelib_addons1:quarry_defect",
+	infotext_name = "Tubelib Quarry",
+	cycle_time = CYCLE_TIME,
+	standby_ticks = STANDBY_TICKS,
+	has_item_meter = true,
+	aging_factor = 12,
+})
+
+local function formspec(pos, meta)
 	local depth = meta:get_int("max_levels") or 1
 	local start_level = meta:get_int("start_level") or 1
 	local endless = meta:get_int("endless") or 0
 	local fuel = meta:get_int("fuel") or 0
 	-- some recalculations
 	endless = endless == 1 and "true" or "false"
-	if state == tubelib.RUNNING then
+	if State:get_state(meta) ~= tubelib.RUNNING then
 		fuel = fuel * 100/BURNING_TIME
 	else
 		fuel = 0
@@ -57,11 +72,13 @@ local function quarry_formspec(meta, state)
 	"item_image[1.5,3;1,1;tubelib_addons1:biofuel]"..
 	"image[2.5,3;1,1;default_furnace_fire_bg.png^[lowpart:"..
 	fuel..":default_furnace_fire_fg.png]"..
-	"image_button[3.5,3;1,1;".. tubelib.state_button(state) ..";button;]"..
+	"image_button[3.5,3;1,1;".. State:get_state_button_image(meta) ..";state_button;]"..
 	"list[current_player;main;0.5,4.3;8,4;]"..
 	"listring[context;main]"..
 	"listring[current_player;main]"
 end
+
+State:register_formspec_func(formspec)
 
 local function get_pos(pos, facedir, side)
 	local offs = {F=0, R=1, B=2, L=3, D=4, U=5}
@@ -110,46 +127,6 @@ local function allow_metadata_inventory_take(pos, listname, index, stack, player
 	return stack:get_count()
 end
 
-local function start_the_machine(pos)
-	local meta = minetest.get_meta(pos)
-	local node = minetest.get_node(pos)
-	local number = meta:get_string("number")
-	meta:set_int("running", TICKS_TO_SLEEP)
-	meta:set_string("infotext", "Tubelib Quarry "..number..": running")
-	meta:set_string("formspec", quarry_formspec(meta, tubelib.RUNNING))
-	node.name = "tubelib_addons1:quarry_active"
-	minetest.swap_node(pos, node)
-	minetest.get_node_timer(pos):start(CYCLE_TIME)
-	return false
-end
-
-local function stop_the_machine(pos)
-	local meta = minetest.get_meta(pos)
-	local node = minetest.get_node(pos)
-	local number = meta:get_string("number")
-	meta:set_int("running", STOP_STATE)
-	meta:set_int("idx", 1) -- restart from the beginning
-	meta:set_string("quarry_pos", nil)
-	meta:set_string("infotext", "Tubelib Quarry "..number..": stopped")
-	meta:set_string("formspec", quarry_formspec(meta, tubelib.STOPPED))
-	node.name = "tubelib_addons1:quarry"
-	minetest.swap_node(pos, node)
-	minetest.get_node_timer(pos):stop()
-	return false
-end
-
-local function goto_fault(pos)
-	local meta = minetest.get_meta(pos)
-	local node = minetest.get_node(pos)
-	local number = meta:get_string("number")
-	meta:set_int("running", FAULT_STATE)
-	meta:set_string("infotext", "Tubelib Quarry "..number..": fault")
-	meta:set_string("formspec", quarry_formspec(meta, tubelib.FAULT))
-	node.name = "tubelib_addons1:quarry"
-	minetest.swap_node(pos, node)
-	minetest.get_node_timer(pos):stop()
-	return false
-end
 
 local QuarrySchedule = {0,0,3,3,3,3,2,2,2,2,1,1,1,1,0,3,0,0,3,3,2,2,1,0,0}
 
@@ -160,14 +137,26 @@ local function get_next_pos(pos, facedir, dir)
 end
 
 local function quarry_next_node(pos, meta)
+	-- check fuel
+	local fuel = meta:get_int("fuel") or 0
+	if fuel <= 0 then
+		if tubelib.get_this_item(meta, "fuel", 1) == nil then
+			State:fault(pos, meta)
+			return
+		end
+		fuel = BURNING_TIME
+	else
+		fuel = fuel - 1
+	end
+	meta:set_int("fuel", fuel) 
+	
 	local idx = meta:get_int("idx")
 	local facedir = meta:get_int("facedir")
 	local owner = meta:get_string("owner")
 	local endless = meta:get_int("endless")
 	local curr_level = meta:get_int("curr_level")
 	local stop_level = pos.y + meta:get_int("start_level") 
-							 - meta:get_int("max_levels") 
-							 + 1
+			- meta:get_int("max_levels") + 1
 	
 	local quarry_pos = minetest.string_to_pos(meta:get_string("quarry_pos"))
 	if quarry_pos == nil then
@@ -191,7 +180,8 @@ local function quarry_next_node(pos, meta)
 		curr_level = pos.y + meta:get_int("start_level")	-- start level
 		meta:set_int("idx", 1)
 		meta:set_string("quarry_pos", nil)
-		return false		-- stopped
+		State:stop(pos, meta)
+		return
 	end
 	meta:set_int("curr_level", curr_level)
 	meta:set_int("idx", idx)
@@ -199,71 +189,43 @@ local function quarry_next_node(pos, meta)
 
 	if minetest.is_protected(quarry_pos, owner) then
 		minetest.chat_send_player(owner, "[Tubelib Quarry] Area is protected!")
-		return nil			-- fault
+		State:fault(pos, meta)
+		return
 	end
 
 	local node = get_node_lvm(quarry_pos)
-	if node == nil then
-		return true
-	end
-
-	local number = meta:get_string("number")
-	local order = tubelib_addons1.GroundNodes[node.name]
-	if order ~= nil then
-		local inv = meta:get_inventory()
-		if inv:room_for_item("main", ItemStack(order.drop)) then
-			minetest.remove_node(quarry_pos)
-			inv:add_item("main", ItemStack(order.drop))
+	if node then
+		local number = meta:get_string("number")
+		local order = tubelib_addons1.GroundNodes[node.name]
+		if order ~= nil then
+			local inv = meta:get_inventory()
+			if inv:room_for_item("main", ItemStack(order.drop)) then
+				minetest.remove_node(quarry_pos)
+				inv:add_item("main", ItemStack(order.drop))
+				meta:set_string("infotext", "Tubelib Quarry "..number..
+						": running "..idx.."/"..(curr_level-pos.y))
+				State:keep_running(pos, meta, COUNTDOWN_TICKS, 1)
+			else
+				State:blocked(pos, meta)
+			end
+		else
 			meta:set_string("infotext", "Tubelib Quarry "..number..
 					": running "..idx.."/"..(curr_level-pos.y))
-			return true
-		else
-			return nil		-- fault
 		end
 	end
-	meta:set_string("infotext", "Tubelib Quarry "..number..
-			": running "..idx.."/"..(curr_level-pos.y))
-	return true
 end
 
 local function keep_running(pos, elapsed)
-	local meta = minetest.get_meta(pos)
-	local running = meta:get_int("running") - 1
-	local fuel = meta:get_int("fuel") or 0
-	local inv = meta:get_inventory()
-	-- check fuel
-	if fuel <= 0 then
-		if tubelib.get_this_item(meta, "fuel", 1) == nil then
-			return goto_fault(pos)
-		end
-		fuel = BURNING_TIME
-	else
-		fuel = fuel - 1
-	end
-	meta:set_int("fuel", fuel) 
-	
-	local busy = quarry_next_node(pos, meta)
-	if busy == true then 
-		if running <= STOP_STATE then
-			return start_the_machine(pos)
-		else
-			running = TICKS_TO_SLEEP
-		end
-	elseif busy == nil then
-		return goto_fault(pos)
-	else
-		return stop_the_machine(pos)
-	end
-	meta:set_int("running", running)
-	meta:set_string("formspec", quarry_formspec(meta, tubelib.RUNNING))
-	return true
+	local meta = M(pos)
+	quarry_next_node(pos, meta)
+	return State:is_active(meta)
 end
 
 local function on_receive_fields(pos, formname, fields, player)
 	if minetest.is_protected(pos, player:get_player_name()) then
 		return
 	end
-	local meta = minetest.get_meta(pos)
+	local meta = M(pos)
 	
 	local max_levels = meta:get_int("max_levels")
 	if fields.depth then
@@ -271,7 +233,7 @@ local function on_receive_fields(pos, formname, fields, player)
 	end
 	if max_levels ~= meta:get_int("max_levels") then
 		meta:set_string("quarry_pos", nil)	-- reset the quarry
-		stop_the_machine(pos)
+		State:stop(pos, meta)
 		meta:set_int("max_levels", max_levels)
 	end
 	
@@ -281,7 +243,7 @@ local function on_receive_fields(pos, formname, fields, player)
 	end
 	if start_level ~= meta:get_int("start_level") then
 		meta:set_string("quarry_pos", nil)	-- reset the quarry
-		stop_the_machine(pos)
+		State:stop(pos, meta)
 		meta:set_int("start_level", start_level)
 	end
 	
@@ -291,15 +253,15 @@ local function on_receive_fields(pos, formname, fields, player)
 	end
 	meta:set_int("endless", endless)
 	
-	local running = meta:get_int("running") or STOP_STATE
-	if fields.button ~= nil then
-		if running > STOP_STATE then
-			stop_the_machine(pos)
-		else
-			start_the_machine(pos)
+	if fields.state_button ~= nil then
+		local state = State:get_state(meta)
+		if state == tubelib.STOPPED or state == tubelib.STANDBY or state == tubelib.BLOCKED then
+			meta:set_int("idx", 1) -- restart from the beginning
+			meta:set_string("quarry_pos", nil)
+			State:start(pos, meta)
+		elseif state == tubelib.RUNNING or state == tubelib.FAULT then
+			State:stop(pos, meta)
 		end
-	else
-		meta:set_string("formspec", quarry_formspec(meta, tubelib.state(running)))
 	end
 end
 
@@ -315,36 +277,27 @@ minetest.register_node("tubelib_addons1:quarry", {
 		'tubelib_addons1_quarry.png^[transformFX',
 	},
 
-	on_construct = function(pos)
-		local meta = minetest.get_meta(pos)
+	after_place_node = function(pos, placer)
+		local meta = M(pos)
 		local inv = meta:get_inventory()
 		inv:set_size('main', 16)
 		inv:set_size('fuel', 1)
-	end,
-	
-	after_place_node = function(pos, placer)
 		local number = tubelib.add_node(pos, "tubelib_addons1:quarry")
-		local meta = minetest.get_meta(pos)
-		meta:set_string("infotext", "Quarry "..number..": stopped")
 		local facedir = minetest.dir_to_facedir(placer:get_look_dir(), false)
 		meta:set_int("facedir", facedir)
 		meta:set_string("number", number)
 		meta:set_string("owner", placer:get_player_name())
-		meta:set_int("running", STOP_STATE)
 		meta:set_int("endless", 0)
 		meta:set_int("curr_level", -1)
 		meta:set_int("max_levels", 1)
-		meta:set_string("formspec", quarry_formspec(meta, tubelib.STOPPED))
+		State:node_init(pos, number)
 	end,
-
-	on_receive_fields = on_receive_fields,
-	on_rotate = screwdriver.disallow,
 
 	on_dig = function(pos, node, puncher, pointed_thing)
 		if minetest.is_protected(pos, puncher:get_player_name()) then
 			return
 		end
-		local meta = minetest.get_meta(pos)
+		local meta = M(pos)
 		local inv = meta:get_inventory()
 		if inv:is_empty("main") then
 			minetest.node_dig(pos, node, puncher, pointed_thing)
@@ -352,9 +305,17 @@ minetest.register_node("tubelib_addons1:quarry", {
 		end
 	end,
 
+	after_dig_node = function(pos, oldnode, oldmetadata, digger)
+		State:after_dig_node(pos, oldnode, oldmetadata, digger)
+	end,
+	
+	on_rotate = screwdriver.disallow,
+	on_receive_fields = on_receive_fields,
+	on_timer = keep_running,
 	allow_metadata_inventory_put = allow_metadata_inventory_put,
 	allow_metadata_inventory_take = allow_metadata_inventory_take,
 
+	drop = "",
 	paramtype = "light",
 	sunlight_propagates = true,
 	paramtype2 = "facedir",
@@ -362,7 +323,6 @@ minetest.register_node("tubelib_addons1:quarry", {
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
 })
-
 
 minetest.register_node("tubelib_addons1:quarry_active", {
 	description = "Tubelib Quarry",
@@ -402,6 +362,48 @@ minetest.register_node("tubelib_addons1:quarry_active", {
 	sounds = default.node_sound_wood_defaults(),
 })
 
+minetest.register_node("tubelib_addons1:quarry_defect", {
+	description = "Tubelib Quarry",
+	tiles = {
+		-- up, down, right, left, back, front
+		'tubelib_front.png',
+		'tubelib_front.png',
+		'tubelib_addons1_quarry.png^tubelib_defect.png',
+		'tubelib_addons1_quarry_passive.png^tubelib_defect.png',
+		'tubelib_addons1_quarry.png^tubelib_defect.png',
+		'tubelib_addons1_quarry.png^[transformFX^tubelib_defect.png',
+	},
+
+	after_place_node = function(pos, placer)
+		local number = tubelib.add_node(pos, "tubelib_addons1:quarry")
+		State:node_init(pos, number)
+		State:defect(pos, M(pos))
+	end,
+
+	on_dig = function(pos, node, puncher, pointed_thing)
+		if minetest.is_protected(pos, puncher:get_player_name()) then
+			return
+		end
+		local meta = M(pos)
+		local inv = meta:get_inventory()
+		if inv:is_empty("main") then
+			minetest.node_dig(pos, node, puncher, pointed_thing)
+			tubelib.remove_node(pos)
+		end
+	end,
+
+	on_rotate = screwdriver.disallow,
+	allow_metadata_inventory_put = allow_metadata_inventory_put,
+	allow_metadata_inventory_take = allow_metadata_inventory_take,
+
+	paramtype = "light",
+	sunlight_propagates = true,
+	paramtype2 = "facedir",
+	groups = {choppy=2, cracky=2, crumbly=2, not_in_creative_inventory=1},
+	is_ground_content = false,
+	sounds = default.node_sound_wood_defaults(),
+})
+
 minetest.register_craft({
 	output = "tubelib_addons1:quarry",
 	recipe = {
@@ -412,45 +414,34 @@ minetest.register_craft({
 })
 
 
-tubelib.register_node("tubelib_addons1:quarry", {"tubelib_addons1:quarry_active"}, {
+tubelib.register_node("tubelib_addons1:quarry", 
+	{"tubelib_addons1:quarry_active", "tubelib_addons1:quarry_defect"}, {
 	on_pull_item = function(pos, side)
-		local meta = minetest.get_meta(pos)
-		return tubelib.get_item(meta, "main")
+		return tubelib.get_item(M(pos), "main")
 	end,
 	on_push_item = function(pos, side, item)
-		if item:get_name() == "tubelib_addons1:biofuel" then
-			local meta = minetest.get_meta(pos)
-			return tubelib.put_item(meta, "fuel", item)
-		end
-		return false
+		return tubelib.put_item(M(pos), "fuel", item)
 	end,
 	on_unpull_item = function(pos, side, item)
-		local meta = minetest.get_meta(pos)
-		return tubelib.put_item(meta, "main", item)
+		return tubelib.put_item(M(pos), "main", item)
 	end,
-	
 	on_recv_message = function(pos, topic, payload)
-		if topic == "on" then
-			start_the_machine(pos)
-		elseif topic == "off" then
-			stop_the_machine(pos)
-		elseif topic == "state" then
-			local meta = minetest.get_meta(pos)
-			local running = meta:get_int("running")
-			return tubelib.statestring(running)
-		elseif topic == "fuel" then
-			local meta = minetest.get_meta(pos)
-			return tubelib.fuelstate(meta, "fuel")
+		if topic == "fuel" then
+			return tubelib.fuelstate(M(pos), "fuel")
+		end
+		
+		local resp = State:on_receive_message(pos, topic, payload)
+		if resp then
+			return resp
 		else
 			return "unsupported"
 		end
 	end,
 	on_node_load = function(pos)
-		local meta = minetest.get_meta(pos)
-		if meta:get_int("running") ~= STOP_STATE then
-			meta:set_int("running", TICKS_TO_SLEEP)
-			minetest.get_node_timer(pos):start(CYCLE_TIME)
-		end
+		State:on_node_load(pos)
+	end,
+	on_node_repair = function(pos)
+		return State:on_node_repair(pos)
 	end,
 })	
 

@@ -3,7 +3,7 @@
 	Tubelib Addons 1
 	================
 
-	Copyright (C) 2017,2018 Joachim Stolberg
+	Copyright (C) 2017-2019 Joachim Stolberg
 
 	LGPLv2.1+
 	See LICENSE.txt for more information
@@ -62,7 +62,6 @@ local function allow_metadata_inventory_put(pos, listname, index, stack, player)
 	if minetest.is_protected(pos, player:get_player_name()) then
 		return 0
 	end
-	local inv = M(pos):get_inventory()
 	if listname == "src" and State:get_state(M(pos)) == tubelib.STANDBY then
 		State:start(pos, M(pos))
 	end
@@ -211,7 +210,7 @@ minetest.register_node("tubelib_addons1:grinder_defect", {
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_addons1_grinder.png',
-		'tubelib_front.png^tubelib_defect.png',
+		'tubelib_front.png',
 		'tubelib_front.png^tubelib_defect.png',
 		'tubelib_front.png^tubelib_defect.png',
 		"tubelib_front.png^tubelib_defect.png",
@@ -253,9 +252,9 @@ minetest.register_node("tubelib_addons1:grinder_defect", {
 minetest.register_craft({
 	output = "tubelib_addons1:grinder",
 	recipe = {
-		{"group:wood", 		"default:tin_ingot",  	"group:wood"},
-		{"tubelib:tube1", 	"default:mese_crystal",	"tubelib:tube1"},
-		{"group:wood", 		"default:tin_ingot",  	"group:wood"},
+		{"group:wood", "default:tin_ingot", "group:wood"},
+		{"tubelib:tube1", "default:mese_crystal", "tubelib:tube1"},
+		{"group:wood", "default:tin_ingot", "group:wood"},
 	},
 })
 

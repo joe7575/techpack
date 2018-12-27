@@ -3,14 +3,14 @@
 	Tubelib Addons 1
 	================
 
-	Copyright (C) 2017,2018 Joachim Stolberg
+	Copyright (C) 2017-2019 Joachim Stolberg
 
 	LGPLv2.1+
 	See LICENSE.txt for more information
 	
 	harvester.lua
 	
-	Harvester machine to chop wood, leaves and harvest farming crops.
+	Harvester machine to chop wood, leaves and harvest farming crops and flowers.
 	
 	The machine is able to harvest an square area of up to 33x33 blocks (radius = 16).
 	The base node has to be placed in the middle of the harvesting area.
@@ -19,17 +19,28 @@
 
 ]]--
 
+-- for lazy programmers
+local S = function(pos) if pos then return minetest.pos_to_string(pos) end end
+local P = minetest.string_to_pos
+local M = minetest.get_meta
 
 local CYCLE_TIME = 4
-local MAX_HEIGHT = 18
+local MAX_HEIGHT = 18  -- harvesting altitude
 local MAX_DIAMETER = 33
-local BURNING_TIME = 20
-local TICKS_TO_SLEEP = 10
-local STOP_STATE = 0
-local RUNNING = 1
-local STANDBY_STATE = -1
-local FAULT_STATE = -3
-local OFFSET = 5
+local BURNING_TIME = 20  -- fuel
+local STANDBY_TICKS = 4  -- used for blocked state
+local COUNTDOWN_TICKS = 2
+local OFFSET = 5  -- for uneven terrains
+
+local State = tubelib.NodeStates:new({
+	node_name_passive = "tubelib_addons1:harvester_base",
+	node_name_defect = "tubelib_addons1:harvester_defect",
+	infotext_name = "Tubelib Fermenter",
+	cycle_time = CYCLE_TIME,
+	standby_ticks = STANDBY_TICKS,
+	has_item_meter = true,
+	aging_factor = 15,
+})
 
 local Radius2Idx = {[4]=1 ,[6]=2, [8]=3, [10]=4, [12]=5, [14]=6, [16]=7}
 
@@ -57,11 +68,12 @@ end
 local WorkingSteps = gen_working_steps()
 
 
-local function formspec(this, state)
+local function formspec(pos, meta)
 	-- some recalculations
+	local this = minetest.deserialize(meta:get_string("this"))
 	local endless = this.endless == 1 and "true" or "false"
 	local fuel = this.fuel * 100/BURNING_TIME
-	if state ~= tubelib.RUNNING then
+	if State:get_state(meta) ~= tubelib.RUNNING then
 		fuel = 0
 	end
 	local radius = Radius2Idx[this.radius] or 2
@@ -78,18 +90,19 @@ local function formspec(this, state)
 	"item_image[1.5,3;1,1;tubelib_addons1:biofuel]"..
 	"image[2.5,3;1,1;default_furnace_fire_bg.png^[lowpart:"..
 	fuel..":default_furnace_fire_fg.png]"..
-	"image_button[3.5,3;1,1;".. tubelib.state_button(state) ..";button;]"..
+	"image_button[3.5,3;1,1;".. State:get_state_button_image(meta) ..";state_button;]"..
 	"list[current_player;main;0.5,4.3;8,4;]"..
 	"listring[context;main]"..
 	"listring[current_player;main]"
 end
 
+State:register_formspec_func(formspec)
+
 local function allow_metadata_inventory_put(pos, listname, index, stack, player)
 	if minetest.is_protected(pos, player:get_player_name()) then
 		return 0
 	end
-	local meta = minetest.get_meta(pos)
-	local inv = meta:get_inventory()
+	local inv = M(pos):get_inventory()
 	if listname == "main" then
 		return stack:get_count()
 	elseif listname == "fuel" and stack:get_name() == "tubelib_addons1:biofuel" then
@@ -117,43 +130,6 @@ local function get_next_pos(old_pos, idx)
 	return vector.add(old_pos, core.facedir_to_dir(facedir))
 end
 
-local function start_the_machine(pos, this, meta)
-	this.running = RUNNING
-	this.working_pos = working_start_pos(pos)
-	meta:set_string("infotext", "Tubelib Harvester "..this.number..": running")
-	meta:set_string("formspec", formspec(this, tubelib.RUNNING))
-	minetest.get_node_timer(pos):start(CYCLE_TIME)
-	meta:set_string("this", minetest.serialize(this))
-	return false
-end
-
-local function stop_the_machine(pos, this, meta)
-	this.running = STOP_STATE
-	this.idx = 0
-	meta:set_string("infotext", "Tubelib Harvester "..this.number..": stopped")
-	meta:set_string("formspec", formspec(this, tubelib.STOPPED))
-	minetest.get_node_timer(pos):stop()
-	meta:set_string("this", minetest.serialize(this))
-	return false
-end
-
-local function goto_standby(pos, this, meta)
-	this.running = STANDBY_STATE
-	meta:set_string("infotext", "Tubelib Harvester "..this.number..": standby")
-	meta:set_string("formspec", formspec(this, tubelib.STANDBY))
-	minetest.get_node_timer(pos):start(CYCLE_TIME * TICKS_TO_SLEEP)
-	meta:set_string("this", minetest.serialize(this))
-	return false
-end
-
-local function goto_fault(pos, this, meta)
-	this.running = FAULT_STATE
-	meta:set_string("infotext", "Tubelib Harvester "..this.number..": fault")
-	meta:set_string("formspec", formspec(this, tubelib.FAULT))
-	minetest.get_node_timer(pos):stop()
-	meta:set_string("this", minetest.serialize(this))
-	return false
-end
 
 -- Remove saplings lying arround
 local function remove_all_sapling_items(pos)
@@ -168,7 +144,7 @@ end
 -- Remove wood/leave nodes and place sapling if necessary
 -- Return false if inventory is full
 -- else return true
-local function remove_or_replace_node(pos, inv, node, order)
+local function remove_or_replace_node(this, pos, inv, node, order)
 	local next_pos = table.copy(pos)
 	next_pos.y = next_pos.y - 1
 	
@@ -180,6 +156,7 @@ local function remove_or_replace_node(pos, inv, node, order)
 	if next_node then
 		minetest.remove_node(pos)
 		inv:add_item("main", ItemStack(order.drop))
+		this.num_items = this.num_items + 1
 		if tubelib_addons1.GroundNodes[next_node.name] ~= nil and order.plant then  -- hit the ground?
 			minetest.set_node(pos, {name=order.plant, paramtype2 = "wallmounted", param2=1})
 			if order.t1 ~= nil then 
@@ -237,9 +214,9 @@ local function harvest_field(this, meta)
 		pos.y = y_pos
 		local node = minetest.get_node_or_nil(pos)
 		if node and node.name ~= "air" then
-			local order = tubelib_addons1.FarmingNodes[node.name]
+			local order = tubelib_addons1.FarmingNodes[node.name] or tubelib_addons1.Flowers[node.name]
 			if order then
-				if not remove_or_replace_node(pos, inv, node, order) then
+				if not remove_or_replace_node(this, pos, inv, node, order) then
 					return false
 				end
 			else 	
@@ -250,43 +227,42 @@ local function harvest_field(this, meta)
 	return true
 end
 
-local function not_standby(pos, this, meta)
-	if this and this.running == STANDBY_STATE then
+local function not_blocked(pos, this, meta)
+	if State:get_state(meta) == tubelib.BLOCKED then
 		if harvest_field(this, meta) then
-			minetest.after(0, start_the_machine, pos, this, meta)
+			minetest.after(0, State.start, State, pos, meta)
 		end
 		return false
 	end
 	return true
 end
 	
--- move the copter to the next pos and harvest the field below
+-- move the "harvesting copter" to the next pos and harvest the field below
 local function keep_running(pos, elapsed)
-	local meta = minetest.get_meta(pos)
+	local meta = M(pos)
 	local this = minetest.deserialize(meta:get_string("this"))
 	
-	--print(this.working_pos.x, this.working_pos.z, this.running)
-	if not_standby(pos, this, meta) then
+	if not_blocked(pos, this, meta) then
 		if check_fuel(pos, this, meta) then
 			if calc_new_pos(pos, this, meta) then
+				this.num_items = 0
 				if harvest_field(this, meta) then
 					meta:set_string("this", minetest.serialize(this))
 					meta:set_string("infotext", 
 						"Tubelib Harvester "..this.number..
 						": running ("..this.idx.."/"..this.max..")")
-					return true
+					State:keep_running(pos, meta, COUNTDOWN_TICKS, this.num_items)
 				else
-					goto_standby(pos, this, meta)
+					State:blocked(pos, meta)
 				end
 			else
-				stop_the_machine(pos, this, meta)
+				State:stop(pos, meta)
 			end
 		else
-			goto_fault(pos, this, meta)
+			State:fault(pos, meta)
 		end
-		return false
 	end
-	return true
+	return State:is_active(meta)
 end	
 	
 
@@ -294,7 +270,7 @@ local function on_receive_fields(pos, formname, fields, player)
 	if minetest.is_protected(pos, player:get_player_name()) then
 		return
 	end
-	local meta = minetest.get_meta(pos)
+	local meta = M(pos)
 	local this = minetest.deserialize(meta:get_string("this"))
 	local radius = this.radius
 	
@@ -302,7 +278,7 @@ local function on_receive_fields(pos, formname, fields, player)
 		radius = tonumber(fields.radius)
 	end
 	if radius ~= this.radius then
-		stop_the_machine(pos, this, meta)
+		State:stop(pos, meta)
 		this.radius = radius
 		this.max = (radius*2 + 1) * (radius*2 + 1)
 	end
@@ -311,15 +287,17 @@ local function on_receive_fields(pos, formname, fields, player)
 		this.endless = fields.endless == "true" and 1 or 0
 	end
 	
-	if fields.button ~= nil then
-		if this.running > STOP_STATE then
-			stop_the_machine(pos, this, meta)
-		else
-			start_the_machine(pos, this, meta)
+	if fields.state_button ~= nil then
+		local state = State:get_state(meta)
+		if state == tubelib.STOPPED or state == tubelib.STANDBY or state == tubelib.BLOCKED then
+			this.idx = 0
+			this.working_pos = working_start_pos(pos)
+			State:start(pos, meta)
+		elseif state == tubelib.RUNNING or state == tubelib.FAULT then
+			State:stop(pos, meta)
 		end
-	else
-		meta:set_string("formspec", formspec(this, tubelib.state(this.running)))
 	end
+	
 	meta:set_string("this", minetest.serialize(this))
 end
 
@@ -328,40 +306,99 @@ minetest.register_node("tubelib_addons1:harvester_base", {
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_front.png',
+		'tubelib_front.png',
 		'tubelib_addons1_harvester.png',
 	},
 
-	on_construct = function(pos)
-		local meta = minetest.get_meta(pos)
+	after_place_node = function(pos, placer)
+		local meta = M(pos)
 		local inv = meta:get_inventory()
 		inv:set_size('main', 16)
 		inv:set_size('fuel', 1)
-	end,
-	
-	after_place_node = function(pos, placer)
 		local number = tubelib.add_node(pos, "tubelib_addons1:harvester_base")
-		local meta = minetest.get_meta(pos)
-		meta:set_string("infotext", "Tubelib Harvester "..number..": stopped")
 		local this = {
 			number = number,
 			owner = placer:get_player_name(),
 			working_pos = working_start_pos(pos),
 			fuel = 0,
-			running = STOP_STATE,
 			endless = 0,
 			radius = 6,
 			idx = 0,
 			max = (6+1+6) * (6+1+6)
 		}
 		meta:set_string("this", minetest.serialize(this))
-		meta:set_string("formspec", formspec(this, tubelib.STOPPED))
+		State:node_init(pos, number)
 	end,
 
 	on_dig = function(pos, node, puncher, pointed_thing)
 		if minetest.is_protected(pos, puncher:get_player_name()) then
 			return
 		end
-		local meta = minetest.get_meta(pos)
+		local meta = M(pos)
+		local inv = meta:get_inventory()
+		if inv:is_empty("main") then
+			minetest.node_dig(pos, node, puncher, pointed_thing)
+			tubelib.remove_node(pos)
+		end
+	end,
+
+	after_dig_node = function(pos, oldnode, oldmetadata, digger)
+		State:after_dig_node(pos, oldnode, oldmetadata, digger)
+	end,
+	
+	on_rotate = screwdriver.disallow,
+	on_receive_fields = on_receive_fields,
+	on_timer = keep_running,
+	allow_metadata_inventory_put = allow_metadata_inventory_put,
+	allow_metadata_inventory_take = allow_metadata_inventory_take,
+
+	drop = "",
+	paramtype = "light",
+	sunlight_propagates = true,
+	paramtype2 = "facedir",
+	groups = {choppy=2, cracky=2, crumbly=2},
+	is_ground_content = false,
+	sounds = default.node_sound_wood_defaults(),
+})
+
+minetest.register_node("tubelib_addons1:harvester_defect", {
+	description = "Tubelib Harvester Base",
+	tiles = {
+		-- up, down, right, left, back, front
+		'tubelib_front.png',
+		'tubelib_front.png',
+		'tubelib_addons1_harvester.png^tubelib_defect.png',
+	},
+
+	on_construct = function(pos)
+		local inv = M(pos):get_inventory()
+		inv:set_size('main', 16)
+		inv:set_size('fuel', 1)
+	end,
+	
+	after_place_node = function(pos, placer)
+		local number = tubelib.add_node(pos, "tubelib_addons1:harvester_base")
+		local this = {
+			number = number,
+			owner = placer:get_player_name(),
+			working_pos = working_start_pos(pos),
+			fuel = 0,
+			endless = 0,
+			radius = 6,
+			idx = 0,
+			max = (6+1+6) * (6+1+6)
+		}
+		local meta = M(pos)
+		meta:set_string("this", minetest.serialize(this))
+		State:node_init(pos, number)
+		State:defect(pos, meta)
+	end,
+
+	on_dig = function(pos, node, puncher, pointed_thing)
+		if minetest.is_protected(pos, puncher:get_player_name()) then
+			return
+		end
+		local meta = M(pos)
 		local inv = meta:get_inventory()
 		if inv:is_empty("main") then
 			minetest.node_dig(pos, node, puncher, pointed_thing)
@@ -370,38 +407,17 @@ minetest.register_node("tubelib_addons1:harvester_base", {
 	end,
 
 	on_rotate = screwdriver.disallow,
-	on_receive_fields = on_receive_fields,
-	on_timer = keep_running,
 	allow_metadata_inventory_put = allow_metadata_inventory_put,
 	allow_metadata_inventory_take = allow_metadata_inventory_take,
 
 	paramtype = "light",
 	sunlight_propagates = true,
-	groups = {choppy=2, cracky=2, crumbly=2},
+	paramtype2 = "facedir",
+	groups = {choppy=2, cracky=2, crumbly=2, not_in_creative_inventory=1},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
 })
 
-minetest.register_node("tubelib_addons1:harvester_base_active", {
-	description = "Tubelib Harvester Base",
-	tiles = {
-		-- up, down, right, left, back, front
-		'tubelib_front.png',
-		'tubelib_addons1_harvester.png',
-	},
-
-	on_rotate = screwdriver.disallow,
-	on_receive_fields = on_receive_fields,
-	on_timer = keep_running,
-	allow_metadata_inventory_put = allow_metadata_inventory_put,
-	allow_metadata_inventory_take = allow_metadata_inventory_take,
-
-	paramtype = "light",
-	sunlight_propagates = true,
-	groups = {crumbly=0, not_in_creative_inventory=1},
-	is_ground_content = false,
-	sounds = default.node_sound_wood_defaults(),
-})
 
 minetest.register_craft({
 	output = "tubelib_addons1:harvester_base",
@@ -413,50 +429,33 @@ minetest.register_craft({
 })
 
 
-tubelib.register_node("tubelib_addons1:harvester_base", {}, {
-	on_pull_stack = function(pos, side)
-		local meta = minetest.get_meta(pos)
-		return tubelib.get_stack(meta, "main")
-	end,
+tubelib.register_node("tubelib_addons1:harvester_base", {"tubelib_addons1:harvester_defect"}, {
 	on_pull_item = function(pos, side)
-		local meta = minetest.get_meta(pos)
-		return tubelib.get_item(meta, "main")
+		return tubelib.get_item(M(pos), "main")
 	end,
 	on_push_item = function(pos, side, item)
-		if item:get_name() == "tubelib_addons1:biofuel" then
-			local meta = minetest.get_meta(pos)
-			return tubelib.put_item(meta, "fuel", item)
-		end
-		return false
+		return tubelib.put_item(M(pos), "fuel", item)
 	end,
 	on_unpull_item = function(pos, side, item)
-		local meta = minetest.get_meta(pos)
-		return tubelib.put_item(meta, "main", item)
+		return tubelib.put_item(M(pos), "main", item)
 	end,
 	on_recv_message = function(pos, topic, payload)
-		local meta = minetest.get_meta(pos)
-		local this = minetest.deserialize(meta:get_string("this"))
-		if topic == "on" then
-			start_the_machine(pos, this, meta)
-		elseif topic == "off" then
-			stop_the_machine(pos, this, meta)
-		elseif topic == "state" then
-			return tubelib.statestring(this.running)
-		elseif topic == "fuel" then
-			local meta = minetest.get_meta(pos)
-			return tubelib.fuelstate(meta, "fuel")
+		if topic == "fuel" then
+			return tubelib.fuelstate(M(pos), "fuel")
+		end
+		
+		local resp = State:on_receive_message(pos, topic, payload)
+		if resp then
+			return resp
 		else
 			return "unsupported"
 		end
 	end,
 	on_node_load = function(pos)
-		local meta = minetest.get_meta(pos)
-		local this = minetest.deserialize(meta:get_string("this"))
-		if this and this.running ~= tubelib.STATE_STOPPED then
-			this.running = tubelib.STATE_STANDBY
-			meta:set_string("this", minetest.serialize(this))
-			minetest.get_node_timer(pos):start(CYCLE_TIME * TICKS_TO_SLEEP)
-		end
+		State:on_node_load(pos)
+	end,
+	on_node_repair = function(pos)
+		return State:on_node_repair(pos)
 	end,
 })	
 
@@ -468,7 +467,7 @@ minetest.register_lbm({
 	nodenames = {"tubelib_addons1:harvester_base", "tubelib:harvester_base_active"},
 	run_at_every_load = false,
 	action = function(pos, node)
-		local meta = minetest.get_meta(pos)
+		local meta = M(pos)
 		local this = minetest.deserialize(meta:get_string("this"))
 		if this then
 			this.working_pos = this.copter_pos or working_start_pos(pos)

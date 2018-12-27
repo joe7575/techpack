@@ -12,8 +12,9 @@
 
 tubelib_addons1 = {}
 
--- table needed for Harvester
+-- tables needed for Harvester
 tubelib_addons1.FarmingNodes = {}
+tubelib_addons1.Flowers = {}
 
 -- table needed for Grinder
 tubelib_addons1.GroundNodes = {}
@@ -27,6 +28,10 @@ end
 -- default farming nodes which require the node timer
 function tubelib_addons1.register_default_farming_node(name, drop, plant)
 	tubelib_addons1.FarmingNodes[name] = {drop = drop or name, plant = plant, t1 = 2400, t2 = 4800}
+end
+
+function tubelib_addons1.register_flower(name)
+	tubelib_addons1.FarmingNodes[name] = {drop = name}
 end
 
 -- farming nodes with ABM
@@ -221,3 +226,18 @@ gn("ethereal:quicksand2", "default:sand")
 gn("ethereal:illumishroom")
 gn("ethereal:illumishroom2")
 gn("ethereal:illumishroom3")
+
+
+-------------------------------------------------------------------------------
+-- Registered flowers
+-------------------------------------------------------------------------------
+local function register_flowers()
+	for name,item in pairs(minetest.registered_items) do
+		if item.groups.flower == 1 then
+			tubelib_addons1.register_flower(name)
+		end
+	end
+end
+
+minetest.after(10, register_flowers)
+
