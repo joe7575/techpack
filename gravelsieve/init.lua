@@ -70,6 +70,7 @@ local function add_ores()
 			and drop ~= item.ore
 			and drop ~= ""
 			and item.ore_type == "scatter"
+			and item.wherein == "default:stone"
 			and item.clust_scarcity ~= nil and item.clust_scarcity > 0 
 			and item.clust_size ~= nil and item.clust_size > 0 then
 				local probability = item.clust_scarcity / item.clust_size / 
