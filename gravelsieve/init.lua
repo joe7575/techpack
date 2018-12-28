@@ -89,10 +89,10 @@ local function add_ores()
 	end
 	local overall_probability = 0.0
 	for name,probability in pairs(gravelsieve.ore_probability) do
-		print(string.format("[gravelsieve] %-32s %u", name, probability))
+		minetest.log("info", string.format("[gravelsieve] %-32s %u", name, probability))
 		overall_probability = overall_probability + 1.0/probability
 	end
-	print(string.format("[gravelsieve] Overall probability %g", overall_probability))
+	minetest.log("info", string.format("[gravelsieve] Overall probability %g", overall_probability))
 end	
 
 minetest.after(1, add_ores)
