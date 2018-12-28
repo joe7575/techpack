@@ -72,17 +72,14 @@ local function add_ores()
 			and item.ore_type == "scatter"
 			and item.wherein == "default:stone"
 			and item.clust_scarcity ~= nil and item.clust_scarcity > 0 
-			and item.clust_size ~= nil and item.clust_size > 0 then
-				local probability = item.clust_scarcity / item.clust_size / 
-								PROBABILITY_FACTOR * gravelsieve.ore_rarity
-				probability = math.floor(probability)
-				if probability > 20 then
-					if gravelsieve.ore_probability[drop] == nil then
-						gravelsieve.ore_probability[drop] = probability
-					else
-						gravelsieve.ore_probability[drop] = 
-										math.min(gravelsieve.ore_probability[drop], probability)
-					end
+			and item.clust_num_ores ~= nil and item.clust_num_ores > 0 
+			and item.y_max ~= nil and item.y_min ~= nil then
+				local probability = (gravelsieve.ore_rarity / PROBABILITY_FACTOR) * item.clust_scarcity / (item.clust_num_ores * ((item.y_max - item.y_min) / 65535))
+				if gravelsieve.ore_probability[drop] == nil then
+					gravelsieve.ore_probability[drop] = probability
+				else
+					-- harmonic sum
+					gravelsieve.ore_probability[drop] = 1.0 / ((1.0 / gravelsieve.ore_probability[drop]) + (1.0 / probability))
 				end
 			end
 		end
