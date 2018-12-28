@@ -92,6 +92,8 @@ function NodeStates:new(attr)
 		node_name_defect = attr.node_name_defect,
 		infotext_name = attr.infotext_name,
 		start_condition_fullfilled = attr.start_condition_fullfilled or start_condition_fullfilled,
+		on_start = attr.on_start,
+		on_stop = attr.on_stop,
 	}
 	if attr.aging_factor then
 		o.aging_level1 = attr.aging_factor * tubelib.machine_aging_value
@@ -125,7 +127,11 @@ function NodeStates:node_init(pos, number)
 end
 
 function NodeStates:stop(pos, meta)
-	if meta:get_int("tubelib_state") ~= DEFECT then
+	local state = meta:get_int("tubelib_state")
+	if state ~= DEFECT then
+		if self.on_stop then
+			self.on_stop(pos, meta, state)
+		end
 		meta:set_int("tubelib_state", STOPPED)
 		if self.node_name_passive then
 			local node = minetest.get_node(pos)
@@ -150,6 +156,9 @@ function NodeStates:start(pos, meta, called_from_on_timer)
 	if state == STOPPED or state == STANDBY or state == BLOCKED then
 		if not self.start_condition_fullfilled(pos, meta) then
 			return false
+		end
+		if self.on_start then
+			self.on_start(pos, meta, state)
 		end
 		meta:set_int("tubelib_state", RUNNING)
 		if called_from_on_timer then

@@ -52,9 +52,10 @@ local function calc_area(pos)
 end
 
 local function add_pos(pos, player)
+	local pos1 = calc_area(pos)
 	local lPos = minetest.deserialize(player:get_attribute("tubelib_forceload_blocks")) or {}
-	if not in_list(lPos, pos) and #lPos < tubelib.max_num_forceload_blocks then
-		lPos[#lPos+1] = pos
+	if not in_list(lPos, pos1) and #lPos < tubelib.max_num_forceload_blocks then
+		lPos[#lPos+1] = pos1
 		player:set_attribute("tubelib_forceload_blocks", minetest.serialize(lPos))
 		return true
 	end
@@ -62,9 +63,9 @@ local function add_pos(pos, player)
 end
 	
 local function del_pos(pos, player)
+	local pos1 = calc_area(pos)
 	local lPos = minetest.deserialize(player:get_attribute("tubelib_forceload_blocks")) or {}
-	lPos = remove_list_elem(lPos, pos)
-	lPos = remove_list_elem(lPos, pos)
+	lPos = remove_list_elem(lPos, pos1)
 	player:set_attribute("tubelib_forceload_blocks", minetest.serialize(lPos))
 end
 
@@ -78,6 +79,27 @@ local function get_data(pos, player)
 	local max = tubelib.max_num_forceload_blocks
 	return pos1, pos2, num, max
 end
+
+local function formspec(player)
+	local lPos = get_pos_list(player)
+	local tRes = {}
+	tRes[1] = "size[7,9]"..
+	default.gui_bg..
+	default.gui_bg_img..
+	default.gui_slots..
+	"label[0,0;List of your Forceload Blocks:]"
+	
+	for idx,pos in ipairs(lPos) do
+		local pos1, pos2 = calc_area(pos)
+		local ypos = 0.2 + idx * 0.4
+		tRes[#tRes+1] = "label[0,"..ypos..";"..idx.."]"
+		tRes[#tRes+1] = "label[0.8,"..ypos..";"..S(pos1).."]"
+		tRes[#tRes+1] = "label[3.2,"..ypos..";to]"
+		tRes[#tRes+1] = "label[4,"..ypos..";"..S(pos2).."]"
+	end
+	return table.concat(tRes)
+end
+
 
 minetest.register_node("tubelib:forceload", {
 	description = "Tubelib Forceload Block",
@@ -107,7 +129,7 @@ minetest.register_node("tubelib:forceload", {
 			tubelib.mark_region(placer:get_player_name(), pos1, pos2)
 			M(pos):set_string("owner", placer:get_player_name())
 		else
-			chat(placer, "Max. number of Forceload Blocks reached!")
+			chat(placer, "Area already loaded or max. number of Forceload Blocks reached!")
 			minetest.remove_node(pos)
 			return itemstack
 		end
@@ -117,6 +139,14 @@ minetest.register_node("tubelib:forceload", {
 		del_pos(pos, digger)
 		minetest.forceload_free_block(pos, true)
 		tubelib.unmark_region(oldmetadata.fields.owner)
+	end,
+	
+	on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
+		if M(pos):get_string("owner") == clicker:get_player_name() or
+				minetest.check_player_privs(clicker:get_player_name(), "server") then
+			local s = formspec(clicker)
+			minetest.show_formspec(clicker:get_player_name(), "tubelib:forceload", s)
+		end
 	end,
 	
 	on_punch = function(pos, node, puncher, pointed_thing)

@@ -43,6 +43,12 @@ local State = tubelib.NodeStates:new({
 	standby_ticks = STANDBY_TICKS,
 	has_item_meter = true,
 	aging_factor = 12,
+	on_stop = function(pos, meta, oldstate)
+		if oldstate == tubelib.RUNNING then
+			meta:set_int("idx", 1) -- restart from the beginning
+			meta:set_string("quarry_pos", nil)
+		end
+	end,
 })
 
 local function formspec(pos, meta)
@@ -110,8 +116,7 @@ local function allow_metadata_inventory_put(pos, listname, index, stack, player)
 	if minetest.is_protected(pos, player:get_player_name()) then
 		return 0
 	end
-	local meta = minetest.get_meta(pos)
-	local inv = meta:get_inventory()
+	local inv = M(pos):get_inventory()
 	if listname == "main" then
 		return stack:get_count()
 	elseif listname == "fuel" and stack:get_name() == "tubelib_addons1:biofuel" then
@@ -195,7 +200,7 @@ local function quarry_next_node(pos, meta)
 
 	local node = get_node_lvm(quarry_pos)
 	if node then
-		local number = meta:get_string("number")
+		local number = meta:get_string("tubelib_number")
 		local order = tubelib_addons1.GroundNodes[node.name]
 		if order ~= nil then
 			local inv = meta:get_inventory()
@@ -253,16 +258,7 @@ local function on_receive_fields(pos, formname, fields, player)
 	end
 	meta:set_int("endless", endless)
 	
-	if fields.state_button ~= nil then
-		local state = State:get_state(meta)
-		if state == tubelib.STOPPED or state == tubelib.STANDBY or state == tubelib.BLOCKED then
-			meta:set_int("idx", 1) -- restart from the beginning
-			meta:set_string("quarry_pos", nil)
-			State:start(pos, meta)
-		elseif state == tubelib.RUNNING or state == tubelib.FAULT then
-			State:stop(pos, meta)
-		end
-	end
+	State:state_button_event(pos, fields)
 end
 
 minetest.register_node("tubelib_addons1:quarry", {
@@ -285,7 +281,6 @@ minetest.register_node("tubelib_addons1:quarry", {
 		local number = tubelib.add_node(pos, "tubelib_addons1:quarry")
 		local facedir = minetest.dir_to_facedir(placer:get_look_dir(), false)
 		meta:set_int("facedir", facedir)
-		meta:set_string("number", number)
 		meta:set_string("owner", placer:get_player_name())
 		meta:set_int("endless", 0)
 		meta:set_int("curr_level", -1)

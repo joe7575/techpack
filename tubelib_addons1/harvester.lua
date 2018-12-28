@@ -32,6 +32,13 @@ local STANDBY_TICKS = 4  -- used for blocked state
 local COUNTDOWN_TICKS = 2
 local OFFSET = 5  -- for uneven terrains
 
+-- start on top of the base block
+local function working_start_pos(pos)
+	local working_pos = table.copy(pos)
+	working_pos.y = working_pos.y + MAX_HEIGHT
+	return working_pos
+end
+
 local State = tubelib.NodeStates:new({
 	node_name_passive = "tubelib_addons1:harvester_base",
 	node_name_defect = "tubelib_addons1:harvester_defect",
@@ -40,6 +47,12 @@ local State = tubelib.NodeStates:new({
 	standby_ticks = STANDBY_TICKS,
 	has_item_meter = true,
 	aging_factor = 15,
+	on_start = function(pos, meta, oldstate)
+		local this = minetest.deserialize(meta:get_string("this"))
+		this.idx = 0
+		this.working_pos = working_start_pos(pos)
+		meta:set_string("this", minetest.serialize(this))
+	end,
 })
 
 local Radius2Idx = {[4]=1 ,[6]=2, [8]=3, [10]=4, [12]=5, [14]=6, [16]=7}
@@ -118,18 +131,10 @@ local function allow_metadata_inventory_take(pos, listname, index, stack, player
 	return stack:get_count()
 end
 
--- start on top of the base block
-local function working_start_pos(pos)
-	local working_pos = table.copy(pos)
-	working_pos.y = working_pos.y + MAX_HEIGHT
-	return working_pos
-end
-
 local function get_next_pos(old_pos, idx)
 	local facedir = WorkingSteps[idx]
 	return vector.add(old_pos, core.facedir_to_dir(facedir))
 end
-
 
 -- Remove saplings lying arround
 local function remove_all_sapling_items(pos)
@@ -241,11 +246,11 @@ end
 local function keep_running(pos, elapsed)
 	local meta = M(pos)
 	local this = minetest.deserialize(meta:get_string("this"))
+	this.num_items = 0
 	
 	if not_blocked(pos, this, meta) then
 		if check_fuel(pos, this, meta) then
 			if calc_new_pos(pos, this, meta) then
-				this.num_items = 0
 				if harvest_field(this, meta) then
 					meta:set_string("this", minetest.serialize(this))
 					meta:set_string("infotext", 
@@ -287,16 +292,7 @@ local function on_receive_fields(pos, formname, fields, player)
 		this.endless = fields.endless == "true" and 1 or 0
 	end
 	
-	if fields.state_button ~= nil then
-		local state = State:get_state(meta)
-		if state == tubelib.STOPPED or state == tubelib.STANDBY or state == tubelib.BLOCKED then
-			this.idx = 0
-			this.working_pos = working_start_pos(pos)
-			State:start(pos, meta)
-		elseif state == tubelib.RUNNING or state == tubelib.FAULT then
-			State:stop(pos, meta)
-		end
-	end
+	State:state_button_event(pos, fields)
 	
 	meta:set_string("this", minetest.serialize(this))
 end

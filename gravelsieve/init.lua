@@ -3,7 +3,7 @@
 	Gravel Sieve Mod
 	================
 
-	v1.07 by JoSt
+	v1.09 by JoSt
 	Derived from the work of celeron55, Perttu Ahola  (furnace)
 	Pipeworks support added by FiftySix
 
@@ -35,6 +35,7 @@
 	2018-01-01  V1.06  * Hopper support added
 	2018-01-02  V1.07  * changed to registered ores
 	2018-02-09  V1.08  * Pipeworks support added, bugfix for issue #7
+	2018-12-28  V1.09  * Ore probability calculation changed (thanks to obl3pplifp)
 ]]--
 
 gravelsieve = {
@@ -70,28 +71,28 @@ local function add_ores()
 			and drop ~= item.ore
 			and drop ~= ""
 			and item.ore_type == "scatter"
+			and item.wherein == "default:stone"
 			and item.clust_scarcity ~= nil and item.clust_scarcity > 0 
-			and item.clust_size ~= nil and item.clust_size > 0 then
-				local probability = item.clust_scarcity / item.clust_size / 
-								PROBABILITY_FACTOR * gravelsieve.ore_rarity
-				probability = math.floor(probability)
-				if probability > 20 then
-					if gravelsieve.ore_probability[drop] == nil then
-						gravelsieve.ore_probability[drop] = probability
-					else
-						gravelsieve.ore_probability[drop] = 
-										math.min(gravelsieve.ore_probability[drop], probability)
-					end
+			and item.clust_num_ores ~= nil and item.clust_num_ores > 0 
+			and item.y_max ~= nil and item.y_min ~= nil then
+				local probability = (gravelsieve.ore_rarity / PROBABILITY_FACTOR) * item.clust_scarcity /
+						(item.clust_num_ores * ((item.y_max - item.y_min) / 65535))
+				if gravelsieve.ore_probability[drop] == nil then
+					gravelsieve.ore_probability[drop] = probability
+				else
+					-- harmonic sum
+					gravelsieve.ore_probability[drop] = 1.0 / ((1.0 / gravelsieve.ore_probability[drop]) +
+							(1.0 / probability))
 				end
 			end
 		end
 	end
 	local overall_probability = 0.0
 	for name,probability in pairs(gravelsieve.ore_probability) do
-		print(string.format("[gravelsieve] %-32s %u", name, probability))
+		minetest.log("info", string.format("[gravelsieve] %-32s %u", name, probability))
 		overall_probability = overall_probability + 1.0/probability
 	end
-	print(string.format("[gravelsieve] Overall probability %g", overall_probability))
+	minetest.log("info", string.format("[gravelsieve] Overall probability %g", overall_probability))
 end	
 
 minetest.after(1, add_ores)
