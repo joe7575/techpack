@@ -1,5 +1,5 @@
-# Maximim number of Forceload Blocks per player (default 10)
-tubelib_max_num_forceload_blocks (max number of Forceload Blocks) int 10
+# Maximim number of Forceload Blocks per player (default 12)
+tubelib_max_num_forceload_blocks (max number of Forceload Blocks) int 12
 
 # Enable Basalt Stone (and disable ore generation via cobble generator)
 tubelib_basalt_stone_enabled (Basalt Stone enabled) bool true

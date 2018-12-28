@@ -200,14 +200,13 @@ tubelib.register_node("tubelib_addons3:pushing_chest", {}, {
 	end,
 	on_pull_item = function(pos, side)
 		local meta = minetest.get_meta(pos)
-		local item = tubelib.get_item(meta, "main")
-		-- check if one remaining item is left
-		if meta:get_inventory():contains_item("main", item) then
-			return item 
-		else
-			-- don't remove the last item (recipe)
-			tubelib.put_item(meta, "main", item)
-			return nil 
+		local items = tubelib.get_num_items(meta, "main", 2)
+		if items then
+			-- return only one
+			items:set_count(1)
+			-- don't remove the potentally last item (recipe)
+			tubelib.put_item(meta, "main", items)
+			return items
 		end
 	end,
 	on_push_item = function(pos, side, item)

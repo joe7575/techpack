@@ -36,6 +36,7 @@
 	2018-01-02  V1.07  * changed to registered ores
 	2018-02-09  V1.08  * Pipeworks support added, bugfix for issue #7
 	2018-12-28  V1.09  * Ore probability calculation changed (thanks to obl3pplifp)
+	                     tubelib aging added
 ]]--
 
 gravelsieve = {
@@ -47,6 +48,14 @@ gravelsieve.ore_rarity = tonumber(minetest.setting_get("gravelsieve_ore_rarity")
 
 -- Increase the probability over the natural occurrence
 local PROBABILITY_FACTOR = 3
+
+-- tubelib aging feature
+local AGING_LEVEL1 = nil
+local AGING_LEVEL2 = nil
+if minetest.get_modpath("tubelib") and tubelib ~= nil then
+	AGING_LEVEL1 = 1 * tubelib.machine_aging_value
+	AGING_LEVEL2 = 3 * tubelib.machine_aging_value
+end
 
 -- Ore probability table  (1/n)
 gravelsieve.ore_probability = {
@@ -139,6 +148,17 @@ local function allow_metadata_inventory_take(pos, listname, index, stack, player
 	return stack:get_count()
 end
 
+local function aging(pos, meta)
+	if AGING_LEVEL1 then
+		local cnt = meta:get_int("tubelib_aging") + 1
+		meta:set_int("tubelib_aging", cnt)
+		if cnt > AGING_LEVEL1 and math.random(AGING_LEVEL2) == 1 then
+			minetest.get_node_timer(pos):stop()
+			minetest.swap_node(pos, {name = "gravelsieve:sieve_defect"})
+		end
+	end
+end
+
 -- handle the sieve animation
 local function swap_node(pos, meta, start)
 	local node = minetest.get_node(pos)
@@ -212,8 +232,10 @@ local function sieve_node_timer(pos, elapsed)
 	local gravel_sieved = ItemStack("gravelsieve:sieved_gravel")
 
 	if move_src2dst(meta, pos, inv, gravel) then
+		aging(pos, meta)
 		return true
 	elseif move_src2dst(meta, pos, inv, gravel_sieved) then
+		aging(pos, meta)
 		return true
 	else
 		minetest.get_node_timer(pos):stop()
@@ -405,11 +427,67 @@ end
 -- Optional adaption to tubelib
 ------------------------------------------------------------------------
 if minetest.global_exists("tubelib") then
+	minetest.register_node("gravelsieve:sieve_defect", {
+		tiles = {
+			-- up, down, right, left, back, front
+			"gravelsieve_top.png",
+			"gravelsieve_gravel.png",
+			"gravelsieve_auto_sieve.png^tubelib_defect.png",
+		},
+		drawtype = "nodebox",
+		node_box = {
+			type = "fixed",
+			fixed = {
+				{ -8/16, -8/16, -8/16,   8/16, 4/16, -6/16 },
+				{ -8/16, -8/16,  6/16,   8/16, 4/16,  8/16 },
+				{ -8/16, -8/16, -8/16,  -6/16, 4/16,  8/16 },
+				{  6/16, -8/16, -8/16,   8/16, 4/16,  8/16 },
+				{ -6/16, -2/16, -6/16,   6/16, 2/16,  6/16 },
+			},
+		},
+		selection_box = {
+			type = "fixed",
+			fixed = { -8/16, -8/16, -8/16,   8/16, 4/16, 8/16 },
+		},
+
+		on_construct = function(pos)
+			local meta = minetest.get_meta(pos)
+			meta:set_int("idx", 0)        -- for the 4 sieve phases
+			meta:set_int("gravel_cnt", 0)   -- counter to switch between gravel and sieved gravel
+			meta:set_string("node_name", "gravelsieve:auto_sieve")
+			meta:set_string("formspec", sieve_formspec)
+			local inv = meta:get_inventory()
+			inv:set_size('src', 1)
+			inv:set_size('dst', 16)
+		end,
+		
+		after_place_node = function(pos, placer)
+			local meta = minetest.get_meta(pos)
+			meta:set_string("infotext", "Gravel Sieve")
+		end,
+			
+		on_dig = function(pos, node, puncher, pointed_thing)
+			local meta = minetest.get_meta(pos)
+			local inv = meta:get_inventory()
+			if inv:is_empty("dst") and inv:is_empty("src") then
+				minetest.node_dig(pos, node, puncher, pointed_thing)
+			end
+		end,
+
+		paramtype = "light",
+		sounds = default.node_sound_wood_defaults(),
+		paramtype2 = "facedir",
+		sunlight_propagates = true,
+		is_ground_content = false,
+		groups = {choppy=2, cracky=1, not_in_creative_inventory=1},
+	})
+	
 	tubelib.register_node("gravelsieve:auto_sieve3", 
 		{
 			"gravelsieve:auto_sieve0",
 			"gravelsieve:auto_sieve1",
 			"gravelsieve:auto_sieve2",
+			"gravelsieve:sieve_defect",
 		},
 		{
 		on_pull_item = function(pos, side)
@@ -427,6 +505,18 @@ if minetest.global_exists("tubelib") then
 		end,
 		on_node_load = function(pos)
 			minetest.get_node_timer(pos):start(1.0)
+		end,
+		on_node_repair = function(pos)
+			local meta = minetest.get_meta(pos)
+			meta:set_int("tubelib_aging", 0)
+			meta:set_int("idx", 2)
+			meta:set_string("node_name", "gravelsieve:auto_sieve")
+			local inv = meta:get_inventory()
+			inv:set_size('src', 1)
+			inv:set_size('dst', 16)
+			swap_node(pos, meta, false)
+			minetest.get_node_timer(pos):start(1.0)
+			return true
 		end,
 	})	
 end

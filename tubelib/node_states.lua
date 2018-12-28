@@ -404,6 +404,10 @@ function NodeStates:on_node_load(pos)
 	elseif state == BLOCKED then
 		minetest.get_node_timer(pos):start(self.cycle_time * self.standby_ticks)
 	end
+	
+	if self.formspec_func then
+		meta:set_string("formspec", self.formspec_func(pos, meta))
+	end
 end
 
 -- Repair of defect (feature!) nodes

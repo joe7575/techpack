@@ -42,7 +42,7 @@ end
 local State = tubelib.NodeStates:new({
 	node_name_passive = "tubelib_addons1:harvester_base",
 	node_name_defect = "tubelib_addons1:harvester_defect",
-	infotext_name = "Tubelib Fermenter",
+	infotext_name = "Tubelib Harvester",
 	cycle_time = CYCLE_TIME,
 	standby_ticks = STANDBY_TICKS,
 	has_item_meter = true,
@@ -283,18 +283,18 @@ local function on_receive_fields(pos, formname, fields, player)
 		radius = tonumber(fields.radius)
 	end
 	if radius ~= this.radius then
-		State:stop(pos, meta)
 		this.radius = radius
 		this.max = (radius*2 + 1) * (radius*2 + 1)
+		meta:set_string("this", minetest.serialize(this))
+		State:stop(pos, meta)
 	end
 
 	if fields.endless ~= nil then
 		this.endless = fields.endless == "true" and 1 or 0
 	end
+	meta:set_string("this", minetest.serialize(this))
 	
 	State:state_button_event(pos, fields)
-	
-	meta:set_string("this", minetest.serialize(this))
 end
 
 minetest.register_node("tubelib_addons1:harvester_base", {

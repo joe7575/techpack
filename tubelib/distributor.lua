@@ -43,7 +43,7 @@ local State = tubelib.NodeStates:new({
 })
 
 local function formspec(pos, meta)
-	local filter = minetest.deserialize(meta:get_string("filter"))
+	local filter = minetest.deserialize(meta:get_string("filter")) or {false,false,false,false}
 	return "size[10.5,8.5]"..
 	default.gui_bg..
 	default.gui_bg_img..

@@ -238,8 +238,8 @@ local function on_receive_fields(pos, formname, fields, player)
 	end
 	if max_levels ~= meta:get_int("max_levels") then
 		meta:set_string("quarry_pos", nil)	-- reset the quarry
-		State:stop(pos, meta)
 		meta:set_int("max_levels", max_levels)
+		State:stop(pos, meta)
 	end
 	
 	local start_level = meta:get_int("start_level") or 0
@@ -248,8 +248,8 @@ local function on_receive_fields(pos, formname, fields, player)
 	end
 	if start_level ~= meta:get_int("start_level") then
 		meta:set_string("quarry_pos", nil)	-- reset the quarry
-		State:stop(pos, meta)
 		meta:set_int("start_level", start_level)
+		State:stop(pos, meta)
 	end
 	
 	local endless = meta:get_int("endless") or 0
@@ -370,7 +370,17 @@ minetest.register_node("tubelib_addons1:quarry_defect", {
 	},
 
 	after_place_node = function(pos, placer)
+		local meta = M(pos)
+		local inv = meta:get_inventory()
+		inv:set_size('main', 16)
+		inv:set_size('fuel', 1)
 		local number = tubelib.add_node(pos, "tubelib_addons1:quarry")
+		local facedir = minetest.dir_to_facedir(placer:get_look_dir(), false)
+		meta:set_int("facedir", facedir)
+		meta:set_string("owner", placer:get_player_name())
+		meta:set_int("endless", 0)
+		meta:set_int("curr_level", -1)
+		meta:set_int("max_levels", 1)
 		State:node_init(pos, number)
 		State:defect(pos, M(pos))
 	end,
