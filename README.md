@@ -5,23 +5,18 @@
 **For your world use the stable release ![v1.16](https://github.com/joe7575/techpack/releases/tag/v1.16)**
 
 
-## Current v2 state
-- Switch to tubelib2 is done (not fully tested).
-- Almost all machines already support the new state 'defect'.
-- The Repair Kit is available and can be used to repair defect machines.
-- The mod 'basic_materials' is now needed for some new recipes.
-- Due to server crashes I can happen that all loaded nodes loose their timers. Therefore, all "timed" nodes got an "on_node_load" function, which is used to restart the timer. 
-- Forceload block (16x16x16) added
-- switch 'tubelib_addons1_cobble_generator_enabled' activated, so that the automated cobble/ore generation can be disabled.
-  The cobble generation produces Basalt Stone which can be crafted to Basalt Stone Blocks and Basalt Stone Bricks
-- Quarry now uses LVM techniques to go down up to 100 meter
+## New in v2 (from players point of view)
+- Almost all machines break after a certain amount of time (switch into the state 'defect') and have to be repaired.
+- A Repair Kit is available to repair defect machines.
+- A Forceload block (16x16x16) is added which keeps the corresponding area loaded and the machines operational as far as the player is logged in.
+- The Quarry now uses LVM techniques to go down up to 100 meter
+- Ladders, stairways, and bridges added (tubelib_stairway) for the machines
+
+
+## New in v2 (from admins point of view)
 - settingtypes introduced with the following settings: tubelib_max_num_forceload_blocks, tubelib_basalt_stone_enabled, tubelib_machine_aging_value
-- Ladders, stairways, and bridges (tubelib_stairway)
-
-
-## To Do
-- adapt API.md
-- revise Wiki
+- the new mod 'tubelib_stairway' has to be enabled
+- TechPack depends now on the mod 'tubelib2' (![GitHub](https://github.com/joe7575/tubelib2))
 
 
 
@@ -29,7 +24,7 @@ TechPack, a Mining, Crafting, &amp; Farming Modpack for Minetest.
 
 ![TechPack](https://github.com/joe7575/techpack/blob/master/screenshot.png)
 
-**After update to v1.16, don't forget to activate the new mod "lcdlib" as part of the mod pack.**
+**After update to v2, don't forget to activate the new mod "tubelib_stairway" as part of the mod pack.**
 
 
 TechPack is a collection of following Mods:
@@ -38,12 +33,12 @@ TechPack is a collection of following Mods:
 * tubelib_addons1, a Tubelib extension with mining, farming, and crafting nodes
 * tubelib_addons2, a Tubelib extension with control nodes
 * tubelib_addons3, a Tubelib extension with high performance nodes
+* tubelib_stairway, Ladders, stairways, and bridges for your machines
 * gravelsieve, a Mod to sieve ores from gravel.
 * smartline, a Mod with small and smart sensors, actors and controllers.
 * safer_lua, a subset of the language Lua for safe and secure Lua sandboxes
 * SaferLua Controller - a controller to be programmed in LUA
 * lcdlib - a display lib used by smartline
-* tubelib_stairway - Ladders, stairways, and bridges for machines
 
 **A TechPack Tutorial is available as ![Wiki](https://github.com/joe7575/techpack/wiki)**
 
@@ -58,9 +53,10 @@ TechPack provides:
 - a Distributor node with 4 output channels to sort incoming items
 - a Blackhole node which lets all items disappear
 - Button/switches to send "switch on/off" messages
+- a Forceload block to keep your machines operational
 - Several lamp nodes in different colors (can be switched on/off)
 - a Quarry node to dig for stones and other ground nodes
-- a Harvester node to chop wood, leaves and crops
+- a Harvester node to chop wood, leaves, flowers and crops
 - a Grinder node to grind all kinds of cobblestone to gravel, gravel to sand, and sand to clay
 - a Gravelsieve node to sieve ores from gravel
 - an Autocrafter node for automated crafting of tools and items
@@ -85,6 +81,8 @@ TechPack provides:
 - a Controller to be programmed in Lua
 - a Signal Tower node showing machine states
 - a Display node for text outputs of the Controller
+- Metal ladders, stairways, and bridges
+
 
 TechPack supports the following mods:
 - Farming Redo (Harvester, Fermenter)
@@ -101,18 +99,18 @@ TechPack supports the following mods:
 
 
 ### License
-Copyright (C) 2017-2018 Joachim Stolberg  
+Copyright (C) 2017-2019 Joachim Stolberg  
 Code: Licensed under the GNU LGPL version 2.1 or later. See LICENSE.txt  
 Textures: CC BY-SA 3.0
 
 
 ### Dependencies 
 default, doors, intllib, basic_materials  
+tubelib2 (![GitHub](https://github.com/joe7575/tubelib2))  
 Tubelib Color Lamps optional: unifieddyes  
 SmartLine Controller optional: mail  
 Gravelsieve optional: moreores, hopper, pipeworks  
 tubelib_addons1 optional: unified_inventory
-
 
 ### History 
 - 2018-03-18  V1.00  * Tubelib, tubelib_addons1, tubelib_addons2, smartline, and gravelsieve combined to one modpack.
@@ -133,6 +131,7 @@ tubelib_addons1 optional: unified_inventory
 - 2018-09-15  V1.15  * Smartline Controller command added, chest commands improved
 - 2018-09-20  V1.16  * Switched from "Display mod pack" to lcdlib
 - 2018-12-23  V2.xx  * on the way to v2
+- 2018-12-29  V2.00  * see "New in v2"
 
 
 See ![releasenotes.txt](https://github.com/joe7575/techpack/blob/master/releasenotes.md) for further information
