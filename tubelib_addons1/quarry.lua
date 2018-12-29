@@ -30,6 +30,7 @@ local BURNING_TIME = 16
 local STANDBY_TICKS = 4
 local COUNTDOWN_TICKS = 5
 
+local Side2Facedir = {F=0, R=1, B=2, L=3, D=4, U=5}
 local Depth2Idx = {[1]=1 ,[2]=2, [3]=3, [5]=4, [10]=5, [15]=6, [20]=7, [25]=8, [50]=9, [100]=10}
 local Level2Idx = {[2]=1, [1]=2, [0]=3, [-1]=4, [-2]=5, [-3]=6, 
 				   [-5]=7, [-10]=8, [-15]=9, [-20]=10}
@@ -86,12 +87,10 @@ end
 
 State:register_formspec_func(formspec)
 
-local function get_pos(pos, facedir, side)
-	local offs = {F=0, R=1, B=2, L=3, D=4, U=5}
-	local dst_pos = table.copy(pos)
-	facedir = (facedir + offs[side]) % 4
-	local dir = minetest.facedir_to_dir(facedir)
-	return vector.add(dst_pos, dir)
+local function get_pos(pos, facedir, side, steps)
+	facedir = (facedir + Side2Facedir[side]) % 4
+	local dir = vector.multiply(minetest.facedir_to_dir(facedir), steps or 1)
+	return vector.add(pos, dir)
 end	
 
 local function get_node_lvm(pos)
@@ -141,6 +140,22 @@ local function get_next_pos(pos, facedir, dir)
 	return vector.add(pos, core.facedir_to_dir(facedir))
 end
 
+local function skip_the_air(pos, curr_level, facedir) 
+	local pos1, pos2, lPos
+	pos1 = get_pos(pos, facedir, "F", 2)
+	pos2 = get_pos(pos, facedir, "B", 2)
+	pos2 = get_pos(pos2, facedir, "L", 5)
+	pos1.y = curr_level
+	pos2.y = curr_level
+	while true do
+		lPos = minetest.find_nodes_in_area(pos1, pos2, {"air"})
+		if #lPos ~= 25 then break end
+		pos1.y = pos1.y - 1
+		pos2.y = pos2.y - 1
+	end
+	return pos2.y 
+end
+	
 local function quarry_next_node(pos, meta)
 	-- check fuel
 	local fuel = meta:get_int("fuel") or 0
@@ -159,38 +174,40 @@ local function quarry_next_node(pos, meta)
 	local facedir = meta:get_int("facedir")
 	local owner = meta:get_string("owner")
 	local endless = meta:get_int("endless")
-	local curr_level = meta:get_int("curr_level")
-	local stop_level = pos.y + meta:get_int("start_level") 
-			- meta:get_int("max_levels") + 1
+	local start_y = pos.y + meta:get_int("start_level")
+	local stop_y = pos.y + meta:get_int("start_level") - meta:get_int("max_levels") + 1
+	local quarry_pos = P(meta:get_string("quarry_pos"))
 	
-	local quarry_pos = minetest.string_to_pos(meta:get_string("quarry_pos"))
-	if quarry_pos == nil then
-		curr_level = pos.y + meta:get_int("start_level")	-- start level
+	if quarry_pos == nil then  -- start at the beginning?
 		quarry_pos = get_pos(pos, facedir, "L")
-		quarry_pos.y = curr_level
-		idx = 1
+		local y = skip_the_air(quarry_pos, start_y, facedir) 
+		if y < stop_y then -- below the base line?
+			meta:set_int("idx", 1)
+			meta:set_string("quarry_pos", nil)
+			State:stop(pos, meta)
+			return
+		end
+		quarry_pos.y = y
 	elseif idx < #QuarrySchedule then
 		quarry_pos = get_next_pos(quarry_pos, facedir, QuarrySchedule[idx])
 		idx = idx + 1
-	elseif curr_level > stop_level then
-		curr_level = curr_level - 1
+	elseif quarry_pos.y > stop_y then
+		local y = quarry_pos.y
 		quarry_pos = get_pos(pos, facedir, "L")
-		quarry_pos.y = curr_level
+		quarry_pos.y = y - 1
 		idx = 1
 	elseif endless == 1 then  -- farming mode
 		quarry_pos = get_pos(pos, facedir, "L")
-		quarry_pos.y = pos.y + meta:get_int("start_level")	-- start level
+		quarry_pos.y = start_y
 		idx = 1
 	else
-		curr_level = pos.y + meta:get_int("start_level")	-- start level
 		meta:set_int("idx", 1)
 		meta:set_string("quarry_pos", nil)
 		State:stop(pos, meta)
 		return
 	end
-	meta:set_int("curr_level", curr_level)
 	meta:set_int("idx", idx)
-	meta:set_string("quarry_pos", minetest.pos_to_string(quarry_pos))
+	meta:set_string("quarry_pos", S(quarry_pos))
 
 	if minetest.is_protected(quarry_pos, owner) then
 		minetest.chat_send_player(owner, "[Tubelib Quarry] Area is protected!")
@@ -208,14 +225,14 @@ local function quarry_next_node(pos, meta)
 				minetest.remove_node(quarry_pos)
 				inv:add_item("main", ItemStack(order.drop))
 				meta:set_string("infotext", "Tubelib Quarry "..number..
-						": running "..idx.."/"..(curr_level-pos.y))
+						": running "..idx.."/"..(start_y-quarry_pos.y+1))
 				State:keep_running(pos, meta, COUNTDOWN_TICKS, 1)
 			else
 				State:blocked(pos, meta)
 			end
 		else
 			meta:set_string("infotext", "Tubelib Quarry "..number..
-					": running "..idx.."/"..(curr_level-pos.y))
+					": running "..idx.."/"..(start_y-quarry_pos.y+1))
 		end
 	end
 end

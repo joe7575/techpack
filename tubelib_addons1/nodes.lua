@@ -157,6 +157,8 @@ gn("stairs:stair_desert_cobble")
 
 gn("default:stone",             "default:cobble")
 gn("default:desert_stone",      "default:desert_cobble")
+gn("default:sandstone",         "default:sandstone")
+gn("default:desert_sandstone",  "default:desert_sandstone")
 gn("default:clay",              "default:clay_lump")
 gn("default:stone_with_coal",   "default:coal_lump")
 gn("default:stone_with_iron",   "default:iron_lump")
