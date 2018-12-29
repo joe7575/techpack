@@ -299,14 +299,15 @@ end
 -- To be called after successful node action to raise the timer
 -- and keep the node in state RUNNING
 function NodeStates:keep_running(pos, meta, val, num_items)
+	num_items = num_items or 1
 	-- set to RUNNING if not already done
 	self:start(pos, meta, true)
 	meta:set_int("tubelib_countdown", val)
 	meta:set_int("tubelib_item_meter", meta:get_int("tubelib_item_meter") + (num_items or 1))
 	if self.aging_level1 then
-		local cnt = meta:get_int("tubelib_aging") + (num_items or 1)
+		local cnt = meta:get_int("tubelib_aging") + num_items
 		meta:set_int("tubelib_aging", cnt)
-		if cnt > (self.aging_level1) and math.random(self.aging_level2) == 1 then
+		if cnt > (self.aging_level1) and math.random(self.aging_level2/num_items) == 1 then
 			self:defect(pos, meta)
 		end
 	end
