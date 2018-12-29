@@ -446,9 +446,9 @@ minetest.register_node("tubelib:distributor_defect", {
 		meta:set_string("item_counter", minetest.serialize({red=0, green=0, blue=0, yellow=0}))
 		State:defect(pos, meta)
 	end,
-	
+
 	on_receive_fields = on_receive_fields,
-	
+
 	allow_metadata_inventory_put = allow_metadata_inventory_put,
 	allow_metadata_inventory_take = allow_metadata_inventory_take,
 	allow_metadata_inventory_move = allow_metadata_inventory_move,

@@ -163,7 +163,7 @@ smartline.icta_register_condition("state", {
 			type = "textlist",
 			name = "value",
 			label = "",
-			choices = "stopped,running,standby,blocked,fault",
+			choices = "stopped,running,standby,blocked,defect,fault,never",
 			default = "stopped",
 		},
 		{

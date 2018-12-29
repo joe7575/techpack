@@ -5,19 +5,9 @@
 **For your world use the stable release ![v1.16](https://github.com/joe7575/techpack/releases/tag/v1.16)**
 
 
-## Planned for v2
-- switch to library tubelib2
-- introduce a new machine state model
-- add new machine state "defect"
-- add a tubelib Repair Kit for defect blocks
-- Forceload block as part of tubelib
-- support for intllib
-- optionally disable the cobble/ore generation
-
-
-## Current state
+## Current v2 state
 - Switch to tubelib2 is done (not fully tested).
-- Pusher, Distributor, and Grinder already support the new state 'defect'.
+- Almost all machines already support the new state 'defect'.
 - The Repair Kit is available and can be used to repair defect machines.
 - The mod 'basic_materials' is now needed for some new recipes.
 - Due to server crashes I can happen that all loaded nodes loose their timers. Therefore, all "timed" nodes got an "on_node_load" function, which is used to restart the timer. 
@@ -26,12 +16,12 @@
   The cobble generation produces Basalt Stone which can be crafted to Basalt Stone Blocks and Basalt Stone Bricks
 - Quarry now uses LVM techniques to go down up to 100 meter
 - settingtypes introduced with the following settings: tubelib_max_num_forceload_blocks, tubelib_basalt_stone_enabled, tubelib_machine_aging_value
+- Ladders, stairways, and bridges (tubelib_stairway)
 
 
 ## To Do
 - adapt API.md
 - revise Wiki
-- expand controllers by the state defect
 
 
 
@@ -53,7 +43,7 @@ TechPack is a collection of following Mods:
 * safer_lua, a subset of the language Lua for safe and secure Lua sandboxes
 * SaferLua Controller - a controller to be programmed in LUA
 * lcdlib - a display lib used by smartline
-
+* tubelib_stairway - Ladders, stairways, and bridges for machines
 
 **A TechPack Tutorial is available as ![Wiki](https://github.com/joe7575/techpack/wiki)**
 

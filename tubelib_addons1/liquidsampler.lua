@@ -138,7 +138,7 @@ minetest.register_node("tubelib_addons1:liquidsampler", {
 	},
 
 	after_place_node = function(pos, placer)
-		local number = tubelib.add_node(pos, "tubelib_addons1:grinder")
+		local number = tubelib.add_node(pos, "ttubelib_addons1:liquidsampler")
 		State:node_init(pos, number)
 		local meta = M(pos)
 		local node = minetest.get_node(pos)

@@ -3,7 +3,7 @@
 	Tubelib Addons 3
 	================
 
-	Copyright (C) 2018 Joachim Stolberg
+	Copyright (C) 2018-2019 Joachim Stolberg
 
 	LGPLv2.1+
 	See LICENSE.txt for more information
@@ -111,6 +111,38 @@ local function random_list_elem(list)
 	end
 end
 
+local Side2Color = {B="red", L="green", F="blue", R="yellow"}
+local SlotColors = {"red", "green", "blue", "yellow"}
+local Num2Ascii = {"B", "L", "F", "R"} 
+local FilterCache = {} -- local cache for filter settings
+
+local function filter_settings(pos)
+	local hash = minetest.hash_node_position(pos)
+	local meta = M(pos)
+	local inv = meta:get_inventory()
+	local filter = minetest.deserialize(meta:get_string("filter")) or {false,false,false,false}
+	local kvFilterItemNames = {}  -- {<item:name> = side,...}
+	local OpenPorts = {}  -- {side, ...}
+	
+	-- collect all filter settings
+	for idx,slot in ipairs(SlotColors) do
+		local side = Num2Ascii[idx]
+		if filter[idx] == true then
+			local list = inv:get_list(slot)
+			local filter = invlist_entries_as_list(list)
+			AddToTbl(kvFilterItemNames, filter, side)
+			if not next(filter) then
+				OpenPorts[#OpenPorts + 1] = side
+			end
+		end
+	end
+	
+	FilterCache[hash] = {
+		kvFilterItemNames = kvFilterItemNames, 
+		OpenPorts = OpenPorts,
+	}
+end
+
 local function allow_metadata_inventory_put(pos, listname, index, stack, player)
 	local meta = M(pos)
 	local inv = meta:get_inventory()
@@ -144,38 +176,6 @@ local function allow_metadata_inventory_move(pos, from_list, from_index, to_list
 	local inv = meta:get_inventory()
 	local stack = inv:get_stack(from_list, from_index)
 	return allow_metadata_inventory_put(pos, to_list, to_index, stack, player)
-end
-
-local Side2Color = {B="red", L="green", F="blue", R="yellow"}
-local SlotColors = {"red", "green", "blue", "yellow"}
-local Num2Ascii = {"B", "L", "F", "R"} 
-local FilterCache = {} -- local cache for filter settings
-
-local function filter_settings(pos)
-	local hash = minetest.hash_node_position(pos)
-	local meta = M(pos)
-	local inv = meta:get_inventory()
-	local filter = minetest.deserialize(meta:get_string("filter")) or {false,false,false,false}
-	local kvFilterItemNames = {}  -- {<item:name> = side,...}
-	local OpenPorts = {}  -- {side, ...}
-	
-	-- collect all filter settings
-	for idx,slot in ipairs(SlotColors) do
-		local side = Num2Ascii[idx]
-		if filter[idx] == true then
-			local list = inv:get_list(slot)
-			local filter = invlist_entries_as_list(list)
-			AddToTbl(kvFilterItemNames, filter, side)
-			if not next(filter) then
-				OpenPorts[#OpenPorts + 1] = side
-			end
-		end
-	end
-	
-	FilterCache[hash] = {
-		kvFilterItemNames = kvFilterItemNames, 
-		OpenPorts = OpenPorts,
-	}
 end
 
 -- move items to the output slots
@@ -438,7 +438,7 @@ minetest.register_node("tubelib_addons3:distributor_defect", {
 	allow_metadata_inventory_move = allow_metadata_inventory_move,
 
 	on_rotate = screwdriver.disallow,
-	
+
 	paramtype = "light",
 	sunlight_propagates = true,
 	paramtype2 = "facedir",

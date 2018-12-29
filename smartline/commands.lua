@@ -256,7 +256,7 @@ smartline.register_condition("pusher", {
 			type = "textlist",
 			name = "value",
 			label = "is",
-			choices = "stopped,running,standby,blocked,fault,false",
+			choices = "stopped,running,standby,blocked,fault,defect,false",
 			default = 1,
 		},
 		{

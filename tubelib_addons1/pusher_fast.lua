@@ -46,16 +46,16 @@ local State = tubelib.NodeStates:new({
 	cycle_time = CYCLE_TIME,
 	standby_ticks = STANDBY_TICKS,
 	has_item_meter = true,
-	aging_factor = 10,
+	aging_factor = 30,
 })
 
 local function pushing(pos, meta)
 	local player_name = meta:get_string("player_name")
-	local items = tubelib.pull_items(pos, "L", player_name) -- <<=== tubelib
+	local items = tubelib.pull_items(pos, "L", player_name)
 	if items ~= nil then
-		if tubelib.push_items(pos, "R", items, player_name) == false then -- <<=== tubelib
+		if tubelib.push_items(pos, "R", items, player_name) == false then
 			-- place item back
-			tubelib.unpull_items(pos, "L", items, player_name) -- <<=== tubelib
+			tubelib.unpull_items(pos, "L", items, player_name)
 			State:blocked(pos, meta)
 			return
 		end
@@ -86,7 +86,7 @@ minetest.register_node("tubelib_addons1:pusher_fast", {
 	after_place_node = function(pos, placer)
 		local meta = minetest.get_meta(pos)
 		meta:set_string("player_name", placer:get_player_name())
-		local number = tubelib.add_node(pos, "tubelib_addons1:pusher_fast") -- <<=== tubelib
+		local number = tubelib.add_node(pos, "tubelib_addons1:pusher_fast")
 		State:node_init(pos, number)
 	end,
 
@@ -97,7 +97,7 @@ minetest.register_node("tubelib_addons1:pusher_fast", {
 	end,
 
 	after_dig_node = function(pos, oldnode, oldmetadata, digger)
-		tubelib.remove_node(pos) -- <<=== tubelib
+		tubelib.remove_node(pos)
 		State:after_dig_node(pos, oldnode, oldmetadata, digger)
 	end,
 	
@@ -194,13 +194,13 @@ minetest.register_node("tubelib_addons1:pusher_fast_defect", {
 	after_place_node = function(pos, placer)
 		local meta = minetest.get_meta(pos)
 		meta:set_string("player_name", placer:get_player_name())
-		local number = tubelib.add_node(pos, "tubelib_addons1:pusher") -- <<=== tubelib
+		local number = tubelib.add_node(pos, "tubelib_addons1:pusher_fast")
 		State:node_init(pos, number)
 		State:defect(pos, meta)
 	end,
 
 	after_dig_node = function(pos)
-		tubelib.remove_node(pos) -- <<=== tubelib
+		tubelib.remove_node(pos)
 	end,
 	
 	on_timer = keep_running,
@@ -224,7 +224,6 @@ minetest.register_craft({
 	},
 })
 
---------------------------------------------------------------- tubelib
 tubelib.register_node("tubelib_addons1:pusher_fast", 
 	{"tubelib_addons1:pusher_fast_active", "tubelib_addons1:pusher_fast_defect"}, {
 	on_pull_item = nil,  		-- pusher has no inventory
@@ -247,4 +246,3 @@ tubelib.register_node("tubelib_addons1:pusher_fast",
 		return State:on_node_repair(pos)
 	end,
 })	
---------------------------------------------------------------- tubelib
