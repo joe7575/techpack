@@ -122,7 +122,7 @@ But the areas are only loaded when the player is online.
 The lava/water Cobblestone generator allows to produce infinite Cobblestone. By means of Quarry, 
 Grinder, and Gravel Sieve it allows to infinite generate ores.  
 This can be disabled by means of the setting parameter. If enabled, the Cobblestone 
-generator generates Basalt instead, which only can used for building purposes.
+generator generates Basalt instead, which only can be used for building purposes.
 
 #### Machine aging value to calculate the lifetime of machines
 Default value is 200.  
