@@ -116,7 +116,7 @@ Grinder, and Gravel Sieve it allows to infinite generate ores.
 This can be disabled by means of the setting parameter. If enabled, the Cobblestone 
 generator generates Basalt instead, which only can used for building purposes.
 
-### Machine aging value to calculate the lifetime of machines
+#### Machine aging value to calculate the lifetime of machines
 Default value is 200.  
 This aging value is used to calculate the lifetime of machines before they go defect.
 The value 200 (default) results in a lifetime for standard machines of about 2000 - 8000 item processing cycles (~2-4 hours).
