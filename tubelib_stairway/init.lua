@@ -18,7 +18,7 @@ minetest.register_node("tubelib_stairway:bridge1", {
 	selection_box = {
 		type = "fixed",
 		fixed = {
-			{-16/32, -16/32, -16/32,  16/32, -14/32, 16/32},
+			{-16/32, -18/32, -16/32,  16/32, -12/32, 16/32},
 		},
 	},
 	
@@ -51,7 +51,7 @@ minetest.register_node("tubelib_stairway:bridge2", {
 	selection_box = {
 		type = "fixed",
 		fixed = {
-			{-16/32, -16/32, -16/32,  16/32, -14/32, 16/32},
+			{-16/32, -18/32, -16/32,  16/32, -12/32, 16/32},
 		},
 	},
 	
@@ -85,7 +85,7 @@ minetest.register_node("tubelib_stairway:bridge3", {
 	selection_box = {
 		type = "fixed",
 		fixed = {
-			{-16/32, -16/32, -16/32,  16/32, -14/32, 16/32},
+			{-16/32, -18/32, -16/32,  16/32, -12/32, 16/32},
 		},
 	},
 	
@@ -118,7 +118,7 @@ minetest.register_node("tubelib_stairway:bridge4", {
 	selection_box = {
 		type = "fixed",
 		fixed = {
-			{-16/32, -16/32, -16/32,  16/32, -14/32, 16/32},
+			{-16/32, -18/32, -16/32,  16/32, -12/32, 16/32},
 		},
 	},
 	
@@ -130,6 +130,38 @@ minetest.register_node("tubelib_stairway:bridge4", {
 	groups = {cracky = 2},
 	sounds = default.node_sound_metal_defaults(),
 })
+
+minetest.register_node("tubelib_stairway:bridge5", {
+	description = "Tubelib Bridge 5",
+	tiles = {
+		'tubelib_stairway_bottom.png',
+		'tubelib_stairway_bottom.png',
+		'tubelib_stairway_side.png',
+	},
+	drawtype = "nodebox",
+	node_box = {
+		type = "fixed",
+		fixed = {
+			{-17/32, -15/32, -17/32,  17/32, -14/32, 17/32}
+		},
+	},
+
+	selection_box = {
+		type = "fixed",
+		fixed = {
+			{-16/32, -18/32, -16/32,  16/32, -12/32, 16/32},
+		},
+	},
+	
+	--climbable = true,
+	paramtype2 = "facedir",
+	paramtype = "light",
+	sunlight_propagates = true,
+	is_ground_content = false,
+	groups = {cracky = 2},
+	sounds = default.node_sound_metal_defaults(),
+})
+
 minetest.register_node("tubelib_stairway:stairway", {
 	description = "Tubelib Stairway",
 	tiles = {
@@ -232,7 +264,7 @@ minetest.register_node("tubelib_stairway:ladder2", {
 })
 
 minetest.register_craft({
-	output = "tubelib_stairway:bridge1",
+	output = "tubelib_stairway:bridge1 2",
 	recipe = {
 		{"", "", ""},
 		{"dye:dark_grey", "", "default:coal_lump"},
@@ -241,7 +273,7 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	output = "tubelib_stairway:bridge3",
+	output = "tubelib_stairway:bridge3 2",
 	recipe = {
 		{"", "", ""},
 		{"default:coal_lump", "", "dye:dark_grey"},
@@ -250,7 +282,7 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	output = "tubelib_stairway:stairway",
+	output = "tubelib_stairway:stairway 2",
 	recipe = {
 		{"", "", "default:steel_ingot"},
 		{"dye:dark_grey", "default:tin_ingot", "default:coal_lump"},
@@ -259,7 +291,7 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	output = "tubelib_stairway:ladder1",
+	output = "tubelib_stairway:ladder1 2",
 	recipe = {
 		{"", "default:steel_ingot", ""},
 		{"dye:dark_grey", "default:tin_ingot", "default:coal_lump"},
@@ -280,4 +312,9 @@ minetest.register_craft({
 minetest.register_craft({
 	output = "tubelib_stairway:bridge4",
 	recipe = {{"tubelib_stairway:bridge3"}},
+})
+
+minetest.register_craft({
+	output = "tubelib_stairway:bridge5",
+	recipe = {{"tubelib_stairway:bridge4"}},
 })
