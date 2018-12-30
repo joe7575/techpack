@@ -16,7 +16,7 @@
 ## New in v2 (from admins point of view)
 - settingtypes introduced with the following settings: tubelib_max_num_forceload_blocks, tubelib_basalt_stone_enabled, tubelib_machine_aging_value
 - the new mod 'tubelib_stairway' has to be enabled
-- TechPack depends now on the mod 'tubelib2' (![GitHub](https://github.com/joe7575/tubelib2))
+- TechPack depends now on the mod 'basic_materials' and 'tubelib2' (![GitHub](https://github.com/joe7575/tubelib2))
 
 
 
@@ -93,9 +93,33 @@ TechPack supports the following mods:
 
 
 ### Configuration
-- Maximim number of Forceload Blocks per player
-- Enable Basalt Stone (and disable ore generation via cobble generator)
-- machine aging value to calculate the lifetime of machines
+The following can be changed in the minetest menu (Settings -> Advanced Settings -> Mods -> tubelib) or directly in 'minetest.conf'
+- Maximum number of Forceload Blocks per player
+- Enable Basalt Stone (and disable ore generation via Cobblestone generator)
+- Machine aging value to calculate the lifetime of machines
+
+Example for 'minetest.conf':
+```LUA
+tubelib_basalt_stone_enabled = false
+tubelib_max_num_forceload_blocks = 12
+tubelib_machine_aging_value = 200
+```
+
+#### Maximum number of Forceload Blocks per player
+Default value is 12.  
+I higher number allows to build larger farms and machines which keep loaded, but increases the server load, too.
+But the areas are only loaded when the player is online.
+
+#### Enable Basalt Stone (and disable ore generation via Cobblestone generator)
+The lava/water Cobblestone generator allows to produce infinite Cobblestone. By means of Quarry, 
+Grinder, and Gravel Sieve it allows to infinite generate ores.  
+This can be disabled by means of the setting parameter. If enabled, the Cobblestone 
+generator generates Basalt instead, which only can used for building purposes.
+
+### Machine aging value to calculate the lifetime of machines
+Default value is 200.  
+This aging value is used to calculate the lifetime of machines before they go defect.
+The value 200 (default) results in a lifetime for standard machines of about 2000 - 8000 item processing cycles (~2-4 hours).
 
 
 ### License
