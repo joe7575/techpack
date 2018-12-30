@@ -105,6 +105,14 @@ tubelib_max_num_forceload_blocks = 12
 tubelib_machine_aging_value = 200
 ```
 
+Example for a v1 compatible 'minetest.conf':
+```LUA
+tubelib_basalt_stone_enabled = false
+tubelib_max_num_forceload_blocks = 0
+tubelib_machine_aging_value = 999999
+```
+
+
 #### Maximum number of Forceload Blocks per player
 Default value is 12.  
 I higher number allows to build larger farms and machines which keep loaded, but increases the server load, too.
