@@ -18,7 +18,7 @@ minetest.register_node("tubelib_stairway:bridge1", {
 	selection_box = {
 		type = "fixed",
 		fixed = {
-			{-16/32, -18/32, -16/32,  16/32, -12/32, 16/32},
+			{-16/32, -16/32, -16/32,  16/32, -10/32, 16/32},
 		},
 	},
 	
@@ -51,7 +51,7 @@ minetest.register_node("tubelib_stairway:bridge2", {
 	selection_box = {
 		type = "fixed",
 		fixed = {
-			{-16/32, -18/32, -16/32,  16/32, -12/32, 16/32},
+			{-16/32, -16/32, -16/32,  16/32, -10/32, 16/32},
 		},
 	},
 	
@@ -85,7 +85,7 @@ minetest.register_node("tubelib_stairway:bridge3", {
 	selection_box = {
 		type = "fixed",
 		fixed = {
-			{-16/32, -18/32, -16/32,  16/32, -12/32, 16/32},
+			{-16/32, -16/32, -16/32,  16/32, -10/32, 16/32},
 		},
 	},
 	
@@ -118,7 +118,7 @@ minetest.register_node("tubelib_stairway:bridge4", {
 	selection_box = {
 		type = "fixed",
 		fixed = {
-			{-16/32, -18/32, -16/32,  16/32, -12/32, 16/32},
+			{-16/32, -16/32, -16/32,  16/32, -10/32, 16/32},
 		},
 	},
 	
@@ -149,7 +149,7 @@ minetest.register_node("tubelib_stairway:bridge5", {
 	selection_box = {
 		type = "fixed",
 		fixed = {
-			{-16/32, -18/32, -16/32,  16/32, -12/32, 16/32},
+			{-16/32, -16/32, -16/32,  16/32, -10/32, 16/32},
 		},
 	},
 	
@@ -186,8 +186,8 @@ minetest.register_node("tubelib_stairway:stairway", {
 	selection_box = {
 		type = "fixed",
 		fixed = {
-			{-16/32, -18/32, -16/32,  16/32, -12/32,  0/32},
-			{-16/32, -18/32,   0/32,  16/32,   2/32, 16/32},
+			{-16/32, -16/32, -16/32,  16/32, -10/32,  0/32},
+			{-16/32, -16/32,   0/32,  16/32,   2/32, 16/32},
 		},
 	},
 		
