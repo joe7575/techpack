@@ -253,7 +253,7 @@ minetest.register_craft({
 	output = "tubelib_addons1:grinder",
 	recipe = {
 		{"group:wood", "default:tin_ingot", "group:wood"},
-		{"tubelib:tube1", "default:mese_crystal", "tubelib:tube1"},
+		{"tubelib:tubeS", "default:mese_crystal", "tubelib:tubeS"},
 		{"group:wood", "default:tin_ingot", "group:wood"},
 	},
 })

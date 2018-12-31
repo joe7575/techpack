@@ -468,7 +468,7 @@ minetest.register_craft({
 	output = "tubelib:distributor 2",
 	recipe = {
 		{"group:wood", 		"default:steel_ingot",  "group:wood"},
-		{"tubelib:tube1", 	"default:mese_crystal",	"tubelib:tube1"},
+		{"tubelib:tubeS", 	"default:mese_crystal",	"tubelib:tubeS"},
 		{"group:wood", 		"default:steel_ingot",  "group:wood"},
 	},
 })

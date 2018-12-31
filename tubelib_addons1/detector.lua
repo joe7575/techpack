@@ -111,7 +111,7 @@ minetest.register_craft({
 	output = "tubelib_addons1:detector",
 	recipe = {
 		{"", "group:wood", ""},
-		{"tubelib:tube1", "tubelib:wlanchip", "tubelib:tube1"},
+		{"tubelib:tubeS", "tubelib:wlanchip", "tubelib:tubeS"},
 		{"", "group:wood", ""},
 	},
 })

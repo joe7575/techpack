@@ -419,7 +419,7 @@ minetest.register_craft({
 	output = "tubelib_addons1:harvester_base",
 	recipe = {
 		{"default:steel_ingot", "default:mese_crystal", "default:steel_ingot"},
-		{"default:steel_ingot", "default:mese_crystal",	"tubelib:tube1"},
+		{"default:steel_ingot", "default:mese_crystal",	"tubelib:tubeS"},
 		{"group:wood", 			"default:mese_crystal", "group:wood"},
 	},
 })

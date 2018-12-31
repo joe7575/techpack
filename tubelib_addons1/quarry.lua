@@ -430,7 +430,7 @@ minetest.register_craft({
 	output = "tubelib_addons1:quarry",
 	recipe = {
 		{"group:wood", 			"default:mese_crystal", "group:wood"},
-		{"default:steel_ingot", "default:mese_crystal",	"tubelib:tube1"},
+		{"default:steel_ingot", "default:mese_crystal",	"tubelib:tubeS"},
 		{"group:wood", 			"default:mese_crystal", "group:wood"},
 	},
 })

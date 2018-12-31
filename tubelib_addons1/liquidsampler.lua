@@ -265,7 +265,7 @@ minetest.register_craft({
 	output = "tubelib_addons1:liquidsampler",
 	recipe = {
 		{"group:wood", "default:steel_ingot", "group:wood"},
-		{"default:mese_crystal", "bucket:bucket_empty", "tubelib:tube1"},
+		{"default:mese_crystal", "bucket:bucket_empty", "tubelib:tubeS"},
 		{"group:wood", "default:steel_ingot", "group:wood"},
 	},
 })

@@ -64,7 +64,7 @@ minetest.register_craft({
 	output = "tubelib:blackhole 2",
 	recipe = {
 		{"group:wood",    "",                   "group:wood"},
-		{"tubelib:tube1", "default:coal_lump",  "default:coal_lump"},
+		{"tubelib:tubeS", "default:coal_lump",  "default:coal_lump"},
 		{"group:wood",    "",                   "group:wood"},
 	},
 })

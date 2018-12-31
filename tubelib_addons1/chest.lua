@@ -129,7 +129,7 @@ minetest.register_node("tubelib_addons1:chest", {
 minetest.register_craft({
 	type = "shapeless",
 	output = "tubelib_addons1:chest",
-	recipe = {"default:chest", "tubelib:tube1", "default:steel_ingot"}
+	recipe = {"default:chest", "tubelib:tubeS", "default:steel_ingot"}
 })
 
 tubelib.register_node("tubelib_addons1:chest", {}, {

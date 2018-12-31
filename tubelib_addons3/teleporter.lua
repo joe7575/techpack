@@ -66,7 +66,7 @@ minetest.register_craft({
 	output = "tubelib_addons3:teleporter 2",
 	recipe = {
 		{"default:gold_ingot", "group:wood", ""},
-		{"default:mese_crystal", "default:mese_crystal", "tubelib:tube1"},
+		{"default:mese_crystal", "default:mese_crystal", "tubelib:tubeS"},
 		{"default:gold_ingot", "group:wood", ""},
 	},
 })

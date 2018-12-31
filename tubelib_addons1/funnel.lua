@@ -130,7 +130,7 @@ minetest.register_craft({
 	output = "tubelib_addons1:funnel 2",
 	recipe = {
 		{"group:wood", "", "group:wood"},
-		{"default:steel_ingot", "default:mese_crystal",	"tubelib:tube1"},
+		{"default:steel_ingot", "default:mese_crystal",	"tubelib:tubeS"},
 		{"group:wood", "", "group:wood"},
 	},
 })

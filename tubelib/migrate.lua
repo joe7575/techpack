@@ -73,4 +73,50 @@ minetest.register_lbm({
 	end
 })
 
-minetest.register_node("tubelib:tube1", minetest.registered_nodes["tubelib:tubeS"])
+-- legacy tube, to be converted after placed
+minetest.register_node("tubelib:tube1", {
+	description = "Tubelib Tube",
+	tiles = { -- Top, base, right, left, front, back
+		"tubelib_tube.png^[transformR90",
+		"tubelib_tube.png^[transformR90",
+		"tubelib_tube.png",
+		"tubelib_tube.png",
+		"tubelib_hole.png",
+		"tubelib_hole.png",
+	},
+	
+	after_place_node = function(pos, placer, itemstack, pointed_thing)
+		if not Tube:after_place_tube(pos, placer, pointed_thing) then
+			minetest.remove_node(pos)
+			return true
+		end
+		return false
+	end,
+	
+	after_dig_node = function(pos, oldnode, oldmetadata, digger)
+		Tube:after_dig_tube(pos, oldnode, oldmetadata)
+	end,
+	
+	paramtype2 = "facedir",
+	drawtype = "nodebox",
+	node_box = {
+		type = "fixed",
+		fixed = {
+			{-2/8, -2/8, -4/8,  2/8, 2/8, 4/8},
+		},
+	},
+	selection_box = {
+		type = "fixed",
+		fixed = { -1/4, -1/4, -1/2,  1/4, 1/4, 1/2 },
+	},
+	collision_box = {
+		type = "fixed",
+		fixed = { -1/4, -1/4, -1/2,  1/4, 1/4, 1/2 },
+	},
+	on_rotate = screwdriver.disallow,
+	paramtype = "light",
+	sunlight_propagates = true,
+	is_ground_content = false,
+	groups = {choppy=2, cracky=3, stone=1, not_in_creative_inventory=1},
+	sounds = default.node_sound_wood_defaults(),
+})

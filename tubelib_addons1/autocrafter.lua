@@ -411,7 +411,7 @@ minetest.register_craft({
 	output = "tubelib_addons1:autocrafter",
 	recipe = {
 		{"group:wood", 			"default:steel_ingot",  "group:wood"},
-		{"tubelib:tube1", 		"default:mese_crystal",	"tubelib:tube1"},
+		{"tubelib:tubeS", 		"default:mese_crystal",	"tubelib:tubeS"},
 		{"default:steel_ingot", "default:steel_ingot",  "default:steel_ingot"},
 	},
 })
