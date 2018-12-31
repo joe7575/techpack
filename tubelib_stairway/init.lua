@@ -186,8 +186,8 @@ minetest.register_node("tubelib_stairway:stairway", {
 	selection_box = {
 		type = "fixed",
 		fixed = {
-			{-17/32, -1/32,  -1/32,  17/32,   1/32, 17/32},
-			{-17/32, -17/32, -17/32,  17/32, -15/32, 1/32},
+			{-16/32, -18/32, -16/32,  16/32, -12/32,  0/32},
+			{-16/32, -18/32,   0/32,  16/32,   2/32, 16/32},
 		},
 	},
 		
@@ -263,6 +263,38 @@ minetest.register_node("tubelib_stairway:ladder2", {
 	sounds = default.node_sound_metal_defaults(),
 })
 
+minetest.register_node("tubelib_stairway:lattice", {
+	description = "Tubelib Lattice",
+	tiles = {
+		'tubelib_stairway_lattice.png',
+	},
+	drawtype = "nodebox",
+	node_box = {
+		type = "fixed",
+		fixed = {
+			{-8/16, -8/16, -8/16, -7/16,  8/16,  8/16},
+			{ 7/16, -8/16, -8/16,  8/16,  8/16,  8/16},
+			{-8/16, -8/16, -8/16,  8/16, -7/16,  8/16},
+			{-8/16,  7/16, -8/16,  8/16,  8/16,  8/16},
+			{-8/16, -8/16, -8/16,  8/16,  8/16, -7/16},
+			{-8/16, -8/16,  7/16,  8/16,  8/16,  8/16},
+		},
+	},
+
+	selection_box = {
+		type = "fixed",
+		fixed = {-8/16, -8/16, -8/16,  8/16, 8/16, 8/16},
+	},
+	
+	paramtype2 = "facedir",
+	paramtype = "light",
+	sunlight_propagates = true,
+	is_ground_content = false,
+	groups = {cracky = 2},
+	sounds = default.node_sound_metal_defaults(),
+})
+
+
 minetest.register_craft({
 	output = "tubelib_stairway:bridge1 2",
 	recipe = {
@@ -296,6 +328,15 @@ minetest.register_craft({
 		{"", "default:steel_ingot", ""},
 		{"dye:dark_grey", "default:tin_ingot", "default:coal_lump"},
 		{"", "default:steel_ingot", ""},
+	},
+})
+
+minetest.register_craft({
+	output = "tubelib_stairway:lattice 2",
+	recipe = {
+		{"default:steel_ingot", "", "default:steel_ingot"},
+		{"dye:dark_grey", "default:tin_ingot", "default:coal_lump"},
+		{"default:steel_ingot", "", "default:steel_ingot"},
 	},
 })
 
