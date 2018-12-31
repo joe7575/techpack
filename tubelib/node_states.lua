@@ -363,7 +363,7 @@ function NodeStates:on_node_load(pos)
 	
 	-- legacy node number/state/counter?
 	local number = meta:get_string("number")
-	if number ~= "" then
+	if number ~= "" and number ~= nil then
 		meta:set_string("tubelib_number", number)
 		meta:set_int("tubelib_state", tubelib.state(meta:get_int("running")))
 		if self.has_item_meter then
