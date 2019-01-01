@@ -9,8 +9,13 @@ local TubesTranslation = {
 	["tubelib:tube1"] = {[0]=
 		{12, "S"},
 		{21, "S"},
+		{12, "S"},
+		{21, "S"},
 	},
 	["tubelib:tube2"] = {[0]=
+		{ 4, "S"},
+		{ 4, "S"},
+		{ 4, "S"},
 		{ 4, "S"},
 	},
 	["tubelib:tube3"] = {[0]=
@@ -75,12 +80,12 @@ minetest.register_lbm({
 
 -- legacy tube, to be converted after placed
 minetest.register_node("tubelib:tube1", {
-	description = "Tubelib Tube",
+	description = "Tubelib Tube (old)",
 	tiles = { -- Top, base, right, left, front, back
-		"tubelib_tube.png^[transformR90",
-		"tubelib_tube.png^[transformR90",
-		"tubelib_tube.png",
-		"tubelib_tube.png",
+		"tubelib_tube.png^tubelib_defect.png^[transformR90",
+		"tubelib_tube.png^tubelib_defect.png^[transformR90",
+		"tubelib_tube.png^tubelib_defect.png",
+		"tubelib_tube.png^tubelib_defect.png",
 		"tubelib_hole.png",
 		"tubelib_hole.png",
 	},
@@ -119,4 +124,10 @@ minetest.register_node("tubelib:tube1", {
 	is_ground_content = false,
 	groups = {choppy=2, cracky=3, stone=1, not_in_creative_inventory=1},
 	sounds = default.node_sound_wood_defaults(),
+})
+
+minetest.register_craft({
+	type = "shapeless",
+	output = "tubelib:tubeS",
+	recipe = {"tubelib:tube1"},
 })
