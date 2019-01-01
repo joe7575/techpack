@@ -320,7 +320,7 @@ minetest.register_node("tubelib:distributor", {
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_distributor.png',
-		'tubelib_distributor.png',
+		'tubelib_front.png',
 		'tubelib_distributor_yellow.png',
 		'tubelib_distributor_green.png',
 		"tubelib_distributor_red.png",
@@ -393,7 +393,7 @@ minetest.register_node("tubelib:distributor_active", {
 				length = 2.0,
 			},
 		},
-		'tubelib_distributor.png',
+		'tubelib_front.png',
 		'tubelib_distributor_yellow.png',
 		'tubelib_distributor_green.png',
 		"tubelib_distributor_red.png",
@@ -422,7 +422,7 @@ minetest.register_node("tubelib:distributor_defect", {
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_distributor.png',
-		'tubelib_distributor.png',
+		'tubelib_front.png',
 		'tubelib_distributor_yellow.png^tubelib_defect.png',
 		'tubelib_distributor_green.png^tubelib_defect.png',
 		"tubelib_distributor_red.png^tubelib_defect.png",

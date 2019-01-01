@@ -304,7 +304,7 @@ minetest.register_node("tubelib_addons3:distributor", {
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_distributor.png^tubelib_addons3_node_frame.png',
-		'tubelib_distributor.png^tubelib_addons3_node_frame.png',
+		'tubelib_addons3_chest_bottom.png',
 		'tubelib_distributor_yellow.png^tubelib_addons3_node_frame.png',
 		'tubelib_distributor_green.png^tubelib_addons3_node_frame.png',
 		"tubelib_distributor_red.png^tubelib_addons3_node_frame.png",
@@ -377,7 +377,7 @@ minetest.register_node("tubelib_addons3:distributor_active", {
 				length = 2.0,
 			},
 		},
-		'tubelib_distributor.png^tubelib_addons3_node_frame.png',
+		'tubelib_addons3_chest_bottom.png',
 		'tubelib_distributor_yellow.png^tubelib_addons3_node_frame.png',
 		'tubelib_distributor_green.png^tubelib_addons3_node_frame.png',
 		"tubelib_distributor_red.png^tubelib_addons3_node_frame.png",
@@ -406,7 +406,7 @@ minetest.register_node("tubelib_addons3:distributor_defect", {
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_distributor.png^tubelib_addons3_node_frame.png',
-		'tubelib_distributor.png^tubelib_addons3_node_frame.png',
+		'tubelib_addons3_chest_bottom.png',
 		'tubelib_distributor_yellow.png^tubelib_addons3_node_frame.png^tubelib_defect.png',
 		'tubelib_distributor_green.png^tubelib_addons3_node_frame.png^tubelib_defect.png',
 		"tubelib_distributor_red.png^tubelib_addons3_node_frame.png^tubelib_defect.png",
