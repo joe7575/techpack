@@ -32,7 +32,7 @@ local State = tubelib.NodeStates:new({
 	infotext_name = "HighPerf Distributor",
 	cycle_time = CYCLE_TIME,
 	standby_ticks = STANDBY_TICKS,
-	aging_factor = 10,
+	aging_factor = 50,
 })
 
 local function formspec(pos, meta)
@@ -197,7 +197,7 @@ local function distributing(pos, meta)
 	-- no filter configured?
 	if next(kvFilterItemNames) == nil then return end
 	
-	local moved_items_total = 0
+	local busy = false
 	local inv = meta:get_inventory()
 	local list = inv:get_list("src")
 		
@@ -222,7 +222,7 @@ local function distributing(pos, meta)
 				stack:set_count(0)
 				local color = Side2Color[side]
 				counter[color] = counter[color] + num
-				moved_items_total = moved_items_total + num
+				busy = true
 			else
 				second_try = true  -- port blocked
 			end
@@ -238,7 +238,7 @@ local function distributing(pos, meta)
 					stack:set_count(0)
 					local color = Side2Color[side]
 					counter[color] = counter[color] + num
-					moved_items_total = moved_items_total + num
+					busy = true
 				end
 			end
 		end
@@ -246,8 +246,8 @@ local function distributing(pos, meta)
 	inv:set_list("src", list)
 				
 	meta:set_string("item_counter", minetest.serialize(counter))
-	if moved_items_total > 0 then
-		State:keep_running(pos, meta, COUNTDOWN_TICKS, moved_items_total)
+	if busy then
+		State:keep_running(pos, meta, COUNTDOWN_TICKS, 1)
 	else
 		State:idle(pos, meta)
 	end

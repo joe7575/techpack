@@ -57,7 +57,7 @@ local P = minetest.string_to_pos
 local M = minetest.get_meta
 
 
-local AGING_FACTOR = 3  -- defect random factor
+local AGING_FACTOR = 4  -- defect random factor
 
 --
 -- Local States

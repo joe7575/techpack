@@ -31,7 +31,7 @@ local State = tubelib.NodeStates:new({
 	cycle_time = CYCLE_TIME,
 	standby_ticks = STANDBY_TICKS,
 	has_item_meter = true,
-	aging_factor = 60,
+	aging_factor = 50,
 })
 
 local function pushing(pos, meta)
@@ -44,7 +44,7 @@ local function pushing(pos, meta)
 			State:blocked(pos, meta)
 			return
 		end
-		State:keep_running(pos, meta, COUNTDOWN_TICKS, items:get_count())
+		State:keep_running(pos, meta, COUNTDOWN_TICKS, 1)
 		return
 	end
 	State:idle(pos, meta)

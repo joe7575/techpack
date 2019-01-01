@@ -15,8 +15,8 @@
 ]]--
 
 -- tubelib aging feature
-local AGING_LEVEL1 = 80 * tubelib.machine_aging_value
-local AGING_LEVEL2 = 240 * tubelib.machine_aging_value
+local AGING_LEVEL1 = 50 * tubelib.machine_aging_value
+local AGING_LEVEL2 = 150 * tubelib.machine_aging_value
 
 local Cache = {}
 
@@ -48,10 +48,10 @@ local function allow_metadata_inventory_move(pos, from_list, from_index, to_list
 	return count
 end	
 
-local function aging(pos, meta, num)
-	local cnt = meta:get_int("tubelib_aging") + num
+local function aging(pos, meta)
+	local cnt = meta:get_int("tubelib_aging") + 1
 	meta:set_int("tubelib_aging", cnt)
-	if cnt > AGING_LEVEL1 and math.random(AGING_LEVEL2/num) == 1 then
+	if cnt > AGING_LEVEL1 and math.random(AGING_LEVEL2) == 1 then
 		minetest.get_node_timer(pos):stop()
 		local node = minetest.get_node(pos)
 		node.name = "tubelib_addons3:pushing_chest_defect"
@@ -97,7 +97,7 @@ local function shift_items(pos, elapsed)
 					stack = inv:get_stack("shift", idx)
 					stack:take_item(num)
 					inv:set_stack("shift", idx, stack)
-					aging(pos, meta, num)
+					aging(pos, meta)
 					return true
 				else
 					set_state(meta, "blocked")
