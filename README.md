@@ -117,6 +117,7 @@ tubelib_machine_aging_value = 999999
 Default value is 12.  
 I higher number allows to build larger farms and machines which keep loaded, but increases the server load, too.
 But the areas are only loaded when the player is online.
+To be able to use e.g. 12 forceloaded blocks per player, the pararamter 'max_forceloaded_blocks' in 'minetest.conf' has to be ajusted. 
 
 #### Enable Basalt Stone (and disable ore generation via Cobblestone generator)
 The lava/water Cobblestone generator allows to produce infinite Cobblestone. By means of Quarry, 
