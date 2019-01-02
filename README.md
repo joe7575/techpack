@@ -11,6 +11,7 @@
 - A Forceload block (16x16x16) is added which keeps the corresponding area loaded and the machines operational as far as the player is logged in.
 - The Quarry now uses LVM techniques to go down up to 100 meter
 - Ladders, stairways, and bridges added (tubelib_stairway) for the machines
+- Industrial lamps
 
 
 ## New in v2 (from admins point of view)
