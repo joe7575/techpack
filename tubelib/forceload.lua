@@ -17,9 +17,20 @@ local S = function(pos) if pos then return minetest.pos_to_string(pos) end end
 local P = minetest.string_to_pos
 local M = minetest.get_meta
 
+local function calc_area(pos)
+	local xpos = (math.floor(pos.x / 16) * 16)
+	local ypos = (math.floor(pos.y / 16) * 16)
+	local zpos = (math.floor(pos.z / 16) * 16)
+	local pos1 = {x=xpos, y=ypos, z=zpos}
+	local pos2 = {x=xpos+15, y=ypos+15, z=zpos+15}
+	return pos1, pos2
+end
+
 local function in_list(list, x)
+	local pos1 = calc_area(x)
 	for _,v in ipairs(list) do
-		if vector.equals(v, x) then return true end
+		local pos2 = calc_area(v)
+		if vector.equals(pos1, pos2) then return true end
 	end
 	return false
 end
@@ -60,20 +71,10 @@ local function get_node_lvm(pos)
 	return node
 end
 
-local function calc_area(pos)
-	local xpos = (math.floor(pos.x / 16) * 16)
-	local ypos = (math.floor(pos.y / 16) * 16)
-	local zpos = (math.floor(pos.z / 16) * 16)
-	local pos1 = {x=xpos, y=ypos, z=zpos}
-	local pos2 = {x=xpos+15, y=ypos+15, z=zpos+15}
-	return pos1, pos2
-end
-
 local function add_pos(pos, player)
-	local pos1 = calc_area(pos)
 	local lPos = minetest.deserialize(player:get_attribute("tubelib_forceload_blocks")) or {}
-	if not in_list(lPos, pos1) and #lPos < tubelib.max_num_forceload_blocks then
-		lPos[#lPos+1] = pos1
+	if not in_list(lPos, pos) and #lPos < tubelib.max_num_forceload_blocks then
+		lPos[#lPos+1] = pos
 		player:set_attribute("tubelib_forceload_blocks", minetest.serialize(lPos))
 		return true
 	end
@@ -81,9 +82,8 @@ local function add_pos(pos, player)
 end
 	
 local function del_pos(pos, player)
-	local pos1 = calc_area(pos)
 	local lPos = minetest.deserialize(player:get_attribute("tubelib_forceload_blocks")) or {}
-	lPos = remove_list_elem(lPos, pos1)
+	lPos = remove_list_elem(lPos, pos)
 	player:set_attribute("tubelib_forceload_blocks", minetest.serialize(lPos))
 end
 
@@ -201,6 +201,7 @@ minetest.register_on_joinplayer(function(player)
 	local lPos = {}
 	for _,pos in ipairs(get_pos_list(player)) do
 		local node = get_node_lvm(pos)
+		print("pos", S(pos), "name", node.name)
 		if node.name == "tubelib:forceload" then
 			minetest.forceload_block(pos, true)
 			lPos[#lPos+1] = pos
