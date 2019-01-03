@@ -508,7 +508,7 @@ end
 -- Data Maintenance
 -------------------------------------------------------------------------------
 local function data_maintenance()
-	print("[Tubelib] Data maintenance started")
+	minetest.log("info", "[Tubelib] Data maintenance started")
 	if Version == 1 then
 		-- Add day_count for aging of unused positions
 		for num,item in pairs(Number2Pos) do
@@ -526,27 +526,28 @@ local function data_maintenance()
 			if item.name then
 				Number2Pos[num] = item
 			-- data not older than 5 real days
-			elseif item.time and (item.time + 360) > day_cnt then
+			elseif item.time and (item.time + (72*5)) > day_cnt then
 				Number2Pos[num] = item
 			else
-				print("Position deleted", num)
+				minetest.log("info", "Position deleted", num)
 			end
 		end
 	end
 	-- collect unused node numbers
-	for idx = 1,NextNumber-1 do
+	for idx = NextNumber-1,1,-1 do
 		--FreeNumbers
 		local num = string.format("%.04u", idx)
 		if not Number2Pos[num] then
 			FreeNumbers[#FreeNumbers+1] = num
 		end
 	end
-	print("[Tubelib] Data maintenance finished")
+	minetest.log("info", "[Tubelib] "..#FreeNumbers.." numbers recycled")
+	minetest.log("info", "[Tubelib] Data maintenance finished")
 end	
 	
 generate_Key2Number()
 
--- maintain data after one minute
+-- maintain data after 5 seconds
 -- (minetest.get_day_count() will not be valid at start time)
 minetest.after(5, data_maintenance)
 

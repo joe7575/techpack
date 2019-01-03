@@ -459,11 +459,12 @@ tubelib.register_node("tubelib_addons1:quarry",
 			return "unsupported"
 		end
 	end,
--- Function has some negative impact on the cycle time for the 
--- cobble generator mode (5s on/5s off)
---	on_node_load = function(pos)
---		State:on_node_load(pos)
---	end,
+	on_node_load = function(pos)
+		local depth = M(pos):get_int("max_levels") or 1
+		-- If depth is 1, it is likely that the quarry is used as cobble generator,
+		-- controlled by a sequencer. If so, don't restart the timer.
+		State:on_node_load(pos, depth == 1)
+	end,
 	on_node_repair = function(pos)
 		return State:on_node_repair(pos)
 	end,

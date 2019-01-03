@@ -358,7 +358,7 @@ function NodeStates:on_receive_message(pos, topic, payload)
 end
 	
 -- repair corrupt node data and/or migrate node to state2
-function NodeStates:on_node_load(pos)
+function NodeStates:on_node_load(pos, not_start_timer)
 	local meta = minetest.get_meta(pos)
 	
 	-- legacy node number/state/counter?
@@ -398,7 +398,7 @@ function NodeStates:on_node_load(pos)
 		else
 			meta:set_int("tubelib_state", STOPPED)
 		end
-	elseif state == RUNNING then
+	elseif state == RUNNING and not not_start_timer then
 		minetest.get_node_timer(pos):start(self.cycle_time)
 	elseif state == STANDBY then
 		minetest.get_node_timer(pos):start(self.cycle_time * self.standby_ticks)
