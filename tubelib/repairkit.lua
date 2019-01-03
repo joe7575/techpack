@@ -16,6 +16,14 @@ local S = function(pos) if pos then return minetest.pos_to_string(pos) end end
 local P = minetest.string_to_pos
 local M = minetest.get_meta
 
+local function destroy_node(itemstack, placer, pointed_thing)
+	if pointed_thing.type == "node" then
+		local pos = pointed_thing.under
+		if not minetest.is_protected(pos, placer:get_player_name()) then
+			M(pos):set_int("tubelib_aging", 999999)
+		end
+	end
+end
 
 local function repair_node(itemstack, user, pointed_thing)
 	local pos = pointed_thing.under
@@ -55,11 +63,12 @@ minetest.register_craftitem("tubelib:repairkit", {
 
 
 minetest.register_node("tubelib:end_wrench", {
-	description = "Tubelib End Wrench",
+	description = "Tubelib End Wrench (use = read status, place = destroy)",
 	inventory_image = "tubelib_end_wrench.png",
 	wield_image = "tubelib_end_wrench.png",
 	groups = {cracky=1, book=1},
 	on_use = read_state,
+	on_place = destroy_node,
 	node_placement_prediction = "",
 })
 

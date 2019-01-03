@@ -307,7 +307,8 @@ function NodeStates:keep_running(pos, meta, val, num_items)
 	if self.aging_level1 then
 		local cnt = meta:get_int("tubelib_aging") + num_items
 		meta:set_int("tubelib_aging", cnt)
-		if cnt > (self.aging_level1) and math.random(self.aging_level2/num_items) == 1 then
+		if (cnt > (self.aging_level1) and math.random(self.aging_level2/num_items) == 1)
+		or cnt >= 999999 then
 			self:defect(pos, meta)
 		end
 	end
