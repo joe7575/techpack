@@ -1,3 +1,166 @@
+minetest.register_node("tubelib_stairway:grating", {
+	description = "Tubelib Grating",
+	tiles = {
+		'tubelib_stairway_bottom.png',
+		'tubelib_stairway_bottom.png',
+		'tubelib_stairway_side.png',
+	},
+	drawtype = "nodebox",
+	node_box = {
+		type = "fixed",
+		fixed = {
+			{-17/32, -15/32, -17/32,  17/32, -14/32, 17/32}
+		},
+	},
+
+	selection_box = {
+		type = "fixed",
+		fixed = {
+			{-16/32, -16/32, -16/32,  16/32, -10/32, 16/32},
+		},
+	},
+	
+	--climbable = true,
+	paramtype2 = "facedir",
+	paramtype = "light",
+	sunlight_propagates = true,
+	is_ground_content = false,
+	groups = {cracky = 2},
+	sounds = default.node_sound_metal_defaults(),
+})
+
+minetest.register_node("tubelib_stairway:handrail1", {
+	description = "Tubelib Handrail 1",
+	tiles = {
+		'tubelib_stairway_bottom.png',
+		'tubelib_stairway_bottom.png',
+		'tubelib_stairway_side.png',
+	},
+	drawtype = "nodebox",
+	node_box = {
+		type = "fixed",
+		fixed = {
+			{-17/32, -17/32, -17/32, -15/32,  17/32, 17/32},
+		},
+	},
+
+	selection_box = {
+		type = "fixed",
+		fixed = {
+			{ -16/32, -16/32, -16/32, -12/32, -6/32, 16/32},
+		},
+	},
+	
+	--climbable = true,
+	paramtype2 = "facedir",
+	paramtype = "light",
+	sunlight_propagates = true,
+	is_ground_content = false,
+	groups = {cracky = 2},
+	sounds = default.node_sound_metal_defaults(),
+})
+
+minetest.register_node("tubelib_stairway:handrail2", {
+	description = "Tubelib Handrail 2",
+	tiles = {
+		'tubelib_stairway_bottom.png',
+		'tubelib_stairway_bottom.png',
+		'tubelib_stairway_side.png',
+	},
+	drawtype = "nodebox",
+	node_box = {
+		type = "fixed",
+		fixed = {
+			{ 15/32, -17/32, -17/32,  17/32,  17/32, 17/32},
+			{-17/32, -17/32, -17/32, -15/32,  17/32, 17/32},
+		},
+	},
+
+	selection_box = {
+		type = "fixed",
+		fixed = {
+			{ 12/32, -16/32, -16/32,  16/32,  -6/32, 16/32},
+			{-16/32, -16/32, -16/32, -12/32,  -6/32, 16/32},
+		},
+	},
+	
+	--climbable = true,
+	paramtype2 = "facedir",
+	paramtype = "light",
+	sunlight_propagates = true,
+	is_ground_content = false,
+	groups = {cracky = 2},
+	sounds = default.node_sound_metal_defaults(),
+})
+
+minetest.register_node("tubelib_stairway:handrail3", {
+	description = "Tubelib Handrail 3",
+	tiles = {
+		'tubelib_stairway_bottom.png',
+		'tubelib_stairway_bottom.png',
+		'tubelib_stairway_side.png',
+	},
+	drawtype = "nodebox",
+	node_box = {
+		type = "fixed",
+		fixed = {
+			{-17/32, -17/32,  15/32,  17/32,  17/32, 17/32},
+			{-17/32, -17/32, -17/32, -15/32,  17/32, 17/32},
+		},
+	},
+
+	selection_box = {
+		type = "fixed",
+		fixed = {
+			{ -16/32, -16/32,  12/32,  16/32, -6/32, 16/32},
+			{ -16/32, -16/32, -16/32, -12/32, -6/32, 16/32},
+		},
+	},
+	
+	--climbable = true,
+	paramtype2 = "facedir",
+	paramtype = "light",
+	sunlight_propagates = true,
+	is_ground_content = false,
+	groups = {cracky = 2},
+	sounds = default.node_sound_metal_defaults(),
+})
+
+minetest.register_node("tubelib_stairway:handrail4", {
+	description = "Tubelib Handrail 4",
+	tiles = {
+		'tubelib_stairway_bottom.png',
+		'tubelib_stairway_bottom.png',
+		'tubelib_stairway_side.png',
+	},
+	drawtype = "nodebox",
+	node_box = {
+		type = "fixed",
+		fixed = {
+			{-17/32, -17/32,  15/32,  17/32,  17/32, 17/32},
+			{ 15/32, -17/32, -17/32,  17/32,  17/32, 17/32},
+			{-17/32, -17/32, -17/32, -15/32,  17/32, 17/32},
+		},
+	},
+
+	selection_box = {
+		type = "fixed",
+		fixed = {
+			{ 12/32, -16/32, -16/32,  16/32, -6/32, 16/32},
+			{-16/32, -16/32, -16/32, -12/32, -6/32, 16/32},
+			{-16/32, -16/32,  12/32,  16/32, -6/32, 16/32},
+		},
+	},
+	
+	--climbable = true,
+	paramtype2 = "facedir",
+	paramtype = "light",
+	sunlight_propagates = true,
+	is_ground_content = false,
+	groups = {cracky = 2},
+	sounds = default.node_sound_metal_defaults(),
+})
+
 minetest.register_node("tubelib_stairway:bridge1", {
 	description = "Tubelib Bridge 1",
 	tiles = {
@@ -9,7 +172,6 @@ minetest.register_node("tubelib_stairway:bridge1", {
 	node_box = {
 		type = "fixed",
 		fixed = {
-			{ 15/32, -17/32, -17/32,  17/32,  17/32, 17/32},
 			{-17/32, -17/32, -17/32, -15/32,  17/32, 17/32},
 			{-17/32, -15/32, -17/32,  17/32, -14/32, 17/32}
 		},
@@ -26,7 +188,6 @@ minetest.register_node("tubelib_stairway:bridge1", {
 	paramtype2 = "facedir",
 	paramtype = "light",
 	sunlight_propagates = true,
-	use_texture_alpha = true,
 	is_ground_content = false,
 	groups = {cracky = 2},
 	sounds = default.node_sound_metal_defaults(),
@@ -43,6 +204,7 @@ minetest.register_node("tubelib_stairway:bridge2", {
 	node_box = {
 		type = "fixed",
 		fixed = {
+			{ 15/32, -17/32, -17/32,  17/32,  17/32, 17/32},
 			{-17/32, -17/32, -17/32, -15/32,  17/32, 17/32},
 			{-17/32, -15/32, -17/32,  17/32, -14/32, 17/32}
 		},
@@ -76,7 +238,6 @@ minetest.register_node("tubelib_stairway:bridge3", {
 		type = "fixed",
 		fixed = {
 			{-17/32, -17/32,  15/32,  17/32,  17/32, 17/32},
-			{ 15/32, -17/32, -17/32,  17/32,  17/32, 17/32},
 			{-17/32, -17/32, -17/32, -15/32,  17/32, 17/32},
 			{-17/32, -15/32, -17/32,  17/32, -14/32, 17/32}
 		},
@@ -110,38 +271,8 @@ minetest.register_node("tubelib_stairway:bridge4", {
 		type = "fixed",
 		fixed = {
 			{-17/32, -17/32,  15/32,  17/32,  17/32, 17/32},
+			{ 15/32, -17/32, -17/32,  17/32,  17/32, 17/32},
 			{-17/32, -17/32, -17/32, -15/32,  17/32, 17/32},
-			{-17/32, -15/32, -17/32,  17/32, -14/32, 17/32}
-		},
-	},
-
-	selection_box = {
-		type = "fixed",
-		fixed = {
-			{-16/32, -16/32, -16/32,  16/32, -10/32, 16/32},
-		},
-	},
-	
-	--climbable = true,
-	paramtype2 = "facedir",
-	paramtype = "light",
-	sunlight_propagates = true,
-	is_ground_content = false,
-	groups = {cracky = 2},
-	sounds = default.node_sound_metal_defaults(),
-})
-
-minetest.register_node("tubelib_stairway:bridge5", {
-	description = "Tubelib Bridge 5",
-	tiles = {
-		'tubelib_stairway_bottom.png',
-		'tubelib_stairway_bottom.png',
-		'tubelib_stairway_side.png',
-	},
-	drawtype = "nodebox",
-	node_box = {
-		type = "fixed",
-		fixed = {
 			{-17/32, -15/32, -17/32,  17/32, -14/32, 17/32}
 		},
 	},
@@ -296,7 +427,7 @@ minetest.register_node("tubelib_stairway:lattice", {
 
 
 minetest.register_craft({
-	output = "tubelib_stairway:bridge1 2",
+	output = "tubelib_stairway:grating 4",
 	recipe = {
 		{"", "", ""},
 		{"dye:dark_grey", "", "default:coal_lump"},
@@ -305,11 +436,11 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	output = "tubelib_stairway:bridge3 2",
+	output = "tubelib_stairway:handrail1 4",
 	recipe = {
-		{"", "", ""},
-		{"default:coal_lump", "", "dye:dark_grey"},
-		{"default:steel_ingot", "default:tin_ingot", "default:steel_ingot"},
+		{"default:steel_ingot", "default:coal_lump", ""},
+		{"default:tin_ingot", "", ""},
+		{"default:steel_ingot", "dye:dark_grey", ""},
 	},
 })
 
@@ -340,22 +471,70 @@ minetest.register_craft({
 	},
 })
 
+
+
 minetest.register_craft({
-	output = "tubelib_stairway:ladder2",
-	recipe = {{"tubelib_stairway:ladder1"}},
+	output = "tubelib_stairway:handrail2",
+	recipe = {
+		{"", "", ""},
+		{"tubelib_stairway:handrail1", "", "tubelib_stairway:handrail1"},
+		{"", "", ""},
+	},
+})
+
+minetest.register_craft({
+	output = "tubelib_stairway:handrail3",
+	recipe = {
+		{"", "tubelib_stairway:handrail1", ""},
+		{"tubelib_stairway:handrail1", "", ""},
+		{"", "", ""},
+	},
+})
+
+minetest.register_craft({
+	output = "tubelib_stairway:handrail4",
+	recipe = {
+		{"", "tubelib_stairway:handrail1", ""},
+		{"tubelib_stairway:handrail1", "", "tubelib_stairway:handrail1"},
+		{"", "", ""},
+	},
+})
+
+minetest.register_craft({
+	output = "tubelib_stairway:bridge1",
+	recipe = {
+		{"", "", ""},
+		{"tubelib_stairway:handrail1", "tubelib_stairway:grating", ""},
+		{"", "", ""},
+	},
 })
 
 minetest.register_craft({
 	output = "tubelib_stairway:bridge2",
-	recipe = {{"tubelib_stairway:bridge1"}},
+	recipe = {
+		{"", "", ""},
+		{"tubelib_stairway:handrail1", "tubelib_stairway:grating", "tubelib_stairway:handrail1"},
+		{"", "", ""},
+	},
 })
-
+minetest.register_craft({
+	output = "tubelib_stairway:bridge3",
+	recipe = {
+		{"", "tubelib_stairway:handrail1", ""},
+		{"tubelib_stairway:handrail1", "tubelib_stairway:grating", ""},
+		{"", "", ""},
+	},
+})
 minetest.register_craft({
 	output = "tubelib_stairway:bridge4",
-	recipe = {{"tubelib_stairway:bridge3"}},
+	recipe = {
+		{"", "tubelib_stairway:handrail1", ""},
+		{"tubelib_stairway:handrail1", "tubelib_stairway:grating", "tubelib_stairway:handrail1"},
+		{"", "", ""},
+	},
 })
 
 minetest.register_craft({
-	output = "tubelib_stairway:bridge5",
-	recipe = {{"tubelib_stairway:bridge4"}},
+	output = "tubelib_stairway:ladder2",
+	recipe = {{"tubelib_stairway:ladder1"}},
 })
