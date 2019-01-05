@@ -190,11 +190,11 @@ function techpack_warehouse.allow_metadata_inventory_put(self, pos, listname, in
 	local item_name = inv:get_stack("filter", index):get_name()
 	if listname == "input" and item_name == stack:get_name() then
 		return math.min(stack:get_count(), self.inv_size - main_stack:get_count())
-	elseif listname == "filter" then
+	elseif listname == "filter" and item_name == main_stack:get_name() then
 		local number = M(pos):get_string("number")
 		Cache[number] = nil
 		return 1
-	elseif listname == "shift" and item_name == main_stack:get_name() then
+	elseif listname == "shift" then
 		return stack:get_count()
 	end
 	return 0
@@ -202,6 +202,8 @@ end
 
 function techpack_warehouse.on_metadata_inventory_put(pos, listname, index, stack, player)
 	if listname == "input" then
+		local number = M(pos):get_string("number")
+		Cache[number] = nil
 		minetest.after(0.5, move_to_main, pos, index)
 	end
 end
@@ -226,6 +228,8 @@ function techpack_warehouse.allow_metadata_inventory_take(pos, listname, index, 
 		Cache[number] = nil
 		return 1
 	elseif listname == "shift" then
+		local number = M(pos):get_string("number")
+		Cache[number] = nil
 		return stack:get_count()
 	end
 	return 0
@@ -239,6 +243,8 @@ function techpack_warehouse.on_receive_fields(self, pos, formname, fields, playe
 	if minetest.is_protected(pos, player:get_player_name()) then
 		return
 	end
+	local number = M(pos):get_string("number")
+	Cache[number] = nil
 	self.State:state_button_event(pos, fields)
 end
 
@@ -261,7 +267,8 @@ function techpack_warehouse.on_timer(self, pos, elapsed)
 		local number = meta:get_string("number")
 		local player_name = meta:get_string("player_name")
 		local offs = meta:get_int("offs")
-		local push_dir = meta:get_string("push_dir") or "R"
+		local push_dir = meta:get_string("push_dir")
+		if push_dir == "" then push_dir = "L" end
 		meta:set_int("offs", offs + 1)
 		for i = 0,7 do
 			local idx = ((i + offs) % 8) + 1
