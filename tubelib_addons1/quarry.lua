@@ -35,31 +35,14 @@ local Depth2Idx = {[1]=1 ,[2]=2, [3]=3, [5]=4, [10]=5, [15]=6, [20]=7, [25]=8, [
 local Level2Idx = {[2]=1, [1]=2, [0]=3, [-1]=4, [-2]=5, [-3]=6, 
 				   [-5]=7, [-10]=8, [-15]=9, [-20]=10}
 
-local State = tubelib.NodeStates:new({
-	node_name_passive = "tubelib_addons1:quarry",
-	node_name_active = "tubelib_addons1:quarry_active",
-	node_name_defect = "tubelib_addons1:quarry_defect",
-	infotext_name = "Tubelib Quarry",
-	cycle_time = CYCLE_TIME,
-	standby_ticks = STANDBY_TICKS,
-	has_item_meter = true,
-	aging_factor = 12,
-	on_stop = function(pos, meta, oldstate)
-		if oldstate == tubelib.RUNNING then
-			meta:set_int("idx", 1) -- restart from the beginning
-			meta:set_string("quarry_pos", nil)
-		end
-	end,
-})
-
-local function formspec(pos, meta)
+local function formspec(self, pos, meta)
 	local depth = meta:get_int("max_levels") or 1
 	local start_level = meta:get_int("start_level") or 1
 	local endless = meta:get_int("endless") or 0
 	local fuel = meta:get_int("fuel") or 0
 	-- some recalculations
 	endless = endless == 1 and "true" or "false"
-	if State:get_state(meta) ~= tubelib.RUNNING then
+	if self:get_state(meta) ~= tubelib.RUNNING then
 		fuel = fuel * 100/BURNING_TIME
 	else
 		fuel = 0
@@ -79,13 +62,29 @@ local function formspec(pos, meta)
 	"item_image[1.5,3;1,1;tubelib_addons1:biofuel]"..
 	"image[2.5,3;1,1;default_furnace_fire_bg.png^[lowpart:"..
 	fuel..":default_furnace_fire_fg.png]"..
-	"image_button[3.5,3;1,1;".. State:get_state_button_image(meta) ..";state_button;]"..
+	"image_button[3.5,3;1,1;".. self:get_state_button_image(meta) ..";state_button;]"..
 	"list[current_player;main;0.5,4.3;8,4;]"..
 	"listring[context;main]"..
 	"listring[current_player;main]"
 end
 
-State:register_formspec_func(formspec)
+local State = tubelib.NodeStates:new({
+	node_name_passive = "tubelib_addons1:quarry",
+	node_name_active = "tubelib_addons1:quarry_active",
+	node_name_defect = "tubelib_addons1:quarry_defect",
+	infotext_name = "Tubelib Quarry",
+	cycle_time = CYCLE_TIME,
+	standby_ticks = STANDBY_TICKS,
+	has_item_meter = true,
+	aging_factor = 12,
+	on_stop = function(pos, meta, oldstate)
+		if oldstate == tubelib.RUNNING then
+			meta:set_int("idx", 1) -- restart from the beginning
+			meta:set_string("quarry_pos", nil)
+		end
+	end,
+	formspec_func = formspec,
+})
 
 local function get_pos(pos, facedir, side, steps)
 	facedir = (facedir + Side2Facedir[side]) % 4

@@ -32,17 +32,7 @@ local COUNTDOWN_TICKS = 6
 local STANDBY_TICKS = 4
 local CYCLE_TIME = 2
 
-local State = tubelib.NodeStates:new({
-	node_name_passive = "tubelib:distributor",
-	node_name_active = "tubelib:distributor_active",
-	node_name_defect = "tubelib:distributor_defect",
-	infotext_name = "Tubelib Distributor",
-	cycle_time = CYCLE_TIME,
-	standby_ticks = STANDBY_TICKS,
-	aging_factor = 10,
-})
-
-local function formspec(pos, meta)
+local function formspec(self, pos, meta)
 	local filter = minetest.deserialize(meta:get_string("filter")) or {false,false,false,false}
 	return "size[10.5,8.5]"..
 	default.gui_bg..
@@ -50,7 +40,7 @@ local function formspec(pos, meta)
 	default.gui_slots..
 	"list[context;src;0,0;2,4;]"..
 	"image[2,1.5;1,1;tubelib_gui_arrow.png]"..
-	"image_button[2,3;1,1;"..State:get_state_button_image(meta)..";state_button;]"..
+	"image_button[2,3;1,1;"..self:get_state_button_image(meta)..";state_button;]"..
 	"checkbox[3,0;filter1;On;"..dump(filter[1]).."]"..
 	"checkbox[3,1;filter2;On;"..dump(filter[2]).."]"..
 	"checkbox[3,2;filter3;On;"..dump(filter[3]).."]"..
@@ -68,7 +58,16 @@ local function formspec(pos, meta)
 	"listring[current_player;main]"
 end
 
-State:register_formspec_func(formspec)
+local State = tubelib.NodeStates:new({
+	node_name_passive = "tubelib:distributor",
+	node_name_active = "tubelib:distributor_active",
+	node_name_defect = "tubelib:distributor_defect",
+	infotext_name = "Tubelib Distributor",
+	cycle_time = CYCLE_TIME,
+	standby_ticks = STANDBY_TICKS,
+	aging_factor = 10,
+	formspec_func = formspec,
+})
 
 -- Return a key/value table with all items and the corresponding stack numbers
 local function invlist_content_as_kvlist(list)

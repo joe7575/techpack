@@ -21,18 +21,7 @@ local STANDBY_TICKS = 4
 local COUNTDOWN_TICKS = 2
 local CYCLE_TIME = 8
 
-local State = tubelib.NodeStates:new({
-	node_name_passive = "tubelib_addons1:liquidsampler",
-	node_name_active = "tubelib_addons1:liquidsampler_active",
-	node_name_defect = "tubelib_addons1:liquidsampler_defect",
-	infotext_name = "Liquid Sampler",
-	cycle_time = CYCLE_TIME,
-	standby_ticks = STANDBY_TICKS,
-	has_item_meter = true,
-	aging_factor = 8,
-})
-
-local function formspec(pos, meta)
+local function formspec(self, pos, meta)
 	return "size[9,8.5]"..
 	default.gui_bg..
 	default.gui_bg_img..
@@ -40,7 +29,7 @@ local function formspec(pos, meta)
 	"list[context;src;0,0;1,4;]"..
 	"image[0,0;1,1;bucket.png]"..
 	"image[1,1;1,1;tubelib_gui_arrow.png]"..
-	"image_button[1,3;1,1;".. State:get_state_button_image(meta) ..";state_button;]"..
+	"image_button[1,3;1,1;".. self:get_state_button_image(meta) ..";state_button;]"..
 	"list[context;dst;2,0;7,4;]"..
 	"list[current_player;main;0.5,4.5;8,4;]"..
 	"listring[current_player;main]"..
@@ -50,7 +39,17 @@ local function formspec(pos, meta)
 	"listring[current_player;main]"
 end
 
-State:register_formspec_func(formspec)
+local State = tubelib.NodeStates:new({
+	node_name_passive = "tubelib_addons1:liquidsampler",
+	node_name_active = "tubelib_addons1:liquidsampler_active",
+	node_name_defect = "tubelib_addons1:liquidsampler_defect",
+	infotext_name = "Liquid Sampler",
+	cycle_time = CYCLE_TIME,
+	standby_ticks = STANDBY_TICKS,
+	has_item_meter = true,
+	aging_factor = 8,
+	formspec_func = formspec,
+})
 
 local function get_pos(pos, facedir, side)
 	local offs = {F=0, R=1, B=2, L=3, D=4, U=5}

@@ -24,17 +24,7 @@ local STANDBY_TICKS = 4
 local COUNTDOWN_TICKS = 4
 local CYCLE_TIME = 2
 
-local State = tubelib.NodeStates:new({
-	node_name_passive = "tubelib_addons1:fermenter",
-	node_name_defect = "tubelib_addons1:fermenter_defect",
-	infotext_name = "Tubelib Fermenter",
-	cycle_time = CYCLE_TIME,
-	standby_ticks = STANDBY_TICKS,
-	has_item_meter = true,
-	aging_factor = 10,
-})
-
-local function formspec(pos, meta)
+local function formspec(self, pos, meta)
 	return "size[8,8]"..
 	default.gui_bg..
 	default.gui_bg_img..
@@ -42,7 +32,7 @@ local function formspec(pos, meta)
 	"list[context;src;0,0;3,3;]"..
 	"item_image[0,0;1,1;default:leaves]"..
 	"image[3.5,1;1,1;tubelib_gui_arrow.png]"..
-	"image_button[3.5,3;1,1;".. State:get_state_button_image(meta) ..";state_button;]"..
+	"image_button[3.5,3;1,1;".. self:get_state_button_image(meta) ..";state_button;]"..
 	"list[context;dst;5,0;3,3;]"..
 	"item_image[5,0;1,1;tubelib_addons1:biogas]"..
 	"list[current_player;main;0,4.3;8,4;]"..
@@ -52,7 +42,16 @@ local function formspec(pos, meta)
 	"listring[current_player;main]"
 end
 
-State:register_formspec_func(formspec)
+local State = tubelib.NodeStates:new({
+	node_name_passive = "tubelib_addons1:fermenter",
+	node_name_defect = "tubelib_addons1:fermenter_defect",
+	infotext_name = "Tubelib Fermenter",
+	cycle_time = CYCLE_TIME,
+	standby_ticks = STANDBY_TICKS,
+	has_item_meter = true,
+	aging_factor = 10,
+	formspec_func = formspec,
+})
 
 local function is_leaves(name)
 	return tubelib_addons1.FarmingNodes[name] ~= nil  and

@@ -1,9 +1,22 @@
-minetest.register_node("tubelib_stairway:grating", {
-	description = "Tubelib Grating",
+--[[
+
+	TechPack Stairway
+	=================
+
+	Copyright (C) 2019 Joachim Stolberg
+
+	LGPLv2.1+
+	See LICENSE.txt for more information
+	
+	init.lua
+
+]]--
+minetest.register_node("techpack_stairway:grating", {
+	description = "TechPack Grating",
 	tiles = {
-		'tubelib_stairway_bottom.png',
-		'tubelib_stairway_bottom.png',
-		'tubelib_stairway_side.png',
+		'techpack_stairway_bottom.png',
+		'techpack_stairway_bottom.png',
+		'techpack_stairway_side.png',
 	},
 	drawtype = "nodebox",
 	node_box = {
@@ -29,12 +42,12 @@ minetest.register_node("tubelib_stairway:grating", {
 	sounds = default.node_sound_metal_defaults(),
 })
 
-minetest.register_node("tubelib_stairway:handrail1", {
-	description = "Tubelib Handrail 1",
+minetest.register_node("techpack_stairway:handrail1", {
+	description = "TechPack Handrail 1",
 	tiles = {
-		'tubelib_stairway_bottom.png',
-		'tubelib_stairway_bottom.png',
-		'tubelib_stairway_side.png',
+		'techpack_stairway_bottom.png',
+		'techpack_stairway_bottom.png',
+		'techpack_stairway_side.png',
 	},
 	drawtype = "nodebox",
 	node_box = {
@@ -60,12 +73,12 @@ minetest.register_node("tubelib_stairway:handrail1", {
 	sounds = default.node_sound_metal_defaults(),
 })
 
-minetest.register_node("tubelib_stairway:handrail2", {
-	description = "Tubelib Handrail 2",
+minetest.register_node("techpack_stairway:handrail2", {
+	description = "TechPack Handrail 2",
 	tiles = {
-		'tubelib_stairway_bottom.png',
-		'tubelib_stairway_bottom.png',
-		'tubelib_stairway_side.png',
+		'techpack_stairway_bottom.png',
+		'techpack_stairway_bottom.png',
+		'techpack_stairway_side.png',
 	},
 	drawtype = "nodebox",
 	node_box = {
@@ -93,12 +106,12 @@ minetest.register_node("tubelib_stairway:handrail2", {
 	sounds = default.node_sound_metal_defaults(),
 })
 
-minetest.register_node("tubelib_stairway:handrail3", {
-	description = "Tubelib Handrail 3",
+minetest.register_node("techpack_stairway:handrail3", {
+	description = "TechPack Handrail 3",
 	tiles = {
-		'tubelib_stairway_bottom.png',
-		'tubelib_stairway_bottom.png',
-		'tubelib_stairway_side.png',
+		'techpack_stairway_bottom.png',
+		'techpack_stairway_bottom.png',
+		'techpack_stairway_side.png',
 	},
 	drawtype = "nodebox",
 	node_box = {
@@ -126,12 +139,12 @@ minetest.register_node("tubelib_stairway:handrail3", {
 	sounds = default.node_sound_metal_defaults(),
 })
 
-minetest.register_node("tubelib_stairway:handrail4", {
-	description = "Tubelib Handrail 4",
+minetest.register_node("techpack_stairway:handrail4", {
+	description = "TechPack Handrail 4",
 	tiles = {
-		'tubelib_stairway_bottom.png',
-		'tubelib_stairway_bottom.png',
-		'tubelib_stairway_side.png',
+		'techpack_stairway_bottom.png',
+		'techpack_stairway_bottom.png',
+		'techpack_stairway_side.png',
 	},
 	drawtype = "nodebox",
 	node_box = {
@@ -161,12 +174,12 @@ minetest.register_node("tubelib_stairway:handrail4", {
 	sounds = default.node_sound_metal_defaults(),
 })
 
-minetest.register_node("tubelib_stairway:bridge1", {
-	description = "Tubelib Bridge 1",
+minetest.register_node("techpack_stairway:bridge1", {
+	description = "TechPack Bridge 1",
 	tiles = {
-		'tubelib_stairway_bottom.png',
-		'tubelib_stairway_bottom.png',
-		'tubelib_stairway_side.png',
+		'techpack_stairway_bottom.png',
+		'techpack_stairway_bottom.png',
+		'techpack_stairway_side.png',
 	},
 	drawtype = "nodebox",
 	node_box = {
@@ -193,12 +206,12 @@ minetest.register_node("tubelib_stairway:bridge1", {
 	sounds = default.node_sound_metal_defaults(),
 })
 
-minetest.register_node("tubelib_stairway:bridge2", {
-	description = "Tubelib Bridge 2",
+minetest.register_node("techpack_stairway:bridge2", {
+	description = "TechPack Bridge 2",
 	tiles = {
-		'tubelib_stairway_bottom.png',
-		'tubelib_stairway_bottom.png',
-		'tubelib_stairway_side.png',
+		'techpack_stairway_bottom.png',
+		'techpack_stairway_bottom.png',
+		'techpack_stairway_side.png',
 	},
 	drawtype = "nodebox",
 	node_box = {
@@ -226,12 +239,12 @@ minetest.register_node("tubelib_stairway:bridge2", {
 	sounds = default.node_sound_metal_defaults(),
 })
 
-minetest.register_node("tubelib_stairway:bridge3", {
-	description = "Tubelib Bridge 3",
+minetest.register_node("techpack_stairway:bridge3", {
+	description = "TechPack Bridge 3",
 	tiles = {
-		'tubelib_stairway_bottom.png',
-		'tubelib_stairway_bottom.png',
-		'tubelib_stairway_side.png',
+		'techpack_stairway_bottom.png',
+		'techpack_stairway_bottom.png',
+		'techpack_stairway_side.png',
 	},
 	drawtype = "nodebox",
 	node_box = {
@@ -259,12 +272,12 @@ minetest.register_node("tubelib_stairway:bridge3", {
 	sounds = default.node_sound_metal_defaults(),
 })
 
-minetest.register_node("tubelib_stairway:bridge4", {
-	description = "Tubelib Bridge 4",
+minetest.register_node("techpack_stairway:bridge4", {
+	description = "TechPack Bridge 4",
 	tiles = {
-		'tubelib_stairway_bottom.png',
-		'tubelib_stairway_bottom.png',
-		'tubelib_stairway_side.png',
+		'techpack_stairway_bottom.png',
+		'techpack_stairway_bottom.png',
+		'techpack_stairway_side.png',
 	},
 	drawtype = "nodebox",
 	node_box = {
@@ -293,12 +306,12 @@ minetest.register_node("tubelib_stairway:bridge4", {
 	sounds = default.node_sound_metal_defaults(),
 })
 
-minetest.register_node("tubelib_stairway:stairway", {
-	description = "Tubelib Stairway",
+minetest.register_node("techpack_stairway:stairway", {
+	description = "TechPack Stairway",
 	tiles = {
-		'tubelib_stairway_steps.png',
-		'tubelib_stairway_steps.png',
-		'tubelib_stairway_side.png',
+		'techpack_stairway_steps.png',
+		'techpack_stairway_steps.png',
+		'techpack_stairway_side.png',
 	},
 	drawtype = "nodebox",
 	node_box = {
@@ -331,12 +344,12 @@ minetest.register_node("tubelib_stairway:stairway", {
 	sounds = default.node_sound_metal_defaults(),
 })
 
-minetest.register_node("tubelib_stairway:ladder1", {
-	description = "Tubelib Ladder 1",
+minetest.register_node("techpack_stairway:ladder1", {
+	description = "TechPack Ladder 1",
 	tiles = {
-		'tubelib_stairway_steps.png',
-		'tubelib_stairway_steps.png',
-		'tubelib_stairway_ladder.png',
+		'techpack_stairway_steps.png',
+		'techpack_stairway_steps.png',
+		'techpack_stairway_ladder.png',
 	},
 	drawtype = "nodebox",
 	node_box = {
@@ -362,12 +375,12 @@ minetest.register_node("tubelib_stairway:ladder1", {
 	sounds = default.node_sound_metal_defaults(),
 })
 
-minetest.register_node("tubelib_stairway:ladder2", {
-	description = "Tubelib Ladder 2",
+minetest.register_node("techpack_stairway:ladder2", {
+	description = "TechPack Ladder 2",
 	tiles = {
-		'tubelib_stairway_steps.png',
-		'tubelib_stairway_steps.png',
-		'tubelib_stairway_ladder.png',
+		'techpack_stairway_steps.png',
+		'techpack_stairway_steps.png',
+		'techpack_stairway_ladder.png',
 	},
 	drawtype = "nodebox",
 	node_box = {
@@ -394,10 +407,10 @@ minetest.register_node("tubelib_stairway:ladder2", {
 	sounds = default.node_sound_metal_defaults(),
 })
 
-minetest.register_node("tubelib_stairway:lattice", {
-	description = "Tubelib Lattice",
+minetest.register_node("techpack_stairway:lattice", {
+	description = "TechPack Lattice",
 	tiles = {
-		'tubelib_stairway_lattice.png',
+		'techpack_stairway_lattice.png',
 	},
 	drawtype = "nodebox",
 	node_box = {
@@ -427,7 +440,7 @@ minetest.register_node("tubelib_stairway:lattice", {
 
 
 minetest.register_craft({
-	output = "tubelib_stairway:grating 4",
+	output = "techpack_stairway:grating 4",
 	recipe = {
 		{"", "", ""},
 		{"dye:dark_grey", "", "default:coal_lump"},
@@ -436,7 +449,7 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	output = "tubelib_stairway:handrail1 4",
+	output = "techpack_stairway:handrail1 4",
 	recipe = {
 		{"default:steel_ingot", "default:coal_lump", ""},
 		{"default:tin_ingot", "", ""},
@@ -445,7 +458,7 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	output = "tubelib_stairway:stairway 2",
+	output = "techpack_stairway:stairway 2",
 	recipe = {
 		{"", "", "default:steel_ingot"},
 		{"dye:dark_grey", "default:tin_ingot", "default:coal_lump"},
@@ -454,7 +467,7 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	output = "tubelib_stairway:ladder1 2",
+	output = "techpack_stairway:ladder1 2",
 	recipe = {
 		{"", "default:steel_ingot", ""},
 		{"dye:dark_grey", "default:tin_ingot", "default:coal_lump"},
@@ -463,7 +476,7 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	output = "tubelib_stairway:lattice 2",
+	output = "techpack_stairway:lattice 2",
 	recipe = {
 		{"default:steel_ingot", "", "default:steel_ingot"},
 		{"dye:dark_grey", "default:tin_ingot", "default:coal_lump"},
@@ -472,69 +485,84 @@ minetest.register_craft({
 })
 
 
-
 minetest.register_craft({
-	output = "tubelib_stairway:handrail2",
+	output = "techpack_stairway:handrail2",
 	recipe = {
 		{"", "", ""},
-		{"tubelib_stairway:handrail1", "", "tubelib_stairway:handrail1"},
+		{"techpack_stairway:handrail1", "", "techpack_stairway:handrail1"},
 		{"", "", ""},
 	},
 })
 
 minetest.register_craft({
-	output = "tubelib_stairway:handrail3",
+	output = "techpack_stairway:handrail3",
 	recipe = {
-		{"", "tubelib_stairway:handrail1", ""},
-		{"tubelib_stairway:handrail1", "", ""},
+		{"", "techpack_stairway:handrail1", ""},
+		{"techpack_stairway:handrail1", "", ""},
 		{"", "", ""},
 	},
 })
 
 minetest.register_craft({
-	output = "tubelib_stairway:handrail4",
+	output = "techpack_stairway:handrail4",
 	recipe = {
-		{"", "tubelib_stairway:handrail1", ""},
-		{"tubelib_stairway:handrail1", "", "tubelib_stairway:handrail1"},
+		{"", "techpack_stairway:handrail1", ""},
+		{"techpack_stairway:handrail1", "", "techpack_stairway:handrail1"},
 		{"", "", ""},
 	},
 })
 
 minetest.register_craft({
-	output = "tubelib_stairway:bridge1",
+	output = "techpack_stairway:bridge1",
 	recipe = {
 		{"", "", ""},
-		{"tubelib_stairway:handrail1", "tubelib_stairway:grating", ""},
+		{"techpack_stairway:handrail1", "techpack_stairway:grating", ""},
 		{"", "", ""},
 	},
 })
 
 minetest.register_craft({
-	output = "tubelib_stairway:bridge2",
+	output = "techpack_stairway:bridge2",
 	recipe = {
 		{"", "", ""},
-		{"tubelib_stairway:handrail1", "tubelib_stairway:grating", "tubelib_stairway:handrail1"},
-		{"", "", ""},
-	},
-})
-minetest.register_craft({
-	output = "tubelib_stairway:bridge3",
-	recipe = {
-		{"", "tubelib_stairway:handrail1", ""},
-		{"tubelib_stairway:handrail1", "tubelib_stairway:grating", ""},
-		{"", "", ""},
-	},
-})
-minetest.register_craft({
-	output = "tubelib_stairway:bridge4",
-	recipe = {
-		{"", "tubelib_stairway:handrail1", ""},
-		{"tubelib_stairway:handrail1", "tubelib_stairway:grating", "tubelib_stairway:handrail1"},
+		{"techpack_stairway:handrail1", "techpack_stairway:grating", "techpack_stairway:handrail1"},
 		{"", "", ""},
 	},
 })
 
 minetest.register_craft({
-	output = "tubelib_stairway:ladder2",
-	recipe = {{"tubelib_stairway:ladder1"}},
+	output = "techpack_stairway:bridge3",
+	recipe = {
+		{"", "techpack_stairway:handrail1", ""},
+		{"techpack_stairway:handrail1", "techpack_stairway:grating", ""},
+		{"", "", ""},
+	},
 })
+
+minetest.register_craft({
+	output = "techpack_stairway:bridge4",
+	recipe = {
+		{"", "techpack_stairway:handrail1", ""},
+		{"techpack_stairway:handrail1", "techpack_stairway:grating", "techpack_stairway:handrail1"},
+		{"", "", ""},
+	},
+})
+
+minetest.register_craft({
+	output = "techpack_stairway:ladder2",
+	recipe = {{"techpack_stairway:ladder1"}},
+})
+
+minetest.register_alias("tubelib_stairway:grating", "techpack_stairway:grating")
+minetest.register_alias("tubelib_stairway:lattice", "techpack_stairway:lattice")
+minetest.register_alias("tubelib_stairway:handrail1", "techpack_stairway:handrail1")
+minetest.register_alias("tubelib_stairway:handrail2", "techpack_stairway:handrail3")
+minetest.register_alias("tubelib_stairway:handrail3", "techpack_stairway:handrail4")
+minetest.register_alias("tubelib_stairway:handrail4", "techpack_stairway:handrail5")
+minetest.register_alias("tubelib_stairway:stairway", "techpack_stairway:stairway")
+minetest.register_alias("tubelib_stairway:ladder1", "techpack_stairway:ladder1")
+minetest.register_alias("tubelib_stairway:ladder2", "techpack_stairway:ladder2")
+minetest.register_alias("tubelib_stairway:bridge1", "techpack_stairway:bridge1")
+minetest.register_alias("tubelib_stairway:bridge2", "techpack_stairway:bridge2")
+minetest.register_alias("tubelib_stairway:bridge3", "techpack_stairway:bridge3")
+minetest.register_alias("tubelib_stairway:bridge4", "techpack_stairway:bridge4")

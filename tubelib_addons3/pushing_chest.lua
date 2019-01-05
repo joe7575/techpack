@@ -239,7 +239,7 @@ minetest.register_node("tubelib_addons3:pushing_chest_defect", {
 	paramtype = "light",
 	sunlight_propagates = true,
 	paramtype2 = "facedir",
-	groups = {choppy=2, cracky=2, crumbly=2},
+	groups = {choppy=2, cracky=2, crumbly=2, not_in_creative_inventory=1},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
 })

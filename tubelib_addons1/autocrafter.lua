@@ -24,6 +24,25 @@ local STANDBY_TICKS = 6
 local COUNTDOWN_TICKS = 6
 local CYCLE_TIME = 2
 
+local function formspec(self, pos, meta)
+	return "size[8,9.2]"..
+		default.gui_bg..
+		default.gui_bg_img..
+		default.gui_slots..
+		"list[context;recipe;0,0;3,3;]"..
+		"image[2.8,1;1,1;tubelib_gui_arrow.png]"..
+		"list[context;output;3.5,1;1,1;]"..
+		"image_button[3.5,2;1,1;".. self:get_state_button_image(meta) ..";state_button;]"..
+		"list[context;src;0,3.2;8,2;]"..
+		"list[context;dst;5,0;3,3;]"..
+		"list[current_player;main;0,5.4;8,4;]" ..
+		"listring[current_player;main]"..
+		"listring[context;src]" ..
+		"listring[current_player;main]"..
+		"listring[context;dst]" ..
+		"listring[current_player;main]"
+end
+
 local State = tubelib.NodeStates:new({
 	node_name_passive = "tubelib_addons1:autocrafter",
 	node_name_active = "tubelib_addons1:autocrafter_active",
@@ -40,28 +59,8 @@ local State = tubelib.NodeStates:new({
 		end
 		return true
 	end,
+	formspec_func = formspec,
 })
-
-local function formspec(pos, meta)
-	return "size[8,9.2]"..
-		default.gui_bg..
-		default.gui_bg_img..
-		default.gui_slots..
-		"list[context;recipe;0,0;3,3;]"..
-		"image[2.8,1;1,1;tubelib_gui_arrow.png]"..
-		"list[context;output;3.5,1;1,1;]"..
-		"image_button[3.5,2;1,1;".. State:get_state_button_image(meta) ..";state_button;]"..
-		"list[context;src;0,3.2;8,2;]"..
-		"list[context;dst;5,0;3,3;]"..
-		"list[current_player;main;0,5.4;8,4;]" ..
-		"listring[current_player;main]"..
-		"listring[context;src]" ..
-		"listring[current_player;main]"..
-		"listring[context;dst]" ..
-		"listring[current_player;main]"
-end
-
-State:register_formspec_func(formspec)
 
 
 local function count_index(invlist)

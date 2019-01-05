@@ -39,6 +39,36 @@ local function working_start_pos(pos)
 	return working_pos
 end
 
+local Radius2Idx = {[4]=1 ,[6]=2, [8]=3, [10]=4, [12]=5, [14]=6, [16]=7}
+
+local function formspec(self, pos, meta)
+	-- some recalculations
+	local this = minetest.deserialize(meta:get_string("this"))
+	local endless = this.endless == 1 and "true" or "false"
+	local fuel = this.fuel * 100/BURNING_TIME
+	if self:get_state(meta) ~= tubelib.RUNNING then
+		fuel = 0
+	end
+	local radius = Radius2Idx[this.radius] or 2
+	
+	return "size[9,8]"..
+	default.gui_bg..
+	default.gui_bg_img..
+	default.gui_slots..
+	"dropdown[0,0;1.5;radius;4,6,8,10,12,14,16;"..radius.."]".. 
+	"label[1.6,0.2;Area radius]"..
+	"checkbox[0,1;endless;Run endless;"..endless.."]"..
+	"list[context;main;5,0;4,4;]"..
+	"list[context;fuel;1.5,3;1,1;]"..
+	"item_image[1.5,3;1,1;tubelib_addons1:biofuel]"..
+	"image[2.5,3;1,1;default_furnace_fire_bg.png^[lowpart:"..
+	fuel..":default_furnace_fire_fg.png]"..
+	"image_button[3.5,3;1,1;".. self:get_state_button_image(meta) ..";state_button;]"..
+	"list[current_player;main;0.5,4.3;8,4;]"..
+	"listring[context;main]"..
+	"listring[current_player;main]"
+end
+
 local State = tubelib.NodeStates:new({
 	node_name_passive = "tubelib_addons1:harvester_base",
 	node_name_defect = "tubelib_addons1:harvester_defect",
@@ -53,9 +83,8 @@ local State = tubelib.NodeStates:new({
 		this.working_pos = working_start_pos(pos)
 		meta:set_string("this", minetest.serialize(this))
 	end,
+	formspec_func = formspec,
 })
-
-local Radius2Idx = {[4]=1 ,[6]=2, [8]=3, [10]=4, [12]=5, [14]=6, [16]=7}
 
 local function gen_working_steps()
 	-- Working steps like a snail shell from inner to outer
@@ -80,36 +109,6 @@ end
 
 local WorkingSteps = gen_working_steps()
 
-
-local function formspec(pos, meta)
-	-- some recalculations
-	local this = minetest.deserialize(meta:get_string("this"))
-	local endless = this.endless == 1 and "true" or "false"
-	local fuel = this.fuel * 100/BURNING_TIME
-	if State:get_state(meta) ~= tubelib.RUNNING then
-		fuel = 0
-	end
-	local radius = Radius2Idx[this.radius] or 2
-	
-	return "size[9,8]"..
-	default.gui_bg..
-	default.gui_bg_img..
-	default.gui_slots..
-	"dropdown[0,0;1.5;radius;4,6,8,10,12,14,16;"..radius.."]".. 
-	"label[1.6,0.2;Area radius]"..
-	"checkbox[0,1;endless;Run endless;"..endless.."]"..
-	"list[context;main;5,0;4,4;]"..
-	"list[context;fuel;1.5,3;1,1;]"..
-	"item_image[1.5,3;1,1;tubelib_addons1:biofuel]"..
-	"image[2.5,3;1,1;default_furnace_fire_bg.png^[lowpart:"..
-	fuel..":default_furnace_fire_fg.png]"..
-	"image_button[3.5,3;1,1;".. State:get_state_button_image(meta) ..";state_button;]"..
-	"list[current_player;main;0.5,4.3;8,4;]"..
-	"listring[context;main]"..
-	"listring[current_player;main]"
-end
-
-State:register_formspec_func(formspec)
 
 local function allow_metadata_inventory_put(pos, listname, index, stack, player)
 	if minetest.is_protected(pos, player:get_player_name()) then

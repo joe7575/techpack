@@ -12,6 +12,7 @@
 - The Quarry now uses LVM techniques to go down up to 100 meter
 - Ladders, stairways, and bridges added (tubelib_stairway) for the machines
 - Industrial lamps
+- TechPack Warehouse Boxes in steel, copper, and gold for your warehouse/stock
 
 
 ## New in v2 (from admins point of view)
@@ -34,7 +35,8 @@ TechPack is a collection of following Mods:
 * tubelib_addons1, a Tubelib extension with mining, farming, and crafting nodes
 * tubelib_addons2, a Tubelib extension with control nodes
 * tubelib_addons3, a Tubelib extension with high performance nodes
-* tubelib_stairway, Ladders, stairways, and bridges for your machines
+* techpack_stairway, Ladders, stairways, and bridges for your machines
+* techpack_warehouse, Warehouse Boxes in steel, copper, and gold
 * gravelsieve, a Mod to sieve ores from gravel.
 * smartline, a Mod with small and smart sensors, actors and controllers.
 * safer_lua, a subset of the language Lua for safe and secure Lua sandboxes
@@ -83,6 +85,7 @@ TechPack provides:
 - a Signal Tower node showing machine states
 - a Display node for text outputs of the Controller
 - Metal ladders, stairways, and bridges
+- Warehouse Boxes in steel, copper, and gold
 
 
 TechPack supports the following mods:

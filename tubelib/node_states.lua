@@ -94,6 +94,7 @@ function NodeStates:new(attr)
 		start_condition_fullfilled = attr.start_condition_fullfilled or start_condition_fullfilled,
 		on_start = attr.on_start,
 		on_stop = attr.on_stop,
+		formspec_func = attr.formspec_func,
 	}
 	if attr.aging_factor then
 		o.aging_level1 = attr.aging_factor * tubelib.machine_aging_value
@@ -102,10 +103,6 @@ function NodeStates:new(attr)
 	setmetatable(o, self)
 	self.__index = self
 	return o
-end
-
-function NodeStates:register_formspec_func(func)
-	self.formspec_func = func
 end
 
 function NodeStates:node_init(pos, number)
@@ -122,7 +119,7 @@ function NodeStates:node_init(pos, number)
 		meta:set_int("tubelib_aging", 0)
 	end
 	if self.formspec_func then
-		meta:set_string("formspec", self.formspec_func(pos, meta))
+		meta:set_string("formspec", self.formspec_func(self, pos, meta))
 	end
 end
 
@@ -143,7 +140,7 @@ function NodeStates:stop(pos, meta)
 			meta:set_string("infotext", self.infotext_name.." "..number..": stopped")
 		end
 		if self.formspec_func then
-			meta:set_string("formspec", self.formspec_func(pos, meta))
+			meta:set_string("formspec", self.formspec_func(self, pos, meta))
 		end
 		minetest.get_node_timer(pos):stop()
 		return true
@@ -161,6 +158,7 @@ function NodeStates:start(pos, meta, called_from_on_timer)
 			self.on_start(pos, meta, state)
 		end
 		meta:set_int("tubelib_state", RUNNING)
+		meta:set_int("tubelib_countdown", 4)
 		if called_from_on_timer then
 			-- timer has to be stopped once to be able to be restarted
 			self.stop_timer = true
@@ -175,7 +173,7 @@ function NodeStates:start(pos, meta, called_from_on_timer)
 			meta:set_string("infotext", self.infotext_name.." "..number..": running")
 		end
 		if self.formspec_func then
-			meta:set_string("formspec", self.formspec_func(pos, meta))
+			meta:set_string("formspec", self.formspec_func(self, pos, meta))
 		end
 		minetest.get_node_timer(pos):start(self.cycle_time)
 		return true
@@ -198,7 +196,7 @@ function NodeStates:standby(pos, meta)
 			meta:set_string("infotext", self.infotext_name.." "..number..": standby")
 		end
 		if self.formspec_func then
-			meta:set_string("formspec", self.formspec_func(pos, meta))
+			meta:set_string("formspec", self.formspec_func(self, pos, meta))
 		end
 		minetest.get_node_timer(pos):start(self.cycle_time * self.standby_ticks)
 		return true
@@ -222,7 +220,7 @@ function NodeStates:blocked(pos, meta)
 			meta:set_string("infotext", self.infotext_name.." "..number..": blocked")
 		end
 		if self.formspec_func then
-			meta:set_string("formspec", self.formspec_func(pos, meta))
+			meta:set_string("formspec", self.formspec_func(self, pos, meta))
 		end
 		minetest.get_node_timer(pos):start(self.cycle_time * self.standby_ticks)
 		return true
@@ -243,7 +241,7 @@ function NodeStates:fault(pos, meta)
 			meta:set_string("infotext", self.infotext_name.." "..number..": fault")
 		end
 		if self.formspec_func then
-			meta:set_string("formspec", self.formspec_func(pos, meta))
+			meta:set_string("formspec", self.formspec_func(self, pos, meta))
 		end
 		minetest.get_node_timer(pos):stop()
 		return true
@@ -263,7 +261,7 @@ function NodeStates:defect(pos, meta)
 		meta:set_string("infotext", self.infotext_name.." "..number..": defect")
 	end
 	if self.formspec_func then
-		meta:set_string("formspec", self.formspec_func(pos, meta))
+		meta:set_string("formspec", self.formspec_func(self, pos, meta))
 	end
 	minetest.get_node_timer(pos):stop()
 	return true
@@ -408,7 +406,7 @@ function NodeStates:on_node_load(pos, not_start_timer)
 	end
 	
 	if self.formspec_func then
-		meta:set_string("formspec", self.formspec_func(pos, meta))
+		meta:set_string("formspec", self.formspec_func(self, pos, meta))
 	end
 end
 
@@ -430,7 +428,7 @@ function NodeStates:on_node_repair(pos)
 			meta:set_string("infotext", self.infotext_name.." "..number..": stopped")
 		end
 		if self.formspec_func then
-			meta:set_string("formspec", self.formspec_func(pos, meta))
+			meta:set_string("formspec", self.formspec_func(self, pos, meta))
 		end
 		return true
 	end
