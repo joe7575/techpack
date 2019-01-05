@@ -10,14 +10,14 @@
 - A Repair Kit is available to repair defect machines.
 - A Forceload block (16x16x16) is added which keeps the corresponding area loaded and the machines operational as far as the player is logged in.
 - The Quarry now uses LVM techniques to go down up to 100 meter
-- Ladders, stairways, and bridges added (tubelib_stairway) for the machines
+- Ladders, stairways, and bridges added for the machines (techpack_stairway)
 - Industrial lamps
-- TechPack Warehouse Boxes in steel, copper, and gold for your warehouse/stock
+- Warehouse Boxes in steel, copper, and gold for your warehouse/stock (techpack_warehouse)
 
 
 ## New in v2 (from admins point of view)
 - settingtypes introduced with the following settings: tubelib_max_num_forceload_blocks, tubelib_basalt_stone_enabled, tubelib_machine_aging_value
-- the new mod 'tubelib_stairway' has to be enabled
+- the new mods 'techpack_stairway' and 'techpack_warehouse' have to be enabled
 - TechPack depends now on the mod 'basic_materials' and 'tubelib2' (![GitHub](https://github.com/joe7575/tubelib2))
 
 
@@ -26,7 +26,7 @@ TechPack, a Mining, Crafting, &amp; Farming Modpack for Minetest.
 
 ![TechPack](https://github.com/joe7575/techpack/blob/master/screenshot.png)
 
-**After update to v2, don't forget to activate the new mod "tubelib_stairway" as part of the mod pack.**
+**After update to v2, don't forget to activate the new mods "techpack_stairway" and "techpack_warehouse" as part of the mod pack.**
 
 
 TechPack is a collection of following Mods:
