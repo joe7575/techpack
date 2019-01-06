@@ -83,6 +83,10 @@ local function register_lamp(tbl)
 			end
 		end,
 
+		after_dig_node = function(pos)
+			tubelib.remove_node(pos)
+		end,
+
 		paramtype = "light",
 		light_source = minetest.LIGHT_MAX,	
 		sunlight_propagates = true,

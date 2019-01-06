@@ -72,6 +72,10 @@ minetest.register_node("tubelib_addons1:detector", {
 		end
 	end,
 	
+	after_dig_node = function(pos, oldnode, oldmetadata, digger)
+		tubelib.remove_node(pos)
+	end,
+	
 	on_rotate = screwdriver.disallow,
 	paramtype = "light",
 	sunlight_propagates = true,
@@ -97,6 +101,10 @@ minetest.register_node("tubelib_addons1:detector_active", {
 	on_timer = switch_off,
 	on_rotate = screwdriver.disallow,
 
+	after_dig_node = function(pos, oldnode, oldmetadata, digger)
+		tubelib.remove_node(pos)
+	end,
+	
 	paramtype = "light",
 	light_source = 2,
 	sunlight_propagates = true,

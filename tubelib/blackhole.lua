@@ -88,6 +88,7 @@ tubelib.register_node("tubelib:blackhole", {}, {
 	on_recv_message = function(pos, topic, payload)
 		local node = minetest.get_node(pos)
 		if topic == "state" then
+			local meta = minetest.get_meta(pos)
 			return meta:get_int("disappeared")
 		else
 			return "not supported"

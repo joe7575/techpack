@@ -100,7 +100,7 @@ minetest.register_node("tubelib_addons1:funnel", {
 	on_timer = scan_for_objects,
 	on_rotate = screwdriver.disallow,
 		
-	can_dig = function(pos,player)
+	can_dig = function(pos, player)
 		if minetest.is_protected(pos, player:get_player_name()) then
 			return false
 		end
@@ -109,11 +109,10 @@ minetest.register_node("tubelib_addons1:funnel", {
 		return inv:is_empty("main")
 	end,
 
-	on_dig = function(pos, node, puncher, pointed_thing)
-		minetest.node_dig(pos, node, puncher, pointed_thing)
+	after_dig_node = function(pos, oldnode, oldmetadata, digger)
 		tubelib.remove_node(pos)
 	end,
-
+	
 	allow_metadata_inventory_put = allow_metadata_inventory_put,
 	allow_metadata_inventory_take = allow_metadata_inventory_take,
 

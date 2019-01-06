@@ -135,6 +135,10 @@ minetest.register_node("smartline:button", {
 		end
 	end,
 
+	after_dig_node = function(pos)
+		tubelib.remove_node(pos)
+	end,
+
 	paramtype = "light",
 	sunlight_propagates = true,
 	paramtype2 = "facedir",
@@ -173,6 +177,10 @@ minetest.register_node("smartline:button_active", {
 	end,
 
 	on_timer = switch_off,
+
+	after_dig_node = function(pos)
+		tubelib.remove_node(pos)
+	end,
 
 	paramtype = "light",
 	sunlight_propagates = true,

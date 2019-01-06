@@ -188,17 +188,18 @@ minetest.register_node("tubelib_addons1:fermenter", {
 		State:node_init(pos, number)
 	end,
 
+	-- the fermenter needs 'on_dig' to be able to remove the upper node
 	on_dig = function(pos, node, puncher, pointed_thing)
 		local meta = M(pos)
 		local inv = meta:get_inventory()
 		if inv:is_empty("dst") and inv:is_empty("src") then
 			minetest.node_dig(pos, node, puncher, pointed_thing)
 			minetest.remove_node({x=pos.x, y=pos.y+1, z=pos.z})
-			tubelib.remove_node(pos)
 		end
 	end,
-	
+
 	after_dig_node = function(pos, oldnode, oldmetadata, digger)
+		tubelib.remove_node(pos)
 		State:after_dig_node(pos, oldnode, oldmetadata, digger)
 	end,
 	
@@ -219,7 +220,7 @@ minetest.register_node("tubelib_addons1:fermenter", {
 })
 
 minetest.register_node("tubelib_addons1:fermenter_defect", {
-	description = "Tubelib Fermenter",
+	description = "Tubelib Fermenter defect",
 	inventory_image = "tubelib_addons1_fermenter_inventory.png",
 	tiles = {
 		-- up, down, right, left, back, front
@@ -254,14 +255,18 @@ minetest.register_node("tubelib_addons1:fermenter_defect", {
 		State:defect(pos, M(pos))
 	end,
 
+	-- the fermenter needs 'on_dig' to be able to remove the upper node
 	on_dig = function(pos, node, puncher, pointed_thing)
 		local meta = M(pos)
 		local inv = meta:get_inventory()
 		if inv:is_empty("dst") and inv:is_empty("src") then
 			minetest.node_dig(pos, node, puncher, pointed_thing)
 			minetest.remove_node({x=pos.x, y=pos.y+1, z=pos.z})
-			tubelib.remove_node(pos)
 		end
+	end,
+
+	after_dig_node = function(pos, oldnode, oldmetadata, digger)
+		tubelib.remove_node(pos)
 	end,
 	
 	on_rotate = screwdriver.disallow,

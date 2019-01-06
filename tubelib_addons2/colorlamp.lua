@@ -115,6 +115,10 @@ for idx,color in ipairs(tColors) do
 			switch_node(pos, "", clicker)
 		end,
 
+		after_dig_node = function(pos)
+			tubelib.remove_node(pos)
+		end,
+
 		paramtype = 'light',
 		light_source = minetest.LIGHT_MAX,	
 		groups = {choppy=2, cracky=1, not_in_creative_inventory=1},

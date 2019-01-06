@@ -26,7 +26,7 @@ local STANDBY_TICKS = 4
 local CYCLE_TIME = 2
 
 local function formspec(self, pos, meta)
-	local filter = minetest.deserialize(meta:get_string("filter"))
+	local filter = minetest.deserialize(meta:get_string("filter")) or {false,false,false,false}
 	return "size[10.5,8.5]"..
 	default.gui_bg..
 	default.gui_bg_img..
@@ -329,20 +329,17 @@ minetest.register_node("tubelib_addons3:distributor", {
 
 	on_receive_fields = on_receive_fields,
 
-	on_dig = function(pos, node, puncher, pointed_thing)
-		if minetest.is_protected(pos, puncher:get_player_name()) then
-			return
+	can_dig = function(pos, player)
+		if minetest.is_protected(pos, player:get_player_name()) then
+			return false
 		end
-		local meta = M(pos)
-		local inv = meta:get_inventory()
-		if inv:is_empty("src") then
-			minetest.node_dig(pos, node, puncher, pointed_thing)
-			tubelib.remove_node(pos)
-		end
+		local inv = M(pos):get_inventory()
+		return inv:is_empty("src")
 	end,
 
 	after_dig_node = function(pos, oldnode, oldmetadata, digger)
 		State:after_dig_node(pos, oldnode, oldmetadata, digger)
+		tubelib.remove_node(pos)
 	end,
 	
 	allow_metadata_inventory_put = allow_metadata_inventory_put,
@@ -415,11 +412,11 @@ minetest.register_node("tubelib_addons3:distributor_defect", {
 	after_place_node = function(pos, placer)
 		local meta = M(pos)
 		local number = tubelib.add_node(pos, "tubelib_addons3:distributor")
+		local filter = {false,false,false,false}
+		meta:set_string("filter", minetest.serialize(filter))
 		State:node_init(pos, number)
 		meta:set_string("player_name", placer:get_player_name())
 
-		local filter = {false,false,false,false}
-		meta:set_string("filter", minetest.serialize(filter))
 		local inv = meta:get_inventory()
 		inv:set_size('src', 8)
 		inv:set_size('yellow', 6)
@@ -432,6 +429,18 @@ minetest.register_node("tubelib_addons3:distributor_defect", {
 
 	on_receive_fields = on_receive_fields,
 
+	can_dig = function(pos, player)
+		if minetest.is_protected(pos, player:get_player_name()) then
+			return false
+		end
+		local inv = M(pos):get_inventory()
+		return inv:is_empty("src")
+	end,
+
+	after_dig_node = function(pos, oldnode, oldmetadata, digger)
+		tubelib.remove_node(pos)
+	end,
+	
 	allow_metadata_inventory_put = allow_metadata_inventory_put,
 	allow_metadata_inventory_take = allow_metadata_inventory_take,
 	allow_metadata_inventory_move = allow_metadata_inventory_move,

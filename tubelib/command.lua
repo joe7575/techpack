@@ -151,6 +151,13 @@ local function get_dest_node(pos, side)
 	return spos, in_side, Name2Name[node.name] or node.name 
 end
 	
+local function item_handling_node(name)
+	local node_def = name and tubelib_NodeDef[name]
+	if node_def then
+		return node_def.on_pull_item or node_def.on_push_item or node_def.is_pusher
+	end
+end
+
 -------------------------------------------------------------------
 -- API helper functions
 -------------------------------------------------------------------
@@ -219,6 +226,11 @@ end
 -- Function determines and returns the node position number,
 -- needed for message communication.
 function tubelib.add_node(pos, name)
+	print("tubelib.add_node", S(pos))
+	if item_handling_node(name) then
+		print("Tube:after_place_node")
+		Tube:after_place_node(pos)
+	end
 	-- store position 
 	local number = get_number(pos)
 	Number2Pos[number] = {
@@ -230,13 +242,20 @@ end
 
 -- Function removes the node from the tubelib lists.
 function tubelib.remove_node(pos)
+	print("tubelib.remove_node", S(pos))
 	local number = get_number(pos)
+	local name
 	if Number2Pos[number] then
+		name = Number2Pos[number].name
 		Number2Pos[number] = {
 			pos = pos, 
 			name = nil,
 			time = minetest.get_day_count() -- used for reservation timeout
 		}
+	end
+	if item_handling_node(name) then
+		print("Tube:after_dig_node")
+		Tube:after_dig_node(pos)
 	end
 end
 

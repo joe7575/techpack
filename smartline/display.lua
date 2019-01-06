@@ -64,6 +64,10 @@ minetest.register_node("smartline:display", {
 		lcdlib.update_entities(pos)
 	end,
 
+	after_dig_node = function(pos)
+		tubelib.remove_node(pos)
+	end,
+
 	on_timer = on_timer,
 	on_place = lcdlib.on_place,
 	on_construct = lcdlib.on_construct,

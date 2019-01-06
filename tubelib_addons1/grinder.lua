@@ -136,17 +136,17 @@ minetest.register_node("tubelib_addons1:grinder", {
 		inv:set_size('dst', 9)
 	end,
 
-	on_dig = function(pos, node, puncher, pointed_thing)
-		local meta = M(pos)
-		local inv = meta:get_inventory()
-		if inv:is_empty("dst") and inv:is_empty("src") then
-			minetest.node_dig(pos, node, puncher, pointed_thing)
-			tubelib.remove_node(pos)
+	can_dig = function(pos, player)
+		if minetest.is_protected(pos, player:get_player_name()) then
+			return false
 		end
+		local inv = M(pos):get_inventory()
+		return inv:is_empty("dst") and inv:is_empty("src")
 	end,
 
 	after_dig_node = function(pos, oldnode, oldmetadata, digger)
 		State:after_dig_node(pos, oldnode, oldmetadata, digger)
+		tubelib.remove_node(pos)
 	end,
 	
 	on_rotate = screwdriver.disallow,
@@ -225,15 +225,18 @@ minetest.register_node("tubelib_addons1:grinder_defect", {
 		State:defect(pos, meta)
 	end,
 
-	on_dig = function(pos, node, puncher, pointed_thing)
-		local meta = M(pos)
-		local inv = meta:get_inventory()
-		if inv:is_empty("dst") and inv:is_empty("src") then
-			minetest.node_dig(pos, node, puncher, pointed_thing)
-			tubelib.remove_node(pos)
+	can_dig = function(pos, player)
+		if minetest.is_protected(pos, player:get_player_name()) then
+			return false
 		end
+		local inv = M(pos):get_inventory()
+		return inv:is_empty("dst") and inv:is_empty("src")
 	end,
 
+	after_dig_node = function(pos, oldnode, oldmetadata, digger)
+		tubelib.remove_node(pos)
+	end,
+	
 	on_rotate = screwdriver.disallow,
 	allow_metadata_inventory_put = allow_metadata_inventory_put,
 	allow_metadata_inventory_move = allow_metadata_inventory_move,

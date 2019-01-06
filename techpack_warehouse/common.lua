@@ -147,7 +147,7 @@ end
 
 function techpack_warehouse.numbers_to_shift(self, meta, item)
 	-- check cache
-	local number = meta:get_string("number")
+	local number = meta:get_string("tubelib_number")
 	local item_name = item:get_name()
 	if not Cache[number] then
 		local inv = meta:get_inventory()
@@ -191,7 +191,7 @@ function techpack_warehouse.allow_metadata_inventory_put(self, pos, listname, in
 	if listname == "input" and item_name == stack:get_name() then
 		return math.min(stack:get_count(), self.inv_size - main_stack:get_count())
 	elseif listname == "filter" and item_name == main_stack:get_name() then
-		local number = M(pos):get_string("number")
+		local number = M(pos):get_string("tubelib_number")
 		Cache[number] = nil
 		return 1
 	elseif listname == "shift" then
@@ -202,7 +202,7 @@ end
 
 function techpack_warehouse.on_metadata_inventory_put(pos, listname, index, stack, player)
 	if listname == "input" then
-		local number = M(pos):get_string("number")
+		local number = M(pos):get_string("tubelib_number")
 		Cache[number] = nil
 		minetest.after(0.5, move_to_main, pos, index)
 	end
@@ -213,7 +213,7 @@ function techpack_warehouse.allow_metadata_inventory_take(pos, listname, index, 
 		return 0
 	end
 	if listname == "main" then
-		local number = M(pos):get_string("number")
+		local number = M(pos):get_string("tubelib_number")
 		Cache[number] = nil
 		local inv = M(pos):get_inventory()
 		local list = inv:get_list("main")
@@ -224,11 +224,11 @@ function techpack_warehouse.allow_metadata_inventory_take(pos, listname, index, 
 			return num
 		end
 	elseif listname == "filter" then
-		local number = M(pos):get_string("number")
+		local number = M(pos):get_string("tubelib_number")
 		Cache[number] = nil
 		return 1
 	elseif listname == "shift" then
-		local number = M(pos):get_string("number")
+		local number = M(pos):get_string("tubelib_number")
 		Cache[number] = nil
 		return stack:get_count()
 	end
@@ -243,7 +243,7 @@ function techpack_warehouse.on_receive_fields(self, pos, formname, fields, playe
 	if minetest.is_protected(pos, player:get_player_name()) then
 		return
 	end
-	local number = M(pos):get_string("number")
+	local number = M(pos):get_string("tubelib_number")
 	Cache[number] = nil
 	self.State:state_button_event(pos, fields)
 end
@@ -264,7 +264,7 @@ function techpack_warehouse.on_timer(self, pos, elapsed)
 	local meta = M(pos)
 	local inv = meta:get_inventory()
 	if not inv:is_empty("shift") then
-		local number = meta:get_string("number")
+		--local number = meta:get_string("tubelib_number")
 		local player_name = meta:get_string("player_name")
 		local offs = meta:get_int("offs")
 		local push_dir = meta:get_string("push_dir")
@@ -295,10 +295,14 @@ function techpack_warehouse.on_timer(self, pos, elapsed)
 	return self.State:is_active(meta)
 end
 	
-function techpack_warehouse.on_dig(self, pos, node, puncher, pointed_thing)
+function techpack_warehouse.can_dig(self, pos)
 	local inv = M(pos):get_inventory()
-	if inv:is_empty("main") and inv:is_empty("shift") then
-		minetest.node_dig(pos, node, puncher, pointed_thing)
-		tubelib.remove_node(pos)
+	return inv:is_empty("main") and inv:is_empty("shift")
+end
+
+function techpack_warehouse.after_dig_node(self, pos, oldnode, oldmetadata, digger)
+	tubelib.remove_node(pos)
+	if oldnode.name == self.node_name then -- not for defect nodes
+		self.State:after_dig_node(pos, oldnode, oldmetadata, digger)
 	end
 end

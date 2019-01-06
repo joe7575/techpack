@@ -59,6 +59,17 @@ local function aging(pos, meta)
 	end
 end
 
+local function after_dig_node(pos, oldnode, oldmetadata, digger)
+	local inv = minetest.get_inventory({type="player", name=digger:get_player_name()})
+	local cnt = oldmetadata.fields.tubelib_aging and tonumber(oldmetadata.fields.tubelib_aging) or 0
+	local is_defect = cnt > AGING_LEVEL1 and math.random(AGING_LEVEL2 / cnt) == 1
+	if is_defect then
+		inv:add_item("main", ItemStack("tubelib_addons3:pushing_chest_defect"))
+	else
+		inv:add_item("main", ItemStack("tubelib_addons3:pushing_chest"))
+	end
+end
+
 local function set_state(meta, state)
 	local number = meta:get_string("number")
 	meta:set_string("infotext", "HighPerf Pushing Chest "..number..": "..state)
@@ -161,17 +172,18 @@ minetest.register_node("tubelib_addons3:pushing_chest", {
 		minetest.get_node_timer(pos):start(2)
 	end,
 
-	can_dig = function(pos,player)
+	can_dig = function(pos, player)
 		if minetest.is_protected(pos, player:get_player_name()) then
 			return false
 		end
-		local meta = minetest.get_meta(pos);
+		local meta = minetest.get_meta(pos)
 		local inv = meta:get_inventory()
 		return inv:is_empty("main") and inv:is_empty("shift")
 	end,
-	
-	on_dig = function(pos, node, puncher, pointed_thing)
-		minetest.node_dig(pos, node, puncher, pointed_thing)
+
+	after_dig_node = function(pos, oldnode, oldmetadata, digger)
+		after_dig_node(pos, oldnode, oldmetadata, digger)
+		tubelib.remove_node(pos)
 	end,
 
 	allow_metadata_inventory_put = allow_metadata_inventory_put,
@@ -181,6 +193,7 @@ minetest.register_node("tubelib_addons3:pushing_chest", {
 	on_timer = shift_items,
 	on_rotate = screwdriver.disallow,
 	
+	drop = "",
 	paramtype = "light",
 	sunlight_propagates = true,
 	paramtype2 = "facedir",
@@ -217,17 +230,16 @@ minetest.register_node("tubelib_addons3:pushing_chest_defect", {
 		set_state(meta, "empty")
 	end,
 
-	can_dig = function(pos,player)
+	can_dig = function(pos, player)
 		if minetest.is_protected(pos, player:get_player_name()) then
 			return false
 		end
-		local meta = minetest.get_meta(pos);
-		local inv = meta:get_inventory()
+		local inv = minetest.get_meta(pos):get_inventory()
 		return inv:is_empty("main") and inv:is_empty("shift")
 	end,
-	
-	on_dig = function(pos, node, puncher, pointed_thing)
-		minetest.node_dig(pos, node, puncher, pointed_thing)
+
+	after_dig_node = function(pos, oldnode, oldmetadata, digger)
+		tubelib.remove_node(pos)
 	end,
 
 	allow_metadata_inventory_put = allow_metadata_inventory_put,
@@ -265,6 +277,8 @@ tubelib.register_node("tubelib_addons3:pushing_chest",
 				return "empty"
 			end
 			return meta:get_string("state")
+		elseif topic == "aging" then
+			return minetest.get_meta(pos):get_int("tubelib_aging")
 		else
 			return "not supported"
 		end
@@ -297,10 +311,6 @@ tubelib.register_node("tubelib_addons3:pushing_chest",
 	on_unpull_item = function(pos, side, item)
 		local meta = minetest.get_meta(pos)
 		return tubelib.put_item(meta, "main", item)
-	end,
-	
-	on_recv_message = function(pos, topic, payload)
-		return "unsupported"
 	end,
 	on_node_load = function(pos)
 		minetest.get_node_timer(pos):start(2)

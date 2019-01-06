@@ -44,8 +44,11 @@ minetest.register_node(NODE_NAME, {
 	on_timer = function(pos,elapsed)
 		return wh.on_timer(Box, pos,elapsed)
 	end,
-	on_dig = function(pos, node, puncher, pointed_thing)
-		wh.on_dig(Box, pos, node, puncher, pointed_thing)
+	can_dig = function(pos)
+		return wh.can_dig(Box, pos)
+	end,
+	after_dig_node = function(pos, oldnode, oldmetadata, digger)
+		wh.after_dig_node(Box, pos, oldnode, oldmetadata, digger)
 	end,
 	allow_metadata_inventory_put = function(pos, listname, index, stack, player)
 		return wh.allow_metadata_inventory_put(Box, pos, listname, index, stack, player)
@@ -55,6 +58,7 @@ minetest.register_node(NODE_NAME, {
 	allow_metadata_inventory_move = wh.allow_metadata_inventory_move,
 	
 	on_rotate = screwdriver.disallow,
+	drop = "",
 	paramtype = "light",
 	sunlight_propagates = true,
 	paramtype2 = "facedir",
@@ -100,8 +104,11 @@ minetest.register_node(NODE_NAME.."_defect", {
 		wh.after_place_node(Box, pos, placer, itemstack)
 		Box.State:defect(pos, M(pos))
 	end,
-	on_dig = function(pos, node, puncher, pointed_thing)
-		wh.on_dig(Box, pos, node, puncher, pointed_thing)
+	can_dig = function(pos)
+		return wh.can_dig(Box, pos)
+	end,
+	after_dig_node = function(pos, oldnode, oldmetadata, digger)
+		wh.after_dig_node(Box, pos, oldnode, oldmetadata, digger)
 	end,
 	allow_metadata_inventory_put = function(pos, listname, index, stack, player)
 		return wh.allow_metadata_inventory_put(Box, pos, listname, index, stack, player)
@@ -125,10 +132,11 @@ tubelib.register_node(NODE_NAME,
 		local meta = M(pos)
 		meta:set_string("push_dir", side)
 		local num = wh.numbers_to_shift(Box, meta, item)
-		if num then
+		if num > 0 then
 			item:set_count(num)
 			return tubelib.put_item(meta, "shift", item)
 		end
+		return true
 	end,
 	on_pull_stack = function(pos, side)
 		return tubelib.get_stack(M(pos), "main")

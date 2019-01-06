@@ -100,20 +100,18 @@ minetest.register_node("tubelib_addons1:chest", {
 		meta:set_string("infotext", "Tubelib Protected Chest "..number)
 	end,
 
-	can_dig = function(pos,player)
+	can_dig = function(pos, player)
 		if minetest.is_protected(pos, player:get_player_name()) then
 			return false
 		end
-		local meta = minetest.get_meta(pos)
-		local inv = meta:get_inventory()
+		local inv = minetest.get_meta(pos):get_inventory()
 		return inv:is_empty("main")
 	end,
-	
-	on_dig = function(pos, node, puncher, pointed_thing)
-		minetest.node_dig(pos, node, puncher, pointed_thing)
+
+	after_dig_node = function(pos, oldnode, oldmetadata, digger)
 		tubelib.remove_node(pos)
 	end,
-
+	
 	allow_metadata_inventory_put = allow_metadata_inventory_put,
 	allow_metadata_inventory_take = allow_metadata_inventory_take,
 

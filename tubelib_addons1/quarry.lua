@@ -304,19 +304,16 @@ minetest.register_node("tubelib_addons1:quarry", {
 		State:node_init(pos, number)
 	end,
 
-	on_dig = function(pos, node, puncher, pointed_thing)
-		if minetest.is_protected(pos, puncher:get_player_name()) then
-			return
+	can_dig = function(pos, player)
+		if minetest.is_protected(pos, player:get_player_name()) then
+			return false
 		end
-		local meta = M(pos)
-		local inv = meta:get_inventory()
-		if inv:is_empty("main") then
-			minetest.node_dig(pos, node, puncher, pointed_thing)
-			tubelib.remove_node(pos)
-		end
+		local inv = M(pos):get_inventory()
+		return inv:is_empty("main")
 	end,
 
 	after_dig_node = function(pos, oldnode, oldmetadata, digger)
+		tubelib.remove_node(pos)
 		State:after_dig_node(pos, oldnode, oldmetadata, digger)
 	end,
 	
@@ -401,16 +398,16 @@ minetest.register_node("tubelib_addons1:quarry_defect", {
 		State:defect(pos, M(pos))
 	end,
 
-	on_dig = function(pos, node, puncher, pointed_thing)
-		if minetest.is_protected(pos, puncher:get_player_name()) then
-			return
+	can_dig = function(pos, player)
+		if minetest.is_protected(pos, player:get_player_name()) then
+			return false
 		end
-		local meta = M(pos)
-		local inv = meta:get_inventory()
-		if inv:is_empty("main") then
-			minetest.node_dig(pos, node, puncher, pointed_thing)
-			tubelib.remove_node(pos)
-		end
+		local inv = M(pos):get_inventory()
+		return inv:is_empty("main")
+	end,
+
+	after_dig_node = function(pos, oldnode, oldmetadata, digger)
+		tubelib.remove_node(pos)
 	end,
 
 	on_rotate = screwdriver.disallow,

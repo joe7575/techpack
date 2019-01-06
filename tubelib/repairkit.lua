@@ -46,6 +46,7 @@ local function read_state(itemstack, user, pointed_thing)
 			local counter = tubelib.send_request(number, "counter", nil)
 			local aging = tubelib.send_request(number, "aging", nil)
 			if state and counter and aging then
+				if type(counter) ~= "number" then counter = "unknown" end
 				minetest.chat_send_player(user:get_player_name(), "[Tubelib] state ="..state..", counter = "..counter..", aging = "..aging)
 			end
 		end

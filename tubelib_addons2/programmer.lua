@@ -13,7 +13,7 @@
 ]]--
 
 local function join_to_string(tbl)
-	t = {}
+	local t = {}
 	for key,_ in pairs(tbl) do
 		t[#t + 1] = key .. " "
 	end
