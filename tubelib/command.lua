@@ -26,7 +26,6 @@ local storage = minetest.get_mod_storage()
 local NextNumber = minetest.deserialize(storage:get_string("NextNumber")) or 1
 local Version = minetest.deserialize(storage:get_string("Version")) or 1
 local Number2Pos = minetest.deserialize(storage:get_string("Number2Pos")) or {}
-local FreeNumbers = {}
 
 local function update_mod_storage()
 	minetest.log("action", "[Tubelib] Store data...")
@@ -71,18 +70,11 @@ end
 -- Determine position related node number for addressing purposes
 local function get_number(pos)
 	local key = get_key_str(pos)
-	local num
 	if not Key2Number[key] then
-		num = table.remove(FreeNumbers)
-		if not num then
-			Key2Number[key] = NextNumber
-			NextNumber = NextNumber + 1
-			num = string.format("%.04u", Key2Number[key])
-		end
-	else
-		num = string.format("%.04u", Key2Number[key])
+		Key2Number[key] = NextNumber
+		NextNumber = NextNumber + 1
 	end
-	return num
+	return string.format("%.04u", Key2Number[key])
 end
 
 local function generate_Key2Number()
@@ -552,15 +544,6 @@ local function data_maintenance()
 			end
 		end
 	end
-	-- collect unused node numbers
-	for idx = NextNumber-1,1,-1 do
-		--FreeNumbers
-		local num = string.format("%.04u", idx)
-		if not Number2Pos[num] then
-			FreeNumbers[#FreeNumbers+1] = num
-		end
-	end
-	minetest.log("info", "[Tubelib] "..#FreeNumbers.." numbers recycled")
 	minetest.log("info", "[Tubelib] Data maintenance finished")
 end	
 	
