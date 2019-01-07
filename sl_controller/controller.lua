@@ -326,7 +326,7 @@ local function on_timer(pos, elapsed)
 	-- considering cycle frequency
 	local cycletime = meta:get_int("cycletime") or 1
 	local cyclecount = (meta:get_int("cyclecount") or 0) + 1
-	if cyclecount < cycletime then
+	if cycletime == 0 or cyclecount < cycletime then
 		meta:set_int("cyclecount", cyclecount)
 		return true
 	end
