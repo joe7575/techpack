@@ -125,7 +125,7 @@ smartline.icta_register_condition("input", {
 		{
 			type = "textlist",
 			name = "value",
-			choices = "on,off,false",
+			choices = "on,off,invalid",
 			default = "on",
 		},
 		{
@@ -163,7 +163,7 @@ smartline.icta_register_condition("state", {
 			type = "textlist",
 			name = "value",
 			label = "",
-			choices = "stopped,running,standby,blocked,defect,fault,never",
+			choices = "stopped,running,standby,blocked,defect,fault,invalid",
 			default = "stopped",
 		},
 		{
@@ -202,7 +202,7 @@ smartline.icta_register_condition("fuel", {
 			type = "textlist",
 			name = "value",
 			label = "",
-			choices = "full,loaded,empty",
+			choices = "full,loaded,empty,invalid",
 			default = "full"
 		},
 		{
@@ -241,7 +241,7 @@ smartline.icta_register_condition("chest", {
 			type = "textlist",
 			name = "value",
 			label = "",
-			choices = "empty,loaded",
+			choices = "empty,loaded,invalid",
 			default = "empty",
 		},
 		{
@@ -278,7 +278,7 @@ smartline.icta_register_condition("signaltower", {
 		{
 			type = "textlist",
 			name = "value",
-			choices = "off,green,amber,red",
+			choices = "off,green,amber,red,invalid",
 			default = "off",
 		},
 		{
