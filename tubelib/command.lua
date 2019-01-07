@@ -190,6 +190,18 @@ function tubelib.get_node_number(pos)
 	return nil
 end	
 
+-- Function is used for available nodes with lost numbers, only.
+function tubelib.get_new_number(pos, name)
+	-- store position 
+	local number = get_number(pos)
+	Number2Pos[number] = {
+		pos = pos, 
+		name = name,
+	}
+	return number
+end
+
+
 -- Store any node number related, additional data
 -- param number: node number, returned by tubelib.add_node
 -- param name: name of the data (string)
@@ -218,9 +230,7 @@ end
 -- Function determines and returns the node position number,
 -- needed for message communication.
 function tubelib.add_node(pos, name)
-	print("tubelib.add_node", S(pos))
 	if item_handling_node(name) then
-		print("Tube:after_place_node")
 		Tube:after_place_node(pos)
 	end
 	-- store position 
@@ -234,7 +244,6 @@ end
 
 -- Function removes the node from the tubelib lists.
 function tubelib.remove_node(pos)
-	print("tubelib.remove_node", S(pos))
 	local number = get_number(pos)
 	local name
 	if Number2Pos[number] then
@@ -246,7 +255,6 @@ function tubelib.remove_node(pos)
 		}
 	end
 	if item_handling_node(name) then
-		print("Tube:after_dig_node")
 		Tube:after_dig_node(pos)
 	end
 end

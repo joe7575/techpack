@@ -379,12 +379,12 @@ function NodeStates:on_node_load(pos, not_start_timer)
 	-- node number corrupt?
 	number = meta:get_string("tubelib_number")
 	if number == "" then
-		number = tubelib.add_node(pos, self.node_name_passive)
+		number = tubelib.get_new_number(pos, self.node_name_passive)
 		meta:set_string("tubelib_number", number)
 	else
 		local info = tubelib.get_node_info(number)
 		if not info or info.pos ~= pos then
-			number = tubelib.add_node(pos, self.node_name_passive)
+			number = tubelib.get_new_number(pos, self.node_name_passive)
 			meta:set_string("tubelib_number", number)
 		end
 	end
