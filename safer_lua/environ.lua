@@ -60,6 +60,13 @@ function safer_lua.config(max_code_size, max_table_size)
 	safer_lua.MaxTableSize = max_table_size
 end	
 
+local function format_error(err, tab)
+	err = err:gsub('%[string "%-%-.-"%]:', "in "..tab.." line ")
+	err = err:gsub('in main chunk.+', "")
+	err = err:gsub('%.%.%..-:%d+:', "Error")
+	return err
+end
+
 local function compile(pos, text, label, err_clbk)
 	if safer_lua:check(pos, text, label, err_clbk) == 0 then
 		text = text:gsub("%$", "S:")
@@ -91,10 +98,9 @@ function safer_lua.init(pos, init, loop, environ, err_clbk)
 		env.S = {}
 		env.S = map(env.S, environ)
 		setfenv(code, env)
-		local res, err = pcall(code)
+		local res, err = xpcall(code, debug.traceback)
 		if not res then
-			err = err:gsub("%[string .+%]:", "init() ")
-			err_clbk(pos, err)
+			err_clbk(pos, format_error(err, "init()"))
 		else
 			env = getfenv(code)
 			code = compile(pos, loop, "loop() ", err_clbk)
@@ -115,14 +121,13 @@ function safer_lua.run_loop(pos, elapsed, code, err_clbk)
 		env.event = false
 		env.ticks = env.ticks + 1
 	end
-	local res, err = pcall(code)
+	local res, err = xpcall(code, debug.traceback)
 	if calc_used_mem_size(env) > safer_lua.MaxTableSize then 
 		err_clbk(pos, "Memory limit exceeded")
 		return false
 	end
 	if not res then
-		err = err:gsub("%[string .+%]:", "loop() ")
-		err_clbk(pos, err)
+		err_clbk(pos, format_error(err, "loop()"))
 		return false
 	end
 	return true
