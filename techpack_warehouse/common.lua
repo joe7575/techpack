@@ -31,23 +31,23 @@ local function formspec(self, pos, meta)
 	default.gui_bg_img..
 	default.gui_slots..
 	"image[0,0;1,1;techpack_warehouse_arrow_inv.png]"..
-	"list[context;shift;1,0;8,1;]"..
+	"list[context;shift;1,0;7,1;]"..
 	"image[9,0;1,1;techpack_warehouse_arrow_inv.png]"..
+	"image_button[8,0;1,1;".. self:get_state_button_image(meta) ..";state_button;]"..
 	
-	"image[0,1.2;1,1;techpack_warehouse_filter_inv.png]"..
-	"list[context;filter;1,1.2;8,1;]"..
-	"image[9,1.2;1,1;techpack_warehouse_filter_inv.png]"..
+	"image[0,1.4;1,1;techpack_warehouse_filter_inv.png]"..
+	"list[context;filter;1,1.4;8,1;]"..
+	"image[9,1.4;1,1;techpack_warehouse_filter_inv.png]"..
 	
-	"image[0,2.4;1,1;techpack_warehouse_inventory_inv.png]"..
-	"list[context;main;1,2.4;8,1;]"..
-	"image[9,2.4;1,1;techpack_warehouse_inventory_inv.png]"..
+	"image[0,2.5;1,1;techpack_warehouse_inventory_inv.png]"..
+	"list[context;main;1,2.5;8,1;]"..
+	"image[9,2.5;1,1;techpack_warehouse_inventory_inv.png]"..
 	
 	"image[0,3.6;1,1;techpack_warehouse_input_inv.png]"..
 	"list[context;input;1,3.6;8,1;]"..
 	"image[9,3.6;1,1;techpack_warehouse_input_inv.png]"..
 	
-	"image_button[9,5.3;1,1;".. self:get_state_button_image(meta) ..";state_button;]"..
-	"list[current_player;main;0.5,5.3;8,4;]"..
+	"list[current_player;main;1,5.3;8,4;]"..
 	"listring[context;shift]"..
 	"listring[current_player;main]"..
 	"listring[context;input]"
@@ -254,7 +254,7 @@ function techpack_warehouse.after_place_node(self, pos, placer, itemstack)
 	self.State:node_init(pos, number)
 	meta:set_string("player_name", placer:get_player_name())
 	local inv = meta:get_inventory()
-	inv:set_size('shift', 8)
+	inv:set_size('shift', 7)
 	inv:set_size('filter', 8)
 	inv:set_size('main', 8)
 	inv:set_size('input', 8)
