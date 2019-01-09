@@ -12,6 +12,10 @@
 
 ]]--
 
+-- for lazy programmers
+local S = function(pos) if pos then return minetest.pos_to_string(pos) end end
+local M = minetest.get_meta
+
 local sHELP = [[SaferLua Controller
 
  This controller is used to control and monitor 
@@ -112,6 +116,18 @@ sl_controller.register_function("get_ms_time", {
 	end,
 	help = "$get_ms_time()\n"..
 		" returns time with millisecond precision."
+})
+
+sl_controller.register_function("position", {
+	cmnd = function(self, number)
+		local info = tubelib.get_node_info(number)
+		if info then
+			return S(info.pos)
+		end
+		return "(-,-,-)"
+	end,
+	help = "$position(number)\n"..
+		" returns the position '(x,y,z)' of the device\n with given number."
 })
 
 
