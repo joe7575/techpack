@@ -93,20 +93,23 @@ minetest.register_craft({
 })
 
 
-dofile(minetest.get_modpath("tubelib") .. "/tubes.lua")
-dofile(minetest.get_modpath("tubelib") .. "/command.lua")
--- conversion from v1.16 to v2.00
-dofile(minetest.get_modpath("tubelib") .. "/migrate.lua")
-dofile(minetest.get_modpath("tubelib") .. "/states.lua")
-dofile(minetest.get_modpath("tubelib") .. "/node_states.lua")
-dofile(minetest.get_modpath("tubelib") .. "/pusher.lua")
-dofile(minetest.get_modpath("tubelib") .. "/blackhole.lua")
-dofile(minetest.get_modpath("tubelib") .. "/button.lua")
-dofile(minetest.get_modpath("tubelib") .. "/lamp.lua")
-dofile(minetest.get_modpath("tubelib") .. "/distributor.lua")
-dofile(minetest.get_modpath("tubelib") .. "/legacy_nodes.lua")
-dofile(minetest.get_modpath("tubelib") .. "/repairkit.lua")
-dofile(minetest.get_modpath("tubelib") .. "/mark.lua")
-dofile(minetest.get_modpath("tubelib") .. "/forceload.lua")
-dofile(minetest.get_modpath("tubelib") .. "/basalt.lua")
-
+if tubelib2.version < 0.8 then
+	minetest.log("error", "TechPack/Tubelib requires tubelib2 version 0.8 or newer!!!")
+else
+	dofile(minetest.get_modpath("tubelib") .. "/tubes.lua")
+	dofile(minetest.get_modpath("tubelib") .. "/command.lua")
+	-- conversion from v1.16 to v2.00
+	dofile(minetest.get_modpath("tubelib") .. "/migrate.lua")
+	dofile(minetest.get_modpath("tubelib") .. "/states.lua")
+	dofile(minetest.get_modpath("tubelib") .. "/node_states.lua")
+	dofile(minetest.get_modpath("tubelib") .. "/pusher.lua")
+	dofile(minetest.get_modpath("tubelib") .. "/blackhole.lua")
+	dofile(minetest.get_modpath("tubelib") .. "/button.lua")
+	dofile(minetest.get_modpath("tubelib") .. "/lamp.lua")
+	dofile(minetest.get_modpath("tubelib") .. "/distributor.lua")
+	dofile(minetest.get_modpath("tubelib") .. "/legacy_nodes.lua")
+	dofile(minetest.get_modpath("tubelib") .. "/repairkit.lua")
+	dofile(minetest.get_modpath("tubelib") .. "/mark.lua")
+	dofile(minetest.get_modpath("tubelib") .. "/forceload.lua")
+	dofile(minetest.get_modpath("tubelib") .. "/basalt.lua")
+end
