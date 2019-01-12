@@ -1,9 +1,4 @@
-# TechPack V2.00 (WIP)
-
-**THIS IS WORK IN PROGRESS**
-
-**For your world use the stable release ![v1.16](https://github.com/joe7575/techpack/releases/tag/v1.16)**
-
+# TechPack V2.00
 
 ## New in v2 (from players point of view)
 - Almost all machines break after a certain amount of time (switch into the state 'defect') and have to be repaired.
@@ -168,7 +163,7 @@ tubelib_addons1 optional: unified_inventory
 - 2018-09-15  V1.15  * Smartline Controller command added, chest commands improved
 - 2018-09-20  V1.16  * Switched from "Display mod pack" to lcdlib
 - 2018-12-23  V2.xx  * on the way to v2
-- 2018-12-29  V2.00  * see "New in v2"
-
+- 2018-12-29  V2.00  * beta
+- 2019-01-12  V2.00  * release
 
 See ![releasenotes.txt](https://github.com/joe7575/techpack/blob/master/releasenotes.md) for further information

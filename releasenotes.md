@@ -2,6 +2,36 @@
 
 
 
+## V2.00.00(2019-01-12)
+
+### Additions
+- Almost all machines break after a certain amount of time (switch into the state 'defect') and have to be repaired.
+- A Repair Kit is available to repair defect machines.
+- A Forceload block (16x16x16) is added which keeps the corresponding area loaded and the machines operational as far as the player is logged in.
+- Ladders, stairways, and bridges added for the machines (techpack_stairway)
+- Industrial lamps added
+- Warehouse Boxes in steel, copper, and gold for your warehouse/stock (techpack_warehouse) added
+
+
+### Removals
+
+### Changes
+- TechPack now uses the external library 'tubelib2' (![GitHub](https://github.com/joe7575/tubelib2)), all tubes will be converted to be tubelib2 compatible
+- TechPack depends now on the mod 'basic_materials' 
+- The Quarry now uses LVM techniques to go down up to 100 meter
+- Almost all machines have an 'on_node_load' function to repair timer routines after a server crash
+- 3 settings parameter:
+-- Maximum number of Forceload Blocks per player
+-- Enable Basalt Stone (and disable ore generation via Cobblestone generator)
+-- Machine aging value to calculate the lifetime of machines
+-- SmartLine Controller adapter to the new state 'defect'
+- Gravel Sieve: Ore probability calculation changed (thanks to obl3pplifp)
+
+
+### Fixes
+
+
+
 ## V1.16.7 (2018-11-30)
 
 ### Fixes
