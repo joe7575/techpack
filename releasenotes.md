@@ -21,10 +21,10 @@
 - The Quarry now uses LVM techniques to go down up to 100 meter
 - Almost all machines have an 'on_node_load' function to repair timer routines after a server crash
 - 3 settings parameter:
--- Maximum number of Forceload Blocks per player
--- Enable Basalt Stone (and disable ore generation via Cobblestone generator)
--- Machine aging value to calculate the lifetime of machines
--- SmartLine Controller adapter to the new state 'defect'
+  - Maximum number of Forceload Blocks per player
+  - Enable Basalt Stone (and disable ore generation via Cobblestone generator)
+  - Machine aging value to calculate the lifetime of machines
+- SmartLine Controller adapter to the new state 'defect'
 - Gravel Sieve: Ore probability calculation changed (thanks to obl3pplifp)
 
 
