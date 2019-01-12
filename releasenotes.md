@@ -1,4 +1,4 @@
-# Release Notes of the ModPack TechPack [techpack]
+# Release Notes for ModPack TechPack [techpack]
 
 
 
