@@ -154,7 +154,6 @@ end
 function smartline.formspec_button_update(meta, fields)	
 	local fs_data = minetest.deserialize(meta:get_string("fs_data"))
 	local row = tonumber(fields._row_ or 1)
-	print("row", row)
 	if fields._col_ == "cond" then
 		fs_data[row].cond = smartline.cond_eval_input(fs_data[row].cond, fields)
 	elseif fields._col_ == "actn" then

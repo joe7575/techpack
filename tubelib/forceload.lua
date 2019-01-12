@@ -201,7 +201,6 @@ minetest.register_on_joinplayer(function(player)
 	local lPos = {}
 	for _,pos in ipairs(get_pos_list(player)) do
 		local node = get_node_lvm(pos)
-		print("pos", S(pos), "name", node.name)
 		if node.name == "tubelib:forceload" then
 			minetest.forceload_block(pos, true)
 			lPos[#lPos+1] = pos
