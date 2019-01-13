@@ -30,22 +30,27 @@ local function formspec(self, pos, meta)
 	default.gui_bg..
 	default.gui_bg_img..
 	default.gui_slots..
-	"image[0,0;1,1;techpack_warehouse_arrow_inv.png]"..
+	"image_button[0,0;1,1;techpack_warehouse_arrow_inv.png;shift;;true;false;]"..
 	"list[context;shift;1,0;7,1;]"..
-	"image[9,0;1,1;techpack_warehouse_arrow_inv.png]"..
+	"image_button[9,0;1,1;techpack_warehouse_arrow_inv.png;shift;;true;false;]"..
 	"image_button[8,0;1,1;".. self:get_state_button_image(meta) ..";state_button;]"..
 	
-	"image[0,1.4;1,1;techpack_warehouse_filter_inv.png]"..
+	"image_button[0,1.4;1,1;techpack_warehouse_filter_inv.png;filter;;true;false;]"..
 	"list[context;filter;1,1.4;8,1;]"..
-	"image[9,1.4;1,1;techpack_warehouse_filter_inv.png]"..
+	"image_button[9,1.4;1,1;techpack_warehouse_filter_inv.png;filter;;true;false;]"..
 	
-	"image[0,2.5;1,1;techpack_warehouse_inventory_inv.png]"..
+	"image_button[0,2.5;1,1;techpack_warehouse_inventory_inv.png;storage;;true;false;]"..
 	"list[context;main;1,2.5;8,1;]"..
-	"image[9,2.5;1,1;techpack_warehouse_inventory_inv.png]"..
+	"image_button[9,2.5;1,1;techpack_warehouse_inventory_inv.png;storage;;true;false;]"..
 	
-	"image[0,3.6;1,1;techpack_warehouse_input_inv.png]"..
+	"image_button[0,3.6;1,1;techpack_warehouse_input_inv.png;input;;true;false;]"..
 	"list[context;input;1,3.6;8,1;]"..
-	"image[9,3.6;1,1;techpack_warehouse_input_inv.png]"..
+	"image_button[9,3.6;1,1;techpack_warehouse_input_inv.png;input;;true;false;]"..
+	
+	"tooltip[shift;Pass-through storage for unconfigured items]"..
+	"tooltip[filter;Filter: To configure the 8 storages]"..
+	"tooltip[storage;Storage: All items will be store here]"..
+	"tooltip[input;Input: Put items will be moved to the storage]"..
 	
 	"list[current_player;main;1,5.3;8,4;]"..
 	"listring[context;shift]"..
