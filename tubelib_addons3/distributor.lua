@@ -21,7 +21,7 @@ local M = minetest.get_meta
 local NUM_FILTER_ELEM = 6
 local NUM_FILTER_SLOTS = 4
 
-local COUNTDOWN_TICKS = 6
+local COUNTDOWN_TICKS = 8
 local STANDBY_TICKS = 4
 local CYCLE_TIME = 2
 

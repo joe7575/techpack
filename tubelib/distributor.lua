@@ -28,7 +28,7 @@ local MAX_NUM_PER_CYC = 20 -- maximum number of items, which can be pushed per s
 local NUM_FILTER_ELEM = 6
 local NUM_FILTER_SLOTS = 4
 
-local COUNTDOWN_TICKS = 6
+local COUNTDOWN_TICKS = 8
 local STANDBY_TICKS = 4
 local CYCLE_TIME = 2
 
