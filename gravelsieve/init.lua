@@ -53,8 +53,8 @@ local PROBABILITY_FACTOR = 3
 local AGING_LEVEL1 = nil
 local AGING_LEVEL2 = nil
 if minetest.get_modpath("tubelib") and tubelib ~= nil then
-	AGING_LEVEL1 = 10 * tubelib.machine_aging_value
-	AGING_LEVEL2 = 30 * tubelib.machine_aging_value
+	AGING_LEVEL1 = 15 * tubelib.machine_aging_value
+	AGING_LEVEL2 = 60 * tubelib.machine_aging_value
 end
 
 -- Ore probability table  (1/n)
