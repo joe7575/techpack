@@ -47,10 +47,10 @@ local function formspec(self, pos, meta)
 	"list[context;input;1,3.6;8,1;]"..
 	"image_button[9,3.6;1,1;techpack_warehouse_input_inv.png;input;;true;false;]"..
 	
-	"tooltip[shift;Pass-through storage for unconfigured items]"..
+	"tooltip[shift;Pass-through storage for unconfigured items (turn on/off)]"..
 	"tooltip[filter;Filter: To configure the 8 storages]"..
-	"tooltip[storage;Storage: All items will be store here]"..
-	"tooltip[input;Input: Put items will be moved to the storage]"..
+	"tooltip[storage;Storage: All items will be stored here]"..
+	"tooltip[input;Input: Put items will be moved to the storage, if configured]"..
 	
 	"list[current_player;main;1,5.3;8,4;]"..
 	"listring[context;shift]"..
@@ -217,23 +217,21 @@ function techpack_warehouse.allow_metadata_inventory_take(pos, listname, index, 
 	if minetest.is_protected(pos, player:get_player_name()) then
 		return 0
 	end
+	local inv = M(pos):get_inventory()
+	local main_stack = inv:get_stack("main", index)
+	local number = M(pos):get_string("tubelib_number")
 	if listname == "main" then
-		local number = M(pos):get_string("tubelib_number")
 		Cache[number] = nil
-		local inv = M(pos):get_inventory()
-		local list = inv:get_list("main")
-		local num = list[index]:get_count()
+		local num = main_stack:get_count()
 		if num > 99 then
 			return 99
 		else
 			return num
 		end
-	elseif listname == "filter" then
-		local number = M(pos):get_string("tubelib_number")
+	elseif listname == "filter" and main_stack:is_empty() then
 		Cache[number] = nil
 		return 1
 	elseif listname == "shift" then
-		local number = M(pos):get_string("tubelib_number")
 		Cache[number] = nil
 		return stack:get_count()
 	end
