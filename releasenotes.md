@@ -1,8 +1,21 @@
 # Release Notes for ModPack TechPack [techpack]
 
 
+## V2.00.01 (2019-01-13)
 
-## V2.00.00(2019-01-12)
+### Additions
+- SaferLua-Controller: Support for Lua functions added
+- Warehouse Boxes: Formspec tooltips added
+
+### Removals
+
+### Changes
+- Grinder: Recipes for clay changed
+
+
+
+
+## V2.00.00 (2019-01-12)
 
 ### Additions
 - Almost all machines break after a certain amount of time (switch into the state 'defect') and have to be repaired.
@@ -11,7 +24,6 @@
 - Ladders, stairways, and bridges added for the machines (techpack_stairway)
 - Industrial lamps added
 - Warehouse Boxes in steel, copper, and gold for your warehouse/stock (techpack_warehouse) added
-
 
 ### Removals
 
@@ -26,7 +38,6 @@
   - Machine aging value to calculate the lifetime of machines
 - SmartLine Controller adapter to the new state 'defect'
 - Gravel Sieve: Ore probability calculation changed (thanks to obl3pplifp)
-
 
 ### Fixes
 

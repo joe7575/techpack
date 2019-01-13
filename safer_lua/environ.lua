@@ -61,6 +61,9 @@ function safer_lua.config(max_code_size, max_table_size)
 end	
 
 local function format_error(err, tab)
+	if err:find("stack overflow") then
+		return "Error: Stack overflow due to recursive function calls!"
+	end
 	err = err:gsub('%[string "%-%-.-"%]:', "in "..tab.." line ")
 	err = err:gsub('in main chunk.+', "")
 	err = err:gsub('%.%.%..-:%d+:', "Error")

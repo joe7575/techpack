@@ -153,7 +153,7 @@ local function formspec1(meta)
 	default.gui_bg..
 	default.gui_bg_img..
 	default.gui_slots..
-	"tabheader[0,0;tab;init,loop,outp,notes,help;1;;true]"..
+	"tabheader[0,0;tab;init,func,loop,outp,notes,help;1;;true]"..
 	"textarea[0.3,0.2;10,8.3;init;function init();"..init.."]"..
 	"label[0,7.3;end]"..
 	"button_exit[4.4,7.5;1.8,1;cancel;Cancel]"..
@@ -164,15 +164,14 @@ end
 local function formspec2(meta)
 	local state = meta:get_int("state") == tubelib.RUNNING
 	local cmnd = state and "stop;Stop" or "start;Start"
-	local loop = meta:get_string("loop")
-	loop = minetest.formspec_escape(loop)
+	local func = meta:get_string("func")
+	func = minetest.formspec_escape(func)
 	return "size[10,8]"..
 	default.gui_bg..
 	default.gui_bg_img..
 	default.gui_slots..
-	"tabheader[0,0;tab;init,loop,outp,notes,help;2;;true]"..
-	"textarea[0.3,0.2;10,8.3;loop;function loop(ticks, elapsed);"..loop.."]"..
-	"label[0,7.3;end]"..
+	"tabheader[0,0;tab;init,func,loop,outp,notes,help;2;;true]"..
+	"textarea[0.3,0.2;10,8.3;func;functions:;"..func.."]"..
 	"button_exit[4.4,7.5;1.8,1;cancel;Cancel]"..
 	"button[6.3,7.5;1.8,1;save;Save]"..
 	"button[8.2,7.5;1.8,1;"..cmnd.."]"
@@ -181,39 +180,57 @@ end
 local function formspec3(meta)
 	local state = meta:get_int("state") == tubelib.RUNNING
 	local cmnd = state and "stop;Stop" or "start;Start"
-	local output = meta:get_string("output")
-	output = minetest.formspec_escape(output)
+	local loop = meta:get_string("loop")
+	loop = minetest.formspec_escape(loop)
 	return "size[10,8]"..
 	default.gui_bg..
 	default.gui_bg_img..
 	default.gui_slots..
-	"tabheader[0,0;tab;init,loop,outp,notes,help;3;;true]"..
-	"textarea[0.3,0.2;10,8.3;help;Output:;"..output.."]"..
+	"tabheader[0,0;tab;init,func,loop,outp,notes,help;3;;true]"..
+	"textarea[0.3,0.2;10,8.3;loop;function loop(ticks, elapsed);"..loop.."]"..
+	"label[0,7.3;end]"..
+	"button_exit[4.4,7.5;1.8,1;cancel;Cancel]"..
+	"button[6.3,7.5;1.8,1;save;Save]"..
+	"button[8.2,7.5;1.8,1;"..cmnd.."]"
+end
+
+local function formspec4(meta)
+	local state = meta:get_int("state") == tubelib.RUNNING
+	local cmnd = state and "stop;Stop" or "start;Start"
+	local output = meta:get_string("output")
+	output = minetest.formspec_escape(output)
+	output = output:gsub("\n", ",")
+	return "size[10,8]"..
+	default.gui_bg..
+	default.gui_bg_img..
+	default.gui_slots..
+	"tabheader[0,0;tab;init,func,loop,outp,notes,help;4;;true]"..
+	"table[0.2,0.2;9.5,7;output;"..output..";]"..
 	"button[4.4,7.5;1.8,1;clear;Clear]"..
 	"button[6.3,7.5;1.8,1;update;Update]"..
 	"button[8.2,7.5;1.8,1;"..cmnd.."]"
 end
 
-local function formspec4(meta)
+local function formspec5(meta)
 	local notes = meta:get_string("notes")
 	notes = minetest.formspec_escape(notes)
 	return "size[10,8]"..
 	default.gui_bg..
 	default.gui_bg_img..
 	default.gui_slots..
-	"tabheader[0,0;tab;init,loop,outp,notes,help;4;;true]"..
+	"tabheader[0,0;tab;init,func,loop,outp,notes,help;5;;true]"..
 	"textarea[0.3,0.2;10,8.3;notes;Notepad:;"..notes.."]"..
 	"button_exit[6.3,7.5;1.8,1;cancel;Cancel]"..
 	"button[8.2,7.5;1.8,1;save;Save]"
 end
 
-local function formspec5(items, pos, text)
+local function formspec6(items, pos, text)
 	text = minetest.formspec_escape(text)
 	return "size[10,8]"..
 	default.gui_bg..
 	default.gui_bg_img..
 	default.gui_slots..
-	"tabheader[0,0;tab;init,loop,outp,notes,help;5;;true]"..
+	"tabheader[0,0;tab;init,func,loop,outp,notes,help;6;;true]"..
 	"label[0,-0.2;Functions:]"..
 	"dropdown[0.3,0.2;10,8.3;functions;"..items..";"..pos.."]"..
 	"textarea[0.3,1.3;10,8;help;Help:;"..text.."]"
@@ -223,21 +240,22 @@ local function error(pos, err)
 	output(pos, err)
 	local meta = minetest.get_meta(pos)
 	local number = meta:get_string("number")
-	meta:set_string("formspec", formspec3(meta))
 	meta:set_string("infotext", "Controller "..number..": error")
 	meta:set_int("state", tubelib.STOPPED)
 	meta:set_int("running", tubelib.STATE_STOPPED)
+	meta:set_string("formspec", formspec4(meta))
 	minetest.get_node_timer(pos):stop()
 	return false
 end
 
 local function compile(pos, meta, number)
 	local init = meta:get_string("init")
+	local func = meta:get_string("func")
 	local loop = meta:get_string("loop")
 	local owner = meta:get_string("owner")
 	local env = table.copy(tCommands)
 	env.meta = {pos=pos, owner=owner, number=number, error=error}
-	local code = safer_lua.init(pos, init, loop, env, error)
+	local code = safer_lua.init(pos, init .."\n".. func, loop, env, error)
 	
 	if code then
 		Cache[number] = {code=code, inputs={}}
@@ -273,7 +291,7 @@ local function start_controller(pos)
 		meta:set_int("state", tubelib.RUNNING)
 		meta:set_int("running", tubelib.STATE_RUNNING)
 		minetest.get_node_timer(pos):start(1)
-		meta:set_string("formspec", formspec3(meta))
+		meta:set_string("formspec", formspec4(meta))
 		meta:set_string("infotext", "Controller "..number..": running")
 		return true
 	end
@@ -287,7 +305,7 @@ local function stop_controller(pos)
 	meta:set_int("running", tubelib.STATE_STOPPED)
 	minetest.get_node_timer(pos):stop()
 	meta:set_string("infotext", "Controller "..number..": stopped")
-	meta:set_string("formspec", formspec2(meta))
+	meta:set_string("formspec", formspec3(meta))
 end
 
 local function no_battery(pos)
@@ -362,20 +380,23 @@ local function on_receive_fields(pos, formname, fields, player)
 		if fields.init then
 			meta:set_string("init", fields.init)
 			meta:set_string("formspec", formspec1(meta))
+		elseif fields.func then
+			meta:set_string("func", fields.func)
+			meta:set_string("formspec", formspec2(meta))
 		elseif fields.loop then
 			meta:set_string("loop", fields.loop)
-			meta:set_string("formspec", formspec2(meta))
+			meta:set_string("formspec", formspec3(meta))
 		elseif fields.notes then
 			meta:set_string("notes", fields.notes)
-			meta:set_string("formspec", formspec4(meta))
+			meta:set_string("formspec", formspec5(meta))
 		end	
 	end
 	
 	if fields.update then
-		meta:set_string("formspec", formspec3(meta))
+		meta:set_string("formspec", formspec4(meta))
 	elseif fields.clear then
 		meta:set_string("output", "<press update>")
-		meta:set_string("formspec", formspec3(meta))
+		meta:set_string("formspec", formspec4(meta))
 	elseif fields.tab == "1" then
 		meta:set_string("formspec", formspec1(meta))
 	elseif fields.tab == "2" then
@@ -385,7 +406,9 @@ local function on_receive_fields(pos, formname, fields, player)
 	elseif fields.tab == "4" then
 		meta:set_string("formspec", formspec4(meta))
 	elseif fields.tab == "5" then
-		meta:set_string("formspec", formspec5(sFunctionList, 1, sHELP))
+		meta:set_string("formspec", formspec5(meta))
+	elseif fields.tab == "6" then
+		meta:set_string("formspec", formspec6(sFunctionList, 1, sHELP))
 	elseif fields.start == "Start" then
 		start_controller(pos)
 		minetest.log("action", player:get_player_name() ..
@@ -396,7 +419,7 @@ local function on_receive_fields(pos, formname, fields, player)
 		local key = fields.functions
 		local text = tHelpTexts[key] or ""
 		local pos = tFunctionIndex[key] or 1
-		meta:set_string("formspec", formspec5(sFunctionList, pos, text))
+		meta:set_string("formspec", formspec6(sFunctionList, pos, text))
 	end
 end
 
@@ -431,6 +454,7 @@ minetest.register_node("sl_controller:controller", {
 		meta:set_int("state", tubelib.STOPPED)
 		meta:set_int("running", tubelib.STATE_STOPPED)
 		meta:set_string("init", "-- called only once")
+		meta:set_string("func", "-- for your functions")
 		meta:set_string("loop", "-- called every second")
 		meta:set_string("notes", "For your notes / snippets")
 		meta:set_string("formspec", formspec1(meta))
