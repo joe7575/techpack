@@ -82,6 +82,18 @@ sl_controller.register_function("get_fuel_status", {
 		' example: sts = $get_fuel_status("1234")'
 })
 
+sl_controller.register_function("get_num_items", {
+	cmnd = function(self, num, idx) 
+		num = tostring(num or "")
+		idx = tonumber(idx)
+		return tubelib.send_request(num, "num_items", idx)
+	end,
+	help = " $get_num_items(num)\n"..
+		" Read number of stored items in one\n"..
+		" storage (1..8) from a Warehouse Box.\n"..
+		' example: cnt = $get_num_items("1234", 4)\n'
+})
+
 sl_controller.register_function("time_as_str", {
 	cmnd = function(self) 
 		local t = minetest.get_timeofday()

@@ -152,6 +152,8 @@ tubelib.register_node(NODE_NAME,
 		local resp = Box.State:on_receive_message(pos, topic, payload)
 		if resp then
 			return resp
+		elseif topic == "num_items" then
+			return wh.get_num_items(M(pos), payload)
 		else
 			return "unsupported"
 		end

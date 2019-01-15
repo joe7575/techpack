@@ -63,12 +63,14 @@ local function move_to_main(pos, index)
 	local main_stack = inv:get_stack("main", index)
 	local inp_stack = inv:get_stack("input", index)
 	
-	local stack = ItemStack(inp_stack:get_name())
-	stack:set_count(inp_stack:get_count() + main_stack:get_count())
-	inp_stack:clear()
-	
-	inv:set_stack("main", index, stack)
-	inv:set_stack("input", index, inp_stack)
+	if inp_stack:get_name() ~= "" then
+		local stack = ItemStack(inp_stack:get_name())
+		stack:set_count(inp_stack:get_count() + main_stack:get_count())
+		inp_stack:clear()
+		
+		inv:set_stack("main", index, stack)
+		inv:set_stack("input", index, inp_stack)
+	end
 end
 
 function techpack_warehouse.tiles(background_img)
@@ -308,4 +310,12 @@ function techpack_warehouse.after_dig_node(self, pos, oldnode, oldmetadata, digg
 	if oldnode.name == self.node_name then -- not for defect nodes
 		self.State:after_dig_node(pos, oldnode, oldmetadata, digger)
 	end
+end
+
+function techpack_warehouse.get_num_items(meta, index)
+	index = index and tonumber(index)
+	if index < 1 then index = 1 end
+	if index > 8 then index = 8 end
+	local inv = meta:get_inventory()
+	return inv:get_stack("main", index):get_count()
 end
