@@ -5,6 +5,8 @@
 
 ### Additions
 - SaferLua: Init parameter to the function Store() added
+- Warehouse Boxes: Command 'num_items' added
+- SaferLua-Controller: Command 'num_items' added
 
 ### Removals
 
