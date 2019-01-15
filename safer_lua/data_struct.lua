@@ -35,13 +35,13 @@ safer_lua.DataStructHelp = [[
  Unlike arrays, which are indexed by a range of numbers, 
  'stores' are indexed by keys:
  
-  s = Store()            --> {}
-  s.set("val", 12)       --> {val = 12}
+  s = Store("a",4,"b",5) --> {a = 4, b = 5}
+  s.set("val", 12)       --> {a = 4, b = 5, val = 12}
   s.get("val")           --> returns 12
-  s.set(0, "hello")      --> {val = 12, [0] = "hello"}
+  s.set(0, "hello")      --> {a = 4, b = 5, val = 12, [0] = "hello"}
   s.del("val")           --> {[0] = "hello"}
-  s.size()               --> function returns 1
-  s.memsize()            --> function returns 6
+  s.size()               --> function returns 4
+  s.memsize()            --> function returns 8
   s.next()               --> for loop iterator function  
   s.keys(order)          --> return an array with the keys  
 
@@ -76,7 +76,7 @@ local function var_count(v)
 end
 
 
-function safer_lua.Store()
+function safer_lua.Store(...)
 
     local new_t = {}
     local mt = {}
@@ -169,6 +169,11 @@ function safer_lua.Store()
 		Size = size
 		MemSize = memsize
 		Data = data
+	end
+	
+	for idx = 1,select('#',...),2 do
+		local k,v = select(idx,...),select(idx+1,...)
+		new_t.set(k,v)
 	end
 	
 	return setmetatable(new_t, mt)
