@@ -1,6 +1,21 @@
 # Release Notes for ModPack TechPack [techpack]
 
 
+## V2.00.02 (2019-01-15)
+
+### Additions
+- SaferLua: Init parameter to the function Store() added
+
+### Removals
+
+### Changes
+
+### Fixes
+- Distributors: Formspec bugfixes
+
+
+
+
 ## V2.00.01 (2019-01-13)
 
 ### Additions
@@ -12,6 +27,7 @@
 ### Changes
 - Grinder: Recipes for clay changed
 
+### Fixes
 
 
 

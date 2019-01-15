@@ -294,7 +294,11 @@ local function on_receive_fields(pos, formname, fields, player)
 	
 	filter_settings(pos)
 	
-	State:state_button_event(pos, fields)
+	if fields.state_button ~= nil then
+		State:state_button_event(pos, fields)
+	else
+		meta:set_string("formspec", formspec(State, pos, meta))
+	end
 end
 
 -- tubelib command to turn on/off filter channels
@@ -310,7 +314,7 @@ local function change_filter_settings(pos, slot, val)
 	
 	filter_settings(pos)
 	
-	meta:set_string("formspec", formspec(pos, meta))
+	meta:set_string("formspec", formspec(State, pos, meta))
 	return true
 end
 
