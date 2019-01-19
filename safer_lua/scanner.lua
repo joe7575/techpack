@@ -105,15 +105,15 @@ function safer_lua:check(pos, text, label, err_clbk)
 			if token == "for" then
 				 -- invalid for statement?
 				if lToken[idx + 3] ~= "in" or lToken[idx + 5] ~= "next" then
-						err_clbk(pos, label..lineno..": Invalid use of 'for'")
+						err_clbk(pos, label..":"..lineno..": Invalid use of 'for'")
 						errno = errno + 1
 				end
 			else
-				err_clbk(pos, label..lineno..": Invalid keyword '"..token.."'")
+				err_clbk(pos, label..":"..lineno..": Invalid keyword '"..token.."'")
 				errno = errno + 1
 			end
 		elseif InvalidChars[token] then
-			err_clbk(pos, label..lineno..": Invalid character '"..token.."'")
+			err_clbk(pos, label..":"..lineno..": Invalid character '"..token.."'")
 			errno = errno + 1
 		end
 	end

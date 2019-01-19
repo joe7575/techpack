@@ -12,9 +12,8 @@
 
 ]]--
 
-safer_lua.MaxCodeSize = 2000    -- size in length of byte code
+safer_lua.MaxCodeSize = 5000    -- size if source code in bytes
 safer_lua.MaxTableSize = 1000   -- sum over all table sizes
-
 
 local function memsize()
 	return safer_lua.MaxTableSize
@@ -60,14 +59,31 @@ function safer_lua.config(max_code_size, max_table_size)
 	safer_lua.MaxTableSize = max_table_size
 end	
 
-local function format_error(err, tab)
+local function format_error_str(str, label)
+	local tbl = {}
+	for s in str:gmatch("[^\r\n]+") do
+		s = s:match("^%s*(.-)%s*$")
+		if s:find("function 'xpcall'") then
+			break
+		elseif s:find(".-%.lua:%d+:(.+)") then
+			local err = s:gsub(".-%.lua:%d+:%s*(.+)", "extern: %1")
+			table.insert(tbl, err)
+		elseif s:find('%[string ".-"%]') then
+			local line, err = s:match('^%[string ".-"%]:(%d+): (.+)$')
+			table.insert(tbl, label..":"..line..": "..err)
+		elseif s:find('%(load%):(%d+):') then
+			local line, err = s:match('%(load%):(%d+): (.+)$')
+			table.insert(tbl, label..":"..line..": "..err)
+		end
+	end    
+	return "Error: "..table.concat(tbl, "\n >> ")
+end
+
+local function format_error(err, label)
 	if err:find("stack overflow") then
 		return "Error: Stack overflow due to recursive function calls!"
 	end
-	err = err:gsub('%[string "%-%-.-"%]:', "in "..tab.." line ")
-	err = err:gsub('in main chunk.+', "")
-	err = err:gsub('%.%.%..-:%d+:', "Error")
-	return err
+	return format_error_str(err, label)
 end
 
 local function compile(pos, text, label, err_clbk)
@@ -75,8 +91,7 @@ local function compile(pos, text, label, err_clbk)
 		text = text:gsub("%$", "S:")
 		local code, err = loadstring(text)
 		if not code then
-			err = err:gsub("%(load%):", label)
-			err_clbk(pos, err) 
+			err_clbk(pos, format_error(err, label)) 
 		else
 			return code
 		end
@@ -87,15 +102,11 @@ end
 -- Standard init/loop controller
 -------------------------------------------------------------------------------
 function safer_lua.init(pos, init, loop, environ, err_clbk)
-	if #init > safer_lua.MaxCodeSize then
-		err_clbk(pos, "init() Code size limit exceeded")
+	if (#init + #loop) > safer_lua.MaxCodeSize then
+		err_clbk(pos, "Error: Code size limit exceeded")
 		return
 	end
-	if #loop > safer_lua.MaxCodeSize then
-		err_clbk(pos, "loop() Code size limit exceeded")
-		return
-	end
-	local code = compile(pos, init, "init() ", err_clbk)
+	local code = compile(pos, init, "init", err_clbk, 0)
 	if code then
 		local env = table.copy(BASE_ENV)
 		env.S = {}
@@ -103,10 +114,10 @@ function safer_lua.init(pos, init, loop, environ, err_clbk)
 		setfenv(code, env)
 		local res, err = xpcall(code, debug.traceback)
 		if not res then
-			err_clbk(pos, format_error(err, "init()"))
+			err_clbk(pos, format_error(err, "init"))
 		else
 			env = getfenv(code)
-			code = compile(pos, loop, "loop() ", err_clbk)
+			code = compile(pos, loop, "loop", err_clbk)
 			if code then
 				setfenv(code, env)
 				return code
@@ -126,11 +137,11 @@ function safer_lua.run_loop(pos, elapsed, code, err_clbk)
 	end
 	local res, err = xpcall(code, debug.traceback)
 	if calc_used_mem_size(env) > safer_lua.MaxTableSize then 
-		err_clbk(pos, "Memory limit exceeded")
+		err_clbk(pos, "Error: Data memory limit exceeded")
 		return false
 	end
 	if not res then
-		err_clbk(pos, format_error(err, "loop()"))
+		err_clbk(pos, format_error(err, "loop"))
 		return false
 	end
 	return true
@@ -141,15 +152,14 @@ end
 -------------------------------------------------------------------------------
 local function thread(pos, code, err_clbk)
 	while true do
-		local res, err = pcall(code)
+		local res, err = xpcall(code, debug.traceback)
 		if not res then
-			err = err:gsub("%[string .+%]:", "loop() ")
-			err_clbk(pos, err)
+			err_clbk(pos, format_error(err, "loop"))
 			return false
 		end
 		local env = getfenv(code)
 		if calc_used_mem_size(env) > safer_lua.MaxTableSize then 
-			err_clbk(pos, "Memory limit exceeded")
+			err_clbk(pos, "Error: Memory limit exceeded")
 			return false
 		end
 		coroutine.yield()
@@ -164,8 +174,7 @@ end
 function safer_lua.co_resume(pos, co, code, err_clbk)
 	local res, err = coroutine.resume(co, pos, code, err_clbk)
 	if not res then
-		err = err:gsub("%[string .+%]:", "loop() ")
-		err_clbk(pos, err)
+		err_clbk(pos, format_error(err, "loop"))
 		return false
 	end
 	return true

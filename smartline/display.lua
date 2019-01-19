@@ -108,8 +108,13 @@ end
 local function write_row(meta, payload)
 	local text = meta:get_string("text")
 	if type(payload) == "table" then
-		local row = tonumber(payload.row) or 1
+		local row = tonumber(payload.row) or 0
+		if row > 9 then row = 9 end
 		local str = payload.str or "oops"
+		if row == 0 then
+			meta:set_string("infotext", str)
+			return 
+		end
 		local rows
 		if meta:get_int("startscreen") == 1 then
 			rows = {}

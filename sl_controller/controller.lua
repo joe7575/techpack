@@ -205,7 +205,7 @@ local function formspec4(meta)
 	default.gui_bg_img..
 	default.gui_slots..
 	"tabheader[0,0;tab;init,func,loop,outp,notes,help;4;;true]"..
-	"table[0.2,0.2;9.5,7;output;"..output..";]"..
+	"table[0.2,0.2;9.5,7;output;"..output..";200]"..
 	"button[4.4,7.5;1.8,1;clear;Clear]"..
 	"button[6.3,7.5;1.8,1;update;Update]"..
 	"button[8.2,7.5;1.8,1;"..cmnd.."]"
@@ -236,9 +236,31 @@ local function formspec6(items, pos, text)
 	"textarea[0.3,1.3;10,8;help;Help:;"..text.."]"
 end
 
+local function patch_error_string(err, line_offs)
+	local tbl = {}
+	for s in err:gmatch("[^\r\n]+") do
+		if s:find("loop:(%d+):") then
+			local prefix, line, err = s:match("(.+)loop:(%d+):(.+)")
+			if tonumber(line) < line_offs then
+				table.insert(tbl, prefix.."func:"..line..":"..err)
+			else
+				line = tonumber(line) - line_offs
+				table.insert(tbl, prefix.."loop:"..line..":"..err)
+			end
+		else
+			table.insert(tbl, s)
+		end
+	end    
+	return table.concat(tbl, "\n")
+end
+
 local function error(pos, err)
-	output(pos, err)
 	local meta = minetest.get_meta(pos)
+	local func = meta:get_string("func")
+	local _,line_offs = string.gsub(func, "\n", "\n")
+	line_offs = line_offs + 1
+	err = patch_error_string(err, line_offs)
+	output(pos, err)
 	local number = meta:get_string("number")
 	meta:set_string("infotext", "Controller "..number..": error")
 	meta:set_int("state", tubelib.STOPPED)
@@ -255,7 +277,7 @@ local function compile(pos, meta, number)
 	local owner = meta:get_string("owner")
 	local env = table.copy(tCommands)
 	env.meta = {pos=pos, owner=owner, number=number, error=error}
-	local code = safer_lua.init(pos, init .."\n".. func, loop, env, error)
+	local code = safer_lua.init(pos, init, func.."\n"..loop, env, error)
 	
 	if code then
 		Cache[number] = {code=code, inputs={}}
@@ -457,6 +479,10 @@ minetest.register_node("sl_controller:controller", {
 		meta:set_string("func", "-- for your functions")
 		meta:set_string("loop", "-- called every second")
 		meta:set_string("notes", "For your notes / snippets")
+		meta:mark_as_private("init")
+		meta:mark_as_private("func")
+		meta:mark_as_private("loop")
+		meta:mark_as_private("notes")
 		meta:set_string("formspec", formspec1(meta))
 		meta:set_string("infotext", "Controller "..number..": stopped")
 	end,

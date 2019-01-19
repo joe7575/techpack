@@ -1,6 +1,21 @@
 # Release Notes for ModPack TechPack [techpack]
 
 
+## V2.00.03 (2019-01-19)
+
+### Additions
+
+### Removals
+
+### Changes
+- SaferLua-Controller: Lua error messages output improved
+- SmartLine Display: row 0 can be used to set the infotext
+
+### Fixes
+
+
+
+
 ## V2.00.02 (2019-01-15)
 
 ### Additions
