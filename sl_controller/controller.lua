@@ -240,12 +240,14 @@ local function patch_error_string(err, line_offs)
 	local tbl = {}
 	for s in err:gmatch("[^\r\n]+") do
 		if s:find("loop:(%d+):") then
-			local prefix, line, err = s:match("(.+)loop:(%d+):(.+)")
-			if tonumber(line) < line_offs then
-				table.insert(tbl, prefix.."func:"..line..":"..err)
-			else
-				line = tonumber(line) - line_offs
-				table.insert(tbl, prefix.."loop:"..line..":"..err)
+			local prefix, line, err = s:match("(.-)loop:(%d+):(.+)")
+			if prefix and line and err then
+				if tonumber(line) < line_offs then
+					table.insert(tbl, prefix.."func:"..line..":"..err)
+				else
+					line = tonumber(line) - line_offs
+					table.insert(tbl, prefix.."loop:"..line..":"..err)
+				end
 			end
 		else
 			table.insert(tbl, s)

@@ -1,6 +1,21 @@
 # Release Notes for ModPack TechPack [techpack]
 
 
+## V2.00.04 (2019-01-20)
+
+### Additions
+
+### Removals
+
+### Changes
+
+### Fixes
+- SaferLua-Controller: Lua error messages bugfix
+- SmartLine Server: data base was shared between several severs
+
+
+
+
 ## V2.00.03 (2019-01-19)
 
 ### Additions

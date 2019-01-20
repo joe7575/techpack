@@ -25,7 +25,7 @@ local DEFAULT_MEM = {
 local function on_time(pos, elasped)
 	local meta = minetest.get_meta(pos)
 	local number = meta:get_string("number")
-	local mem = tubelib.get_data(number, "memory") or DEFAULT_MEM
+	local mem = tubelib.get_data(number, "memory") or table.copy(DEFAULT_MEM)
 	meta:set_string("infotext", "Server "..number..": ("..(mem.size or 0).."/"..SERVER_CAPA..")")
 	return true
 end
@@ -64,7 +64,7 @@ minetest.register_node("sl_controller:server", {
 		local number = tubelib.add_node(pos, "sl_controller:server")
 		meta:set_string("owner", placer:get_player_name())
 		meta:set_string("number", number)
-		tubelib.set_data(number, "memory", DEFAULT_MEM)
+		tubelib.set_data(number, "memory", table.copy(DEFAULT_MEM))
 		on_time(pos, 0)
 		minetest.get_node_timer(pos):start(20)
 	end,
@@ -139,7 +139,7 @@ tubelib.register_node("sl_controller:server", {}, {
 		local meta = minetest.get_meta(pos)
 		if meta then
 			local number = meta:get_string("number")
-			local mem = tubelib.get_data(number, "memory") or DEFAULT_MEM
+			local mem = tubelib.get_data(number, "memory") or table.copy(DEFAULT_MEM)
 			if topic == "read" then
 				return read_value(mem, payload)
 			elseif topic == "write" then
