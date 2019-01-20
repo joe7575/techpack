@@ -40,16 +40,26 @@ function safer_lua:string(pttrn)
 	-- result is not needed
 end
 
+local function lines(str)
+   local t = {}
+   local function helper(line)
+	  table.insert(t, line)
+	  return ""
+   end
+   helper((str:gsub("(.-)\r?\n", helper)))
+   return t
+end
+
 function safer_lua:scanner(text)
 	local lToken = {}
-	for idx, line in ipairs(text:split("\n")) do
+	for idx, line in ipairs(lines(text)) do
 		self.line = line
 		self.pos = 1
 		self.line = trim(self.line)
 		self.line = self.line:split("--")[1]
+		table.insert(lToken, idx)  -- line number
 		if self.line then
 			-- devide line in tokens
-			table.insert(lToken, idx)  -- line number
 			while true do
 				if self.pos > #self.line then break end
 				local ch = self.line:sub(self.pos, self.pos)
@@ -80,6 +90,7 @@ local InvalidKeywords = {
 	["repeat"] = true, 
 	["until"] = true, 
 	["for"] = true, 
+	["range"] = true, 
 	--["function"] = true,
 	["_G"] = true,
 	["__load"] = true,
@@ -104,9 +115,18 @@ function safer_lua:check(pos, text, label, err_clbk)
 		elseif InvalidKeywords[token] then
 			if token == "for" then
 				 -- invalid for statement?
-				if lToken[idx + 3] ~= "in" or lToken[idx + 5] ~= "next" then
-						err_clbk(pos, label..":"..lineno..": Invalid use of 'for'")
-						errno = errno + 1
+				if lToken[idx + 3] == "in" and lToken[idx + 5] == "next" then
+					--
+				elseif lToken[idx + 2] == "in" and lToken[idx + 3] == "range" then
+					--
+				else
+					err_clbk(pos, label..":"..lineno..": Invalid use of 'for'")
+					errno = errno + 1
+				end
+			elseif token == "range" then
+				if lToken[idx - 1] ~= "in" then
+					err_clbk(pos, label..":"..lineno..": Invalid use of 'range'")
+					errno = errno + 1
 				end
 			else
 				err_clbk(pos, label..":"..lineno..": Invalid keyword '"..token.."'")

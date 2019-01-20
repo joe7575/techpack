@@ -4,6 +4,7 @@
 ## V2.00.04 (2019-01-20)
 
 ### Additions
+- SaferLua: range(from, to) added, standard string functions added
 
 ### Removals
 

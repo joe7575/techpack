@@ -14,9 +14,21 @@
 
 safer_lua.MaxCodeSize = 5000    -- size if source code in bytes
 safer_lua.MaxTableSize = 1000   -- sum over all table sizes
+safer_lua.MaxExeTime = 5000   -- max. execution time in us
 
 local function memsize()
 	return safer_lua.MaxTableSize
+end
+
+local function range(from, to)
+    return function(expired_at,last)
+		assert(expired_at > minetest.get_us_time(), "Runtime limit exceeded")
+		if last >= to then 
+			return nil
+		else 
+			return last+1
+		end
+	end, minetest.get_us_time() + safer_lua.MaxExeTime, from-1
 end
 
 local BASE_ENV = {
@@ -24,12 +36,27 @@ local BASE_ENV = {
 	Store = safer_lua.Store,
 	Set = safer_lua.Set,
 	memsize = memsize,
+	range = range,
 	math = {
 		floor = math.floor,
 		abs = math.abs,
 		max = math.max,
 		min = math.min,
 		random = math.random,
+	},
+	string = {
+		byte = string.byte,
+		char = string.char,
+		find = string.find,
+		format = string.format,
+		gmatch = string.gmatch,
+		gsub = string.gsub,
+		len = string.len,
+		lower = string.lower,
+		match = string.match,
+		rep = string.rep,
+		sub = string.sub,
+		upper = string.upper,
 	},
 	tonumber = tonumber,
 	tostring = tostring,
