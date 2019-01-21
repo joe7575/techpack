@@ -11,6 +11,7 @@
 
 ### Changes
 - SmartLine Repeater recipe
+- SmartLine textures shrunken
 
 ### Fixes
 - SaferLua-Controller: Event handling disabled when Controller is stopped
