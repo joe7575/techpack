@@ -519,7 +519,7 @@ minetest.register_craft({
 
 -- write inputs from remote nodes
 local function set_input(pos, number, input, val)
-	if input then 
+	if input and M(pos):get_int("state") == tubelib.RUNNING then 
 		if Cache[number] and Cache[number].inputs then
 			Cache[number].inputs[input] = val
 			-- only one event per second

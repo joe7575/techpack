@@ -21,6 +21,7 @@ dofile(MP.."/playerdetector.lua")
 dofile(MP.."/sequencer.lua")
 dofile(MP.."/timer.lua")
 dofile(MP.."/repeater.lua")
+dofile(MP.."/collector.lua")
 dofile(MP.."/controller.lua")
 dofile(MP.."/commands.lua")
 -- ICTA Controller

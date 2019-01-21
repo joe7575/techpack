@@ -1,6 +1,22 @@
 # Release Notes for ModPack TechPack [techpack]
 
 
+
+## V2.00.05 (2019-01-21)
+
+### Additions
+- SmartLine Collector added
+
+### Removals
+
+### Changes
+- SmartLine Repeater recipe
+
+### Fixes
+- SaferLua-Controller: Event handling disabled when Controller is stopped
+
+
+
 ## V2.00.04 (2019-01-20)
 
 ### Additions

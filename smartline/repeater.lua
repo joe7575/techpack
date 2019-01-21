@@ -96,9 +96,9 @@ minetest.register_node("smartline:repeater", {
 minetest.register_craft({
 	output = "smartline:repeater",
 	recipe = {
-		{"default:copper_ingot", "", "default:copper_ingot"},
+		{"", "default:copper_ingot", ""},
 		{"tubelib:wlanchip", "", "tubelib:wlanchip"},
-		{"", "", ""},
+		{"", "dye:blue", ""},
 	},
 })
 
