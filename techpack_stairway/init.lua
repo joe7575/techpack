@@ -407,6 +407,38 @@ minetest.register_node("techpack_stairway:ladder2", {
 	sounds = default.node_sound_metal_defaults(),
 })
 
+minetest.register_node("techpack_stairway:ladder3", {
+    description = "TechPack Ladder 3",
+    tiles = {
+        'techpack_stairway_steps.png',
+        'techpack_stairway_steps.png',
+        'techpack_stairway_ladder.png',
+    },
+    drawtype = "nodebox",
+    node_box = {
+        type = "fixed",
+        fixed = {
+            {-17/32, -17/32,  15/32,  17/32,  17/32,  17/32},
+            --{-17/32, -17/32, -17/32, -15/32,  17/32,  17/32},
+            --{-17/32, -17/32, -17/32,  17/32,  17/32, -15/32},
+            { 15/32, -17/32, -17/32,  17/32,  17/32,  17/32},
+        },
+    },
+
+    selection_box = {
+        type = "fixed",
+        fixed = {-8/16, -8/16, -8/16,  8/16, 8/16, 8/16},
+    },
+
+    climbable = true,
+    paramtype2 = "facedir",
+    paramtype = "light",
+    sunlight_propagates = true,
+    is_ground_content = false,
+    groups = {cracky = 2},
+    sounds = default.node_sound_metal_defaults(),
+})
+
 minetest.register_node("techpack_stairway:lattice", {
 	description = "TechPack Lattice",
 	tiles = {
@@ -472,6 +504,15 @@ minetest.register_craft({
 		{"", "default:steel_ingot", ""},
 		{"dye:dark_grey", "default:tin_ingot", "default:coal_lump"},
 		{"", "default:steel_ingot", ""},
+	},
+})
+
+minetest.register_craft({
+	output = "techpack_stairway:ladder3 4",
+	recipe = {
+		{"", "", "default:steel_ingot"},
+		{"dye:dark_grey", "default:tin_ingot", "default:coal_lump"},
+		{"", "", "default:steel_ingot"},
 	},
 })
 

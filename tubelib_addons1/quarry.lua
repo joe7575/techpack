@@ -170,7 +170,8 @@ local function quarry_next_node(pos, meta)
 	meta:set_int("fuel", fuel) 
 	
 	local idx = meta:get_int("idx")
-	local facedir = meta:get_int("facedir")
+	if idx == 0 then idx = 1 end
+	local facedir = minetest.get_node(pos).param2
 	local owner = meta:get_string("owner")
 	local endless = meta:get_int("endless")
 	local start_y = pos.y + meta:get_int("start_level")
@@ -295,8 +296,6 @@ minetest.register_node("tubelib_addons1:quarry", {
 		inv:set_size('main', 16)
 		inv:set_size('fuel', 1)
 		local number = tubelib.add_node(pos, "tubelib_addons1:quarry")
-		local facedir = minetest.dir_to_facedir(placer:get_look_dir(), false)
-		meta:set_int("facedir", facedir)
 		meta:set_string("owner", placer:get_player_name())
 		meta:set_int("endless", 0)
 		meta:set_int("curr_level", -1)
@@ -388,8 +387,6 @@ minetest.register_node("tubelib_addons1:quarry_defect", {
 		inv:set_size('main', 16)
 		inv:set_size('fuel', 1)
 		local number = tubelib.add_node(pos, "tubelib_addons1:quarry")
-		local facedir = minetest.dir_to_facedir(placer:get_look_dir(), false)
-		meta:set_int("facedir", facedir)
 		meta:set_string("owner", placer:get_player_name())
 		meta:set_int("endless", 0)
 		meta:set_int("curr_level", -1)
