@@ -130,8 +130,8 @@ minetest.register_node("smartline:collector", {
 		if owner ~= player:get_player_name() then
 			return
 		end
-		
-		if fields.quit == "true" then
+
+		if fields.quit == "true" and fields.poll_numbers then
 			if tubelib.check_numbers(fields.event_number) then
 				meta:set_string("event_number", fields.event_number)
 			end

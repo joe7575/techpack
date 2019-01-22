@@ -2,6 +2,20 @@
 
 
 
+## V2.00.06 (2019-01-22)
+
+### Additions
+
+### Removals
+
+### Changes
+
+### Fixes
+- SaferLua Collector: Formspec handling bugfix
+- Quarry: Bugfix
+
+
+
 ## V2.00.05 (2019-01-21)
 
 ### Additions
