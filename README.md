@@ -1,22 +1,5 @@
 # TechPack V2.00
 
-## New in v2 (from players point of view)
-- Almost all machines break after a certain amount of time (switch into the state 'defect') and have to be repaired.
-- A Repair Kit is available to repair defect machines.
-- A Forceload block (16x16x16) is added which keeps the corresponding area loaded and the machines operational as far as the player is logged in.
-- The Quarry now uses LVM techniques to go down up to 100 meter
-- Ladders, stairways, and bridges added for the machines (techpack_stairway)
-- Industrial lamps
-- Warehouse Boxes in steel, copper, and gold for your warehouse/stock (techpack_warehouse)
-
-
-## New in v2 (from admins point of view)
-- settingtypes introduced with the following settings: tubelib_max_num_forceload_blocks, tubelib_basalt_stone_enabled, tubelib_machine_aging_value
-- the new mods 'techpack_stairway' and 'techpack_warehouse' have to be enabled
-- TechPack depends now on the mod 'basic_materials' and 'tubelib2' (![GitHub](https://github.com/joe7575/tubelib2))
-
-
-
 TechPack, a Mining, Crafting, &amp; Farming Modpack for Minetest.
 
 ![TechPack](https://github.com/joe7575/techpack/blob/master/screenshot.png)
@@ -39,11 +22,6 @@ TechPack is a collection of following Mods:
 * lcdlib - a display lib used by smartline
 
 **A TechPack Tutorial is available as ![Wiki](https://github.com/joe7575/techpack/wiki)**
-
-TechPack is a collection of mods for an automated mining, crafting, and farming. It is no replacement for Pipeworks, Mesecons, Technic, and Co., but it is a lightweight and simple to use alternative for servers with the focus on building (not only playing around with technique stuff).
-If a player uses the full potential of TechPack, he can work on his building projects while TechPack is producing most of the necessary materials in the meantime. 
-
-
 
 TechPack provides:
 - lumber tubes to connect 2 nodes
@@ -165,5 +143,20 @@ tubelib_addons1 optional: unified_inventory
 - 2018-12-23  V2.xx  * on the way to v2
 - 2018-12-29  V2.00  * beta
 - 2019-01-12  V2.00  * release
+
+## New in v2 (from players point of view)
+- Almost all machines break after a certain amount of time (switch into the state 'defect') and have to be repaired.
+- A Repair Kit is available to repair defect machines.
+- A Forceload block (16x16x16) is added which keeps the corresponding area loaded and the machines operational as far as the player is logged in.
+- The Quarry now uses LVM techniques to go down up to 100 meter
+- Ladders, stairways, and bridges added for the machines (techpack_stairway)
+- Industrial lamps
+- Warehouse Boxes in steel, copper, and gold for your warehouse/stock (techpack_warehouse)
+
+
+## New in v2 (from admins point of view)
+- settingtypes introduced with the following settings: tubelib_max_num_forceload_blocks, tubelib_basalt_stone_enabled, tubelib_machine_aging_value
+- the new mods 'techpack_stairway' and 'techpack_warehouse' have to be enabled
+- TechPack depends now on the mod 'basic_materials' and 'tubelib2' (![GitHub](https://github.com/joe7575/tubelib2))
 
 See ![releasenotes.txt](https://github.com/joe7575/techpack/blob/master/releasenotes.md) for further information

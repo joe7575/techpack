@@ -353,8 +353,8 @@ smartline.icta_register_action("switch", {
 		return 'turn('..sl.fmt_number(data.number)..","..data.value..')'
 	end,
 	code = function(data, environ)
-		local s = 'tubelib.send_message("%s", "%s", nil, "%s", nil)'
-		return string.format(s, data.number, environ.owner, data.value)
+		local s = 'tubelib.send_message("%s", "%s", nil, "%s", "%s")'
+		return string.format(s, data.number, environ.owner, data.value, environ.number)
 	end,
 })
 

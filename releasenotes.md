@@ -2,6 +2,20 @@
 
 
 
+## V2.00.07 (2019-01-27)
+
+### Additions
+
+### Removals
+
+### Changes
+- SmartLine Controller: Own node number to on/off command added to be able
+  to cascade SmartLine Controllers
+
+### Fixes
+
+
+
 ## V2.00.06 (2019-01-22)
 
 ### Additions
