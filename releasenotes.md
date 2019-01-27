@@ -2,6 +2,20 @@
 
 
 
+## V2.01 (2019-01-27)
+
+### Additions
+- SaferLua Terminal to be connected to the SaferLua Controller
+
+### Removals
+
+### Changes
+- Server: formspec added to enter valid usernames for server access
+
+### Fixes
+
+
+
 ## V2.00.07 (2019-01-27)
 
 ### Additions

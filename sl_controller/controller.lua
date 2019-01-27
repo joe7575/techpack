@@ -283,6 +283,7 @@ local function compile(pos, meta, number)
 	
 	if code then
 		Cache[number] = {code=code, inputs={}}
+		Cache[number].inputs.term = "" -- terminal inputs
 		return true
 	end
 	return false
@@ -543,6 +544,16 @@ function sl_controller.get_input(number, input)
 	return "off"
 end	
 
+-- used for Terminal commands
+function sl_controller.get_command(number)
+	if Cache[number] and Cache[number].inputs then
+		local cmnd = Cache[number].inputs["term"] or ""
+		Cache[number].inputs["term"] = ""
+		return cmnd
+	end
+	return ""
+end	
+
 tubelib.register_node("sl_controller:controller", {}, {
 	on_recv_message = function(pos, topic, payload)
 		local meta = minetest.get_meta(pos)
@@ -552,6 +563,8 @@ tubelib.register_node("sl_controller:controller", {}, {
 			set_input(pos, number, payload, topic)
 		elseif topic == "off" then
 			set_input(pos, number, payload, topic)
+		elseif topic == "term" then
+			set_input(pos, number, "term", payload)
 		elseif topic == "state" then
 			local running = meta:get_int("running") or tubelib.STATE_STOPPED
 			return tubelib.statestring(running)

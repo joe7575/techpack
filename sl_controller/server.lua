@@ -21,6 +21,16 @@ local DEFAULT_MEM = {
 	}
 }
 
+local function formspec(meta)
+	local names = meta:get_string("names") or ""
+	return "size[9,4]"..
+	default.gui_bg..
+	default.gui_bg_img..
+	default.gui_slots..
+	"field[0.2,1;9,1;names;Allowed user names (spaces separated):;"..names.."]" ..
+	"button_exit[3.5,2.5;2,1;exit;Save]"
+end
+
 
 local function on_time(pos, elasped)
 	local meta = minetest.get_meta(pos)
@@ -65,8 +75,18 @@ minetest.register_node("sl_controller:server", {
 		meta:set_string("owner", placer:get_player_name())
 		meta:set_string("number", number)
 		tubelib.set_data(number, "memory", table.copy(DEFAULT_MEM))
+		meta:set_string("formspec", formspec(meta))
 		on_time(pos, 0)
 		minetest.get_node_timer(pos):start(20)
+	end,
+	
+	on_receive_fields = function(pos, formname, fields, player)
+		local meta = minetest.get_meta(pos)
+		if fields.names and fields.names ~= "" then
+			local names = string.gsub(fields.names, " +", " ")
+			meta:set_string("names", names)
+			meta:set_string("formspec", formspec(meta))
+		end
 	end,
 	
 	on_dig = function(pos, node, puncher, pointed_thing)
@@ -113,6 +133,23 @@ local function calc_size(v)
 	end
 end
 
+local function get_memory(num, name)
+	local info = tubelib.get_node_info(num)
+	if info and info.name == "sl_controller:server" then
+		local meta = minetest.get_meta(info.pos)
+		local owner = meta:get_string("owner")
+		if name == owner then
+			return tubelib.get_data(num, "memory") or table.copy(DEFAULT_MEM)
+		end
+		local names = meta:get_string("names")
+		for _,n in ipairs(string.split(names, " ")) do
+			if name == n then
+				return tubelib.get_data(num, "memory") or table.copy(DEFAULT_MEM)
+			end
+		end
+	end
+end
+
 local function write_value(mem, key, item)
 	if mem and mem.size < SERVER_CAPA then
 		if mem.data[key] then
@@ -136,19 +173,7 @@ end
 
 tubelib.register_node("sl_controller:server", {}, {
 	on_recv_message = function(pos, topic, payload)
-		local meta = minetest.get_meta(pos)
-		if meta then
-			local number = meta:get_string("number")
-			local mem = tubelib.get_data(number, "memory") or table.copy(DEFAULT_MEM)
-			if topic == "read" then
-				return read_value(mem, payload)
-			elseif topic == "write" then
-				write_value(mem, payload.key, payload.value)
-				tubelib.set_data(number, "memory", mem)
-			else
-				return "unsupported"
-			end
-		end
+		return "unsupported"
 	end,
 	on_node_load = function(pos)
 		minetest.get_node_timer(pos):start(20)
@@ -159,7 +184,10 @@ tubelib.register_node("sl_controller:server", {}, {
 sl_controller.register_function("server_read", {
 	cmnd = function(self, num, key) 
 		if type(key) == "string" then
-			return tubelib.send_request(num, "read", key)
+			local mem = get_memory(num, self.meta.owner)
+			if mem then
+				return read_value(mem, key)
+			end
 		else
 			self.error("Invalid server_read parameter")
 		end
@@ -173,7 +201,10 @@ sl_controller.register_function("server_read", {
 sl_controller.register_action("server_write", {
 	cmnd = function(self, num, key, value)
 		if type(key) == "string" then
-			tubelib.send_message(num, self.meta.owner, nil, "write", {key=key, value=value})
+			local mem = get_memory(num, self.meta.owner)
+			if mem then
+				write_value(mem, key, value)
+			end
 		else
 			self.error("Invalid server_write parameter")
 		end

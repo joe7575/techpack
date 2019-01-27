@@ -1,4 +1,4 @@
-# TechPack V2.00
+# TechPack V2.01
 
 TechPack, a Mining, Crafting, &amp; Farming Modpack for Minetest.
 
@@ -55,6 +55,7 @@ TechPack provides:
   - sending mails or chat messages
   - output on a display
 - a Controller to be programmed in Lua
+- a Terminal to be connected to the Lua Controller
 - a Signal Tower node showing machine states
 - a Display node for text outputs of the Controller
 - Metal ladders, stairways, and bridges
@@ -143,6 +144,8 @@ tubelib_addons1 optional: unified_inventory
 - 2018-12-23  V2.xx  * on the way to v2
 - 2018-12-29  V2.00  * beta
 - 2019-01-12  V2.00  * release
+- 2019-01-27  V2.01  * SaferLua Controller Terminal added
+
 
 ## New in v2 (from players point of view)
 - Almost all machines break after a certain amount of time (switch into the state 'defect') and have to be repaired.
