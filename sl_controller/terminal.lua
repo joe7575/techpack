@@ -20,7 +20,7 @@ Controller to the Terminal.
 
 Commands can have up to 80 characters.
 Local commands:
-- cls        = clear screen
+- clear    = clear screen
 - help     = this message 
 - pub      = switch to public use
 - priv      = switch to private use
@@ -64,7 +64,7 @@ local function command(pos, cmnd, player)
 	if cmnd then
 		cmnd = cmnd:sub(1,80)
 		
-		if cmnd == "cls" then
+		if cmnd == "clear" then
 			meta:set_string("output", "")
 			meta:set_string("formspec", formspec2(meta))
 		elseif cmnd == "help" then
