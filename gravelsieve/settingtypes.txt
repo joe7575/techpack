@@ -2,4 +2,4 @@
 # 1.0 is according to the mapgen generator 
 # 2.0 means half as many ores as result
 # 0.5 means twice as many ores as result
-gravelsieve_ore_rarity (Rarity factor to find ores) float 1
+gravelsieve_ore_rarity (Rarity factor to find ores) float 1.5

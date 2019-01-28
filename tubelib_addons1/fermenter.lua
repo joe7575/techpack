@@ -10,7 +10,7 @@
 	
 	fermenter.lua
 	
-	The Fermenter converts 2 leave items of any kind into one Bio Gas item,
+	The Fermenter converts 3 leave items of any kind into one Bio Gas item,
 	needed by the Reformer to produce Bio Fuel.
 
 ]]--
@@ -23,6 +23,7 @@ local M = minetest.get_meta
 local STANDBY_TICKS = 4
 local COUNTDOWN_TICKS = 4
 local CYCLE_TIME = 2
+local NUM_LEAVES = 3 -- to produce on bio gas
 
 local function formspec(self, pos, meta)
 	return "size[8,8]"..
@@ -113,10 +114,10 @@ local function convert_leaves_to_biogas(pos, meta)
 		return
 	end
 	
-	-- take 2 items
+	-- take NUM_LEAVES items
 	local items = {}
 	local fault = false
-	for i = 1, 2 do
+	for i = 1, NUM_LEAVES do
 		items[i] = tubelib.get_num_items(meta, "src", 1)
 		if items[i] then  -- input available?
 			if not is_leaves(items[i]:get_name()) then
@@ -127,7 +128,7 @@ local function convert_leaves_to_biogas(pos, meta)
 	end
 		
 	-- put result into dst inventory
-	if #items == 2 then
+	if #items == NUM_LEAVES then
 		inv:add_item("dst", biogas)
 		State:keep_running(pos, meta, COUNTDOWN_TICKS)
 		return

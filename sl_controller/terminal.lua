@@ -24,6 +24,8 @@ Local commands:
 - help     = this message 
 - pub      = switch to public use
 - priv      = switch to private use
+Test commands:
+- send <num> on/off   = send on/off event
 ]]
 
 local function formspec1()
@@ -80,16 +82,65 @@ local function command(pos, cmnd, player)
 			output(pos, player..":$ "..cmnd)
 			output(pos, "Switched to private use!")
 		elseif meta:get_int("public") == 1 or owner == player then
-			local number = meta:get_string("number") or "0000"
-			output(pos, player..":$ "..cmnd)
-			tubelib.send_message(number, owner, nil, "term", cmnd)
+			local num, topic = cmnd:match('^send%s+([0-9]+)%s+([onff]+)$')
+			if num and topic then
+				local own_number = meta:get_string("own_number")
+				output(pos, player..":$ send "..num.." "..topic)
+				tubelib.send_message(num, owner, nil, topic, own_number)
+			else
+				local number = meta:get_string("number") or "0000"
+				output(pos, player..":$ "..cmnd)
+				tubelib.send_message(number, owner, nil, "term", cmnd)
+			end
 		end
 	end
 end	
 
-minetest.register_node("sl_controller:terminal", {
-	description = "SaferLua Controller Terminal",
-	tiles = {
+local function register_terminal(num, tiles, node_box, selection_box)
+	minetest.register_node("sl_controller:terminal"..num, {
+		description = "SaferLua Controller Terminal",
+		tiles = tiles,
+		drawtype = "nodebox",
+		node_box = node_box,
+		selection_box = selection_box,
+		
+		after_place_node = function(pos, placer)
+			local number = tubelib.add_node(pos, minetest.get_node(pos).name)
+			local meta = minetest.get_meta(pos)
+			meta:set_string("own_number", number)
+			meta:set_string("formspec", formspec1())
+			meta:set_string("owner", placer:get_player_name())
+			meta:set_string("infotext", "SaferLua Controller Terminal "..number..": not connected")
+		end,
+
+		on_receive_fields = function(pos, formname, fields, player)
+			local meta = minetest.get_meta(pos)
+			if fields.number and fields.number ~= "" then
+				if tubelib.check_numbers(fields.number) then
+					meta:set_string("number", fields.number)
+					local own_number = meta:get_string("own_number")
+					meta:set_string("infotext", "SaferLua Controller Terminal "..own_number..": connected with "..fields.number)
+					meta:set_string("formspec", formspec2(meta))
+				end
+			elseif (fields.key_enter == "true" or fields.ok == "Enter") and fields.cmnd ~= "" then
+				command(pos, fields.cmnd, player:get_player_name())
+			end
+		end,
+		
+		after_dig_node = function(pos)
+			tubelib.remove_node(pos)
+		end,
+		
+		paramtype = "light",
+		sunlight_propagates = true,
+		paramtype2 = "facedir",
+		groups = {choppy=2, cracky=2, crumbly=2},
+		is_ground_content = false,
+		sounds = default.node_sound_metal_defaults(),
+	})
+end
+
+register_terminal("", {
 		-- up, down, right, left, back, front
 		'sl_controller_terminal_top.png',
 		'sl_controller_terminal_bottom.png',
@@ -98,51 +149,13 @@ minetest.register_node("sl_controller:terminal", {
 		'sl_controller_terminal_bottom.png',
 		"sl_controller_terminal_front.png",
 	},
-
-	drawtype = "nodebox",
-	node_box = {
+	{
 		type = "fixed",
 		fixed = {
 			{-12/32, -16/32,  -8/32,  12/32, -14/32, 12/32},
 			{-12/32, -14/32,  12/32,  12/32,   6/32, 14/32},
 		},
-	},
-	
-	after_place_node = function(pos, placer)
-		local number = tubelib.add_node(pos, "sl_controller:terminal")
-		local meta = minetest.get_meta(pos)
-		meta:set_string("own_number", number)
-		meta:set_string("formspec", formspec1())
-		meta:set_string("owner", placer:get_player_name())
-		meta:set_string("infotext", "SaferLua Controller Terminal "..number..": not connected")
-	end,
-
-	on_receive_fields = function(pos, formname, fields, player)
-		local meta = minetest.get_meta(pos)
-		if fields.number and fields.number ~= "" then
-			if tubelib.check_numbers(fields.number) then
-				meta:set_string("number", fields.number)
-				local own_number = meta:get_string("own_number")
-				meta:set_string("infotext", "SaferLua Controller Terminal "..own_number..": connected with "..fields.number)
-				meta:set_string("formspec", formspec2(meta))
-			end
-		elseif (fields.key_enter == "true" or fields.ok == "Enter") and fields.cmnd ~= "" then
-			command(pos, fields.cmnd, player:get_player_name())
-		end
-	end,
-	
-	after_dig_node = function(pos)
-		tubelib.remove_node(pos)
-	end,
-	
-	paramtype = "light",
-	sunlight_propagates = true,
-	paramtype2 = "facedir",
-	groups = {choppy=2, cracky=2, crumbly=2},
-	is_ground_content = false,
-	sounds = default.node_sound_metal_defaults(),
-})
-
+	})
 
 minetest.register_craft({
 	output = "sl_controller:terminal",
@@ -153,7 +166,44 @@ minetest.register_craft({
 	},
 })
 
-tubelib.register_node("sl_controller:terminal", {}, {
+register_terminal("2", {
+		-- up, down, right, left, back, front
+		'sl_controller_terminal2_top.png',
+		'sl_controller_terminal2_side.png',
+		'sl_controller_terminal2_side.png^[transformFX',
+		'sl_controller_terminal2_side.png',
+		'sl_controller_terminal2_back.png',
+		"sl_controller_terminal2_front.png",
+	},
+	{
+		type = "fixed",
+		fixed = {
+			{-12/32, -16/32, -16/32,  12/32, -14/32, 16/32},
+			{-12/32, -14/32,  -3/32,  12/32,   6/32, 16/32},
+			{-10/32, -12/32,  14/32,  10/32,   4/32, 18/32},
+			{-12/32,   4/32,  -4/32,  12/32,   6/32, 16/32},
+			{-12/32, -16/32,  -4/32, -10/32,   6/32, 16/32},
+			{ 10/32, -16/32,  -4/32,  12/32,   6/32, 16/32},
+			{-12/32, -14/32,  -4/32,  12/32, -12/32, 16/32},
+		},
+	},
+	{
+		type = "fixed",
+		fixed = {
+			{-12/32, -16/32, -4/32,  12/32, 6/32, 16/32},
+		},
+	})
+
+minetest.register_craft({
+	output = "sl_controller:terminal2",
+	recipe = {
+		{"", "smartline:display", ""},
+		{"", "", ""},
+		{"dye:grey", "tubelib:wlanchip", "default:copper_ingot"},
+	},
+})
+
+tubelib.register_node("sl_controller:terminal", {"sl_controller:terminal2", "sl_controller:terminal3"}, {
 	on_recv_message = function(pos, topic, payload)
 		if topic == "term" then
 			output(pos, payload)

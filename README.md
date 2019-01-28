@@ -1,4 +1,4 @@
-# TechPack V2.01
+# TechPack V2.02
 
 TechPack, a Mining, Crafting, &amp; Farming Modpack for Minetest.
 
@@ -43,6 +43,7 @@ TechPack provides:
 - two Sequencer nodes for a waiting time controlled sending of commands (on/off)
 - an item Detector node sending commands (on/off)
 - a Repeater node to distribute received commands to connected nodes
+- a Logic Not node to invert on/off commands
 - Gate/Door nodes in different textures to be controlled via on/off commands
 - an Access Lock node with number key field 
 - a Mesecon Converter node to translate tubelib commands in mesecon commands and vice versa
@@ -145,6 +146,7 @@ tubelib_addons1 optional: unified_inventory
 - 2018-12-29  V2.00  * beta
 - 2019-01-12  V2.00  * release
 - 2019-01-27  V2.01  * SaferLua Controller Terminal added
+- 2019-01-28  V2.02  * Logic Not added, output reduction on Harvester, Fermenter, and Gravel Sieve
 
 
 ## New in v2 (from players point of view)

@@ -73,7 +73,7 @@ for idx,pgn in ipairs(tPgns) do
 		sounds = default.node_sound_stone_defaults(),
 		groups = {cracky=2, choppy=2, crumbly=2, not_in_creative_inventory = idx==NUM_TEXTURES and 0 or 1},
 		is_ground_content = false,
-		drop = "tubelib_addons2:gateblock15",
+		drop = "tubelib_addons2:gateblock1",
 	})
 
 	not_in_inventory = 1

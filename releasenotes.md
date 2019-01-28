@@ -2,6 +2,23 @@
 
 
 
+## V2.02 (2019-01-28)
+
+### Additions
+- Tubelib_addons2 "Logic Not" added
+- second (classical) SaferLua Terminal added
+
+### Removals
+
+### Changes
+- Output reduction on Harvester (cycle time from 4 to 6 s), 
+  Fermenter (from 2 to 3 input items needed per bio gas), 
+  and Gravel Sieve (rarity from 1 to 1.5)
+
+### Fixes
+- removing the Gate block returns the original block
+
+
 ## V2.01 (2019-01-27)
 
 ### Additions

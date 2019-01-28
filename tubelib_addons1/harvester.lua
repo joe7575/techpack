@@ -14,7 +14,7 @@
 	
 	The machine is able to harvest an square area of up to 33x33 blocks (radius = 16).
 	The base node has to be placed in the middle of the harvesting area.
-	The Harvester processes one node every 4 seconds.
+	The Harvester processes one node every 6 seconds.
 	It requires one item Bio Fuel per 20 nodes.
 
 ]]--
@@ -24,7 +24,7 @@ local S = function(pos) if pos then return minetest.pos_to_string(pos) end end
 local P = minetest.string_to_pos
 local M = minetest.get_meta
 
-local CYCLE_TIME = 4
+local CYCLE_TIME = 6
 local MAX_HEIGHT = 18  -- harvesting altitude
 local MAX_DIAMETER = 33
 local BURNING_TIME = 20  -- fuel
