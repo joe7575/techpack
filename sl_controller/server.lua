@@ -82,10 +82,13 @@ minetest.register_node("sl_controller:server", {
 	
 	on_receive_fields = function(pos, formname, fields, player)
 		local meta = minetest.get_meta(pos)
-		if fields.names and fields.names ~= "" then
-			local names = string.gsub(fields.names, " +", " ")
-			meta:set_string("names", names)
-			meta:set_string("formspec", formspec(meta))
+		local owner = meta:get_string("owner")
+		if player:get_player_name() == owner then
+			if fields.names and fields.names ~= "" then
+				local names = string.gsub(fields.names, " +", " ")
+				meta:set_string("names", names)
+				meta:set_string("formspec", formspec(meta))
+			end
 		end
 	end,
 	
