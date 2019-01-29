@@ -2,6 +2,21 @@
 
 
 
+## V2.02.01 (2019-01-29)
+
+### Additions
+
+### Removals
+
+### Changes
+- Terminal related Controller commands changed
+
+### Fixes
+- Terminal output bugfix
+- Controller event handling bugfix
+
+
+
 ## V2.02 (2019-01-28)
 
 ### Additions

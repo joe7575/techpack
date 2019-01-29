@@ -103,7 +103,7 @@ sl_controller.register_action("loopcycle", {
 
 sl_controller.register_action("events", {
 	cmnd = function(self, event)
-		self.events = event or false
+		self.meta.events = event or false
 	end,
 	help = "$events(true/false)\n"..
 		" Enable/disable event handling.\n"..
@@ -282,8 +282,9 @@ local function compile(pos, meta, number)
 	local code = safer_lua.init(pos, init, func.."\n"..loop, env, error)
 	
 	if code then
-		Cache[number] = {code=code, inputs={}}
-		Cache[number].inputs.term = "" -- terminal inputs
+		Cache[number] = {code=code, inputs={}, events=env.meta.events}
+		Cache[number].inputs.term = nil  -- terminal inputs
+		Cache[number].inputs.msg = {}  -- message queue
 		return true
 	end
 	return false
@@ -361,7 +362,6 @@ local function call_loop(pos, meta, elapsed)
 	local t = minetest.get_us_time()
 	local number = meta:get_string("number")
 	if Cache[number] or compile(pos, meta, number) then
-		
 		local cpu = meta:get_int("cpu") or 0
 		local code = Cache[number].code
 		local res = safer_lua.run_loop(pos, elapsed, code, error)
@@ -374,6 +374,10 @@ local function call_loop(pos, meta, elapsed)
 				no_battery(pos)
 				return false
 			end
+		end
+		-- further messages available?
+		if next(Cache[number].inputs["msg"]) then
+			minetest.after(1, call_loop, pos, meta, -1)
 		end
 		return res
 	end
@@ -522,13 +526,21 @@ minetest.register_craft({
 local function set_input(pos, number, input, val)
 	if input and M(pos):get_int("state") == tubelib.RUNNING then 
 		if Cache[number] and Cache[number].inputs then
-			Cache[number].inputs[input] = val
-			-- only one event per second
-			local t = minetest.get_us_time()
-			if not Cache[number].last_event or Cache[number].last_event < t then
-				local meta = minetest.get_meta(pos)
-				minetest.after(0.01, call_loop, pos, meta, -1)
-				Cache[number].last_event = t + 500000 -- add 500 ms
+			if input == "msg" then
+				if #Cache[number].inputs["msg"] < 10 then
+					table.insert(Cache[number].inputs["msg"], val)
+				end
+			else
+				Cache[number].inputs[input] = val
+			end
+			if Cache[number].events then  -- events enabled?
+				-- only one event per second
+				local t = minetest.get_us_time()
+				 if not Cache[number].last_event or Cache[number].last_event < t then
+					local meta = minetest.get_meta(pos)
+					minetest.after(0.01, call_loop, pos, meta, -1)
+					Cache[number].last_event = t + 500000 -- add 500 ms
+				end
 			end
 		end
 	end
@@ -547,11 +559,17 @@ end
 -- used for Terminal commands
 function sl_controller.get_command(number)
 	if Cache[number] and Cache[number].inputs then
-		local cmnd = Cache[number].inputs["term"] or ""
-		Cache[number].inputs["term"] = ""
+		local cmnd = Cache[number].inputs["term"]
+		Cache[number].inputs["term"] = nil
 		return cmnd
 	end
-	return ""
+end	
+
+-- used for queued messages
+function sl_controller.get_msg(number)
+	if Cache[number] and Cache[number].inputs then
+		return table.remove(Cache[number].inputs["msg"], 1)
+	end
 end	
 
 tubelib.register_node("sl_controller:controller", {}, {
@@ -565,6 +583,8 @@ tubelib.register_node("sl_controller:controller", {}, {
 			set_input(pos, number, payload, topic)
 		elseif topic == "term" then
 			set_input(pos, number, "term", payload)
+		elseif topic == "msg" then
+			set_input(pos, number, "msg", payload)
 		elseif topic == "state" then
 			local running = meta:get_int("running") or tubelib.STATE_STOPPED
 			return tubelib.statestring(running)

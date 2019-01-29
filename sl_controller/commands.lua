@@ -25,17 +25,6 @@ sl_controller.register_function("get_input", {
 		" The device has to be connected with the controller."
 })
 
-sl_controller.register_function("get_string", {
-	cmnd = function(self, num)
-		num = tostring(num or "")
-		return sl_controller.get_command(self.meta.number)
-	end,
-	help = ' $get_string()  --> text sting or nil\n'..
-		' Read an entered string (command) from the Terminal.\n'..
-		' example: s = $get_string()\n'..
-		" The Terminal has to be connected with the controller."
-})
-
 sl_controller.register_function("get_status", {
 	cmnd = function(self, num) 
 		num = tostring(num or "")
@@ -179,16 +168,6 @@ sl_controller.register_action("display", {
 		" 'row' is a value from 1..9\n"..
 		" The function accepts up to 3 text parameters\n"..
 		' example: $display("0123", 1, "Hello ", name, " !")'
-})
-
-sl_controller.register_action("terminal", {
-	cmnd = function(self, num, text)
-		text = tostring(text or "")
-		tubelib.send_message(num, self.meta.owner, nil, "term", text)
-	end,
-	help = " $terminal(num, text)\n"..
-		' Send a text line to the terminal with number "num".\n'..
-		' example: $terminal("0123", "Hello "..name)'
 })
 
 sl_controller.register_action("clear_screen", {
