@@ -57,9 +57,12 @@ local BASE_ENV = {
 		rep = string.rep,
 		sub = string.sub,
 		upper = string.upper,
+		split = string.split,
+		trim = string:trim,
 	},
 	tonumber = tonumber,
 	tostring = tostring,
+	unpack = unpack,
 	type = type,
 	ticks = 0,
 }
