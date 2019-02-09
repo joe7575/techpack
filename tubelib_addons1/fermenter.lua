@@ -116,11 +116,13 @@ local function convert_leaves_to_biogas(pos, meta)
 	
 	-- take NUM_LEAVES items
 	local items = {}
-	local fault = false
 	for i = 1, NUM_LEAVES do
 		items[i] = tubelib.get_num_items(meta, "src", 1)
 		if items[i] then  -- input available?
 			if not is_leaves(items[i]:get_name()) then
+				for j = 1, #items do
+					inv:add_item("src", items[j])
+				end
 				State:fault(pos, meta)
 				return
 			end

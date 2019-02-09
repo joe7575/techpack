@@ -23,6 +23,7 @@ local M = minetest.get_meta
 local STANDBY_TICKS = 4
 local COUNTDOWN_TICKS = 4
 local CYCLE_TIME = 2
+local NUM_BIOGAS = 4 -- to produce on biofuel
 
 local function formspec(self, pos, meta)
 	return "size[8,8]"..
@@ -100,26 +101,40 @@ end
 local function convert_biogas_to_biofuel(pos, meta)
 	local inv = meta:get_inventory()
 	local biofuel = ItemStack("tubelib_addons1:biofuel")
-	if inv:room_for_item("dst", biofuel) then  -- enough output space?
-		local items = tubelib.get_num_items(meta, "src", 4)
-		if items then  -- input available?
-			if items:get_name() == "tubelib_addons1:biogas" then  -- valid input?
-				inv:add_item("dst", biofuel)
-				State:keep_running(pos, meta, COUNTDOWN_TICKS)
-				return
-			else
-				inv:add_item("src", items)
-				State:fault(pos, meta)
-				return
-			end
-		else
-			State:idle(pos, meta)
-			return
-		end
-	else
+
+	-- Not enough output space?
+	if not inv:room_for_item("dst", biofuel) then
 		State:blocked(pos, meta)
 		return
 	end
+
+	-- take NUM_BIOGAS items
+	local items = {}
+	for i = 1, NUM_BIOGAS do
+		items[i] = tubelib.get_num_items(meta, "src", 1)
+		if items[i] then  -- input available?
+			if items[i]:get_name() ~= "tubelib_addons1:biogas" then
+				for j = 1, #items do
+					inv:add_item("src", items[j])
+				end
+				State:fault(pos, meta)
+				return
+			end
+		end
+	end
+
+	-- put result into dst inventory
+	if #items == NUM_BIOGAS then
+		inv:add_item("dst", biofuel)
+		State:keep_running(pos, meta, COUNTDOWN_TICKS)
+		return
+	end
+
+	-- put biogas back to src inventory
+	for i = 1, #items do
+		inv:add_item("src", items[i])
+	end
+	State:idle(pos, meta)
 end
 
 

@@ -30,7 +30,7 @@ tubelib.StatesImg = {
 	"tubelib_inv_button_on.png", 
 	"tubelib_inv_button_standby.png", 
 	"tubelib_inv_button_error.png",
-	"tubelib_inv_button_error.png",
+	"tubelib_inv_button_warning.png",
 	"tubelib_inv_button_off.png",
 }
 
