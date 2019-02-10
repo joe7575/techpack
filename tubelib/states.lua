@@ -69,7 +69,7 @@ function tubelib.state(running)
 	elseif running == -2 then
 		return tubelib.BLOCKED
 	else
-		return tubelib.FAULT
+		return tubelib.STOPPED
 	end
 end
 

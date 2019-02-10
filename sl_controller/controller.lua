@@ -525,7 +525,7 @@ minetest.register_craft({
 -- write inputs from remote nodes
 local function set_input(pos, number, input, val)
 	if input and M(pos):get_int("state") == tubelib.RUNNING then 
-		if Cache[number] and Cache[number].inputs then
+		if (Cache[number] or compile(pos, M(pos), number)) and Cache[number].inputs then
 			if input == "msg" then
 				if #Cache[number].inputs["msg"] < 10 then
 					table.insert(Cache[number].inputs["msg"], val)
