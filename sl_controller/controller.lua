@@ -130,6 +130,22 @@ sl_controller.register_function("position", {
 		" returns the position '(x,y,z)' of the device\n with given number."
 })
 
+sl_controller.register_action("battery", {
+	cmnd = function(self)
+		local meta = minetest.get_meta(self.meta.pos)
+		local batpos = minetest.string_to_pos(meta:get_string("battery"))
+		local batmeta = minetest.get_meta(batpos)
+		local val = (sl_controller.battery_capacity -
+			math.min(batmeta:get_int("content") or 0,
+				sl_controller.battery_capacity))
+		return 100 - math.floor((val * 100.0 / sl_controller.battery_capacity))
+	end,
+	help =  " $battery()\n"..
+		" Get charge level of battery connected to Controller.\n"..
+		" Function returns percent number (0-100) where 100 means full.\n"..
+		" example: battery_percent = $battery()"
+})
+
 
 local function formspec0(meta)
 	local state = meta:get_int("state") == tubelib.RUNNING
