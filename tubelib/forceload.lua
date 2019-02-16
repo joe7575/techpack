@@ -159,7 +159,9 @@ minetest.register_node("tubelib:forceload", {
 
 	after_dig_node = function(pos, oldnode, oldmetadata, digger)
 		local player = minetest.get_player_by_name(oldmetadata.fields.owner)
-		del_pos(pos, player)
+		if player then
+			del_pos(pos, player)
+		end
 		minetest.forceload_free_block(pos, true)
 		tubelib.unmark_region(oldmetadata.fields.owner)
 	end,
