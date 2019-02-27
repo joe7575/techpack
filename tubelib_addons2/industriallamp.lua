@@ -12,6 +12,23 @@
 	
 ]]--
 
+local function switch_on(pos, node)
+	if string.sub(node.name, -3) ~= "_on" then
+		node.name = node.name.."_on"
+		minetest.swap_node(pos, node)
+	end
+end	
+
+local function switch_off(pos, node)
+	if string.sub(node.name, -3) == "_on" then
+		node.name = string.sub(node.name, 1, -4)
+		minetest.swap_node(pos, node)
+		local pos1 = {x=pos.x-5, y=pos.y-5, z=pos.z-5}
+		local pos2 = {x=pos.x+5, y=pos.y+5, z=pos.z+5}
+		minetest.fix_light(pos1, pos2)
+	end
+end	
+
 local function register_lamp(tbl)
 	local num, tiles, tiles_on, node_box, size = tbl.num, tbl.tiles, tbl.tiles_on, tbl.node_box, tbl.size
 	minetest.register_node("tubelib_addons2:industriallamp"..num, {

@@ -1,7 +1,20 @@
 # Release Notes for ModPack TechPack [techpack]
 
 
-## V2.02.02 (2019-02-216)
+## V2.02.03 (2019-02-27)
+
+### Additions
+
+### Removals
+
+### Changes
+
+### Fixes
+- industriallamp bugfix
+
+
+
+## V2.02.02 (2019-02-16)
 
 ### Additions
 - sl_controller: add battery status command
