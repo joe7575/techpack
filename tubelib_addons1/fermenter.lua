@@ -55,9 +55,9 @@ local State = tubelib.NodeStates:new({
 })
 
 local function is_leaves(name)
-	return tubelib_addons1.FarmingNodes[name] ~= nil  and
-	       (tubelib_addons1.FarmingNodes[name].leaves == true or
-		minetest.get_node_group(name, "leaves") > 0)
+	return (tubelib_addons1.FarmingNodes[name] ~= nil  and
+	       tubelib_addons1.FarmingNodes[name].leaves == true) or
+		minetest.get_item_group(name, "leaves") > 0
 end
 
 local function allow_metadata_inventory_put(pos, listname, index, stack, player)

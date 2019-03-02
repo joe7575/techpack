@@ -1,6 +1,19 @@
 # Release Notes for ModPack TechPack [techpack]
 
 
+## V2.02.04 (2019-03-02)
+
+### Additions
+
+### Removals
+
+### Changes
+
+### Fixes
+- Fermenter leaves bugfix (moretrees)
+
+
+
 ## V2.02.03 (2019-02-27)
 
 ### Additions
