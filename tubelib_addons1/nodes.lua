@@ -100,6 +100,9 @@ if farming.mod == "redo" then
 	fn("farming:barley_7",    "farming:barley",         "farming:barley_1")
 	fn("farming:chili_8",     "farming:chili_pepper 2", "farming:chili_1")
 	fn("farming:hemp_8",      "farming:hemp_leaf",      "farming:hemp_1")
+	fn("farming:oat_8",       "farming:oat",            "farming:oat_1")
+	fn("farming:rye_8",       "farming:rye",            "farming:rye_1")
+	fn("farming:rice_8",      "farming:rice",           "farming:rice_1")
 end
 
 -------------------------------------------------------------------------------
