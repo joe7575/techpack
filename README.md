@@ -23,6 +23,9 @@ TechPack is a collection of following Mods:
 
 **A TechPack Tutorial is available as ![Wiki](https://github.com/joe7575/techpack/wiki)**
 
+**Machine data is stored in memory and not in the nodes itself. Therefore, never move or copy machines or tubes by means of Worldedit.**
+**The moved/copied nodes will not have valid node numbers, which could lead to a server crash.**
+
 TechPack provides:
 - lumber tubes to connect 2 nodes
 - a Pusher node to pull/push items through tubes
