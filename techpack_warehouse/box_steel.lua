@@ -130,7 +130,7 @@ tubelib.register_node(NODE_NAME,
 	{NODE_NAME.."_active", NODE_NAME.."_defect"}, {
 	on_push_item = function(pos, side, item)
 		local meta = M(pos)
-		meta:set_string("push_dir", side)
+		meta:set_string("push_dir", wh.Turn180[side])
 		local num = wh.numbers_to_shift(Box, meta, item)
 		if num > 0 then
 			item:set_count(num)
