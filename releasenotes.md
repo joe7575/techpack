@@ -1,6 +1,19 @@
 # Release Notes for ModPack TechPack [techpack]
 
 
+## V2.02.06 (2019-03-23)
+
+### Additions
+
+### Removals
+
+### Changes
+
+### Fixes
+- Warehouse boxes bugfix for the Blackhole bugfix
+
+
+
 ## V2.02.05 (2019-03-14)
 
 ### Additions
@@ -10,7 +23,7 @@
 ### Changes
 
 ### Fixes
-- Blackhole tube side backfix
+- Blackhole tube side bugfix
 
 
 
