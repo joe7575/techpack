@@ -67,27 +67,30 @@ end
 
 
 local function on_timer(pos,elapsed)
-	local meta = minetest.get_meta(pos)
-	local poll_numbers = meta:get_string("poll_numbers")
-	local idx = meta:get_int("index") + 1
-	
-	if poll_numbers == "" then
-		local own_number = meta:get_string("own_number")
-		meta:set_string("infotext", "SmartLine State Collector "..own_number..": stopped")
-		meta:set_int("state", 0)
-		meta:set_int("stored_state", 0)
-		return false
+	if tubelib.data_not_corrupted(pos) then
+		local meta = minetest.get_meta(pos)
+		local poll_numbers = meta:get_string("poll_numbers")
+		local idx = meta:get_int("index") + 1
+		
+		if poll_numbers == "" then
+			local own_number = meta:get_string("own_number")
+			meta:set_string("infotext", "SmartLine State Collector "..own_number..": stopped")
+			meta:set_int("state", 0)
+			meta:set_int("stored_state", 0)
+			return false
+		end
+		
+		if idx > meta:get_int("num_numbers") then
+			idx = 1
+			send_event(meta)
+		end
+		meta:set_int("index", idx)
+		
+		request_state(meta, poll_numbers, idx)
+		
+		return true
 	end
-	
-	if idx > meta:get_int("num_numbers") then
-		idx = 1
-		send_event(meta)
-	end
-	meta:set_int("index", idx)
-	
-	request_state(meta, poll_numbers, idx)
-	
-	return true
+	return false
 end
 
 minetest.register_node("smartline:collector", {

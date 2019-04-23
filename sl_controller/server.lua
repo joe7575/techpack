@@ -33,11 +33,14 @@ end
 
 
 local function on_time(pos, elasped)
-	local meta = minetest.get_meta(pos)
-	local number = meta:get_string("number")
-	local mem = tubelib.get_data(number, "memory") or table.copy(DEFAULT_MEM)
-	meta:set_string("infotext", "Server "..number..": ("..(mem.size or 0).."/"..SERVER_CAPA..")")
-	return true
+	if tubelib.data_not_corrupted(pos) then
+		local meta = minetest.get_meta(pos)
+		local number = meta:get_string("number")
+		local mem = tubelib.get_data(number, "memory") or table.copy(DEFAULT_MEM)
+		meta:set_string("infotext", "Server "..number..": ("..(mem.size or 0).."/"..SERVER_CAPA..")")
+		return true
+	end
+	return false
 end
 
 minetest.register_node("sl_controller:server", {

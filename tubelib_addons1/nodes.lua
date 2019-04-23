@@ -48,6 +48,7 @@ local tn = tubelib_addons1.register_tree_node
 local dn = tubelib_addons1.register_default_farming_node
 local fn = tubelib_addons1.register_farming_node
 local gn = tubelib_addons1.register_ground_node
+local gr = tubelib.add_grinder_recipe
 
 -------------------------------------------------------------------------------
 -- Default Farming
@@ -103,6 +104,13 @@ if farming.mod == "redo" then
 	fn("farming:oat_8",       "farming:oat",            "farming:oat_1")
 	fn("farming:rye_8",       "farming:rye",            "farming:rye_1")
 	fn("farming:rice_8",      "farming:rice",           "farming:rice_1")
+	fn('farming:beetroot_5',  'farming:beetroot 2',     'farming:beetroot_1')
+	fn('farming:cocoa_4',     'farming:cocoa_beans 2',  'farming:cocoa_1')
+	fn('farming:garlic_5',    'farming:garlic 2',       'farming:garlic_1')
+	fn('farming:onion_5',     'farming:onion 2',        'farming:onion_1')
+	fn('farming:pea_5',       'farming:pea_pod 3',      'farming:pea_1')
+	fn('farming:pepper_5',    'farming:pepper 2',       'farming:pepper_1')
+	fn('farming:pineapple_8', 'farming:pineapple 1',    'farming:pineapple_1')
 end
 
 -------------------------------------------------------------------------------
@@ -245,4 +253,56 @@ local function register_flowers()
 end
 
 minetest.after(10, register_flowers)
+
+-------------------------------------------------------------------------------
+-- moretrees
+-------------------------------------------------------------------------------
+
+if minetest.global_exists("moretrees") then
+	local function register_tree(treename)
+		local trunk_name = 'moretrees:' .. treename .. '_trunk'
+		local sappling_name = 'moretrees:' .. treename .. '_sapling'
+		local leaves_name = 'moretrees:' .. treename .. '_leaves'
+
+		tn(trunk_name, trunk_name, sappling_name)
+		fn(leaves_name)
+		gr({input=trunk_name, output=leaves_name .. ' 8'})
+	end
+
+	-- "ordinary" moretrees blocks
+	for i in ipairs(moretrees.treelist) do
+		local treename = moretrees.treelist[i][1]
+
+		if treename ~= 'jungletree' then
+			register_tree(treename)
+		end
+	end
+
+	-- "weird" moretrees trunks
+	tn('moretrees:date_palm_fruit_trunk', 'moretrees:date_palm_trunk', 'moretrees:date_palm_sapling')
+	gr({input='moretrees:date_palm_fruit_trunk', output='moretrees:date_palm_leaves 8'})
+	tn('moretrees:date_palm_ffruit_trunk', 'moretrees:date_palm_trunk', 'moretrees:date_palm_sapling')
+	gr({input='moretrees:date_palm_ffruit_trunk', output='moretrees:date_palm_leaves 8'})
+	tn('moretrees:date_palm_mfruit_trunk', 'moretrees:date_palm_trunk', 'moretrees:date_palm_sapling')
+	gr({input='moretrees:date_palm_mfruit_trunk', output='moretrees:date_palm_leaves 8'})
+	tn('moretrees:jungletree_trunk', 'default:jungletree', 'default:junglesapling')
+	gr({input='moretrees:jungletree_trunk', output='default:jungleleaves 8'})
+	tn('moretrees:palm_fruit_trunk', 'moretrees:palm_trunk', 'moretrees:palm_sapling')
+	gr({input='moretrees:palm_fruit_trunk', output='moretrees:palm_leaves 8'})
+	tn('moretrees:palm_fruit_trunk_gen', 'moretrees:palm_trunk', 'moretrees:palm_sapling')
+	gr({input='moretrees:palm_fruit_trunk_gen', output='moretrees:palm_leaves 8'})
+	tn('moretrees:rubber_tree_trunk_empty', 'moretrees:rubber_tree_trunk_empty', 'moretrees:rubber_tree_sapling')
+	gr({input='moretrees:rubber_tree_trunk_empty', output='moretrees:rubber_tree_leaves 8'})
+
+	-- moretrees fruit and leaves
+	fn('moretrees:acorn')
+	fn('moretrees:cedar_cone')
+	fn('moretrees:coconut_3', 'moretrees:coconut')
+	fn('moretrees:dates_f4', 'moretrees:date 16')
+	fn('moretrees:fir_cone')
+	fn('moretrees:fir_leaves_bright')
+	fn('moretrees:jungletree_leaves_red')
+	fn('moretrees:jungletree_leaves_yellow')
+	fn('moretrees:spruce_cone')
+end
 

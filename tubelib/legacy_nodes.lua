@@ -104,4 +104,32 @@ tubelib.register_node("shop:shop", {}, {
 	end,
 })	
 
+tubelib.register_node("signs_bot:box", {}, {
+	on_pull_item = function(pos, side)
+		local meta = minetest.get_meta(pos)
+		return tubelib.get_item(meta, "main")
+	end,
+	on_push_item = function(pos, side, item)
+		local meta = minetest.get_meta(pos)
+		return tubelib.put_item(meta, "main", item)
+	end,
+	on_unpull_item = function(pos, side, item)
+		local meta = minetest.get_meta(pos)
+		return tubelib.put_item(meta, "main", item)
+	end,
+})	
 
+tubelib.register_node("signs_bot:chest", {}, {
+	on_pull_item = function(pos, side)
+		local meta = minetest.get_meta(pos)
+		return tubelib.get_item(meta, "main")
+	end,
+	on_push_item = function(pos, side, item)
+		local meta = minetest.get_meta(pos)
+		return tubelib.put_item(meta, "main", item)
+	end,
+	on_unpull_item = function(pos, side, item)
+		local meta = minetest.get_meta(pos)
+		return tubelib.put_item(meta, "main", item)
+	end,
+})	

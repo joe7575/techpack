@@ -127,12 +127,15 @@ end
 
 
 local function keep_running(pos, elapsed)
-	local meta = M(pos)
-	local inv = meta:get_inventory()
-	local craft = get_craft(pos, inv)
-	local output_item = craft.output.item
-	autocraft(pos, meta, inv, craft)
-	return State:is_active(meta)
+	if tubelib.data_not_corrupted(pos) then
+		local meta = M(pos)
+		local inv = meta:get_inventory()
+		local craft = get_craft(pos, inv)
+		local output_item = craft.output.item
+		autocraft(pos, meta, inv, craft)
+		return State:is_active(meta)
+	end
+	return false
 end
 
 -- note, that this function assumes allready being updated to virtual items

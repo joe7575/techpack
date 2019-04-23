@@ -150,6 +150,7 @@ tubelib_addons1 optional: unified_inventory
 - 2019-01-12  V2.00  * release
 - 2019-01-27  V2.01  * SaferLua Controller Terminal added
 - 2019-01-28  V2.02  * Logic Not added, output reduction on Harvester, Fermenter, and Gravel Sieve
+- 2019-04-23  V2.03  * Piston/WorldEdit/replacer detection added, farming and grinder recipes added
 
 
 ## New in v2 (from players point of view)

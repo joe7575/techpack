@@ -14,26 +14,30 @@
 
 
 local function switch_on(pos)
-	local node = minetest.get_node(pos)
-	node.name = "tubelib_addons1:detector_active"
-	minetest.swap_node(pos, node)
-	minetest.get_node_timer(pos):start(1)
-	local meta = minetest.get_meta(pos)
-	local own_num = meta:get_string("own_num")
-	local numbers = meta:get_string("numbers")
-	local placer_name = meta:get_string("placer_name")
-	tubelib.send_message(numbers, placer_name, nil, "on", own_num)
+	if tubelib.data_not_corrupted(pos) then
+		local node = minetest.get_node(pos)
+		node.name = "tubelib_addons1:detector_active"
+		minetest.swap_node(pos, node)
+		minetest.get_node_timer(pos):start(1)
+		local meta = minetest.get_meta(pos)
+		local own_num = meta:get_string("own_num")
+		local numbers = meta:get_string("numbers")
+		local placer_name = meta:get_string("placer_name")
+		tubelib.send_message(numbers, placer_name, nil, "on", own_num)
+	end
 end
 
 local function switch_off(pos)
-	local node = minetest.get_node(pos)
-	node.name = "tubelib_addons1:detector"
-	minetest.swap_node(pos, node)
-	local meta = minetest.get_meta(pos)
-	local own_num = meta:get_string("own_num")
-	local numbers = meta:get_string("numbers")
-	local placer_name = meta:get_string("placer_name")
-	tubelib.send_message(numbers, placer_name, nil, "off", own_num)
+	if tubelib.data_not_corrupted(pos) then
+		local node = minetest.get_node(pos)
+		node.name = "tubelib_addons1:detector"
+		minetest.swap_node(pos, node)
+		local meta = minetest.get_meta(pos)
+		local own_num = meta:get_string("own_num")
+		local numbers = meta:get_string("numbers")
+		local placer_name = meta:get_string("placer_name")
+		tubelib.send_message(numbers, placer_name, nil, "off", own_num)
+	end
 end
 
 

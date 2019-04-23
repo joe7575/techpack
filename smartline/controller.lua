@@ -578,16 +578,19 @@ local function execute(meta, number, debug)
 end
 
 local function check_rules(pos, elapsed)
-	--local t = minetest.get_us_time()
-	local meta = minetest.get_meta(pos)
-	meta:set_int("runtime", (meta:get_int("runtime") or 1) + 1)
-	local number = meta:get_string("number")
-	local state = meta:get_int("state")
-	if state == tubelib.RUNNING and number then
-		execute(meta, number, debug)
+	if tubelib.data_not_corrupted(pos) then
+		--local t = minetest.get_us_time()
+		local meta = minetest.get_meta(pos)
+		meta:set_int("runtime", (meta:get_int("runtime") or 1) + 1)
+		local number = meta:get_string("number")
+		local state = meta:get_int("state")
+		if state == tubelib.RUNNING and number then
+			execute(meta, number, debug)
+		end
+		--print("time", minetest.get_us_time() - t)
+		return true
 	end
-	--print("time", minetest.get_us_time() - t)
-	return true
+	return false
 end
 
 local function switch_state(pos, state, fs_data)

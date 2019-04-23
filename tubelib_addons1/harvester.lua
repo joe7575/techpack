@@ -243,30 +243,33 @@ end
 	
 -- move the "harvesting copter" to the next pos and harvest the field below
 local function keep_running(pos, elapsed)
-	local meta = M(pos)
-	local this = minetest.deserialize(meta:get_string("this"))
-	this.num_items = 0
-	
-	if not_blocked(pos, this, meta) then
-		if check_fuel(pos, this, meta) then
-			if calc_new_pos(pos, this, meta) then
-				if harvest_field(this, meta) then
-					meta:set_string("this", minetest.serialize(this))
-					meta:set_string("infotext", 
-						"Tubelib Harvester "..this.number..
-						": running ("..this.idx.."/"..this.max..")")
-					State:keep_running(pos, meta, COUNTDOWN_TICKS, this.num_items)
+	if tubelib.data_not_corrupted(pos) then
+		local meta = M(pos)
+		local this = minetest.deserialize(meta:get_string("this"))
+		this.num_items = 0
+		
+		if not_blocked(pos, this, meta) then
+			if check_fuel(pos, this, meta) then
+				if calc_new_pos(pos, this, meta) then
+					if harvest_field(this, meta) then
+						meta:set_string("this", minetest.serialize(this))
+						meta:set_string("infotext", 
+							"Tubelib Harvester "..this.number..
+							": running ("..this.idx.."/"..this.max..")")
+						State:keep_running(pos, meta, COUNTDOWN_TICKS, this.num_items)
+					else
+						State:blocked(pos, meta)
+					end
 				else
-					State:blocked(pos, meta)
+					State:stop(pos, meta)
 				end
 			else
-				State:stop(pos, meta)
+				State:fault(pos, meta)
 			end
-		else
-			State:fault(pos, meta)
 		end
+		return State:is_active(meta)
 	end
-	return State:is_active(meta)
+	return false
 end	
 	
 

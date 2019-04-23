@@ -16,47 +16,51 @@
 
 
 local function switch_on(pos, node)
-	node.name = "tubelib:button_active"
-	minetest.swap_node(pos, node)
-	minetest.sound_play("button", {
-			pos = pos,
-			gain = 0.5,
-			max_hear_distance = 5,
-		})
-	local meta = minetest.get_meta(pos)
-	local own_num = meta:get_string("own_num")
-	local numbers = meta:get_string("numbers")
-	local cycle_time = meta:get_int("cycle_time")
-	if cycle_time > 0 then 	-- button mode?
-		minetest.get_node_timer(pos):start(cycle_time)
+	if tubelib.data_not_corrupted(pos) then
+		node.name = "tubelib:button_active"
+		minetest.swap_node(pos, node)
+		minetest.sound_play("button", {
+				pos = pos,
+				gain = 0.5,
+				max_hear_distance = 5,
+			})
+		local meta = minetest.get_meta(pos)
+		local own_num = meta:get_string("own_num")
+		local numbers = meta:get_string("numbers")
+		local cycle_time = meta:get_int("cycle_time")
+		if cycle_time > 0 then 	-- button mode?
+			minetest.get_node_timer(pos):start(cycle_time)
+		end
+		local placer_name = meta:get_string("placer_name")
+		local clicker_name = nil
+		if meta:get_string("public") == "false" then
+			clicker_name = meta:get_string("clicker_name")
+		end
+		tubelib.send_message(numbers, placer_name, clicker_name, "on", own_num)  -- <<=== tubelib
 	end
-	local placer_name = meta:get_string("placer_name")
-	local clicker_name = nil
-	if meta:get_string("public") == "false" then
-		clicker_name = meta:get_string("clicker_name")
-	end
-	tubelib.send_message(numbers, placer_name, clicker_name, "on", own_num)  -- <<=== tubelib
 end
 
 local function switch_off(pos)
-	local node = minetest.get_node(pos)
-	node.name = "tubelib:button"
-	minetest.swap_node(pos, node)
-	minetest.get_node_timer(pos):stop()
-	minetest.sound_play("button", {
-			pos = pos,
-			gain = 0.5,
-			max_hear_distance = 5,
-		})
-	local meta = minetest.get_meta(pos)
-	local own_num = meta:get_string("own_num")
-	local numbers = meta:get_string("numbers")
-	local placer_name = meta:get_string("placer_name")
-	local clicker_name = nil
-	if meta:get_string("public") == "false" then
-		clicker_name = meta:get_string("clicker_name")
+	if tubelib.data_not_corrupted(pos) then
+		local node = minetest.get_node(pos)
+		node.name = "tubelib:button"
+		minetest.swap_node(pos, node)
+		minetest.get_node_timer(pos):stop()
+		minetest.sound_play("button", {
+				pos = pos,
+				gain = 0.5,
+				max_hear_distance = 5,
+			})
+		local meta = minetest.get_meta(pos)
+		local own_num = meta:get_string("own_num")
+		local numbers = meta:get_string("numbers")
+		local placer_name = meta:get_string("placer_name")
+		local clicker_name = nil
+		if meta:get_string("public") == "false" then
+			clicker_name = meta:get_string("clicker_name")
+		end
+		tubelib.send_message(numbers, placer_name, clicker_name, "off", own_num)  -- <<=== tubelib
 	end
-	tubelib.send_message(numbers, placer_name, clicker_name, "off", own_num)  -- <<=== tubelib
 end
 
 

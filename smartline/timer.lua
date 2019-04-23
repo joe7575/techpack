@@ -86,41 +86,44 @@ local function formspec_help()
 end
 
 local function check_rules(pos,elapsed)
-	local hour = math.floor(minetest.get_timeofday() * 24)
-	local meta = minetest.get_meta(pos)
-	local events = minetest.deserialize(meta:get_string("events"))
-	local numbers = minetest.deserialize(meta:get_string("numbers"))
-	local actions = minetest.deserialize(meta:get_string("actions"))
-	local done = minetest.deserialize(meta:get_string("done"))
-	local placer_name = meta:get_string("placer_name")
-	local own_num = meta:get_string("own_num")
-	
-	-- check all rules
-	for idx,act in ipairs(actions) do
-		if act ~= "" and numbers[idx] ~= "" then
-			local hr = (events[idx] - 1) * 2
-			if ((hour - hr) % 24) <= 4 then  -- last 4 hours?
-				if done[idx] == false then  -- not already executed?
+	if tubelib.data_not_corrupted(pos) then
+		local hour = math.floor(minetest.get_timeofday() * 24)
+		local meta = minetest.get_meta(pos)
+		local events = minetest.deserialize(meta:get_string("events"))
+		local numbers = minetest.deserialize(meta:get_string("numbers"))
+		local actions = minetest.deserialize(meta:get_string("actions"))
+		local done = minetest.deserialize(meta:get_string("done"))
+		local placer_name = meta:get_string("placer_name")
+		local own_num = meta:get_string("own_num")
+		
+		-- check all rules
+		for idx,act in ipairs(actions) do
+			if act ~= "" and numbers[idx] ~= "" then
+				local hr = (events[idx] - 1) * 2
+				if ((hour - hr) % 24) <= 4 then  -- last 4 hours?
+					if done[idx] == false then  -- not already executed?
+						tubelib.send_message(numbers[idx], placer_name, nil, act, own_num)
+						done[idx] = true
+					end
+				else
+					done[idx] = false
+				end
+				if hour == hr and done[idx] == false then
 					tubelib.send_message(numbers[idx], placer_name, nil, act, own_num)
 					done[idx] = true
 				end
-			else
-				done[idx] = false
-			end
-			if hour == hr and done[idx] == false then
-				tubelib.send_message(numbers[idx], placer_name, nil, act, own_num)
-				done[idx] = true
 			end
 		end
+		
+		-- prepare for the next day
+		if hour == 23 then
+			done = {false,false,false,false,false,false}
+		end
+		meta:set_string("done",  minetest.serialize(done))
+		meta:set_string("infotext","SmartLine Timer ("..own_num..")"..hour..":00")
+		return true
 	end
-	
-	-- prepare for the next day
-	if hour == 23 then
-		done = {false,false,false,false,false,false}
-	end
-	meta:set_string("done",  minetest.serialize(done))
-	meta:set_string("infotext","SmartLine Timer ("..own_num..")"..hour..":00")
-	return true
+	return false
 end
 
 

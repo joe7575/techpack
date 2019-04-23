@@ -268,38 +268,41 @@ function techpack_warehouse.after_place_node(self, pos, placer, itemstack)
 end
 		
 function techpack_warehouse.on_timer(self, pos, elapsed)
-	local meta = M(pos)
-	local inv = meta:get_inventory()
-	if not inv:is_empty("shift") then
-		--local number = meta:get_string("tubelib_number")
-		local player_name = meta:get_string("player_name")
-		local offs = meta:get_int("offs")
-		local push_dir = meta:get_string("push_dir")
-		if push_dir == "" then push_dir = "L" end
-		meta:set_int("offs", offs + 1)
-		for i = 0,7 do
-			local idx = ((i + offs) % 8) + 1
-			local stack = inv:get_stack("shift", idx)
-			if stack:get_count() > 0 then
-				if tubelib.push_items(pos, push_dir, stack, player_name) then
-					-- The effort is needed here for the case the 
-					-- pusher pushes into its own chest.
-					local num = stack:get_count()
-					stack = inv:get_stack("shift", idx)
-					stack:take_item(num)
-					inv:set_stack("shift", idx, stack)
-					self.State:keep_running(pos, meta, COUNTDOWN_TICKS)
-					break
-				else
-					self.State:blocked(pos, meta)
+	if tubelib.data_not_corrupted(pos) then
+		local meta = M(pos)
+		local inv = meta:get_inventory()
+		if not inv:is_empty("shift") then
+			--local number = meta:get_string("tubelib_number")
+			local player_name = meta:get_string("player_name")
+			local offs = meta:get_int("offs")
+			local push_dir = meta:get_string("push_dir")
+			if push_dir == "" then push_dir = "L" end
+			meta:set_int("offs", offs + 1)
+			for i = 0,7 do
+				local idx = ((i + offs) % 8) + 1
+				local stack = inv:get_stack("shift", idx)
+				if stack:get_count() > 0 then
+					if tubelib.push_items(pos, push_dir, stack, player_name) then
+						-- The effort is needed here for the case the 
+						-- pusher pushes into its own chest.
+						local num = stack:get_count()
+						stack = inv:get_stack("shift", idx)
+						stack:take_item(num)
+						inv:set_stack("shift", idx, stack)
+						self.State:keep_running(pos, meta, COUNTDOWN_TICKS)
+						break
+					else
+						self.State:blocked(pos, meta)
+					end
 				end
 			end
+		else
+			self.State:idle(pos, meta)
 		end
-	else
-		self.State:idle(pos, meta)
+		
+		return self.State:is_active(meta)
 	end
-	
-	return self.State:is_active(meta)
+	return false
 end
 	
 function techpack_warehouse.can_dig(self, pos)

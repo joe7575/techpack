@@ -76,19 +76,21 @@ minetest.register_craft({
 
 tubelib.register_node("tubelib_addons2:logic_not", {}, {
 	on_recv_message = function(pos, topic, payload)
-		local meta = minetest.get_meta(pos)
-		local owner = meta:get_string("owner")
-		local numbers = meta:get_string("numbers")
-		local own_number = meta:get_string("own_number")
-		if topic == "set_numbers" then
-			meta:set_string("infotext", "Tubelib Logic Not "..own_number..": connected with "..payload)
-			meta:set_string("numbers", payload)
-			meta:set_string("formspec", formspec(meta))
-			return true
-		elseif topic == "on" then
-			return tubelib.send_message(numbers, owner, nil, "off", payload)
-		elseif topic == "off" then
-			return tubelib.send_message(numbers, owner, nil, "on", payload)
+		if tubelib.data_not_corrupted(pos) then
+			local meta = minetest.get_meta(pos)
+			local owner = meta:get_string("owner")
+			local numbers = meta:get_string("numbers")
+			local own_number = meta:get_string("own_number")
+			if topic == "set_numbers" then
+				meta:set_string("infotext", "Tubelib Logic Not "..own_number..": connected with "..payload)
+				meta:set_string("numbers", payload)
+				meta:set_string("formspec", formspec(meta))
+				return true
+			elseif topic == "on" then
+				return tubelib.send_message(numbers, owner, nil, "off", payload)
+			elseif topic == "off" then
+				return tubelib.send_message(numbers, owner, nil, "on", payload)
+			end
 		end
 	end,
 })		

@@ -101,6 +101,7 @@ else
 	-- conversion from v1.16 to v2.00
 	dofile(minetest.get_modpath("tubelib") .. "/migrate.lua")
 	dofile(minetest.get_modpath("tubelib") .. "/states.lua")
+	dofile(minetest.get_modpath("tubelib") .. "/defect.lua")
 	dofile(minetest.get_modpath("tubelib") .. "/node_states.lua")
 	dofile(minetest.get_modpath("tubelib") .. "/pusher.lua")
 	dofile(minetest.get_modpath("tubelib") .. "/blackhole.lua")

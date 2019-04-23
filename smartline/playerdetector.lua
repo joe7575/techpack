@@ -139,12 +139,15 @@ minetest.register_node("smartline:playerdetector", {
 	end,
 	
 	on_timer = function (pos, elapsed)
-		if scan_for_player(pos) then
-			switch_on(pos)
-			minetest.get_node_timer(pos):start(1)
-			return false
+		if tubelib.data_not_corrupted(pos) then
+			if scan_for_player(pos) then
+				switch_on(pos)
+				minetest.get_node_timer(pos):start(1)
+				return false
+			end
+			return true
 		end
-		return true
+		return false
 	end,
 
 	paramtype = "light",

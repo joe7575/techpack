@@ -75,9 +75,12 @@ minetest.register_node("smartline:repeater", {
 	end,
 	
 	on_timer = function(pos,elapsed)
-		local meta = minetest.get_meta(pos)
-		meta:set_int("overload_cnt", 0)
-		return true
+		if tubelib.data_not_corrupted(pos) then
+			local meta = minetest.get_meta(pos)
+			meta:set_int("overload_cnt", 0)
+			return true
+		end
+		return false
 	end,
 	
 	after_dig_node = function(pos)

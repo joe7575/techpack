@@ -103,10 +103,13 @@ local function grinding(pos, meta, inv)
 end
 
 local function keep_running(pos, elapsed)
-	local meta = M(pos)
-	local inv = meta:get_inventory()
-	grinding(pos, meta, inv)
-	return State:is_active(meta)
+	if tubelib.data_not_corrupted(pos) then
+		local meta = M(pos)
+		local inv = meta:get_inventory()
+		grinding(pos, meta, inv)
+		return State:is_active(meta)
+	end
+	return false
 end
 
 local function on_receive_fields(pos, formname, fields, player)

@@ -376,17 +376,9 @@ function NodeStates:on_node_load(pos, not_start_timer)
 		meta:set_int("counter", 0)
 	end
 
-	-- node number corrupt?
-	number = meta:get_string("tubelib_number")
-	if number == "" then
-		number = tubelib.get_new_number(pos, self.node_name_passive)
-		meta:set_string("tubelib_number", number)
-	else
-		local info = tubelib.get_node_info(number)
-		if not info or info.pos ~= pos then
-			number = tubelib.get_new_number(pos, self.node_name_passive)
-			meta:set_string("tubelib_number", number)
-		end
+	-- node corrupt?
+	if not tubelib.data_not_corrupted(pos) then
+		return
 	end
 	
 	-- state corrupt?

@@ -98,37 +98,40 @@ local function restart_timer(pos, time)
 end	
 
 local function check_rules(pos, elapsed)
-	local meta = minetest.get_meta(pos)
-	local rules = minetest.deserialize(meta:get_string("rules"))
-	if rules then
-		local running = meta:get_int("running")
-		local index = meta:get_int("index") or 1
-		local number = meta:get_string("number")
-		local endless = meta:get_int("endless") or 0
-		local placer_name = meta:get_string("placer_name")
-		while true do -- process all rules as long as offs == 0
-			local rule = rules[index]
-			local offs = rules[index].offs
-			if type(offs) == "string" then
-				offs = 0
-			end
-			tubelib.send_message(rule.num, placer_name, nil, tAction[rule.act], number)
-			index = get_next_slot(index, rules, endless)
-			if index ~= nil and offs ~= nil and running == 1 then
-				-- after the last rule a pause with 2 or more sec is required
-				if index == 1 and offs < 1 then
-					offs = 2
+	if tubelib.data_not_corrupted(pos) then
+		local meta = minetest.get_meta(pos)
+		local rules = minetest.deserialize(meta:get_string("rules"))
+		if rules then
+			local running = meta:get_int("running")
+			local index = meta:get_int("index") or 1
+			local number = meta:get_string("number")
+			local endless = meta:get_int("endless") or 0
+			local placer_name = meta:get_string("placer_name")
+			while true do -- process all rules as long as offs == 0
+				local rule = rules[index]
+				local offs = rules[index].offs
+				if type(offs) == "string" then
+					offs = 0
 				end
-				meta:set_string("infotext", "SmartLine Sequencer "..number..": running ("..index.."/"..NUM_SLOTS..")")
-				meta:set_int("index", index)
-				if offs > 0 then
-					minetest.after(0, restart_timer, pos, offs)
-					return false
+				tubelib.send_message(rule.num, placer_name, nil, tAction[rule.act], number)
+				index = get_next_slot(index, rules, endless)
+				if index ~= nil and offs ~= nil and running == 1 then
+					-- after the last rule a pause with 2 or more sec is required
+					if index == 1 and offs < 1 then
+						offs = 2
+					end
+					meta:set_string("infotext", "SmartLine Sequencer "..number..": running ("..index.."/"..NUM_SLOTS..")")
+					meta:set_int("index", index)
+					if offs > 0 then
+						minetest.after(0, restart_timer, pos, offs)
+						return false
+					end
+				else
+					return stop_the_sequencer(pos)
 				end
-			else
-				return stop_the_sequencer(pos)
 			end
 		end
+		return false
 	end
 	return false
 end
@@ -147,7 +150,7 @@ local function start_the_sequencer(pos)
 	return false
 end
 
-local function 	on_receive_fields(pos, formname, fields, player)
+local function on_receive_fields(pos, formname, fields, player)
 	local meta = minetest.get_meta(pos)
 	local running = meta:get_int("running")
 	if minetest.is_protected(pos, player:get_player_name()) then

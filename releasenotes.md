@@ -1,5 +1,21 @@
 # Release Notes for ModPack TechPack [techpack]
 
+2019-04-23  V2.03  * , 
+
+## V2.03 (2019-04-23)
+
+### Additions
+- Farming and Grinder recipes added (thanks to obl3pplifp)
+- Support for Signs Bot chest and Box added
+
+### Removals
+
+### Changes
+
+### Fixes
+- Piston/WorldEdit/Replacer tool detection added. If node is replaced/removed/copied,
+  it will switch to a "defect" dummy node.
+
 
 ## V2.02.06 (2019-03-23)
 

@@ -28,8 +28,11 @@ local function display_update(pos, objref)
 end
 
 local function on_timer(pos)
-	local meta = minetest.get_meta(pos)
-	lcdlib.update_entities(pos)
+	if tubelib.data_not_corrupted(pos) then
+		local meta = minetest.get_meta(pos)
+		lcdlib.update_entities(pos)
+		return false
+	end
 	return false
 end
 

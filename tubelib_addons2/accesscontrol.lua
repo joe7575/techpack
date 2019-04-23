@@ -13,29 +13,33 @@
 ]]--
 
 local function switch_on(pos, meta)
-	minetest.sound_play("tubelib_addons2_door", {
-			pos = pos,
-			gain = 0.5,
-			max_hear_distance = 5,
-		})
-	local numbers = meta:get_string("numbers")
-	local number = meta:get_string("number")
-	local placer_name = meta:get_string("placer_name")
-	tubelib.send_message(numbers, placer_name, nil, "on", number)
-	minetest.get_node_timer(pos):start(4)
+	if tubelib.data_not_corrupted(pos) then
+		minetest.sound_play("tubelib_addons2_door", {
+				pos = pos,
+				gain = 0.5,
+				max_hear_distance = 5,
+			})
+		local numbers = meta:get_string("numbers")
+		local number = meta:get_string("number")
+		local placer_name = meta:get_string("placer_name")
+		tubelib.send_message(numbers, placer_name, nil, "on", number)
+		minetest.get_node_timer(pos):start(4)
+	end
 end
 
 local function switch_off(pos)
-	minetest.sound_play("tubelib_addons2_door", {
-			pos = pos,
-			gain = 0.5,
-			max_hear_distance = 5,
-		})
-	local meta = minetest.get_meta(pos)
-	local numbers = meta:get_string("numbers")
-	local number = meta:get_string("number")
-	local placer_name = meta:get_string("placer_name")
-	tubelib.send_message(numbers, placer_name, nil, "off", number)
+	if tubelib.data_not_corrupted(pos) then
+		minetest.sound_play("tubelib_addons2_door", {
+				pos = pos,
+				gain = 0.5,
+				max_hear_distance = 5,
+			})
+		local meta = minetest.get_meta(pos)
+		local numbers = meta:get_string("numbers")
+		local number = meta:get_string("number")
+		local placer_name = meta:get_string("placer_name")
+		tubelib.send_message(numbers, placer_name, nil, "off", number)
+	end
 end
 
 local function formspec1(numbers)

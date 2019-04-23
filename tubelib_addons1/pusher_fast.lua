@@ -66,9 +66,12 @@ local function pushing(pos, meta)
 end
 
 local function keep_running(pos, elapsed)
-	local meta = M(pos)
-	pushing(pos, meta)
-	return State:is_active(meta)
+	if tubelib.data_not_corrupted(pos) then
+		local meta = M(pos)
+		pushing(pos, meta)
+		return State:is_active(meta)
+	end
+	return false
 end	
 
 minetest.register_node("tubelib_addons1:pusher_fast", {
