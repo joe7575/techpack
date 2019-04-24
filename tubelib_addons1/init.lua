@@ -11,9 +11,9 @@
 ]]--
 
 
-dofile(minetest.get_modpath("tubelib_addons1") .. "/nodes.lua")
 dofile(minetest.get_modpath("tubelib_addons1") .. "/quarry.lua")
 dofile(minetest.get_modpath("tubelib_addons1") .. "/grinder.lua")
+dofile(minetest.get_modpath("tubelib_addons1") .. "/nodes.lua")
 dofile(minetest.get_modpath("tubelib_addons1") .. '/autocrafter.lua')
 dofile(minetest.get_modpath("tubelib_addons1") .. '/harvester.lua')
 dofile(minetest.get_modpath("tubelib_addons1") .. '/fermenter.lua')
