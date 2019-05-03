@@ -1,6 +1,18 @@
 # Release Notes for ModPack TechPack [techpack]
 
-2019-04-23  V2.03  * , 
+
+## V2.03.01 (2019-05-03)
+
+### Additions
+
+### Removals
+
+### Changes
+
+### Fixes
+- Warehouse nodes inventory handling bugfix
+
+
 
 ## V2.03 (2019-04-23)
 
@@ -15,6 +27,7 @@
 ### Fixes
 - Piston/WorldEdit/Replacer tool detection added. If node is replaced/removed/copied,
   it will switch to a "defect" dummy node.
+
 
 
 ## V2.02.06 (2019-03-23)

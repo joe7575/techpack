@@ -75,6 +75,18 @@ local function move_to_main(pos, index)
 	end
 end
 
+local function move_to_player_inv(player_name, pos, main_stack, index)
+	local player_inv = minetest.get_inventory({type="player", name=player_name})
+	local num = main_stack:get_count()
+	if num > 99 then
+		num = 99
+	end
+	local leftover = player_inv:add_item("main", ItemStack(main_stack:get_name().." "..num))
+	main_stack:set_count(main_stack:get_count() - num + leftover:get_count())
+	local node_inv = M(pos):get_inventory()	
+	node_inv:set_stack("main", index, main_stack)
+end
+
 function techpack_warehouse.tiles(background_img)
 	return {
 		-- up, down, right, left, back, front
@@ -226,12 +238,8 @@ function techpack_warehouse.allow_metadata_inventory_take(pos, listname, index, 
 	local number = M(pos):get_string("tubelib_number")
 	if listname == "main" then
 		Cache[number] = nil
-		local num = main_stack:get_count()
-		if num > 99 then
-			return 99
-		else
-			return num
-		end
+		minetest.after(0.1, move_to_player_inv, player:get_player_name(), pos, main_stack, index)
+		return 0
 	elseif listname == "filter" and main_stack:is_empty() then
 		Cache[number] = nil
 		return 1
