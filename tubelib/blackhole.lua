@@ -77,7 +77,7 @@ tubelib.register_node("tubelib:blackhole", {}, {
 	on_push_item = function(pos, side, item)
 		if side == "L" then
 			local meta = minetest.get_meta(pos)
-			local disappeared = meta:get_int("disappeared") + 1
+			local disappeared = meta:get_int("disappeared") + item:get_count()
 			meta:set_int("disappeared", disappeared)
 			meta:set_string("infotext", disappeared.." items disappeared")
 			return true		

@@ -112,6 +112,18 @@ local function AddToTbl(kvTbl, new_items)
 	return kvTbl
 end
 
+local function countItemOccurrenceInFilters(kvTbl, new_items)
+	for _, l in ipairs(new_items) do 
+		local name = l[1]
+		if kvTbl[name] == nil then
+			kvTbl[name] = 1
+		else
+			kvTbl[name] = kvTbl[name] + 1
+		end	
+	end
+	return kvTbl
+end
+
 -- return the number of items to be pushed to an unconfigured slot
 local function num_items(moved_items, name, filter_item_names, rejected_item_names)
 	if filter_item_names[name] == nil then  -- not configured in one filter?
@@ -170,6 +182,7 @@ local function filter_settings(pos)
 	local filter = minetest.deserialize(meta:get_string("filter")) or {false,false,false,false}
 	local kvFilterItemNames = {} -- {<item:name> = true,...}
 	local kvSide2ItemNames = {} -- {"F" = {<item:name>,...},...}
+	local kvNumOccur = {}
 	
 	-- collect all filter settings
 	for idx,slot in ipairs(SlotColors) do
@@ -179,6 +192,7 @@ local function filter_settings(pos)
 			local filter = invlist_entries_as_list(list)
 			AddToTbl(kvFilterItemNames, filter)
 			kvSide2ItemNames[side] = filter
+			countItemOccurrenceInFilters(kvNumOccur, filter)
 		end
 	end
 	
@@ -186,6 +200,7 @@ local function filter_settings(pos)
 		kvFilterItemNames = kvFilterItemNames, 
 		kvSide2ItemNames = kvSide2ItemNames,
 		kvRejectedItemNames = {},
+		kvNumOccur = kvNumOccur,
 	}
 end
 
@@ -213,6 +228,7 @@ local function distributing(pos, meta)
 	local kvFilterItemNames = FilterCache[hash].kvFilterItemNames
 	-- filter items of one slot as list  {{<item:name>, <num-items>},...}
 	local items = FilterCache[hash].kvSide2ItemNames[side]
+	local kvNumOccur = FilterCache[hash].kvNumOccur
 	-- rejected items from other filter slots
 	local rejected = FilterCache[hash].kvRejectedItemNames
 	
@@ -244,7 +260,7 @@ local function distributing(pos, meta)
 			local num = num_items(moved_items, name, kvFilterItemNames, rejected)
 			if num then
 				local item = tubelib.get_this_item(meta, "src", kvSrc[name], num) -- <<=== tubelib
-				if item then
+				if item and (not kvNumOccur[item:get_name()] or kvNumOccur[item:get_name()] < 2) then
 					if not tubelib.push_items(pos, side, item, player_name) then -- <<=== tubelib
 						tubelib.put_item(meta, "src", item)
 					else

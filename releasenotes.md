@@ -1,6 +1,24 @@
 # Release Notes for ModPack TechPack [techpack]
 
 
+## V2.03.02 (2019-05-09)
+
+### Additions
+
+### Removals
+
+### Changes
+- HighPerf Pusher support for autocrafter, grinder, and harvester 
+  added (issue #22, #23)
+- Both distributor behaviours changed (issue #26)
+
+### Fixes
+- Black Hole "items disappeared" counter bugfix (issue #24)
+- HighPerf distributor behaviour without an active filtered channel 
+  changed (issue #25)
+
+
+
 ## V2.03.01 (2019-05-03)
 
 ### Additions

@@ -425,6 +425,9 @@ minetest.register_craft({
 
 
 tubelib.register_node("tubelib_addons1:harvester_base", {"tubelib_addons1:harvester_defect"}, {
+	on_pull_stack = function(pos, side)
+		return tubelib.get_stack(M(pos), "main")
+	end,
 	on_pull_item = function(pos, side)
 		return tubelib.get_item(M(pos), "main")
 	end,

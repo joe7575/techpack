@@ -48,6 +48,22 @@ local function allow_metadata_inventory_move(pos, from_list, from_index, to_list
 	return count
 end	
 
+local function keep_the_rest(meta, list, taken)
+	if taken then
+		local inv = meta:get_inventory()	
+		local rest = ItemStack(taken:get_name())
+		if not inv:contains_item(list, rest) then
+			inv:add_item(list, rest)
+			if taken:get_count() > 1 then
+				taken:set_count(taken:get_count() - 1)
+				return taken
+			end
+		else
+			return taken
+		end
+	end
+end	
+
 local function aging(pos, meta)
 	local cnt = meta:get_int("tubelib_aging") + 1
 	meta:set_int("tubelib_aging", cnt)
@@ -285,6 +301,11 @@ tubelib.register_node("tubelib_addons3:pushing_chest",
 		else
 			return "not supported"
 		end
+	end,
+	on_pull_stack = function(pos, side)
+		local meta = minetest.get_meta(pos)
+		local taken = tubelib.get_stack(meta, "main")
+		return keep_the_rest(meta, "main", taken)
 	end,
 	on_pull_item = function(pos, side)
 		local meta = minetest.get_meta(pos)

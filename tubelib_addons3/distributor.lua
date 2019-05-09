@@ -194,7 +194,7 @@ local function distributing(pos, meta)
 	local open_ports = table.copy(FilterCache[hash].OpenPorts)
 	
 	-- no filter configured?
-	if next(kvFilterItemNames) == nil then return end
+	if not next(kvFilterItemNames) and not next(open_ports) then return end
 	
 	local busy = false
 	local inv = meta:get_inventory()
@@ -230,7 +230,7 @@ local function distributing(pos, meta)
 		end
 		
 		-- try unconfigured open output ports
-		if second_try then
+		if second_try and (not kvFilterItemNames[name] or #kvFilterItemNames[name] == 1) then
 			side = random_list_elem(open_ports)
 			if side then
 				if tubelib.push_items(pos, side, stack, player_name) then
