@@ -260,13 +260,17 @@ local function distributing(pos, meta)
 			local num = num_items(moved_items, name, kvFilterItemNames, rejected)
 			if num then
 				local item = tubelib.get_this_item(meta, "src", kvSrc[name], num) -- <<=== tubelib
-				if item and (not kvNumOccur[item:get_name()] or kvNumOccur[item:get_name()] < 2) then
-					if not tubelib.push_items(pos, side, item, player_name) then -- <<=== tubelib
-						tubelib.put_item(meta, "src", item)
+				if item then
+					if not kvNumOccur[item:get_name()] or kvNumOccur[item:get_name()] < 2 then
+						if not tubelib.push_items(pos, side, item, player_name) then -- <<=== tubelib
+							tubelib.put_item(meta, "src", item)
+						else
+							counter[listname] = counter[listname] + num
+							moved_items = moved_items + num
+							moved_items_total = moved_items_total + num
+						end
 					else
-						counter[listname] = counter[listname] + num
-						moved_items = moved_items + num
-						moved_items_total = moved_items_total + num
+						tubelib.put_item(meta, "src", item)
 					end
 				end
 			end
