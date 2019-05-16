@@ -305,7 +305,7 @@ function NodeStates:keep_running(pos, meta, val, num_items)
 	if self.aging_level1 then
 		local cnt = meta:get_int("tubelib_aging") + num_items
 		meta:set_int("tubelib_aging", cnt)
-		if (cnt > (self.aging_level1) and math.random(self.aging_level2/num_items) == 1)
+		if (cnt > (self.aging_level1) and math.random(math.max(1, math.floor(self.aging_level2/num_items))) == 1)
 		or cnt >= 999999 then
 			self:defect(pos, meta)
 		end
@@ -431,7 +431,7 @@ end
 function NodeStates:after_dig_node(pos, oldnode, oldmetadata, digger)
 	local inv = minetest.get_inventory({type="player", name=digger:get_player_name()})
 	local cnt = oldmetadata.fields.tubelib_aging and tonumber(oldmetadata.fields.tubelib_aging) or 0
-	local is_defect = cnt > self.aging_level1 and math.random(self.aging_level2 / cnt) == 1
+	local is_defect = cnt > self.aging_level1 and math.random(math.max(1, math.floor(self.aging_level2 / cnt))) == 1
 	if self.node_name_defect and is_defect then
 		inv:add_item("main", ItemStack(self.node_name_defect))
 	else
