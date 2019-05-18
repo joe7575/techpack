@@ -36,8 +36,10 @@ local Level2Idx = {[2]=1, [1]=2, [0]=3, [-1]=4, [-2]=5, [-3]=6,
 				   [-5]=7, [-10]=8, [-15]=9, [-20]=10}
 
 local function formspec(self, pos, meta)
-	local depth = meta:get_int("max_levels") or 1
-	local start_level = meta:get_int("start_level") or 1
+	local depth = meta:get_int("max_levels")
+	if not Depth2Idx[depth] then depth = 1 end
+	local start_level = meta:get_int("start_level")
+	if not Level2Idx[start_level] then start_level = 0 end
 	local endless = meta:get_int("endless") or 0
 	local fuel = meta:get_int("fuel") or 0
 	-- some recalculations
