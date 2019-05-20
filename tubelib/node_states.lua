@@ -15,33 +15,33 @@
 ]]--
 
 
---[[ 
+--[[
 
 Node states:
 
         +-----------------------------------+    +------------+
-        |                                   |    |            |                                      
-        |                                   V    V            |                                      
-        |                                +---------+          |                                      
-        |                                |         |          |                                      
-        |                      +---------| STOPPED |          |                                      
-        |                      |         |         |          |                                      
-        |               button |         +---------+          |                                      
-        |                      |              ^               |                                      
- repair |                      V              | button        |                                      
-        |                 +---------+         |               | button                               
-        |                 |         |---------+               |                                      
-        |                 | RUNNING |                         |                                      
-        |        +--------|         |---------+               |                                      
-        |        |        +---------+         |               |                                      
-        |        |           ^    |           |               |                                      
-        |        |           |    |           |               |                                      
-        |        V           |    V           V               |                                      
-        |   +---------+   +----------+   +---------+          |                                      
-        |   |         |   |          |   |         |          |                                      
-        +---| DEFECT  |   | STANDBY/ |   |  FAULT  |----------+                                      
-            |         |   | BLOCKED  |   |         |                                                 
-            +---------+   +----------+   +---------+                                                 
+        |                                   |    |            |
+        |                                   V    V            |
+        |                                +---------+          |
+        |                                |         |          |
+        |                      +---------| STOPPED |          |
+        |                      |         |         |          |
+        |               button |         +---------+          |
+        |                      |              ^               |
+ repair |                      V              | button        |
+        |                 +---------+         |               | button
+        |                 |         |---------+               |
+        |                 | RUNNING |                         |
+        |        +--------|         |---------+               |
+        |        |        +---------+         |               |
+        |        |           ^    |           |               |
+        |        |           |    |           |               |
+        |        V           |    V           V               |
+        |   +---------+   +----------+   +---------+          |
+        |   |         |   |          |   |         |          |
+        +---| DEFECT  |   | STANDBY/ |   |  FAULT  |----------+
+            |         |   | BLOCKED  |   |         |
+            +---------+   +----------+   +---------+
 
 Node metadata:
 	"tubelib_number"     - string with tubelib number, like "0123"
@@ -88,7 +88,7 @@ function NodeStates:new(attr)
 		has_item_meter = attr.has_item_meter, -- true/false
 		-- optional
 		node_name_passive = attr.node_name_passive,
-		node_name_active = attr.node_name_active, 
+		node_name_active = attr.node_name_active,
 		node_name_defect = attr.node_name_defect,
 		infotext_name = attr.infotext_name,
 		start_condition_fullfilled = attr.start_condition_fullfilled or start_condition_fullfilled,
@@ -202,7 +202,7 @@ function NodeStates:standby(pos, meta)
 		return true
 	end
 	return false
-end	
+end
 
 -- special case of standby for pushing nodes
 function NodeStates:blocked(pos, meta)
@@ -226,7 +226,7 @@ function NodeStates:blocked(pos, meta)
 		return true
 	end
 	return false
-end	
+end
 
 function NodeStates:fault(pos, meta)
 	if meta:get_int("tubelib_state") == RUNNING then
@@ -247,7 +247,7 @@ function NodeStates:fault(pos, meta)
 		return true
 	end
 	return false
-end	
+end
 
 function NodeStates:defect(pos, meta)
 	meta:set_int("tubelib_state", DEFECT)
@@ -265,7 +265,7 @@ function NodeStates:defect(pos, meta)
 	end
 	minetest.get_node_timer(pos):stop()
 	return true
-end	
+end
 
 function NodeStates:get_state(meta)
 	return meta:get_int("tubelib_state")
@@ -297,7 +297,7 @@ end
 -- To be called after successful node action to raise the timer
 -- and keep the node in state RUNNING
 function NodeStates:keep_running(pos, meta, val, num_items)
-	num_items = num_items or 1
+	if not num_items or num_items < 1 then num_items = 1 end
 	-- set to RUNNING if not already done
 	self:start(pos, meta, true)
 	meta:set_int("tubelib_countdown", val)
@@ -355,11 +355,11 @@ function NodeStates:on_receive_message(pos, topic, payload)
 		return M(pos):get_int("tubelib_aging")
 	end
 end
-	
+
 -- repair corrupt node data and/or migrate node to state2
 function NodeStates:on_node_load(pos, not_start_timer)
 	local meta = minetest.get_meta(pos)
-	
+
 	-- legacy node number/state/counter?
 	local number = meta:get_string("number")
 	if number ~= "" and number ~= nil then
@@ -380,7 +380,7 @@ function NodeStates:on_node_load(pos, not_start_timer)
 	if not tubelib.data_not_corrupted(pos) then
 		return
 	end
-	
+
 	-- state corrupt?
 	local state = meta:get_int("tubelib_state")
 	if state == 0 then
@@ -396,7 +396,7 @@ function NodeStates:on_node_load(pos, not_start_timer)
 	elseif state == BLOCKED then
 		minetest.get_node_timer(pos):start(self.cycle_time * self.standby_ticks)
 	end
-	
+
 	if self.formspec_func then
 		meta:set_string("formspec", self.formspec_func(self, pos, meta))
 	end
@@ -425,12 +425,13 @@ function NodeStates:on_node_repair(pos)
 		return true
 	end
 	return false
-end	
+end
 
 -- Return working or defect machine, depending on machine lifetime
 function NodeStates:after_dig_node(pos, oldnode, oldmetadata, digger)
 	local inv = minetest.get_inventory({type="player", name=digger:get_player_name()})
-	local cnt = oldmetadata.fields.tubelib_aging and tonumber(oldmetadata.fields.tubelib_aging) or 0
+	local cnt = oldmetadata.fields.tubelib_aging and tonumber(oldmetadata.fields.tubelib_aging)
+	if not cnt or cnt < 1 then cnt = 1 end
 	local is_defect = cnt > self.aging_level1 and math.random(math.max(1, math.floor(self.aging_level2 / cnt))) == 1
 	if self.node_name_defect and is_defect then
 		inv:add_item("main", ItemStack(self.node_name_defect))
