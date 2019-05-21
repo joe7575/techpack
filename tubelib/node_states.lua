@@ -297,7 +297,7 @@ end
 -- To be called after successful node action to raise the timer
 -- and keep the node in state RUNNING
 function NodeStates:keep_running(pos, meta, val, num_items)
-	num_items = num_items or 1
+	if not num_items or num_items < 1 then num_items = 1 end
 	-- set to RUNNING if not already done
 	self:start(pos, meta, true)
 	meta:set_int("tubelib_countdown", val)
@@ -430,7 +430,8 @@ end
 -- Return working or defect machine, depending on machine lifetime
 function NodeStates:after_dig_node(pos, oldnode, oldmetadata, digger)
 	local inv = minetest.get_inventory({type="player", name=digger:get_player_name()})
-	local cnt = oldmetadata.fields.tubelib_aging and tonumber(oldmetadata.fields.tubelib_aging) or 0
+	local cnt = oldmetadata.fields.tubelib_aging and tonumber(oldmetadata.fields.tubelib_aging)
+	if not cnt or cnt < 1 then cnt = 1 end
 	local is_defect = cnt > self.aging_level1 and math.random(math.max(1, math.floor(self.aging_level2 / cnt))) == 1
 	if self.node_name_defect and is_defect then
 		inv:add_item("main", ItemStack(self.node_name_defect))
