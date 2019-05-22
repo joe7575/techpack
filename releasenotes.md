@@ -1,6 +1,19 @@
 # Release Notes for ModPack TechPack [techpack]
 
 
+## V2.03.03 (2019-05-22)
+
+### Additions
+
+### Removals
+
+### Changes
+
+### Fixes
+- Bug fixes from obl3pplifp (Blocky Survival) (issues #27, #28)
+- Unstackable items vanish when using HighPerf pushers (issue #29)
+
+
 ## V2.03.02 (2019-05-09)
 
 ### Additions

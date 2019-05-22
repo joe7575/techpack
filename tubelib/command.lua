@@ -472,9 +472,9 @@ end
 function tubelib.get_stack(meta, listname)
 	local inv = meta:get_inventory()
 	local item = tubelib.get_item(meta, listname)
-	if item and inv:contains_item(listname, item) then
+	if item and item:get_stack_max() > 1 and inv:contains_item(listname, item) then
 		-- try to remove a complete stack
-		item:set_count(98)
+		item:set_count(math.min(98, item:get_stack_max() - 1))
 		local taken = inv:remove_item(listname, item)
 		-- add the already removed
 		taken:set_count(taken:get_count() + 1)
