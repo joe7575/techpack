@@ -18,8 +18,8 @@ tubelib_addons1.Flowers = {}
 
 -- table needed for Grinder
 tubelib_addons1.GroundNodes = {}
-	
-	
+
+
 -- default trees which require the node timer
 function tubelib_addons1.register_tree_node(name, drop, plant)
 	tubelib_addons1.FarmingNodes[name] = {drop = drop or name, plant = plant, t1= 166, t2 = 288}
@@ -161,6 +161,7 @@ gn("default:silver_sand")
 gn("default:ice")
 gn("default:snowblock")
 gn("default:snow")
+gn("default:obsidian")
 
 gn("stairs:stair_cobble")
 gn("stairs:stair_mossycobble")
