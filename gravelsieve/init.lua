@@ -29,7 +29,7 @@
 	2017-07-08  V1.01  * extended for moreores
 	2017-07-09  V1.02  * Cobblestone bugfix (NathanSalapat)
 	                   * ore_probability is now global accessable (bell07)
-	2017-08-29  V1.03  * Fix syntax listring (Jat15) 
+	2017-08-29  V1.03  * Fix syntax listring (Jat15)
 	2017-09-08  V1.04  * Adaption to Tubelib
 	2017-11-03  V1.05  * Adaption to Tubelib v0.06
 	2018-01-01  V1.06  * Hopper support added
@@ -44,7 +44,16 @@ gravelsieve = {
 
 dofile(minetest.get_modpath("gravelsieve") .. "/hammer.lua")
 
-gravelsieve.ore_rarity = tonumber(minetest.setting_get("gravelsieve_ore_rarity")) or 1
+local settings_get
+if minetest.setting_get then
+	settings_get = minetest.setting_get
+else
+	settings_get = function(...) endminetest.settings:get(...) end
+end
+gravelsieve.ore_rarity = tonumber(settings_get("gravelsieve_ore_rarity")) or 1.16
+gravelsieve.ore_max_elevation = tonumber(settings_get("gravelsieve_ore_max_elevation")) or 0
+gravelsieve.ore_min_elevation = tonumber(settings_get("gravelsieve_ore_min_elevation")) or -30912
+local y_spread = math.max(1 + gravelsieve.ore_max_elevation - gravelsieve.ore_min_elevation, 1)
 
 -- Increase the probability over the natural occurrence
 local PROBABILITY_FACTOR = 3
@@ -71,6 +80,17 @@ if minetest.get_modpath("pipeworks") and pipeworks ~= nil then
 	pipeworks_after_place = pipeworks.after_place
 end
 
+local function harmonic_sum(a, b)
+	return 1 / ((1 / a) + (1 / b))
+end
+
+local function calculate_probability(item)
+	local ymax = math.min(item.y_max, gravelsieve.ore_max_elevation)
+	local ymin = math.max(item.y_min, gravelsieve.ore_min_elevation)
+	return (gravelsieve.ore_rarity / PROBABILITY_FACTOR) *
+			item.clust_scarcity / (item.clust_num_ores * ((ymax - ymin) / y_spread))
+end
+
 -- collect all registered ores and calculate the probability
 local function add_ores()
 	for _,item in  pairs(minetest.registered_ores) do
@@ -81,28 +101,28 @@ local function add_ores()
 			and drop ~= ""
 			and item.ore_type == "scatter"
 			and item.wherein == "default:stone"
-			and item.clust_scarcity ~= nil and item.clust_scarcity > 0 
-			and item.clust_num_ores ~= nil and item.clust_num_ores > 0 
+			and item.clust_scarcity ~= nil and item.clust_scarcity > 0
+			and item.clust_num_ores ~= nil and item.clust_num_ores > 0
 			and item.y_max ~= nil and item.y_min ~= nil then
-				local probability = (gravelsieve.ore_rarity / PROBABILITY_FACTOR) * item.clust_scarcity /
-						(item.clust_num_ores * ((item.y_max - item.y_min) / 65535))
-				if gravelsieve.ore_probability[drop] == nil then
-					gravelsieve.ore_probability[drop] = probability
-				else
-					-- harmonic sum
-					gravelsieve.ore_probability[drop] = 1.0 / ((1.0 / gravelsieve.ore_probability[drop]) +
-							(1.0 / probability))
+				local probability = calculate_probability(item)
+				if probability > 0 then
+					local cur_probability = gravelsieve.ore_probability[drop]
+					if cur_probability then
+						gravelsieve.ore_probability[drop] = harmonic_sum(cur_probability, probability)
+					else
+						gravelsieve.ore_probability[drop] = probability
+					end
 				end
 			end
 		end
 	end
 	local overall_probability = 0.0
 	for name,probability in pairs(gravelsieve.ore_probability) do
-		minetest.log("info", string.format("[gravelsieve] %-32s %u", name, probability))
+		minetest.log("info", ("[gravelsieve] %-32s %.02f"):format(name, probability))
 		overall_probability = overall_probability + 1.0/probability
 	end
-	minetest.log("info", string.format("[gravelsieve] Overall probability %g", overall_probability))
-end	
+	minetest.log("info", ("[gravelsieve] Overall probability %f"):format(overall_probability))
+end
 
 minetest.after(1, add_ores)
 
@@ -283,7 +303,7 @@ for idx = 0,4 do
 			"gravelsieve_auto_sieve.png",
 			"gravelsieve_auto_sieve.png",
 		}
-		
+
 		-- Pipeworks support
 		tube_info = {
 			insert_object = function(pos, node, stack, direction)
@@ -320,9 +340,9 @@ for idx = 0,4 do
 		tiles = tiles_data,
 		drawtype = "nodebox",
         drop = node_name,
-		
+
 		tube = tube_info,     --  NEW
-		
+
 		node_box = {
 			type = "fixed",
 			fixed = nodebox_data,
@@ -344,18 +364,18 @@ for idx = 0,4 do
 			inv:set_size('src', 1)
 			inv:set_size('dst', 16)
 		end,
-		
+
 		-- Pipeworks support
 		after_dig_node = pipeworks_after_dig,
 
 		after_place_node = function(pos, placer)
 			local meta = minetest.get_meta(pos)
 			meta:set_string("infotext", "Gravel Sieve")
-			
+
 			-- Pipeworks support
 			pipeworks_after_place(pos, placer)
 		end,
-			
+
 		on_metadata_inventory_move = function(pos)
 			if automatic == 0 then
 				local meta = minetest.get_meta(pos)
@@ -460,12 +480,12 @@ if minetest.global_exists("tubelib") then
 			inv:set_size('src', 1)
 			inv:set_size('dst', 16)
 		end,
-		
+
 		after_place_node = function(pos, placer)
 			local meta = minetest.get_meta(pos)
 			meta:set_string("infotext", "Gravel Sieve")
 		end,
-			
+
 		on_dig = function(pos, node, puncher, pointed_thing)
 			local meta = minetest.get_meta(pos)
 			local inv = meta:get_inventory()
@@ -481,8 +501,8 @@ if minetest.global_exists("tubelib") then
 		is_ground_content = false,
 		groups = {choppy=2, cracky=1, not_in_creative_inventory=1},
 	})
-	
-	tubelib.register_node("gravelsieve:auto_sieve3", 
+
+	tubelib.register_node("gravelsieve:auto_sieve3",
 		{
 			"gravelsieve:auto_sieve0",
 			"gravelsieve:auto_sieve1",
@@ -518,7 +538,7 @@ if minetest.global_exists("tubelib") then
 			minetest.get_node_timer(pos):start(1.0)
 			return true
 		end,
-	})	
+	})
 end
 
 minetest.register_node("gravelsieve:sieved_gravel", {
@@ -573,19 +593,19 @@ minetest.register_alias("gravelsieve:auto_sieve", "gravelsieve:auto_sieve3")
 -- adaption to hopper
 if minetest.get_modpath("hopper") and hopper ~= nil and hopper.add_container ~= nil then
 	hopper:add_container({
-		{"bottom", "gravelsieve:auto_sieve0", "src"}, 
+		{"bottom", "gravelsieve:auto_sieve0", "src"},
 		{"top", "gravelsieve:auto_sieve0", "dst"},
 		{"side", "gravelsieve:auto_sieve0", "src"},
-		
-		{"bottom", "gravelsieve:auto_sieve1", "src"}, 
+
+		{"bottom", "gravelsieve:auto_sieve1", "src"},
 		{"top", "gravelsieve:auto_sieve1", "dst"},
 		{"side", "gravelsieve:auto_sieve1", "src"},
-		
-		{"bottom", "gravelsieve:auto_sieve2", "src"}, 
+
+		{"bottom", "gravelsieve:auto_sieve2", "src"},
 		{"top", "gravelsieve:auto_sieve2", "dst"},
 		{"side", "gravelsieve:auto_sieve2", "src"},
-		
-		{"bottom", "gravelsieve:auto_sieve3", "src"}, 
+
+		{"bottom", "gravelsieve:auto_sieve3", "src"},
 		{"top", "gravelsieve:auto_sieve3", "dst"},
 		{"side", "gravelsieve:auto_sieve3", "src"},
 	})
@@ -593,7 +613,7 @@ end
 
 -- adaption to Circular Saw
 if minetest.get_modpath("moreblocks") then
-	
+
 	stairsplus:register_all("gravelsieve", "compressed_gravel", "gravelsieve:compressed_gravel", {
 		description="Compressed Gravel",
 		groups={cracky=2, crumbly=2, choppy=2, not_in_creative_inventory=1},
