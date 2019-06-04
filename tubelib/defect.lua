@@ -37,10 +37,13 @@ function tubelib.data_not_corrupted(pos)
 		-- node moved?
 		local info = tubelib.get_node_info(number)
 		if not info or not vector.equals(info.pos, pos) then
-			tubelib.remove_node(pos)
-			minetest.set_node(pos, {name = "tubelib:defect_dummy"})
-			meta:from_table(nil)
-			return false
+			local node = minetest.get_node(pos)
+			number = tubelib.get_new_number(pos, node.name)
+			meta:set_string("tubelib_number", number)
+--			tubelib.remove_node(pos)
+--			minetest.set_node(pos, {name = "tubelib:defect_dummy"})
+--			meta:from_table(nil)
+--			return false
 		end
 		minetest.get_meta(pos):get_string("my_pos", minetest.pos_to_string(pos))
 	end
