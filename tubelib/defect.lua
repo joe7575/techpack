@@ -13,6 +13,15 @@ minetest.register_node("tubelib:defect_dummy", {
 	is_ground_content = false,
 })
 
+local reported_machines = {}
+local function report(pos)
+	reported_machines[minetest.pos_to_string(pos)] = true
+end
+local function already_reported(pos)
+	local key = minetest.pos_to_string(pos)
+	return reported_machines[key]
+end
+
 
 function tubelib.data_not_corrupted(pos)	
 	if minetest.pos_to_string(pos) ~= minetest.get_meta(pos):get_string("my_pos") then
@@ -29,18 +38,22 @@ function tubelib.data_not_corrupted(pos)
 			number = meta:get_string("own_number")
 		end
 		if number == "" then
-			tubelib.remove_node(pos)
-			minetest.set_node(pos, {name = "tubelib:defect_dummy"})
-			meta:from_table(nil)
-			return false
+			if not already_reported(pos) then
+				minetest.log('error', ('[tubelib] machine @ %s has no number'):format(minetest.pos_to_string(pos)))
+				report(pos)
+			end
 		end
 		-- node moved?
 		local info = tubelib.get_node_info(number)
 		if not info or not vector.equals(info.pos, pos) then
-			tubelib.remove_node(pos)
-			minetest.set_node(pos, {name = "tubelib:defect_dummy"})
-			meta:from_table(nil)
-			return false
+			if not already_reported(pos) then
+				if not info then
+					minetest.log('error', ('[tubelib] machine @ %s has no info'):format(minetest.pos_to_string(pos)))
+				else
+					minetest.log('error', ('[tubelib] machine @ %s thinks it is at %s'):format(minetest.pos_to_string(pos), minetest.pos_to_string(info.pos)))
+				end
+				report(pos)
+			end
 		end
 		minetest.get_meta(pos):get_string("my_pos", minetest.pos_to_string(pos))
 	end
