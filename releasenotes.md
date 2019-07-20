@@ -1,6 +1,19 @@
 # Release Notes for ModPack TechPack [techpack]
 
 
+
+## V2.03.04 (2019-07-20)
+
+### Additions
+
+### Removals
+
+### Changes
+
+### Fixes
+- Use Unified Dyes on_dig where needed (issue #35)
+
+
 ## V2.03.03 (2019-05-22)
 
 ### Additions
