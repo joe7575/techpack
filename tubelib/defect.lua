@@ -54,6 +54,9 @@ function tubelib.data_not_corrupted(pos)
 				end
 				report(pos)
 			end
+			local node = minetest.get_node(pos)
+			number = tubelib.get_new_number(pos, node.name)
+			meta:set_string("tubelib_number", number)
 		end
 		minetest.get_meta(pos):get_string("my_pos", minetest.pos_to_string(pos))
 	end
