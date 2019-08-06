@@ -128,7 +128,7 @@ minetest.register_node("tubelib_addons3:funnel", {
 
 
 minetest.register_craft({
-	output = "tubelib_addons3:funnel 2",
+	output = "tubelib_addons3:funnel",
 	recipe = {
 		{"default:tin_ingot", "tubelib_addons1:funnel", ""},
 		{"tubelib_addons1:funnel", "default:gold_ingot", ""},
