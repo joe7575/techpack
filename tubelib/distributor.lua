@@ -142,19 +142,19 @@ local function allow_metadata_inventory_put(pos, listname, index, stack, player)
 	local meta = M(pos)
 	local inv = meta:get_inventory()
 	local list = inv:get_list(listname)
+	local stack_count = stack:get_count()
 	
 	if minetest.is_protected(pos, player:get_player_name()) then
 		return 0
 	end
 	if listname == "src" then
-		if State:get_state(M(pos)) == tubelib.STANDBY then
+		if State:get_state(meta) == tubelib.STANDBY then
 			State:start(pos, meta)
 		end
-		return stack:get_count()
-	elseif invlist_num_entries(list) < MAX_NUM_PER_CYC then
-		return stack:get_count()
+		return stack_count
 	end
-	return 0
+
+	return math.min(stack_count, MAX_NUM_PER_CYC - invlist_num_entries(list))
 end
 
 local function allow_metadata_inventory_take(pos, listname, index, stack, player)
