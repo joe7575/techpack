@@ -2,6 +2,19 @@
 
 
 
+## V2.03.05 (2019-08-06)
+
+### Additions
+- Tubelib_addons3 "HighPerf Funnel" added (see isssue #36)
+
+### Removals
+
+### Changes
+
+### Fixes
+
+
+
 ## V2.03.04 (2019-07-20)
 
 ### Additions
