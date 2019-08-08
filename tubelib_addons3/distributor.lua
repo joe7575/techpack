@@ -143,30 +143,38 @@ local function filter_settings(pos)
 end
 
 local function allow_metadata_inventory_put(pos, listname, index, stack, player)
-	local meta = M(pos)
-	local inv = meta:get_inventory()
-	local list = inv:get_list(listname)
-	
 	if minetest.is_protected(pos, player:get_player_name()) then
 		return 0
 	end
+	
+	local meta = M(pos)
+	local inv = meta:get_inventory()
+	local list = inv:get_list(listname)
+	local stack_count = stack:get_count()
+	
 	if listname == "src" then
 		if State:get_state(M(pos)) == tubelib.STANDBY then
 			State:start(pos, meta)
 		end
-		return stack:get_count()
-	elseif invlist_num_entries(list) < NUM_FILTER_ELEM then
-		filter_settings(pos)
-		return 1
+		return stack_count
 	end
-	return 0
+	
+	local space_left = NUM_FILTER_ELEM - invlist_num_entries(list)
+	if space_left <= 0 then
+		return 0
+	end
+	
+	filter_settings(pos)
+	return 1
 end
 
 local function allow_metadata_inventory_take(pos, listname, index, stack, player)
 	if minetest.is_protected(pos, player:get_player_name()) then
 		return 0
 	end
-	filter_settings(pos)
+	if listname ~= "src" then
+		filter_settings(pos)
+	end
 	return stack:get_count()
 end
 
