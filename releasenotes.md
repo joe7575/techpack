@@ -2,6 +2,19 @@
 
 
 
+## V2.03.05 (2019-08-08)
+
+### Additions
+
+### Removals
+
+### Changes
+
+### Fixes
+- Fixes to distributor metadata_inventory functions
+
+
+
 ## V2.03.05 (2019-08-06)
 
 ### Additions
