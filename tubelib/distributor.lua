@@ -138,39 +138,6 @@ local function num_items(moved_items, name, filter_item_names, rejected_item_nam
 	end
 end
 
-local function allow_metadata_inventory_put(pos, listname, index, stack, player)
-	local meta = M(pos)
-	local inv = meta:get_inventory()
-	local list = inv:get_list(listname)
-	
-	if minetest.is_protected(pos, player:get_player_name()) then
-		return 0
-	end
-	if listname == "src" then
-		if State:get_state(M(pos)) == tubelib.STANDBY then
-			State:start(pos, meta)
-		end
-		return stack:get_count()
-	elseif invlist_num_entries(list) < MAX_NUM_PER_CYC then
-		return stack:get_count()
-	end
-	return 0
-end
-
-local function allow_metadata_inventory_take(pos, listname, index, stack, player)
-	if minetest.is_protected(pos, player:get_player_name()) then
-		return 0
-	end
-	return stack:get_count()
-end
-
-local function allow_metadata_inventory_move(pos, from_list, from_index, to_list, to_index, count, player)
-	local meta = M(pos)
-	local inv = meta:get_inventory()
-	local stack = inv:get_stack(from_list, from_index)
-	return allow_metadata_inventory_put(pos, to_list, to_index, stack, player)
-end
-
 local SlotColors = {"red", "green", "blue", "yellow"}
 local Num2Ascii = {"B", "L", "F", "R"} -- color to side translation
 local FilterCache = {} -- local cache for filter settings
@@ -202,6 +169,50 @@ local function filter_settings(pos)
 		kvRejectedItemNames = {},
 		kvNumOccur = kvNumOccur,
 	}
+end
+
+local function allow_metadata_inventory_put(pos, listname, index, stack, player)
+	if minetest.is_protected(pos, player:get_player_name()) then
+		return 0
+	end
+	
+	local meta = M(pos)
+	local inv = meta:get_inventory()
+	local list = inv:get_list(listname)
+	local stack_count = stack:get_count()
+	
+	if listname == "src" then
+		if State:get_state(M(pos)) == tubelib.STANDBY then
+			State:start(pos, meta)
+		end
+		return stack_count
+	end
+	
+	local space_left = MAX_NUM_PER_CYC - invlist_num_entries(list)
+	if space_left <= 0 then -- < 0 case is possible if distributor is already misconfigured
+		return 0
+	end
+	
+	filter_settings(pos)
+	return math.min(stack_count, space_left)
+end
+
+local function allow_metadata_inventory_take(pos, listname, index, stack, player)
+	if minetest.is_protected(pos, player:get_player_name()) then
+		return 0
+	end
+	
+	if listname ~= "src" then
+		filter_settings(pos)
+	end
+	return stack:get_count()
+end
+
+local function allow_metadata_inventory_move(pos, from_list, from_index, to_list, to_index, count, player)
+	local meta = M(pos)
+	local inv = meta:get_inventory()
+	local stack = inv:get_stack(from_list, from_index)
+	return allow_metadata_inventory_put(pos, to_list, to_index, stack, player)
 end
 
 -- move items from configured filters to the output
