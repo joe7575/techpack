@@ -91,6 +91,41 @@ local function calculate_probability(item)
 			item.clust_scarcity / (item.clust_num_ores * ((ymax - ymin) / y_spread))
 end
 
+local function pairs_by_values(t, f)
+    if not f then
+        f = function(a, b) return a < b end
+    end
+    local s = {}
+    for k, v in pairs(t) do
+        table.insert(s, {k, v})
+    end
+    table.sort(s, function(a, b)
+        return f(a[2], b[2])
+    end)
+    local i = 0
+    return function()
+        i = i + 1
+        local v = s[i]
+        if v then
+            return unpack(v)
+        else
+            return nil
+        end
+    end
+end
+
+local function parse_drop(drop)
+	local d, count = drop:match("^%s*(%S+)%s+(%d+)%s*$")
+	if d and count then
+		return d, count
+	end
+	d, count = drop:match("%s*craft%s+\"?([^%s\"]+)\"?%s+(%d+)%s*")
+	if d and count then
+		return d, count
+	end
+	return drop, 1
+end
+
 -- collect all registered ores and calculate the probability
 local function add_ores()
 	for _,item in  pairs(minetest.registered_ores) do
@@ -104,7 +139,10 @@ local function add_ores()
 			and item.clust_scarcity ~= nil and item.clust_scarcity > 0
 			and item.clust_num_ores ~= nil and item.clust_num_ores > 0
 			and item.y_max ~= nil and item.y_min ~= nil then
-				local probability = calculate_probability(item)
+				local count
+				drop, count = parse_drop(drop)
+
+				local probability = calculate_probability(item) / count
 				if probability > 0 then
 					local cur_probability = gravelsieve.ore_probability[drop]
 					if cur_probability then
@@ -118,8 +156,8 @@ local function add_ores()
 	end
 	minetest.log("action", "[gravelsieve] ore probabilties:")
 	local overall_probability = 0.0
-	for name,probability in pairs(gravelsieve.ore_probability) do
-		minetest.log("action", ("[gravelsieve] %-32s %.02f"):format(name, probability))
+	for name,probability in pairs_by_values(gravelsieve.ore_probability) do
+		minetest.log("action", ("[gravelsieve] %-32s: 1 / %.02f"):format(name, probability))
 		overall_probability = overall_probability + 1.0/probability
 	end
 	minetest.log("action", ("[gravelsieve] Overall probability %f"):format(overall_probability))
