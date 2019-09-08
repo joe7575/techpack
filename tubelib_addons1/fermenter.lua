@@ -7,9 +7,9 @@
 
 	LGPLv2.1+
 	See LICENSE.txt for more information
-	
+
 	fermenter.lua
-	
+
 	The Fermenter converts 3 leave items of any kind into one Bio Gas item,
 	needed by the Reformer to produce Bio Fuel.
 
@@ -97,7 +97,8 @@ local function place_top(pos, facedir, placer)
 		return false
 	end
 	local node = minetest.get_node(pos)
-	if node.name ~= "air" then
+	local def  = minetest.registered_nodes[node.name]
+	if not def or not def.buildable_to then
 		return false
 	end
 	minetest.add_node(pos, {name="tubelib_addons1:fermenter_top", param2=facedir})
@@ -107,13 +108,13 @@ end
 local function convert_leaves_to_biogas(pos, meta)
 	local inv = meta:get_inventory()
 	local biogas = ItemStack("tubelib_addons1:biogas")
-	
+
 	-- Not enough output space?
 	if not inv:room_for_item("dst", biogas) then
 		State:blocked(pos, meta)
 		return
 	end
-	
+
 	-- take NUM_LEAVES items
 	local items = {}
 	for i = 1, NUM_LEAVES do
@@ -128,14 +129,14 @@ local function convert_leaves_to_biogas(pos, meta)
 			end
 		end
 	end
-		
+
 	-- put result into dst inventory
 	if #items == NUM_LEAVES then
 		inv:add_item("dst", biogas)
 		State:keep_running(pos, meta, COUNTDOWN_TICKS)
 		return
 	end
-	
+
 	-- put leaves back to src inventory
 	for i = 1, #items do
 		inv:add_item("src", items[i])
@@ -176,22 +177,24 @@ minetest.register_node("tubelib_addons1:fermenter", {
 		type = "fixed",
 		fixed = { -8/16, -8/16, -8/16,   8/16, 24/16, 8/16 },
 	},
-	
+
 	on_construct = function(pos)
 		local meta = M(pos)
 		local inv = meta:get_inventory()
 		inv:set_size('src', 9)
 		inv:set_size('dst', 9)
 	end,
-	
+
 	after_place_node = function(pos, placer)
 		local facedir = minetest.dir_to_facedir(placer:get_look_dir(), false)
-		if place_top({x=pos.x, y=pos.y+1, z=pos.z}, facedir, placer) == false then
+		if place_top({x=pos.x, y=pos.y+1, z=pos.z}, facedir, placer) then
+			local number = tubelib.add_node(pos, "tubelib_addons1:fermenter")
+			State:node_init(pos, number)
+		else
 			minetest.remove_node(pos)
-			return
+			minetest.chat_send_player(placer:get_player_name(), "Fermenter will not fit there")
+			return true
 		end
-		local number = tubelib.add_node(pos, "tubelib_addons1:fermenter")
-		State:node_init(pos, number)
 	end,
 
 	-- the fermenter needs 'on_dig' to be able to remove the upper node
@@ -208,7 +211,7 @@ minetest.register_node("tubelib_addons1:fermenter", {
 		tubelib.remove_node(pos)
 		State:after_dig_node(pos, oldnode, oldmetadata, digger)
 	end,
-	
+
 	on_rotate = screwdriver.disallow,
 	on_timer = keep_running,
 	on_receive_fields = on_receive_fields,
@@ -242,23 +245,25 @@ minetest.register_node("tubelib_addons1:fermenter_defect", {
 		type = "fixed",
 		fixed = { -8/16, -8/16, -8/16,   8/16, 24/16, 8/16 },
 	},
-	
+
 	on_construct = function(pos)
 		local meta = M(pos)
 		local inv = meta:get_inventory()
 		inv:set_size('src', 9)
 		inv:set_size('dst', 9)
 	end,
-	
+
 	after_place_node = function(pos, placer)
 		local facedir = minetest.dir_to_facedir(placer:get_look_dir(), false)
-		if place_top({x=pos.x, y=pos.y+1, z=pos.z}, facedir, placer) == false then
+		if place_top({x=pos.x, y=pos.y+1, z=pos.z}, facedir, placer) then
+			local number = tubelib.add_node(pos, "tubelib_addons1:fermenter")
+			State:node_init(pos, number)
+			State:defect(pos, M(pos))
+		else
 			minetest.remove_node(pos)
-			return
+			minetest.chat_send_player(placer:get_player_name(), "Fermenter will not fit there")
+			return true
 		end
-		local number = tubelib.add_node(pos, "tubelib_addons1:fermenter")
-		State:node_init(pos, number)
-		State:defect(pos, M(pos))
 	end,
 
 	-- the fermenter needs 'on_dig' to be able to remove the upper node
@@ -274,7 +279,7 @@ minetest.register_node("tubelib_addons1:fermenter_defect", {
 	after_dig_node = function(pos, oldnode, oldmetadata, digger)
 		tubelib.remove_node(pos)
 	end,
-	
+
 	on_rotate = screwdriver.disallow,
 	allow_metadata_inventory_put = allow_metadata_inventory_put,
 	allow_metadata_inventory_move = allow_metadata_inventory_move,
@@ -327,14 +332,14 @@ if minetest.global_exists("unified_inventory") then
 		height = 2,
 	})
 	unified_inventory.register_craft({
-		items = {"group:leaves", "group:leaves"}, 
-		output = "tubelib_addons1:biogas", 
+		items = {"group:leaves", "group:leaves"},
+		output = "tubelib_addons1:biogas",
 		type = "fermenting"
 	})
 	unified_inventory.register_craft({
-		items = {"tubelib_addons1:biogas", "tubelib_addons1:biogas", 
-				"tubelib_addons1:biogas", "tubelib_addons1:biogas"}, 
-		output = "tubelib_addons1:biofuel", 
+		items = {"tubelib_addons1:biogas", "tubelib_addons1:biogas",
+				"tubelib_addons1:biogas", "tubelib_addons1:biogas"},
+		output = "tubelib_addons1:biofuel",
 		type = "reforming"
 	})
 end
@@ -373,4 +378,4 @@ tubelib.register_node("tubelib_addons1:fermenter", {"tubelib_addons1:fermenter_d
 	on_node_repair = function(pos)
 		return State:on_node_repair(pos)
 	end,
-})	
+})
