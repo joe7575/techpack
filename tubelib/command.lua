@@ -139,7 +139,6 @@ local function get_dest_node(pos, side)
 	local dir = side_to_dir(side, node.param2)
 	local spos, sdir = Tube:get_connected_node_pos(pos, dir)
 	if not (spos and sdir) then return end
-	if vector.equals(pos, spos) then return end
 	_,node = Tube:get_node(spos)
 	local out_side = dir_to_side(tubelib2.Turn180Deg[sdir], node.param2)
 	return spos, out_side, Name2Name[node.name] or node.name
