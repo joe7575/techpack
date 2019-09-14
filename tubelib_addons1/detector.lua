@@ -131,6 +131,7 @@ minetest.register_craft({
 
 tubelib.register_node("tubelib_addons1:detector", {"tubelib_addons1:detector_active"}, {
 	on_push_item = function(pos, side, item)
+		if side ~= "L" then return false end
 		local player_name = minetest.get_meta(pos):get_string("player_name")
 		if tubelib.push_items(pos, "R", item, player_name) then
 			switch_on(pos)

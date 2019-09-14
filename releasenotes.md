@@ -2,6 +2,19 @@
 
 
 
+## V2.03.07 (2019-09-14)
+
+### Additions
+
+### Removals
+
+### Changes
+
+### Fixes
+- Stack overflow bugfix for the detector from fluxionary (issue #39)
+
+
+
 ## V2.03.06 (2019-08-08)
 
 ### Additions
