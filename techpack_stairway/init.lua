@@ -439,6 +439,39 @@ minetest.register_node("techpack_stairway:ladder3", {
     sounds = default.node_sound_metal_defaults(),
 })
 
+
+
+minetest.register_node("techpack_stairway:ladder4", {
+	description = "TechPack Ladder 4",
+	tiles = {
+		'techpack_stairway_ladder.png',
+	},
+	drawtype = "nodebox",
+	node_box = {
+		type = "fixed",
+		fixed = {
+			--{-17/32, -17/32,  15/32,  17/32,  17/32,  17/32},
+			--{-17/32, -17/32, -17/32, -15/32,  17/32,  17/32},
+			--{-17/32, -17/32, -17/32,  17/32,  17/32, -15/32},
+			{ 15/32, -17/32, -17/32,  17/32,  17/32,  17/32},
+		},
+	},
+
+	selection_box = {
+		type = "fixed",
+		fixed = {-8/16, -8/16, -8/16,  8/16, 8/16, 8/16},
+	},
+	
+	climbable = true,
+	paramtype2 = "facedir",
+	paramtype = "light",
+	sunlight_propagates = true,
+	is_ground_content = false,
+	groups = {cracky = 2},
+	sounds = default.node_sound_metal_defaults(),
+})
+
+
 minetest.register_node("techpack_stairway:lattice", {
 	description = "TechPack Lattice",
 	tiles = {
@@ -594,6 +627,11 @@ minetest.register_craft({
 	recipe = {{"techpack_stairway:ladder1"}},
 })
 
+minetest.register_craft({
+	output = "techpack_stairway:ladder4 4",
+	recipe = {{"techpack_stairway:ladder1"}},
+})
+
 minetest.register_alias("tubelib_stairway:grating", "techpack_stairway:grating")
 minetest.register_alias("tubelib_stairway:lattice", "techpack_stairway:lattice")
 minetest.register_alias("tubelib_stairway:handrail1", "techpack_stairway:handrail1")
@@ -603,6 +641,7 @@ minetest.register_alias("tubelib_stairway:handrail4", "techpack_stairway:handrai
 minetest.register_alias("tubelib_stairway:stairway", "techpack_stairway:stairway")
 minetest.register_alias("tubelib_stairway:ladder1", "techpack_stairway:ladder1")
 minetest.register_alias("tubelib_stairway:ladder2", "techpack_stairway:ladder2")
+minetest.register_alias("tubelib_stairway:ladder4", "techpack_stairway:ladder4")
 minetest.register_alias("tubelib_stairway:bridge1", "techpack_stairway:bridge1")
 minetest.register_alias("tubelib_stairway:bridge2", "techpack_stairway:bridge2")
 minetest.register_alias("tubelib_stairway:bridge3", "techpack_stairway:bridge3")
