@@ -2,6 +2,19 @@
 
 
 
+## V2.03.08 (2020-03-03)
+
+### Additions
+
+### Removals
+
+### Changes
+
+### Fixes
+Set Idle state instead of fault when there is no liquid (issue #44)
+
+
+
 ## V2.03.07 (2019-09-14)
 
 ### Additions
