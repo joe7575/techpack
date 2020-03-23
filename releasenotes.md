@@ -2,6 +2,19 @@
 
 
 
+## V2.03.09 (2020-03-23)
+
+### Additions
+
+### Removals
+
+### Changes
+Tubelib database optimized to reduce the size of the mod storage file (based on issue #41)
+
+### Fixes
+
+
+
 ## V2.03.08 (2020-03-03)
 
 ### Additions

@@ -19,23 +19,73 @@ local S = function(pos) if pos then return minetest.pos_to_string(pos) end end
 local P = minetest.string_to_pos
 local M = minetest.get_meta
 
+local function deserialize(s)
+	local tbl = {}
+	for line in s:gmatch("[^;]+") do
+		local num, spos = unpack(string.split(line, "="))
+		tbl[num] = {pos = minetest.string_to_pos(spos)}
+	end
+	return tbl
+end
+
+local function serialize(data)
+	local tbl = {}
+	for k,v in pairs(data) do
+		tbl[#tbl+1] = k.."="..minetest.pos_to_string(v.pos)
+	end
+	return table.concat(tbl, ";")
+end
+	
+-- to convert the data base from v2 to v3
+local function extract_data(data)
+	local tbl = {}
+	for num,item in pairs(data) do
+		local new_item = {}
+		local data_present = false
+		for k,v in pairs(item) do
+			if k ~= "name" and k ~= "pos" then
+				new_item[k] = v
+				data_present = true
+			end
+		end
+		if data_present then
+			tbl[num] = new_item
+		end
+	end
+	return tbl
+end
+
 ------------------------------------------------------------------
 -- Data base storage
 -------------------------------------------------------------------
 local storage = minetest.get_mod_storage()
 local NextNumber = minetest.deserialize(storage:get_string("NextNumber")) or 1
 local Version = minetest.deserialize(storage:get_string("Version")) or 1
-local Number2Pos = minetest.deserialize(storage:get_string("Number2Pos")) or {}
+
+local Number2Pos
+local Number2Data
+if Version == 2 then -- legacy data base
+	Number2Pos = minetest.deserialize(storage:get_string("Number2Pos")) or {}
+	Number2Data = extract_data(Number2Pos)
+	Version = 3
+else
+	Number2Pos = deserialize(storage:get_string("Number2Pos"))
+	Number2Data = minetest.deserialize(storage:get_string("Number2Data")) or {}
+end
+
+
 
 local function update_mod_storage()
+	local t = minetest.get_us_time()
 	minetest.log("action", "[Tubelib] Store data...")
 	storage:set_string("NextNumber", minetest.serialize(NextNumber))
 	storage:set_string("Version", minetest.serialize(Version))
-	storage:set_string("Number2Pos", minetest.serialize(Number2Pos))
-	storage:set_string("Key2Number", nil) -- not used any more 
+	storage:set_string("Number2Pos", serialize(Number2Pos))
+	storage:set_string("Number2Data", minetest.serialize(Number2Data))
 	-- store data each hour
 	minetest.after(60*59, update_mod_storage)
-	minetest.log("action", "[Tubelib] Data stored")
+	t = minetest.get_us_time() - t
+	minetest.log("action", "[Tubelib] Data stored. t="..t.."us")
 end
 
 minetest.register_on_shutdown(function()
@@ -75,6 +125,24 @@ local function get_number(pos)
 		NextNumber = NextNumber + 1
 	end
 	return string.format("%.04u", Key2Number[key])
+end
+
+local function get_node_lvm(pos)
+	local node = minetest.get_node_or_nil(pos)
+	if node then
+		return node
+	end
+	local vm = minetest.get_voxel_manip()
+	local MinEdge, MaxEdge = vm:read_from_map(pos, pos)
+	local data = vm:get_data()
+	local param2_data = vm:get_param2_data()
+	local area = VoxelArea:new({MinEdge = MinEdge, MaxEdge = MaxEdge})
+	local idx = area:index(pos.x, pos.y, pos.z)
+	node = {
+		name = minetest.get_name_from_content_id(data[idx]),
+		param2 = param2_data[idx]
+	}
+	return node
 end
 
 local function generate_Key2Number()
@@ -207,8 +275,8 @@ end
 -- param name: name of the data (string)
 -- param data: any data (number, string, table)
 function tubelib.set_data(number, name, data)
-	if Number2Pos[number] and type(name) == "string" then
-		Number2Pos[number]["u_"..name] = data
+	if Number2Data[number] and type(name) == "string" then
+		Number2Data[number]["u_"..name] = data
 	end
 end
 
@@ -216,8 +284,8 @@ end
 -- param number: node number, returned by tubelib.add_node
 -- param name: name of the data (string)
 function tubelib.get_data(number, name)
-	if Number2Pos[number] and type(name) == "string" then
-		return Number2Pos[number]["u_"..name]
+	if Number2Data[number] and type(name) == "string" then
+		return Number2Data[number]["u_"..name]
 	end
 	return nil
 end
@@ -526,39 +594,99 @@ end
 -------------------------------------------------------------------------------
 -- Data Maintenance
 -------------------------------------------------------------------------------
+
+local function parse_number(s)
+	for _,word in ipairs(s:split(" ")) do
+		local n = tonumber(word)
+		if n and n > 0 then 
+			return word 
+		end
+	end
+end
+
+local function get_node_number(pos)
+	local meta = M(pos)
+	local num = meta:get_string("tubelib_number")
+	if num and num ~= "" then return num end
+	
+	num = meta:get_string("number")
+	if num and num ~= "" then return num end
+
+	num = meta:get_string("own_number")
+	if num and num ~= "" then return num end
+
+	num = parse_number(meta:get_string("infotext"))
+	if num and num ~= "" then return num end
+
+	return 0
+end
+
+local NodesWithoutNumber = {
+	["tubelib_addons2:doorblock1"] = true,
+	["tubelib_addons2:doorblock2"] = true,
+	["tubelib_addons2:doorblock3"] = true,
+	["tubelib_addons2:doorblock4"] = true,
+	["tubelib_addons2:doorblock5"] = true,
+	["tubelib_addons2:doorblock6"] = true,
+	["tubelib_addons2:doorblock7"] = true,
+	["tubelib_addons2:doorblock8"] = true,
+	["tubelib_addons2:doorblock9"] = true,
+	["tubelib_addons2:doorblock10"] = true,
+	["tubelib_addons2:doorblock11"] = true,
+	["tubelib_addons2:doorblock12"] = true,
+	["tubelib_addons2:doorblock13"] = true,
+	["tubelib_addons2:doorblock14"] = true,
+	["tubelib_addons2:gateblock1"] = true,
+	["tubelib_addons2:gateblock2"] = true,
+	["tubelib_addons2:gateblock3"] = true,
+	["tubelib_addons2:gateblock4"] = true,
+	["tubelib_addons2:gateblock5"] = true,
+	["tubelib_addons2:gateblock6"] = true,
+	["tubelib_addons2:gateblock7"] = true,
+	["tubelib_addons2:gateblock8"] = true,
+	["tubelib_addons2:gateblock9"] = true,
+	["tubelib_addons2:gateblock10"] = true,
+	["tubelib_addons2:gateblock11"] = true,
+	["tubelib_addons2:gateblock12"] = true,
+	["tubelib_addons2:gateblock13"] = true,
+	["tubelib_addons2:gateblock14"] = true,
+	["tubelib_addons2:gateblock15"] = true,
+	["tubelib_addons2:gateblock16"] = true,
+	["tubelib_addons2:gateblock17"] = true,
+	["tubelib_addons2:gateblock18"] = true,
+}
+
 local function data_maintenance()
 	minetest.log("info", "[Tubelib] Data maintenance started")
-	if Version == 1 then
-		-- Add day_count for aging of unused positions
-		for num,item in pairs(Number2Pos) do
-			if Number2Pos[num].name == nil then
-				Number2Pos[num].time = minetest.get_day_count()
-			end
-		end
-		Version = 2
-	else
-		-- Remove old unused positions
-		local Tbl = table.copy(Number2Pos)
-		Number2Pos = {}
-		local day_cnt = minetest.get_day_count()
-		for num,item in pairs(Tbl) do
-			if item.name then
+	
+	-- Remove unused positions
+	local tbl = table.copy(Number2Pos)
+	Number2Pos = {}
+	local cnt1 = 0
+	local cnt2 = 0
+	for num,item in pairs(tbl) do
+		local name = Name2Name[get_node_lvm(item.pos).name]
+		cnt1 = cnt1 + 1
+		-- Is there a tubelib node?
+		if tubelib_NodeDef[name] then
+			local nnum = get_node_number(item.pos)
+			-- Does the number match?
+			if nnum == num or NodesWithoutNumber[name] then
+				cnt2 = cnt2 + 1
+				-- Store again
 				Number2Pos[num] = item
-			-- data not older than 5 real days
-			elseif item.time and (item.time + (72*5)) > day_cnt then
-				Number2Pos[num] = item
-			else
-				minetest.log("info", "Position deleted", num)
+				-- Add node names which are not stored as file
+				Number2Pos[num].name = name
 			end
 		end
 	end
+	minetest.log("info", "[Tubelib] Data base shrank from "..cnt1.." to "..cnt2.." nodes")
 	minetest.log("info", "[Tubelib] Data maintenance finished")
 end	
 	
 generate_Key2Number()
 
--- maintain data after 5 seconds
--- (minetest.get_day_count() will not be valid at start time)
-minetest.after(5, data_maintenance)
+-- maintain data after 2 seconds
+minetest.after(2, data_maintenance)
 
 
