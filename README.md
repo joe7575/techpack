@@ -1,4 +1,4 @@
-# TechPack V2.02
+# TechPack V2.03
 
 TechPack, a Mining, Crafting, &amp; Farming Modpack for Minetest.
 
@@ -114,7 +114,7 @@ The value 200 (default) results in a lifetime for standard machines of about 200
 
 
 ### License
-Copyright (C) 2017-2019 Joachim Stolberg  
+Copyright (C) 2017-2020 Joachim Stolberg  
 Code: Licensed under the GNU LGPL version 2.1 or later. See LICENSE.txt  
 Textures: CC BY-SA 3.0
 

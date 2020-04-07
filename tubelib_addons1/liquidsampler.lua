@@ -80,10 +80,10 @@ local function sample_liquid(pos, meta)
 			inv:add_item("dst", ItemStack(giving_back))
 			State:keep_running(pos, meta, COUNTDOWN_TICKS)
 		else
-			State:idle(pos, meta)
+			State:blocked(pos, meta)
 		end
 	else
-		State:fault(pos, meta)
+		State:idle(pos, meta)
 	end
 	State:idle(pos, meta)
 end
