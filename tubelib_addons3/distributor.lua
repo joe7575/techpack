@@ -110,6 +110,14 @@ local function random_list_elem(list)
 	end
 end
 
+local function rearrange_table(t)
+	if #t > 1 then
+		local elem = table.remove(t, 1)
+		table.insert(t, elem)
+	end
+	return t
+end
+
 local Side2Color = {B="red", L="green", F="blue", R="yellow"}
 local SlotColors = {"red", "green", "blue", "yellow"}
 local Num2Ascii = {"B", "L", "F", "R"} 
@@ -202,7 +210,10 @@ local function distributing(pos, meta)
 	local open_ports = table.copy(FilterCache[hash].OpenPorts)
 	
 	-- no filter configured?
-	if not next(kvFilterItemNames) and not next(open_ports) then return end
+	if not next(kvFilterItemNames) and not next(open_ports) then 
+		State:idle(pos, meta)
+		return
+	end
 	
 	local busy = false
 	local inv = meta:get_inventory()
@@ -223,23 +234,20 @@ local function distributing(pos, meta)
 		local num = stack:get_count()
 		local second_try = false
 		-- try configured output ports
-		local side = random_list_elem(kvFilterItemNames[name])
-		if side then  -- configured
+		for _, side in ipairs(kvFilterItemNames[name] or {}) do  -- configured
 			if tubelib.push_items(pos, side, stack, player_name) then
 				stack:set_count(0)
 				local color = Side2Color[side]
 				counter[color] = counter[color] + num
+				rearrange_table(kvFilterItemNames[name])
 				busy = true
-			else
-				second_try = true  -- port blocked
+				break
 			end
-		else
-			second_try = true  -- not configured
 		end
 		
 		-- try unconfigured open output ports
-		if second_try and (not kvFilterItemNames[name] or #kvFilterItemNames[name] == 1) then
-			side = random_list_elem(open_ports)
+		if not busy then
+			local side = random_list_elem(open_ports)
 			if side then
 				if tubelib.push_items(pos, side, stack, player_name) then
 					stack:set_count(0)
