@@ -72,7 +72,7 @@ local State = tubelib.NodeStates:new({
 -- Return a key/value table with all items and the corresponding stack numbers
 local function invlist_content_as_kvlist(list)
 	local res = {}
-	for idx,items in ipairs(list) do
+	for idx,items in ipairs(list or {}) do
 		local name = items:get_name()
 		if name ~= "" then
 			res[name] = idx

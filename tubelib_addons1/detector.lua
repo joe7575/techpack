@@ -9,7 +9,7 @@
 	See LICENSE.txt for more information
 
 	detector.lua:
-	
+
 ]]--
 
 
@@ -75,11 +75,11 @@ minetest.register_node("tubelib_addons1:detector", {
 			"button_exit[2,2;3,1;exit;Save]")
 		end
 	end,
-	
+
 	after_dig_node = function(pos, oldnode, oldmetadata, digger)
 		tubelib.remove_node(pos)
 	end,
-	
+
 	on_rotate = screwdriver.disallow,
 	paramtype = "light",
 	sunlight_propagates = true,
@@ -108,7 +108,7 @@ minetest.register_node("tubelib_addons1:detector_active", {
 	after_dig_node = function(pos, oldnode, oldmetadata, digger)
 		tubelib.remove_node(pos)
 	end,
-	
+
 	paramtype = "light",
 	light_source = 2,
 	sunlight_propagates = true,
@@ -140,5 +140,5 @@ tubelib.register_node("tubelib_addons1:detector", {"tubelib_addons1:detector_act
 		return false
 	end,
 	is_pusher = true,  -- is a pulling/pushing node
-})	
+})
 
