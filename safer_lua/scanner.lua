@@ -56,7 +56,7 @@ function safer_lua:scanner(text)
 		self.line = line
 		self.pos = 1
 		self.line = trim(self.line)
-		self.line = self.line:split("--")[1]
+		self.line = string.split(self.line, "--", true, 1)[1]
 		table.insert(lToken, idx)  -- line number
 		if self.line then
 			-- devide line in tokens

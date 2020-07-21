@@ -2,7 +2,20 @@
 
 
 
-## V2.03.10 (2020-06-96)
+## V2.03.11 (2020-07-21)
+
+### Additions
+
+### Removals
+
+### Changes
+
+### Fixes
+- SaferLua Controller comments bugfix (issue #48)
+- SmartLine Controller bugfix
+
+
+## V2.03.10 (2020-06-06)
 
 ### Additions
 
