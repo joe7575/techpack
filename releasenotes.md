@@ -2,6 +2,18 @@
 
 
 
+## V2.03.12 (2020-07-23)
+
+### Additions
+
+### Removals
+
+### Changes
+
+### Fixes
+- string.split bugfix (issue #49)
+
+
 ## V2.03.11 (2020-07-21)
 
 ### Additions

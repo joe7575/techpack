@@ -57,7 +57,9 @@ local BASE_ENV = {
 		rep = string.rep,
 		sub = string.sub,
 		upper = string.upper,
-		split = string.split,
+		split = function(str, separator, include_empty, max_splits, sep_is_pattern) 
+			return safer_lua.Array(unpack(string.split(str, separator, include_empty, max_splits, sep_is_pattern))) 
+		end,
 		trim = string.trim,
 	},
 	tonumber = tonumber,
