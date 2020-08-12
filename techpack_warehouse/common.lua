@@ -323,10 +323,10 @@ function techpack_warehouse.can_dig(self, pos)
 	return inv:is_empty("main") and inv:is_empty("shift")
 end
 
-function techpack_warehouse.after_dig_node(self, pos, oldnode, oldmetadata, digger)
+function techpack_warehouse.on_dig_node(self, pos, node, digger)
 	tubelib.remove_node(pos)
-	if oldnode.name == self.node_name then -- not for defect nodes
-		self.State:after_dig_node(pos, oldnode, oldmetadata, digger)
+	if node.name == self.node_name then -- not for defect nodes
+		self.State:on_dig_node(pos, node, digger)
 	end
 end
 

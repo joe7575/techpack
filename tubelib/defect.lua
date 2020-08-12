@@ -8,7 +8,6 @@ minetest.register_node("tubelib:defect_dummy", {
 		"tubelib_front.png^tubelib_defect.png",
 		"tubelib_front.png^tubelib_defect.png",
 	},
-	drop = "",
 	groups = {cracky=3, crumbly=3, choppy=3, not_in_creative_inventory=1},
 	is_ground_content = false,
 })

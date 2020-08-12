@@ -207,9 +207,9 @@ minetest.register_node("tubelib_addons1:fermenter", {
 		end
 	end,
 
-	after_dig_node = function(pos, oldnode, oldmetadata, digger)
+	on_dig = function(pos, node, player)
+		State:on_dig_node(pos, node, player)
 		tubelib.remove_node(pos)
-		State:after_dig_node(pos, oldnode, oldmetadata, digger)
 	end,
 
 	on_rotate = screwdriver.disallow,
@@ -219,7 +219,6 @@ minetest.register_node("tubelib_addons1:fermenter", {
 	allow_metadata_inventory_move = allow_metadata_inventory_move,
 	allow_metadata_inventory_take = allow_metadata_inventory_take,
 
-	drop = "",
 	paramtype = "light",
 	sunlight_propagates = true,
 	paramtype2 = "facedir",
