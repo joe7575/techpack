@@ -58,6 +58,7 @@ local BASE_ENV = {
 		sub = string.sub,
 		upper = string.upper,
 		split = function(str, separator, include_empty, max_splits, sep_is_pattern) 
+			if separator == "" then separator = " " end
 			return safer_lua.Array(unpack(string.split(str, separator, include_empty, max_splits, sep_is_pattern))) 
 		end,
 		trim = string.trim,
