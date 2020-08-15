@@ -359,9 +359,9 @@ minetest.register_node("tubelib_addons3:distributor", {
 		local inv = M(pos):get_inventory()
 		return inv:is_empty("src")
 	end,
-
-	after_dig_node = function(pos, oldnode, oldmetadata, digger)
-		State:after_dig_node(pos, oldnode, oldmetadata, digger)
+	
+	on_dig = function(pos, node, player)
+		State:on_dig_node(pos, node, player)
 		tubelib.remove_node(pos)
 	end,
 	
@@ -372,7 +372,6 @@ minetest.register_node("tubelib_addons3:distributor", {
 	on_timer = keep_running,
 	on_rotate = screwdriver.disallow,
 	
-	drop = "",
 	paramtype = "light",
 	sunlight_propagates = true,
 	paramtype2 = "facedir",

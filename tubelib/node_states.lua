@@ -302,6 +302,7 @@ function NodeStates:keep_running(pos, meta, val, num_items)
 	self:start(pos, meta, true)
 	meta:set_int("tubelib_countdown", val)
 	meta:set_int("tubelib_item_meter", meta:get_int("tubelib_item_meter") + (num_items or 1))
+		
 	if self.aging_level1 then
 		local cnt = meta:get_int("tubelib_aging") + num_items
 		meta:set_int("tubelib_aging", cnt)
@@ -427,15 +428,39 @@ function NodeStates:on_node_repair(pos)
 	return false
 end	
 
--- Return working or defect machine, depending on machine lifetime
-function NodeStates:after_dig_node(pos, oldnode, oldmetadata, digger)
-	local inv = minetest.get_inventory({type="player", name=digger:get_player_name()})
-	local cnt = oldmetadata.fields.tubelib_aging and tonumber(oldmetadata.fields.tubelib_aging)
-	if not cnt or cnt < 1 then cnt = 1 end
-	local is_defect = cnt > self.aging_level1 and math.random(math.max(1, math.floor(self.aging_level2 / cnt))) == 1
-	if self.node_name_defect and is_defect then
-		inv:add_item("main", ItemStack(self.node_name_defect))
-	else
-		inv:add_item("main", ItemStack(self.node_name_passive))
+
+--[[
+Callback after digging a node but before removing the node.
+
+The tubelib node becomes defect after digging it:
+	- always if the aging counter "tubelib_aging" is greater than self.aging_level2
+	- with a certain probability if the aging counter "tubelib_aging" is greater than self.aging_level1
+	but smaller than self.aging_level2
+	
+Info: If a tubelib machine has been running quite some time but is dropped as a non-defect machine and then placed back again, the
+tubelib machine will be reset to new (digging will reset the aging counter). So this code tries to prevent this exploit
+
+]]--
+function NodeStates:on_dig_node(pos, node, player)
+	local meta = M(pos)
+	local cnt = tonumber(meta:get_string("tubelib_aging"))
+	if (not cnt or cnt < 1) then
+		cnt = 1
 	end
+	
+	local is_defect = (cnt > self.aging_level1) and ( math.random(math.max(1, math.floor(self.aging_level2 / cnt))) == 1 )
+	
+	if is_defect then
+			self:defect(pos, meta) -- replace node with defect one 
+		node = minetest.get_node(pos) 
+	end
+	
+	
+	minetest.node_dig(pos, node, player) -- default behaviour (this function is called automatically if on_dig() callback isn't set)
+
 end
+
+
+
+
+

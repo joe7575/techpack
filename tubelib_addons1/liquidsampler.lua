@@ -159,8 +159,8 @@ minetest.register_node("tubelib_addons1:liquidsampler", {
 		return inv:is_empty("dst") and inv:is_empty("src")
 	end,
 
-	after_dig_node = function(pos, oldnode, oldmetadata, digger)
-		State:after_dig_node(pos, oldnode, oldmetadata, digger)
+	on_dig = function(pos, node, player)
+		State:on_dig_node(pos, node, player)
 		tubelib.remove_node(pos)
 	end,
 	
@@ -171,7 +171,6 @@ minetest.register_node("tubelib_addons1:liquidsampler", {
 	allow_metadata_inventory_move = allow_metadata_inventory_move,
 	allow_metadata_inventory_take = allow_metadata_inventory_take,
 
-	drop = "",
 	paramtype = "light",
 	sunlight_propagates = true,
 	paramtype2 = "facedir",

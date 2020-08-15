@@ -312,10 +312,10 @@ minetest.register_node("tubelib_addons1:autocrafter", {
 		return inv:is_empty("dst") and inv:is_empty("src")
 	end,
 
-	after_dig_node = function(pos, oldnode, oldmetadata, digger)
+	on_dig = function(pos, node, player)
 		autocrafterCache[minetest.hash_node_position(pos)] = nil
+		State:on_dig_node(pos, node, player)
 		tubelib.remove_node(pos)
-		State:after_dig_node(pos, oldnode, oldmetadata, digger)
 	end,
 	
 	on_rotate = screwdriver.disallow,
@@ -326,7 +326,6 @@ minetest.register_node("tubelib_addons1:autocrafter", {
 	allow_metadata_inventory_take = allow_metadata_inventory_take,
 	allow_metadata_inventory_move = allow_metadata_inventory_move,
 
-	drop = "",
 	paramtype = "light",
 	sunlight_propagates = true,
 	paramtype2 = "facedir",

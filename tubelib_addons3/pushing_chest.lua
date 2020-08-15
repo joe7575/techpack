@@ -75,16 +75,6 @@ local function aging(pos, meta)
 	end
 end
 
-local function after_dig_node(pos, oldnode, oldmetadata, digger)
-	local inv = minetest.get_inventory({type="player", name=digger:get_player_name()})
-	local cnt = oldmetadata.fields.tubelib_aging and tonumber(oldmetadata.fields.tubelib_aging) or 0
-	local is_defect = cnt > AGING_LEVEL1 and math.random(AGING_LEVEL2 / cnt) == 1
-	if is_defect then
-		inv:add_item("main", ItemStack("tubelib_addons3:pushing_chest_defect"))
-	else
-		inv:add_item("main", ItemStack("tubelib_addons3:pushing_chest"))
-	end
-end
 
 local function set_state(meta, state)
 	local number = meta:get_string("number")
@@ -200,8 +190,8 @@ minetest.register_node("tubelib_addons3:pushing_chest", {
 		return inv:is_empty("main") and inv:is_empty("shift")
 	end,
 
-	after_dig_node = function(pos, oldnode, oldmetadata, digger)
-		after_dig_node(pos, oldnode, oldmetadata, digger)
+	on_dig = function(pos, node, player)
+		State:on_dig_node(pos, node, player)
 		tubelib.remove_node(pos)
 	end,
 
@@ -212,7 +202,6 @@ minetest.register_node("tubelib_addons3:pushing_chest", {
 	on_timer = shift_items,
 	on_rotate = screwdriver.disallow,
 	
-	drop = "",
 	paramtype = "light",
 	sunlight_propagates = true,
 	paramtype2 = "facedir",
