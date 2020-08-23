@@ -194,18 +194,21 @@ minetest.register_node("tubelib_addons1:reformer", {
 	end,
 
 	-- the reformer needs 'on_dig' to be able to remove the upper node
-	on_dig = function(pos, node, puncher, pointed_thing)
+	on_dig = function(pos, node, puncher)
+		local pos_above = vector.add(pos, vector.new(0, 1, 0))
+		local player_name = puncher:get_player_name()
+
+		if minetest.is_protected(pos, player_name) or minetest.is_protected(pos_above, player_name) then
+			return
+		end
+
 		local meta = M(pos)
 		local inv = meta:get_inventory()
 		if inv:is_empty("dst") and inv:is_empty("src") then
-			minetest.node_dig(pos, node, puncher, pointed_thing)
-			minetest.remove_node({x=pos.x, y=pos.y+1, z=pos.z})
+			State:on_dig_node(pos, node, puncher)
+			tubelib.remove_node(pos)
+			minetest.remove_node(pos_above)
 		end
-	end,
-
-	on_dig = function(pos, node, player)
-		State:on_dig_node(pos, node, player)
-		tubelib.remove_node(pos)
 	end,
 
 	on_rotate = screwdriver.disallow,
@@ -263,11 +266,18 @@ minetest.register_node("tubelib_addons1:reformer_defect", {
 
 	-- the reformer needs 'on_dig' to be able to remove the upper node
 	on_dig = function(pos, node, puncher, pointed_thing)
+		local pos_above = vector.add(pos, vector.new(0, 1, 0))
+		local puncher_name = puncher:get_player_name()
+
+		if minetest.is_protected(pos, puncher_name) or minetest.is_protected(pos_above, puncher_name) then
+			return
+		end
+
 		local meta = M(pos)
 		local inv = meta:get_inventory()
 		if inv:is_empty("dst") and inv:is_empty("src") then
 			minetest.node_dig(pos, node, puncher, pointed_thing)
-			minetest.remove_node({x=pos.x, y=pos.y+1, z=pos.z})
+			minetest.remove_node(pos_above)
 		end
 	end,
 
