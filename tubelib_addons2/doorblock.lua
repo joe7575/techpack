@@ -52,8 +52,7 @@ for idx,pgn in ipairs(tPgns) do
 		after_place_node = function(pos, placer)
 			local meta = minetest.get_meta(pos)
 			local node = minetest.get_node(pos)
-			local number = tubelib.add_node(pos, "tubelib_addons2:doorblock"..idx)
-			tubelib.set_data(number, "facedir", node.param2)
+			local number = tubelib.add_node(pos, node.name)
 			meta:set_string("number", number)
 			meta:set_string("infotext", "Tubelib Door Block "..number)
 			meta:set_string("formspec", "size[3,2]"..
@@ -65,11 +64,10 @@ for idx,pgn in ipairs(tPgns) do
 		on_receive_fields = function(pos, formname, fields, player)
 			local meta = minetest.get_meta(pos)
 			local node = minetest.get_node(pos)
-			local number = meta:get_string("number")
 			if fields.type then
 				node.name = "tubelib_addons2:doorblock"..tTextures[fields.type]
 				minetest.swap_node(pos, node)
-				tubelib.set_data(number, "texture", node.name)
+				tubelib.add_node(pos, node.name)
 			end
 			if fields.exit then
 				meta:set_string("formspec", nil)
@@ -96,14 +94,16 @@ for idx,pgn in ipairs(tPgns) do
 		on_recv_message = function(pos, topic, payload)
 			local node = minetest.get_node(pos)
 			if topic == "on" then
+				local meta = minetest.get_meta(pos)
+				local number = meta:get_string("number")
 				minetest.remove_node(pos)
+				tubelib.temporary_remove_node(pos, number, node.name, {param2 = node.param2})
 			elseif topic == "off" then
-				local num = tubelib.get_node_number(pos)
-				local name = tubelib.get_data(num, "texture") or "tubelib_addons2:doorblock1"
-				if name then
-					minetest.add_node(pos, {name=name, 
-							paramtype2="facedir", 
-							param2=tubelib.get_data(num, "facedir")})
+				local data = tubelib.temporary_remove_node(pos)
+				if data then
+					minetest.add_node(pos, {name = data.name, param2 = data.param2})
+					local meta = minetest.get_meta(pos)
+					meta:set_string("number", data.number)
 				end
 			end
 		end,

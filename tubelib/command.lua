@@ -64,13 +64,16 @@ local Version = minetest.deserialize(storage:get_string("Version")) or 1
 
 local Number2Pos
 local Number2Data
+local TemporaryRemovedNodes
 if Version == 2 then -- legacy data base
 	Number2Pos = minetest.deserialize(storage:get_string("Number2Pos")) or {}
 	Number2Data = extract_data(Number2Pos)
+	TemporaryRemovedNodes = {}
 	Version = 3
 else
 	Number2Pos = deserialize(storage:get_string("Number2Pos"))
 	Number2Data = minetest.deserialize(storage:get_string("Number2Data")) or {}
+	TemporaryRemovedNodes = minetest.deserialize(storage:get_string("TemporaryRemovedNodes")) or {}
 end
 
 
@@ -82,6 +85,7 @@ local function update_mod_storage()
 	storage:set_string("Version", minetest.serialize(Version))
 	storage:set_string("Number2Pos", serialize(Number2Pos))
 	storage:set_string("Number2Data", minetest.serialize(Number2Data))
+	storage:set_string("TemporaryRemovedNodes", minetest.serialize(TemporaryRemovedNodes))
 	-- store data each hour
 	minetest.after(60*59, update_mod_storage)
 	t = minetest.get_us_time() - t
@@ -276,7 +280,8 @@ end
 -- param name: name of the data (string)
 -- param data: any data (number, string, table)
 function tubelib.set_data(number, name, data)
-	if Number2Data[number] and type(name) == "string" then
+	Number2Data[number] = Number2Data[number] or {}
+	if type(name) == "string" then
 		Number2Data[number]["u_"..name] = data
 	end
 end
@@ -591,6 +596,22 @@ function tubelib.get_inv_state(meta, listname)
     return state
 end
 
+-- Mainly used for door/gate nodes
+-- To delete an entry, provide nil as number. The stored data will be returned.
+function tubelib.temporary_remove_node(pos, number, name, add_data)
+	local key = get_key_str(pos)
+	if number then
+		add_data = add_data or {}
+		add_data.pos = pos
+		add_data.number = number
+		add_data.name = name
+		TemporaryRemovedNodes[key] = add_data
+	else
+		local data = table.copy(TemporaryRemovedNodes[key])
+		TemporaryRemovedNodes[key] = nil
+		return data
+	end
+end
 
 -------------------------------------------------------------------------------
 -- Data Maintenance
@@ -622,41 +643,6 @@ local function get_node_number(pos)
 	return 0
 end
 
-local NodesWithoutNumber = {
-	["tubelib_addons2:doorblock1"] = true,
-	["tubelib_addons2:doorblock2"] = true,
-	["tubelib_addons2:doorblock3"] = true,
-	["tubelib_addons2:doorblock4"] = true,
-	["tubelib_addons2:doorblock5"] = true,
-	["tubelib_addons2:doorblock6"] = true,
-	["tubelib_addons2:doorblock7"] = true,
-	["tubelib_addons2:doorblock8"] = true,
-	["tubelib_addons2:doorblock9"] = true,
-	["tubelib_addons2:doorblock10"] = true,
-	["tubelib_addons2:doorblock11"] = true,
-	["tubelib_addons2:doorblock12"] = true,
-	["tubelib_addons2:doorblock13"] = true,
-	["tubelib_addons2:doorblock14"] = true,
-	["tubelib_addons2:gateblock1"] = true,
-	["tubelib_addons2:gateblock2"] = true,
-	["tubelib_addons2:gateblock3"] = true,
-	["tubelib_addons2:gateblock4"] = true,
-	["tubelib_addons2:gateblock5"] = true,
-	["tubelib_addons2:gateblock6"] = true,
-	["tubelib_addons2:gateblock7"] = true,
-	["tubelib_addons2:gateblock8"] = true,
-	["tubelib_addons2:gateblock9"] = true,
-	["tubelib_addons2:gateblock10"] = true,
-	["tubelib_addons2:gateblock11"] = true,
-	["tubelib_addons2:gateblock12"] = true,
-	["tubelib_addons2:gateblock13"] = true,
-	["tubelib_addons2:gateblock14"] = true,
-	["tubelib_addons2:gateblock15"] = true,
-	["tubelib_addons2:gateblock16"] = true,
-	["tubelib_addons2:gateblock17"] = true,
-	["tubelib_addons2:gateblock18"] = true,
-}
-
 local function data_maintenance()
 	minetest.log("info", "[Tubelib] Data maintenance started")
 	
@@ -670,14 +656,28 @@ local function data_maintenance()
 		cnt1 = cnt1 + 1
 		-- Is there a tubelib node?
 		if tubelib_NodeDef[name] then
-			local nnum = get_node_number(item.pos)
 			-- Does the number match?
-			if nnum == num or NodesWithoutNumber[name] then
+			local nnum = get_node_number(item.pos)
+			if nnum == num then
 				cnt2 = cnt2 + 1
 				-- Store again
 				Number2Pos[num] = item
 				-- Add node names which are not stored as file
 				Number2Pos[num].name = name
+				--print("added", num, name)
+			else
+				--print("wrong number", num, name)
+			end
+		else
+			local key = get_key_str(item.pos)
+			local data = TemporaryRemovedNodes[key]
+			if data then
+				cnt2 = cnt2 + 1
+				-- Store again
+				Number2Pos[data.number] = data
+				--print("restored", data.number, data.name)
+			else
+				--print("no data", num)
 			end
 		end
 	end

@@ -34,6 +34,7 @@ local tPgns = {"default_wood.png", "default_aspen_wood.png", "default_junglewood
 	"default_copper_block.png", "default_steel_block.png", "default_tin_block.png", "default_coral_skeleton.png",
 	"default_glass.png", "default_obsidian_glass.png", "default_ice.png", "tubelib_addon2_gate.png"}
 
+local not_in_inventory=nil
 for idx,pgn in ipairs(tPgns) do
 	minetest.register_node("tubelib_addons2:gateblock"..idx, {
 		description = "Tubelib Gate Block",
@@ -41,7 +42,8 @@ for idx,pgn in ipairs(tPgns) do
 		after_place_node = function(pos, placer)
 			local meta = minetest.get_meta(pos)
 			local node = minetest.get_node(pos)
-			local number = tubelib.add_node(pos, "tubelib_addons2:gateblock"..idx)
+			local number = tubelib.add_node(pos, node.name)
+			meta:set_string("number", number)
 			meta:set_string("infotext", "Tubelib Gate Block "..number)
 			meta:set_string("formspec", "size[3,2]"..
 			"label[0,0;Select texture]"..
@@ -62,7 +64,7 @@ for idx,pgn in ipairs(tPgns) do
 			end
 		end,
 		
-		after_dig_node = function(pos)
+		after_dig_node = function(pos, oldnode, oldmetadata)
 			tubelib.remove_node(pos)
 		end,
 
@@ -71,7 +73,7 @@ for idx,pgn in ipairs(tPgns) do
 		paramtype2 = "facedir",
 		sunlight_propagates = true,
 		sounds = default.node_sound_stone_defaults(),
-		groups = {cracky=2, choppy=2, crumbly=2, not_in_creative_inventory = idx==NUM_TEXTURES and 0 or 1},
+		groups = {cracky=2, choppy=2, crumbly=2, not_in_creative_inventory=not_in_inventory},
 		is_ground_content = false,
 		drop = "tubelib_addons2:gateblock1",
 	})
@@ -82,12 +84,16 @@ for idx,pgn in ipairs(tPgns) do
 		on_recv_message = function(pos, topic, payload)
 			local node = minetest.get_node(pos)
 			if topic == "on" then
+				local meta = minetest.get_meta(pos)
+				local number = meta:get_string("number")
 				minetest.remove_node(pos)
+				tubelib.temporary_remove_node(pos, number, node.name, {param2 = node.param2})
 			elseif topic == "off" then
-				local num = tubelib.get_node_number(pos)
-				local info = tubelib.get_node_info(num)
-				if info then
-					minetest.add_node(pos, {name=info.name})
+				local data = tubelib.temporary_remove_node(pos)
+				if data then
+					minetest.add_node(pos, {name = data.name, param2 = data.param2})
+					local meta = minetest.get_meta(pos)
+					meta:set_string("number", data.number)
 				end
 			end
 		end,
