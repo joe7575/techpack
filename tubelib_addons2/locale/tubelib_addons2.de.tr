@@ -1,0 +1,126 @@
+# textdomain: tubelib_addons2
+
+
+
+### accesscontrol.lua ###
+
+Access code (4 digits):=Zugangscode (4 Zahlen):
+Door block numbers:=Türblocknummern:
+Enter access code=Zugangscode eingeben
+OK=OK
+Tubelib Access Lock=Tubelib Zugangsschloss
+Tubelib Access Lock, Enter access code=Tubelib Zugangsschloss, Zugangscode eingeben
+
+### accesscontrol.lua ###
+### colorlamp.lua ###
+### doorblock.lua ###
+### gateblock.lua ###
+### logic_not.lua ###
+### mesecons_converter.lua ###
+### repeater.lua ###
+
+Save=Speichern
+
+### ceilinglamp.lua ###
+
+Tubelib Ceiling Lamp=
+
+### colorlamp.lua ###
+### colorlamp_ud.lua ###
+
+Tubelib Color Lamp=Tubelib Farblampe
+
+### doorblock.lua ###
+
+Select texture=Wähle Textur
+Tubelib Door Block=
+
+### gateblock.lua ###
+
+Tubelib Gate Block=Tubelib Torblock
+
+### industriallamp.lua ###
+
+Tubelib Industrial Lamp=
+
+### invisiblelamp.lua ###
+
+Tubelib Invisible Lamp=
+
+### logic_not.lua ###
+
+Tubelib Logic Not=
+
+### logic_not.lua ###
+### mesecons_converter.lua ###
+### repeater.lua ###
+
+: connected with=
+: not connected=
+Destination node numbers=
+
+### mesecons_converter.lua ###
+
+Tubelib Mesecons Converter=
+
+### mesecons_converter.lua ###
+### repeater.lua ###
+
+: fault (overloaded)=
+
+### programmer.lua ###
+
+Tubelib Programmer=
+[Tubelib Programmer] Error: programmer not supported!=
+[Tubelib Programmer] Unknown node on=
+[Tubelib Programmer] foreign or unknown node!=
+[Tubelib Programmer] node programmed!=
+[Tubelib Programmer] number=
+[Tubelib Programmer] programmer reset=
+read=
+
+### repeater.lua ###
+
+Tubelib Repeater=
+
+### sequencer.lua ###
+
+Define a sequence of commands@nto control other machines.=
+If endless is set, the Sequencer@nrestarts again and again.=
+Numbers(s) are the node numbers,@nthe command shall sent to.=
+Offset is the time to the@nnext line in seconds (1..999).=
+Run endless=
+Sequencer Help=
+
+The command '  ' does nothing,@nonly consuming the offset time.=
+
+The commands 'on'/'off' are used@n for machines and other nodes.=
+
+Tubelib Sequencer=
+exit=
+help=
+
+### sequencer.lua ###
+### timer.lua ###
+
+Command=
+
+### streetlamp.lua ###
+
+Tubelib Street Lamp=
+
+### timer.lua ###
+
+Number(s)=
+Time=
+Tubelib Timer=
+
+
+##### not used anymore #####
+
+Glas,Obsidian Glas=Glas,Obsidian Glas 
+Cobblestone,Sandstone,Stone,Desert Sandstone,=Kopfsteinpflaster,Sandstein,Stein,Wüstensandstein
+Copper,Steel,Tin,Coral,=Kupfer,Stahl,Zinn,Koralle
+Desert Stone,Silver Sandstone,Mossy Cobble,Desert Cobble,=Wüstenstein,Silbersandstein,Moosiges Kopfsteinpflaster
+Glas,Obsidian Glas,Ice,Gate Wood=Glas,Obsidian Glas,Eis,Torholz
+Wood,Aspen Wood,Jungle Wood,Pine Wood,=Holz,Espenholz,Dschungelholz,Kiefernholz

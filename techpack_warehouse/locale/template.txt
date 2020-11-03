@@ -1,0 +1,22 @@
+# textdomain: techpack_warehouse
+
+
+
+### box_copper.lua ###
+
+Warehouse Box Copper=
+
+### box_gold.lua ###
+
+Warehouse Box Gold=
+
+### box_steel.lua ###
+
+Warehouse Box Steel=
+
+### common.lua ###
+
+Filter: To configure the 8 storages=
+Input: Put items will be moved to the storage, if configured=
+Pass-through storage for unconfigured items (turn on/off)=
+Storage: All items will be stored here=

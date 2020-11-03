@@ -25,6 +25,10 @@ luac.out
 *.def
 *.exp
 
+# BAK files
+*.bak
+*.old
+
 # Shared objects (inc. Windows DLLs)
 *.dll
 *.so
