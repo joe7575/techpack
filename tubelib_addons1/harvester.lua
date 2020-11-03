@@ -19,8 +19,10 @@
 
 ]]--
 
+-- Load support for I18n
+local S = tubelib_addons1.S
+
 -- for lazy programmers
-local S = function(pos) if pos then return minetest.pos_to_string(pos) end end
 local P = minetest.string_to_pos
 local M = minetest.get_meta
 
@@ -56,8 +58,8 @@ local function formspec(self, pos, meta)
 	default.gui_bg_img..
 	default.gui_slots..
 	"dropdown[0,0;1.5;radius;4,6,8,10,12,14,16;"..radius.."]".. 
-	"label[1.6,0.2;Area radius]"..
-	"checkbox[0,1;endless;Run endless;"..endless.."]"..
+	"label[1.6,0.2;"..S("Area radius").."]"..
+	"checkbox[0,1;endless;"..S("Run endless")..";"..endless.."]"..
 	"list[context;main;5,0;4,4;]"..
 	"list[context;fuel;1.5,3;1,1;]"..
 	"item_image[1.5,3;1,1;tubelib_addons1:biofuel]"..
@@ -72,7 +74,7 @@ end
 local State = tubelib.NodeStates:new({
 	node_name_passive = "tubelib_addons1:harvester_base",
 	node_name_defect = "tubelib_addons1:harvester_defect",
-	infotext_name = "Tubelib Harvester",
+	infotext_name = S("Tubelib Harvester"),
 	cycle_time = CYCLE_TIME,
 	standby_ticks = STANDBY_TICKS,
 	has_item_meter = true,
@@ -254,8 +256,8 @@ local function keep_running(pos, elapsed)
 					if harvest_field(this, meta) then
 						meta:set_string("this", minetest.serialize(this))
 						meta:set_string("infotext", 
-							"Tubelib Harvester "..this.number..
-							": running ("..this.idx.."/"..this.max..")")
+							S("Tubelib Harvester").." "..this.number..
+							S(": running (")..this.idx.."/"..this.max..")")
 						State:keep_running(pos, meta, COUNTDOWN_TICKS, this.num_items)
 					else
 						State:blocked(pos, meta)
@@ -300,7 +302,7 @@ local function on_receive_fields(pos, formname, fields, player)
 end
 
 minetest.register_node("tubelib_addons1:harvester_base", {
-	description = "Tubelib Harvester Base",
+	description = S("Tubelib Harvester Base"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_front.png',
@@ -356,7 +358,7 @@ minetest.register_node("tubelib_addons1:harvester_base", {
 })
 
 minetest.register_node("tubelib_addons1:harvester_defect", {
-	description = "Tubelib Harvester Base",
+	description = S("Tubelib Harvester Base"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_front.png',

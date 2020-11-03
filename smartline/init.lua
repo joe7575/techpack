@@ -12,6 +12,9 @@
 
 smartline = {}
 
+-- Load support for I18n
+smartline.S = minetest.get_translator("smartline")
+
 local MP = minetest.get_modpath("smartline")
 
 dofile(MP.."/display.lua")

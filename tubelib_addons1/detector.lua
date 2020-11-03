@@ -12,6 +12,8 @@
 
 ]]--
 
+-- Load support for I18n
+local S = tubelib_addons1.S
 
 local function switch_on(pos)
 	if tubelib.data_not_corrupted(pos) then
@@ -42,7 +44,7 @@ end
 
 
 minetest.register_node("tubelib_addons1:detector", {
-	description = "Tubelib Detector",
+	description = S("Tubelib Detector"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_front.png',
@@ -58,10 +60,10 @@ minetest.register_node("tubelib_addons1:detector", {
 		local own_num = tubelib.add_node(pos, "tubelib_addons1:detector")
 		meta:set_string("own_num", own_num)
 		meta:set_string("formspec", "size[7.5,3]"..
-		"field[0.5,1;7,1;numbers;Insert destination node number(s);]" ..
-		"button_exit[2,2;3,1;exit;Save]")
+		"field[0.5,1;7,1;numbers;"..S("Insert destination node number(s)")..";]" ..
+		"button_exit[2,2;3,1;exit;"..S("Save").."]")
 		meta:set_string("placer_name", placer:get_player_name())
-		meta:set_string("infotext", "Tubelib Detector, unconfigured")
+		meta:set_string("infotext", S("Tubelib Detector, unconfigured"))
 	end,
 
 	on_receive_fields = function(pos, formname, fields, player)
@@ -69,10 +71,10 @@ minetest.register_node("tubelib_addons1:detector", {
 		if tubelib.check_numbers(fields.numbers) then
 			meta:set_string("numbers", fields.numbers)
 			local own_num = meta:get_string("own_num")
-			meta:set_string("infotext", "Tubelib Detector, connected")
+			meta:set_string("infotext", S("Tubelib Detector, connected"))
 			meta:set_string("formspec", "size[7.5,3]"..
-			"field[0.5,1;7,1;numbers;Insert destination node number(s);"..fields.numbers.."]" ..
-			"button_exit[2,2;3,1;exit;Save]")
+			"field[0.5,1;7,1;numbers;"..S("Insert destination node number(s)")..";"..fields.numbers.."]" ..
+			"button_exit[2,2;3,1;exit;"..S("Save").."]")
 		end
 	end,
 
@@ -91,7 +93,7 @@ minetest.register_node("tubelib_addons1:detector", {
 
 
 minetest.register_node("tubelib_addons1:detector_active", {
-	description = "Tubelib Detector",
+	description = S("Tubelib Detector"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_front.png',

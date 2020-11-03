@@ -14,6 +14,9 @@
 	
 ]]--
 
+-- Load support for I18n
+local S = tubelib_addons3.S
+
 local function allow_metadata_inventory_put(pos, listname, index, stack, player)
 	if minetest.is_protected(pos, player:get_player_name()) then
 		return 0
@@ -62,7 +65,7 @@ local function scan_for_objects(pos, elapsed)
 end
 
 minetest.register_node("tubelib_addons3:funnel", {
-	description = "HighPerf Funnel",
+	description = S("HighPerf Funnel"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_addons1_funnel_top.png^tubelib_addons3_node_frame4.png',

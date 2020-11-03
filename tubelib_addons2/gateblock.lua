@@ -12,6 +12,9 @@
 	
 ]]--
 
+-- Load support for I18n
+local S = tubelib_addons2.S
+
 local NUM_TEXTURES = 20
 
 local sTextures = "Wood,Aspen Wood,Jungle Wood,Pine Wood,"..
@@ -37,18 +40,18 @@ local tPgns = {"default_wood.png", "default_aspen_wood.png", "default_junglewood
 local not_in_inventory=nil
 for idx,pgn in ipairs(tPgns) do
 	minetest.register_node("tubelib_addons2:gateblock"..idx, {
-		description = "Tubelib Gate Block",
+		description = S("Tubelib Gate Block"),
 		tiles = {pgn},
 		after_place_node = function(pos, placer)
 			local meta = minetest.get_meta(pos)
 			local node = minetest.get_node(pos)
 			local number = tubelib.add_node(pos, node.name)
 			meta:set_string("number", number)
-			meta:set_string("infotext", "Tubelib Gate Block "..number)
+			meta:set_string("infotext", S("Tubelib Gate Block").." "..number)
 			meta:set_string("formspec", "size[3,2]"..
 			"label[0,0;Select texture]"..
 			"dropdown[0,0.5;3;type;"..sTextures..";"..NUM_TEXTURES.."]".. 
-			"button_exit[0.5,1.5;2,1;exit;Save]")
+			"button_exit[0.5,1.5;2,1;exit;"..S("Save").."]")
 		end,
 
 		on_receive_fields = function(pos, formname, fields, player)

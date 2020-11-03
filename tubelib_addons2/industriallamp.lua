@@ -12,6 +12,9 @@
 	
 ]]--
 
+-- Load support for I18n
+local S = tubelib_addons2.S
+
 local function switch_on(pos, node)
 	if string.sub(node.name, -3) ~= "_on" then
 		node.name = node.name.."_on"
@@ -32,7 +35,7 @@ end
 local function register_lamp(tbl)
 	local num, tiles, tiles_on, node_box, size = tbl.num, tbl.tiles, tbl.tiles_on, tbl.node_box, tbl.size
 	minetest.register_node("tubelib_addons2:industriallamp"..num, {
-		description = "Tubelib Industrial Lamp "..num,
+		description = S("Tubelib Industrial Lamp").." "..num,
 		tiles = tiles,
 		drawtype = "nodebox",
 		node_box = node_box,
@@ -48,7 +51,7 @@ local function register_lamp(tbl)
 		after_place_node = function(pos, placer)
 			local number = tubelib.add_node(pos, "tubelib_addons2:industriallamp"..num)
 			local meta = minetest.get_meta(pos)
-			meta:set_string("infotext", "Tubelib Industrial Lamp "..num..": "..number)
+			meta:set_string("infotext", S("Tubelib Industrial Lamp").." "..num..": "..number)
 		end,
 
 		on_rightclick = function(pos, node, clicker)
@@ -72,7 +75,7 @@ local function register_lamp(tbl)
 	})
 
 	minetest.register_node("tubelib_addons2:industriallamp"..num.."_on", {
-		description = "Tubelib Industrial Lamp "..num,
+		description = S("Tubelib Industrial Lamp").." "..num,
 		tiles = tiles_on,
 		drawtype = "nodebox",
 		node_box = node_box,
@@ -87,7 +90,7 @@ local function register_lamp(tbl)
 		after_place_node = function(pos, placer)
 			local number = tubelib.add_node(pos, "tubelib_addons2:industriallamp"..num)
 			local meta = minetest.get_meta(pos)
-			meta:set_string("infotext", "Tubelib Industrial Lamp "..num..": "..number)
+			meta:set_string("infotext", S("Tubelib Industrial Lamp").." "..num..": "..number)
 		end,
 		
 		on_rightclick = function(pos, node, clicker)

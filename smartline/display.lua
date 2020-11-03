@@ -12,6 +12,8 @@
 
 ]]--
 
+-- Load support for I18n
+local S = smartline.S
   
   
 lcdlib.register_display_entity("smartline:entity")
@@ -42,7 +44,7 @@ local lcd_box = {
 }
 
 minetest.register_node("smartline:display", {
-	description = "SmartLine Display",
+	description = S("SmartLine Display"),
 	inventory_image = 'smartline_display_inventory.png',
 	tiles = {"smartline_display.png"},
 	drawtype = "nodebox",

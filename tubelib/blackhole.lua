@@ -24,9 +24,11 @@
 --               |        |/
 --               +--------+
 
+-- Load support for I18n
+local S = tubelib.S
 
 minetest.register_node("tubelib:blackhole", {
-	description = "Tubelib Black Hole",
+	description = S("Tubelib Black Hole"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_front.png',
@@ -42,7 +44,7 @@ minetest.register_node("tubelib:blackhole", {
 		local number = tubelib.add_node(pos, "tubelib:blackhole") -- <<=== tubelib
 		meta:set_string("number", number)
 		meta:set_int("disappeared", 0)
-		meta:set_string("infotext","0 items disappeared")
+		meta:set_string("infotext", "0 "..S("items disappeared"))
 	end,
 
 	after_dig_node = function(pos)
@@ -79,7 +81,7 @@ tubelib.register_node("tubelib:blackhole", {}, {
 			local meta = minetest.get_meta(pos)
 			local disappeared = meta:get_int("disappeared") + item:get_count()
 			meta:set_int("disappeared", disappeared)
-			meta:set_string("infotext", disappeared.." items disappeared")
+			meta:set_string("infotext", disappeared.." "..S("items disappeared"))
 			return true		
 		end
 		return false

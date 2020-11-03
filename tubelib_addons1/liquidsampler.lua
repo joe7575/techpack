@@ -12,8 +12,10 @@
 	
 ]]--
 
+-- Load support for I18n
+local S = tubelib_addons1.S
+
 -- for lazy programmers
-local S = function(pos) if pos then return minetest.pos_to_string(pos) end end
 local P = minetest.string_to_pos
 local M = minetest.get_meta
 
@@ -43,7 +45,7 @@ local State = tubelib.NodeStates:new({
 	node_name_passive = "tubelib_addons1:liquidsampler",
 	node_name_active = "tubelib_addons1:liquidsampler_active",
 	node_name_defect = "tubelib_addons1:liquidsampler_defect",
-	infotext_name = "Liquid Sampler",
+	infotext_name = S("Liquid Sampler"),
 	cycle_time = CYCLE_TIME,
 	standby_ticks = STANDBY_TICKS,
 	has_item_meter = true,
@@ -128,7 +130,7 @@ local function on_receive_fields(pos, formname, fields, player)
 end
 
 minetest.register_node("tubelib_addons1:liquidsampler", {
-	description = "Liquid Sampler",
+	description = S("Liquid Sampler"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_front.png',
@@ -180,7 +182,7 @@ minetest.register_node("tubelib_addons1:liquidsampler", {
 })
 
 minetest.register_node("tubelib_addons1:liquidsampler_active", {
-	description = "Liquid Sampler",
+	description = S("Liquid Sampler"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_front.png',
@@ -216,7 +218,7 @@ minetest.register_node("tubelib_addons1:liquidsampler_active", {
 })
 
 minetest.register_node("tubelib_addons1:liquidsampler_defect", {
-	description = "Liquid Sampler",
+	description = S("Liquid Sampler"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_front.png',

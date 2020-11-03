@@ -15,8 +15,10 @@
 	
 ]]--
 
+-- Load support for I18n
+local S = tubelib_addons1.S
+
 -- for lazy programmers
-local S = function(pos) if pos then return minetest.pos_to_string(pos) end end
 local P = minetest.string_to_pos
 local M = minetest.get_meta
 
@@ -47,7 +49,7 @@ local State = tubelib.NodeStates:new({
 	node_name_passive = "tubelib_addons1:autocrafter",
 	node_name_active = "tubelib_addons1:autocrafter_active",
 	node_name_defect = "tubelib_addons1:autocrafter_defect",
-	infotext_name = "Tubelib Autocrafter",
+	infotext_name = S("Tubelib Autocrafter"),
 	cycle_time = CYCLE_TIME,
 	standby_ticks = STANDBY_TICKS,
 	has_item_meter = true,
@@ -287,7 +289,7 @@ end
 
 
 minetest.register_node("tubelib_addons1:autocrafter", {
-	description = "Tubelib Autocrafter",
+	description = S("Tubelib Autocrafter"),
 	drawtype = "normal",
 	tiles = {
 		'tubelib_front.png', 
@@ -335,7 +337,7 @@ minetest.register_node("tubelib_addons1:autocrafter", {
 })
 
 minetest.register_node("tubelib_addons1:autocrafter_active", {
-	description = "Tubelib Autocrafter",
+	description = S("Tubelib Autocrafter"),
 	drawtype = "normal",
 	tiles = {
 		'tubelib_front.png', 
@@ -368,7 +370,7 @@ minetest.register_node("tubelib_addons1:autocrafter_active", {
 })
 
 minetest.register_node("tubelib_addons1:autocrafter_defect", {
-	description = "Tubelib Autocrafter",
+	description = S("Tubelib Autocrafter"),
 	drawtype = "normal",
 	tiles = {
 		'tubelib_front.png', 

@@ -13,8 +13,10 @@
 	A high performance distributor
 ]]--
 
+-- Load support for I18n
+local S = tubelib_addons3.S
+
 -- for lazy programmers
-local S = function(pos) if pos then return minetest.pos_to_string(pos) end end
 local P = minetest.string_to_pos
 local M = minetest.get_meta
 
@@ -55,7 +57,7 @@ local State = tubelib.NodeStates:new({
 	node_name_passive = "tubelib_addons3:distributor",
 	node_name_active = "tubelib_addons3:distributor_active",
 	node_name_defect = "tubelib_addons3:distributor_defect",
-	infotext_name = "HighPerf Distributor",
+	infotext_name = S("HighPerf Distributor"),
 	cycle_time = CYCLE_TIME,
 	standby_ticks = STANDBY_TICKS,
 	aging_factor = 50,
@@ -322,7 +324,7 @@ local function change_filter_settings(pos, slot, val)
 end
 
 minetest.register_node("tubelib_addons3:distributor", {
-	description = "HighPerf Distributor",
+	description = S("HighPerf Distributor"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_distributor.png^tubelib_addons3_node_frame.png',
@@ -382,7 +384,7 @@ minetest.register_node("tubelib_addons3:distributor", {
 
 
 minetest.register_node("tubelib_addons3:distributor_active", {
-	description = "HighPerf Distributor",
+	description = S("HighPerf Distributor"),
 	tiles = {
 		-- up, down, right, left, back, front
 		{
@@ -420,7 +422,7 @@ minetest.register_node("tubelib_addons3:distributor_active", {
 })
 
 minetest.register_node("tubelib_addons3:distributor_defect", {
-	description = "HighPerf Distributor",
+	description = S("HighPerf Distributor"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_distributor.png^tubelib_addons3_node_frame.png',

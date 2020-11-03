@@ -12,6 +12,9 @@
 
 ]]--
 
+-- Load support for I18n
+local S = tubelib.S
+
 -- used for registered nodes
 tubelib.KnownNodes = {
 	["tubelib:tubeS"] = true,
@@ -33,7 +36,7 @@ local Tube = tubelib2.Tube:new({
 tubelib.Tube = Tube
 
 minetest.register_node("tubelib:tubeS", {
-	description = "Tubelib Tube",
+	description = S("Tubelib Tube"),
 	tiles = { -- Top, base, right, left, front, back
 		"tubelib_tube.png^[transformR90",
 		"tubelib_tube.png^[transformR90",
@@ -80,7 +83,7 @@ minetest.register_node("tubelib:tubeS", {
 })
 
 minetest.register_node("tubelib:tubeA", {
-	description = "Tubelib Tube",
+	description = S("Tubelib Tube"),
 	tiles = { -- Top, base, right, left, front, back
 		"tubelib_knee2.png",
 		"tubelib_hole2.png^[transformR180",

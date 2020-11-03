@@ -14,14 +14,17 @@
 
 ]]--
 
+-- Load support for I18n
+local S = tubelib_addons3.S
+
 local Tube = tubelib.Tube
 
 local sFormspec = "size[7.5,3]"..
-	"field[0.5,1;7,1;channel;Enter channel string;]" ..
-	"button_exit[2,2;3,1;exit;Save]"
+	"field[0.5,1;7,1;channel;"..S("Enter channel string")..";]" ..
+	"button_exit[2,2;3,1;exit;"..S("Save").."]"
 
 minetest.register_node("tubelib_addons3:teleporter", {
-	description = "Tubelib Teleporter",
+	description = S("Tubelib Teleporter"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_addons3_chest_bottom.png',

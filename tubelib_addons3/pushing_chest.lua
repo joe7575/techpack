@@ -14,6 +14,9 @@
 
 ]]--
 
+-- Load support for I18n
+local S = tubelib_addons3.S
+
 -- tubelib aging feature
 local AGING_LEVEL1 = 50 * tubelib.machine_aging_value
 local AGING_LEVEL2 = 150 * tubelib.machine_aging_value
@@ -78,7 +81,7 @@ end
 
 local function set_state(meta, state)
 	local number = meta:get_string("number")
-	meta:set_string("infotext", "HighPerf Pushing Chest "..number..": "..state)
+	meta:set_string("infotext", S("HighPerf Pushing Chest").." "..number..": "..state)
 	meta:set_string("state", state)
 end	
 
@@ -175,7 +178,7 @@ end
 
 
 minetest.register_node("tubelib_addons3:pushing_chest", {
-	description = "HighPerf Pushing Chest",
+	description = S("HighPerf Pushing Chest"),
 	tiles = {
 		-- up, down, right, left, back, front
 		{
@@ -244,7 +247,7 @@ minetest.register_node("tubelib_addons3:pushing_chest", {
 })
 
 minetest.register_node("tubelib_addons3:pushing_chest_defect", {
-	description = "HighPerf Pushing Chest",
+	description = S("HighPerf Pushing Chest"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_pusher1.png^tubelib_addons3_node_frame4.png',

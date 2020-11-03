@@ -14,8 +14,10 @@
 	
 ]]--
 
+-- Load support for I18n
+local S = tubelib_addons1.S
+
 -- for lazy programmers
-local S = function(pos) if pos then return minetest.pos_to_string(pos) end end
 local P = minetest.string_to_pos
 local M = minetest.get_meta
 
@@ -49,7 +51,7 @@ local State = tubelib.NodeStates:new({
 	node_name_passive = "tubelib_addons1:grinder",
 	node_name_active = "tubelib_addons1:grinder_active",
 	node_name_defect = "tubelib_addons1:grinder_defect",
-	infotext_name = "Tubelib Grinder",
+	infotext_name = S("Tubelib Grinder"),
 	cycle_time = CYCLE_TIME,
 	standby_ticks = STANDBY_TICKS,
 	has_item_meter = true,
@@ -120,7 +122,7 @@ local function on_receive_fields(pos, formname, fields, player)
 end
 
 minetest.register_node("tubelib_addons1:grinder", {
-	description = "Tubelib Grinder",
+	description = S("Tubelib Grinder"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_addons1_grinder.png',
@@ -170,7 +172,7 @@ minetest.register_node("tubelib_addons1:grinder", {
 
 
 minetest.register_node("tubelib_addons1:grinder_active", {
-	description = "Tubelib Grinder",
+	description = S("Tubelib Grinder"),
 	tiles = {
 		-- up, down, right, left, back, front
 		{
@@ -207,7 +209,7 @@ minetest.register_node("tubelib_addons1:grinder_active", {
 })
 
 minetest.register_node("tubelib_addons1:grinder_defect", {
-	description = "Tubelib Grinder",
+	description = S("Tubelib Grinder"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_addons1_grinder.png',
@@ -296,7 +298,7 @@ tubelib.register_node("tubelib_addons1:grinder",
 
 if minetest.global_exists("unified_inventory") then
 	unified_inventory.register_craft_type("grinding", {
-		description = "Grinding",
+		description = S("Grinding"),
 		icon = 'tubelib_addons1_grinder.png',
 		width = 1,
 		height = 1,

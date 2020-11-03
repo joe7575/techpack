@@ -12,6 +12,9 @@
 	
 ]]--
 
+-- Load support for I18n
+local S = smartline.S
+
 local function switch_on(pos)
 	local meta = minetest.get_meta(pos)
 	local node = minetest.get_node(pos)
@@ -56,15 +59,19 @@ local function scan_for_player(pos)
 end
 
 local function formspec_help()
+	local help = table.concat({
+			S("Input the number(s) of the receiving node(s)."),
+			S("Separate numbers via blanks, like '0123 0234'."),
+			S("Input the player name(s) separated by blanks,"),
+			S("or leave it blank for all players.")
+		}, "\n")
 	return "size[10,9]"..
 		default.gui_bg..
 		default.gui_bg_img..
 		default.gui_slots..
-		"label[3,0;Player Detector Help]"..
-		"label[0,1;Input the number(s) of the receiving node(s).\n"..
-		"Separate numbers via blanks, like '0123 0234'.\n\n"..
-		"Input the player name(s) separated by blanks,\nor empty for all players.]"..
-		"button_exit[4,8;2,1;exit;close]"
+		"label[3,0;"..S("Player Detector Help").."]"..
+		"label[0,1;"..help.."]"..
+		"button_exit[4,8;2,1;exit;"..S("close").."]"
 end
 
 
@@ -73,11 +80,11 @@ local function formspec(numbers, names)
 		default.gui_bg..
 		default.gui_bg_img..
 		default.gui_slots..
-		"label[2,0;Player Detector]"..
-		"field[0.3,1;8,1;numbers;Receiver node numbers:;"..numbers.."]" ..
-		"field[0.3,2.5;8,1;names;Player name(s):;"..names.."]" ..
-		"button_exit[5,3.5;2,1;exit;Save]"..
-		"button[1,3.5;1,1;help;help]"
+		"label[2,0;"..S("Player Detector").."]"..
+		"field[0.3,1;8,1;numbers;"..S("Receiver node numbers:")..";"..numbers.."]" ..
+		"field[0.3,2.5;8,1;names;"..S("Player name(s):")..";"..names.."]" ..
+		"button_exit[5,3.5;2,1;exit;"..S("Save").."]"..
+		"button[1,3.5;1,1;help;"..S("help").."]"
 end
 
 local function on_receive_fields(pos, formname, fields, player)
@@ -101,7 +108,7 @@ local function on_receive_fields(pos, formname, fields, player)
 end
 
 minetest.register_node("smartline:playerdetector", {
-	description = "SmartLine Player Detector",
+	description = S("SmartLine Player Detector"),
 	inventory_image = "smartline_detector_inventory.png",
 	tiles = {
 		-- up, down, right, left, back, front
@@ -127,7 +134,7 @@ minetest.register_node("smartline:playerdetector", {
 		local numbers = meta:get_string("numbers") or ""
 		local names = meta:get_string("names") or ""
 		meta:set_string("formspec", formspec(numbers, names))
-		meta:set_string("infotext", "SmartLine Player Detector "..number)
+		meta:set_string("infotext", S("SmartLine Player Detector").." "..number)
 		meta:set_string("owner", placer:get_player_name())
 		minetest.get_node_timer(pos):start(1)
 	end,
@@ -159,7 +166,7 @@ minetest.register_node("smartline:playerdetector", {
 })
 
 minetest.register_node("smartline:playerdetector_active", {
-	description = "SmartLine Player Detector",
+	description = S("SmartLine Player Detector"),
 	tiles = {
 		-- up, down, right, left, back, front
 		"smartline.png",

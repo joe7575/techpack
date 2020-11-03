@@ -10,8 +10,6 @@
 
 ]]--
 
-tubelib_addons1 = {}
-
 -- tables needed for Harvester
 tubelib_addons1.FarmingNodes = {}
 tubelib_addons1.Flowers = {}

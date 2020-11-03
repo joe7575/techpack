@@ -1,5 +1,8 @@
+-- Load support for I18n
+local S = tubelib.S
+
 minetest.register_node("tubelib:defect_dummy", {
-	description = "Corrupted Tubelib Node",
+	description = S("Corrupted Tubelib Node"),
 	tiles = {
 		"tubelib_front.png",
 		"tubelib_front.png",

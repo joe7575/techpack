@@ -5,6 +5,8 @@
 
 ]]--
 
+-- Load support for I18n
+local S = gravelsieve.S
 
 gravelsieve.disallow = function(pos, node, user, mode, new_param2)
 	return false
@@ -40,7 +42,7 @@ gravelsieve.handler = function(itemstack, user, pointed_thing)
 end
 
 minetest.register_tool("gravelsieve:hammer", {
-	description = "Hammer converts Cobblestone into Gravel",
+	description = S("Hammer converts Cobblestone into Gravel"),
 	inventory_image = "gravelsieve_hammer.png",
 	on_use = function(itemstack, user, pointed_thing)
 		return gravelsieve.handler(itemstack, user, pointed_thing)

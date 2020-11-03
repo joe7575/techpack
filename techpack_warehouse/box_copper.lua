@@ -12,14 +12,16 @@
 
 ]]--
 
+-- Load support for I18n
+local S = techpack_warehouse.S
+
 --- for lazy programmers
-local S = function(pos) if pos then return minetest.pos_to_string(pos) end end
 local P = minetest.string_to_pos
 local M = minetest.get_meta
 local wh = techpack_warehouse
 
 local NODE_NAME = "techpack_warehouse:box_copper"
-local DESCRIPTION = "Warehouse Box Copper"
+local DESCRIPTION = S("Warehouse Box Copper")
 local INV_SIZE = 1200
 local BACKGROUND_IMG = "default_copper_block.png" 
 

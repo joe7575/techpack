@@ -12,8 +12,10 @@
 
 ]]--
 
+-- Load support for I18n
+local S = techpack_warehouse.S
+
 --- for lazy programmers
-local S = function(pos) if pos then return minetest.pos_to_string(pos) end end
 local P = minetest.string_to_pos
 local M = minetest.get_meta
 
@@ -49,10 +51,10 @@ local function formspec(self, pos, meta)
 	"list[context;input;1,3.6;8,1;]"..
 	"image_button[9,3.6;1,1;techpack_warehouse_input_inv.png;input;;true;false;]"..
 
-	"tooltip[shift;Pass-through storage for unconfigured items (turn on/off)]"..
-	"tooltip[filter;Filter: To configure the 8 storages]"..
-	"tooltip[storage;Storage: All items will be stored here]"..
-	"tooltip[input;Input: Put items will be moved to the storage, if configured]"..
+	"tooltip[shift;"..S("Pass-through storage for unconfigured items (turn on/off)").."]"..
+	"tooltip[filter;"..S("Filter: To configure the 8 storages").."]"..
+	"tooltip[storage;"..S("Storage: All items will be stored here").."]"..
+	"tooltip[input;"..S("Input: Put items will be moved to the storage, if configured").."]"..
 
 	"list[current_player;main;1,5.3;8,4;]"..
 	"listring[context;shift]"..

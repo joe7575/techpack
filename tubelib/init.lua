@@ -34,6 +34,10 @@ tubelib = {
 	NodeDef = {},		-- node registration info
 }
 
+-- Load support for I18n
+tubelib.S = minetest.get_translator("tubelib")
+local S = tubelib.S
+
 tubelib.version = 2.00
 
 tubelib.max_num_forceload_blocks = tonumber(minetest.setting_get("tubelib_max_num_forceload_blocks")) or 10
@@ -78,7 +82,7 @@ minetest.register_lbm({
 })
 
 minetest.register_craftitem("tubelib:wlanchip", {
-	description = "Tubelib WLAN Chip",
+	description = S("Tubelib WLAN Chip"),
 	inventory_image = "tubelib_wlanchip.png",
 })
 

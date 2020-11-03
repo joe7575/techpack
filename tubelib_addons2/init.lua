@@ -10,6 +10,12 @@
 
 ]]--
 
+tubelib_addons2 = {}
+
+
+-- Load support for I18n
+tubelib_addons2.S = minetest.get_translator("tubelib_addons2")
+
 dofile(minetest.get_modpath("tubelib_addons2") .. "/timer.lua")
 dofile(minetest.get_modpath("tubelib_addons2") .. "/sequencer.lua")
 dofile(minetest.get_modpath("tubelib_addons2") .. "/gateblock.lua")
@@ -23,7 +29,7 @@ dofile(minetest.get_modpath("tubelib_addons2") .. "/ceilinglamp.lua")
 dofile(minetest.get_modpath("tubelib_addons2") .. "/invisiblelamp.lua")
 dofile(minetest.get_modpath("tubelib_addons2") .. "/industriallamp.lua")
 
-if minetest.get_modpath("mesecons") and mesecon then
+if minetest.get_modpath("mesecons") and minetest.mesecon then
 	dofile(minetest.get_modpath("tubelib_addons2") .. "/mesecons_converter.lua")
 end
 if minetest.get_modpath("unifieddyes") and unifieddyes then

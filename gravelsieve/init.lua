@@ -42,6 +42,10 @@
 gravelsieve = {
 }
 
+-- Load support for I18n
+gravelsieve.S = minetest.get_translator("gravelsieve")
+local S = gravelsieve.S
+
 dofile(minetest.get_modpath("gravelsieve") .. "/hammer.lua")
 
 local settings_get
@@ -320,7 +324,7 @@ for idx = 0,4 do
 	local tube_info
 	if automatic == 0 then
 		node_name = "gravelsieve:sieve"
-		description = "Gravel Sieve"
+		description = S("Gravel Sieve")
 		tiles_data = {
 			-- up, down, right, left, back, front
 			"gravelsieve_gravel.png",
@@ -332,7 +336,7 @@ for idx = 0,4 do
 		}
 	else
 		node_name = "gravelsieve:auto_sieve"
-		description = "Automatic Gravel Sieve"
+		description = S("Automatic Gravel Sieve")
 		tiles_data = {
 			-- up, down, right, left, back, front
 			"gravelsieve_gravel.png",
@@ -366,6 +370,7 @@ for idx = 0,4 do
 		}
 	end
 
+	local not_in_creative_inventory
 	if idx == 3 then
 		tiles_data[1] = "gravelsieve_top.png"
 		not_in_creative_inventory = 0
@@ -522,7 +527,7 @@ if minetest.global_exists("tubelib") then
 
 		after_place_node = function(pos, placer)
 			local meta = minetest.get_meta(pos)
-			meta:set_string("infotext", "Gravel Sieve")
+			meta:set_string("infotext", S("Gravel Sieve"))
 		end,
 
 		on_dig = function(pos, node, puncher, pointed_thing)
@@ -581,14 +586,14 @@ if minetest.global_exists("tubelib") then
 end
 
 minetest.register_node("gravelsieve:sieved_gravel", {
-	description = "Sieved Gravel",
+	description = S("Sieved Gravel"),
 	tiles = {"default_gravel.png"},
 	groups = {crumbly=2, falling_node=1, not_in_creative_inventory=1},
 	sounds = default.node_sound_gravel_defaults(),
 })
 
 minetest.register_node("gravelsieve:compressed_gravel", {
-	description = "Compressed Gravel",
+	description = S("Compressed Gravel"),
 	tiles = {"gravelsieve_compressed_gravel.png"},
 	groups = {cracky=2, crumbly = 2, cracky = 2},
 	sounds = default.node_sound_gravel_defaults(),
@@ -654,7 +659,7 @@ end
 if minetest.get_modpath("moreblocks") then
 
 	stairsplus:register_all("gravelsieve", "compressed_gravel", "gravelsieve:compressed_gravel", {
-		description="Compressed Gravel",
+		description=S("Compressed Gravel"),
 		groups={cracky=2, crumbly=2, choppy=2, not_in_creative_inventory=1},
 		tiles = {"gravelsieve_compressed_gravel.png"},
 		sounds = default.node_sound_stone_defaults(),
