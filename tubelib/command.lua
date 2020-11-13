@@ -607,7 +607,7 @@ function tubelib.temporary_remove_node(pos, number, name, add_data)
 		add_data.name = name
 		TemporaryRemovedNodes[key] = add_data
 	else
-		local data = table.copy(TemporaryRemovedNodes[key])
+		local data = table.copy(TemporaryRemovedNodes[key] or {})
 		TemporaryRemovedNodes[key] = nil
 		return data
 	end

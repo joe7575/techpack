@@ -119,7 +119,7 @@ local function formspec(player)
 		local ypos = 0.2 + idx * 0.4
 		tRes[#tRes+1] = "label[0,"..ypos..";"..idx.."]"
 		tRes[#tRes+1] = "label[0.8,"..ypos..";"..P2S(pos1).."]"
-		tRes[#tRes+1] = "label[3.2,"..ypos..";to]"
+		tRes[#tRes+1] = "label[3.2,"..ypos..";"..S("to").."]"
 		tRes[#tRes+1] = "label[4,"..ypos..";"..P2S(pos2).."]"
 	end
 	return table.concat(tRes)
@@ -148,7 +148,7 @@ minetest.register_node("tubelib:forceload", {
 		if add_pos(pos, placer) then
 			minetest.forceload_block(pos, true)
 			local pos1, pos2, num, max = get_data(pos, placer)
-			M(pos):set_string("infotext", S("Area").." "..P2S(pos1).." to "..P2S(pos2).." "..S("loaded!").."\n"..
+			M(pos):set_string("infotext", S("Area").." "..P2S(pos1).." "..S("to").." "..P2S(pos2).." "..S("loaded!").."\n"..
 				S("Punch the block to make the area visible."))
 			chat(placer, S("Area").." ("..num.."/"..max..") "..P2S(pos1).." "..S("to").." "..P2S(pos2).." "..S("loaded!"))
 			tubelib.mark_region(placer:get_player_name(), pos1, pos2)

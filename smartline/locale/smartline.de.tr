@@ -83,4 +83,3 @@ SmartLine Timer=SmartLine Timer
 SmartLine Timer Help@n@nThe Timer is for a daytime controlled sending of commands@ne.g. to turn street lights on/off. The timer checks the @ntime every few seconds. If the block was just loaded, @nthe timer will check the last 4 hours for commands@nthat still need to be executed.=SmartLine Timer Hilfe@n@nDer Timer st zum Tageszeit abhängigem Senden von Kommandos@nDer Timer prüft die regeln alle paar Sekunden.@nFalls die Block gerade erst aktiviert wurde (Spieler kommt in die Nähe),@nwerden auch die Kommandos der letzten 4 Spielstunden@ngeprüft und ggf. ausgeführt.
 
 Time=Zeit
-

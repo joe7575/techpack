@@ -41,7 +41,7 @@ List of your Forceload Blocks=Liste deiner Forceload Blöcke
 Punch the block to make the area visible.=Schlage den Block um den Bereich anzuzeigen
 Tubelib Forceload Block=Tubelib Forceload Block
 loaded!=geladen!
-to=zu
+to=bis
 
 ### init.lua ###
 

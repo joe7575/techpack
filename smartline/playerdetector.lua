@@ -71,7 +71,7 @@ local function formspec_help()
 		default.gui_slots..
 		"label[3,0;"..S("Player Detector Help").."]"..
 		"label[0,1;"..help.."]"..
-		"button_exit[4,8;2,1;exit;"..S("close").."]"
+		"button_exit[4,8;2,1;exit2;"..S("close").."]"
 end
 
 
@@ -83,7 +83,7 @@ local function formspec(numbers, names)
 		"label[2,0;"..S("Player Detector").."]"..
 		"field[0.3,1;8,1;numbers;"..S("Receiver node numbers:")..";"..numbers.."]" ..
 		"field[0.3,2.5;8,1;names;"..S("Player name(s):")..";"..names.."]" ..
-		"button_exit[5,3.5;2,1;exit;"..S("Save").."]"..
+		"button_exit[5,3.5;2,1;exit1;"..S("Save").."]"..
 		"button[1,3.5;1,1;help;"..S("help").."]"
 end
 
@@ -91,15 +91,16 @@ local function on_receive_fields(pos, formname, fields, player)
 	local meta = minetest.get_meta(pos)
 	local owner = meta:get_string("owner")
 	if player:get_player_name() == owner then
-		if fields.exit == "Save" then
+		print(dump(fields))
+		if fields.exit1 then
 			if tubelib.check_numbers(fields.numbers) then
 				meta:set_string("numbers", fields.numbers)
 			end
 			meta:set_string("names", fields.names)
 			meta:set_string("formspec", formspec(fields.numbers, fields.names))
-		elseif fields.help ~= nil then
+		elseif fields.help then
 			meta:set_string("formspec", formspec_help())
-		elseif fields.exit == "close" then
+		elseif fields.exit2 then
 			local numbers = meta:get_string("numbers")
 			local names = meta:get_string("names")
 			meta:set_string("formspec", formspec(numbers, names))
