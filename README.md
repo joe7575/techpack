@@ -114,9 +114,9 @@ The value 200 (default) results in a lifetime for standard machines of about 200
 
 
 ### License
-Copyright (C) 2017-2020 Joachim Stolberg
-Code: Licensed under the GNU AGPL version 3 or later. See LICENSE.txt
-Textures: CC BY-SA 3.0
+Copyright (C) 2017-2020 Joachim Stolberg  
+Code: Licensed under the GNU AGPL version 3 or later. See LICENSE.txt  
+Textures: CC BY-SA 3.0  
 
 
 ### Dependencies 
