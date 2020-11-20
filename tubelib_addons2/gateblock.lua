@@ -3,9 +3,9 @@
 	Tubelib Addons 2
 	================
 
-	Copyright (C) 2017 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 
 	gateblock.lua:
@@ -37,7 +37,6 @@ local tPgns = {"default_wood.png", "default_aspen_wood.png", "default_junglewood
 	"default_copper_block.png", "default_steel_block.png", "default_tin_block.png", "default_coral_skeleton.png",
 	"default_glass.png", "default_obsidian_glass.png", "default_ice.png", "tubelib_addon2_gate.png"}
 
-local not_in_inventory=nil
 for idx,pgn in ipairs(tPgns) do
 	minetest.register_node("tubelib_addons2:gateblock"..idx, {
 		description = S("Tubelib Gate Block"),
@@ -76,13 +75,11 @@ for idx,pgn in ipairs(tPgns) do
 		paramtype2 = "facedir",
 		sunlight_propagates = true,
 		sounds = default.node_sound_stone_defaults(),
-		groups = {cracky=2, choppy=2, crumbly=2, not_in_creative_inventory=not_in_inventory},
+		groups = {cracky=2, choppy=2, crumbly=2, not_in_creative_inventory = idx == NUM_TEXTURES and 0 or 1},
 		is_ground_content = false,
 		drop = "tubelib_addons2:gateblock1",
 	})
 
-	not_in_inventory = 1
-	
 	tubelib.register_node("tubelib_addons2:gateblock"..idx, {}, {
 		on_recv_message = function(pos, topic, payload)
 			local node = minetest.get_node(pos)

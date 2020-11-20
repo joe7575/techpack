@@ -3,9 +3,9 @@
 	Tubelib Addons 1
 	================
 
-	Copyright (C) 2017,2018 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 
 ]]--
@@ -66,6 +66,7 @@ fn("default:jungleleaves")
 
 fn("default:bush_leaves")
 fn("default:acacia_bush_leaves")
+fn("default:blueberry_bush_leaves")
 
 fn("default:cactus", "default:cactus", "default:cactus")
 fn("default:papyrus", "default:papyrus", "default:papyrus")
@@ -75,6 +76,7 @@ fn("default:apple")
 if farming.mod ~= "redo" then
 	dn("farming:wheat_8",  "farming:wheat",  "farming:wheat_1")
 	dn("farming:cotton_8", "farming:cotton", "farming:cotton_1")
+	dn("farming:blueberry_bush_leaves_with_berries", "default:blueberries", "farming:blueberry_bush_leaves")
 end
 
 -------------------------------------------------------------------------------
@@ -115,7 +117,7 @@ end
 -- Ethereal Farming
 -------------------------------------------------------------------------------
 fn("ethereal:strawberry_8",   "ethereal:strawberry 2",	     "ethereal:strawberry 1")
-fn("ethereal:onion_5",		  "ethereal:wild_onion_plant 2", "ethereal:onion_1")
+fn("ethereal:onion_5",        "ethereal:wild_onion_plant 2", "ethereal:onion_1")
 
 
 fn("ethereal:willow_trunk",   "ethereal:willow_trunk", "ethereal:willow_sapling")
@@ -160,24 +162,28 @@ gn("default:ice")
 gn("default:snowblock")
 gn("default:snow")
 gn("default:obsidian")
-
+gn("default:mese")
 gn("stairs:stair_cobble")
 gn("stairs:stair_mossycobble")
 gn("stairs:stair_desert_cobble")
+
+gn("default:permafrost")
+gn("default:permafrost_with_moss")
+gn("default:permafrost_with_stones")
 
 gn("default:stone",             "default:cobble")
 gn("default:desert_stone",      "default:desert_cobble")
 gn("default:sandstone",         "default:sandstone")
 gn("default:desert_sandstone",  "default:desert_sandstone")
+gn("default:silver_sandstone",  "default:silver_sandstone")
 gn("default:clay",              "default:clay_lump")
+
 gn("default:stone_with_coal",   "default:coal_lump")
 gn("default:stone_with_iron",   "default:iron_lump")
 gn("default:stone_with_copper", "default:copper_lump")
 gn("default:stone_with_gold",   "default:gold_lump")
 gn("default:stone_with_tin",    "default:tin_lump")
-
 gn("default:stone_with_mese",   "default:mese_crystal")
-
 gn("default:stone_with_diamond",  "default:diamond")
 
 gn("default:dirt_with_grass",             "default:dirt")
@@ -186,6 +192,13 @@ gn("default:dirt_with_dry_grass",         "default:dirt")
 gn("default:dirt_with_snow",              "default:dirt")
 gn("default:dirt_with_rainforest_litter", "default:dirt")
 gn("default:dirt_with_grass",             "default:dirt")
+gn("default:dirt_with_coniferous_litter", "default:dirt")
+gn("default:dry_dirt",                    "default:dry_dirt")
+gn("default:dry_dirt_with_dry_grass",     "default:dry_dirt")
+
+gn("default:dirt_with_coniferous_litter")
+gn("default:dirt_with_coniferous_litter")
+gn("default:dirt_with_coniferous_litter")
 
 gn("default:coral_skeleton",  "default:coral_skeleton")
 gn("default:coral_orange",    "default:coral_skeleton")

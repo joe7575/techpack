@@ -3,9 +3,9 @@
 	Tubes based on tubelib2
 	=======================
 
-	Copyright (C) 2018 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 
 	tubes.lua: Node registration and API functions to move items via tubes

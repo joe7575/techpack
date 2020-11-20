@@ -1,7 +1,6 @@
 # textdomain: tubelib_addons2
 
 
-
 ### accesscontrol.lua ###
 
 Access code (4 digits):=

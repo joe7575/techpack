@@ -1,4 +1,4 @@
-# TechPack V2.03
+# TechPack V2.04
 
 TechPack, a Mining, Crafting, &amp; Farming Modpack for Minetest.
 
@@ -115,7 +115,7 @@ The value 200 (default) results in a lifetime for standard machines of about 200
 
 ### License
 Copyright (C) 2017-2020 Joachim Stolberg  
-Code: Licensed under the GNU LGPL version 2.1 or later. See LICENSE.txt  
+Code: Licensed under the GNU AGPL version 3 or later. See LICENSE.txt
 Textures: CC BY-SA 3.0
 
 
@@ -151,6 +151,7 @@ tubelib_addons1 optional: unified_inventory
 - 2019-01-27  V2.01  * SaferLua Controller Terminal added
 - 2019-01-28  V2.02  * Logic Not added, output reduction on Harvester, Fermenter, and Gravel Sieve
 - 2019-04-23  V2.03  * Piston/WorldEdit/replacer detection added, farming and grinder recipes added
+- 2020-11-20  V2.04  * Switch to AGPL v3, adapt to minetest 5.3, add translation support, fix minor bugs
 
 
 ## New in v2 (from players point of view)

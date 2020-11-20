@@ -3,9 +3,9 @@
 	Tubelib Addons 2
 	================
 
-	Copyright (C) 2017,2018 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 
 ]]--
@@ -29,7 +29,7 @@ dofile(minetest.get_modpath("tubelib_addons2") .. "/ceilinglamp.lua")
 dofile(minetest.get_modpath("tubelib_addons2") .. "/invisiblelamp.lua")
 dofile(minetest.get_modpath("tubelib_addons2") .. "/industriallamp.lua")
 
-if minetest.get_modpath("mesecons") and minetest.mesecon then
+if minetest.get_modpath("mesecons") and mesecon then
 	dofile(minetest.get_modpath("tubelib_addons2") .. "/mesecons_converter.lua")
 end
 if minetest.get_modpath("unifieddyes") and unifieddyes then

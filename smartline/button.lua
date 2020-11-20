@@ -3,9 +3,9 @@
 	SmartLine
 	=========
 
-	Copyright (C) 2018 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 
 	button.lua:
@@ -17,7 +17,7 @@
 local S = smartline.S
 
 local function switch_on(pos, node)
-	if tubelib.data_not_corrupted(pos) then
+	if tubelib.data_not_corrupted(pos, true) then
 		node.name = "smartline:button_active"
 		minetest.swap_node(pos, node)
 		minetest.sound_play("button", {
@@ -42,7 +42,7 @@ local function switch_on(pos, node)
 end
 
 local function switch_off(pos)
-	if tubelib.data_not_corrupted(pos) then
+	if tubelib.data_not_corrupted(pos, true) then
 		local node = minetest.get_node(pos)
 		node.name = "smartline:button"
 		minetest.swap_node(pos, node)

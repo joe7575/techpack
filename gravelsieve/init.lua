@@ -7,11 +7,11 @@
 	Derived from the work of celeron55, Perttu Ahola  (furnace)
 	Pipeworks support added by FiftySix
 
-	Copyright (C) 2017-2018 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 	Copyright (C) 2011-2016 celeron55, Perttu Ahola <celeron55@gmail.com>
 	Copyright (C) 2011-2016 Various Minetest developers and contributors
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 
 	History:

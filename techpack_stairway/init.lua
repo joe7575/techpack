@@ -5,7 +5,7 @@
 
 	Copyright (C) 2019-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 	
 	init.lua
