@@ -2,6 +2,23 @@
 
 
 
+## V2.04.00 (2020-11-20)
+
+### Additions
+- Add minetest.translator support (issue #56)
+- Add German translation
+- Add new minetest v5 nodes
+
+### Removals
+
+### Changes
+- Switch from LGPL to AGPL v3
+
+### Fixes
+- tubelib_addons2:doorblock works incorrectly (issue #55)
+
+
+
 ## V2.03.12 (2020-07-23)
 
 ### Additions
