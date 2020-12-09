@@ -215,7 +215,8 @@ local function quarry_next_node(pos, meta)
 	meta:set_string("quarry_pos", P2S(quarry_pos))
 
 	if minetest.is_protected(quarry_pos, owner) then
-		minetest.chat_send_player(owner, S("[Tubelib Quarry] Area is protected!"))
+		minetest.chat_send_player(owner, S("[Tubelib Quarry] Area is protected!") ..
+		  " " .. minetest.pos_to_string(quarry_pos) )
 		State:fault(pos, meta)
 		return
 	end

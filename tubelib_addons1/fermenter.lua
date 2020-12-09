@@ -342,8 +342,13 @@ if minetest.global_exists("unified_inventory") then
 		width = 2,
 		height = 2,
 	})
+
+	local leaves_table = {}
+	for i = 1, NUM_LEAVES do
+		table.insert(leaves_table, "group:leaves")
+	end
 	unified_inventory.register_craft({
-		items = {"group:leaves", "group:leaves"},
+		items = leaves_table,
 		output = "tubelib_addons1:biogas",
 		type = "fermenting"
 	})
