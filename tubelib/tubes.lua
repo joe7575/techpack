@@ -35,7 +35,7 @@ tubelib.Tube = Tube
 local function ON_BLAST(id)
 	return function (pos)
 		local node = minetest.get_node(pos)
-        minetest.remove_node(pos)
+		minetest.remove_node(pos)
 		Tube:after_dig_tube(pos, node)
 		return {id}
 	end
