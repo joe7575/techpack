@@ -32,6 +32,15 @@ local Tube = tubelib2.Tube:new({
 
 tubelib.Tube = Tube
 
+local function ON_BLAST(id)
+	return function (pos)
+		local node = minetest.get_node(pos)
+        minetest.remove_node(pos)
+		Tube:after_dig_tube(pos, node)
+		return {id}
+	end
+end
+
 minetest.register_node("tubelib:tubeS", {
 	description = "Tubelib Tube",
 	tiles = { -- Top, base, right, left, front, back
@@ -77,6 +86,7 @@ minetest.register_node("tubelib:tubeS", {
 	is_ground_content = false,
 	groups = {choppy=2, cracky=3},
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = ON_BLAST("tubelib:tubeS"),
 })
 
 minetest.register_node("tubelib:tubeA", {
@@ -118,6 +128,7 @@ minetest.register_node("tubelib:tubeA", {
 	groups = {choppy=2, cracky=3, not_in_creative_inventory=1},
 	sounds = default.node_sound_wood_defaults(),
 	drop = "tubelib:tubeS",
+	on_blast = ON_BLAST("tubelib:tubeA"),
 })
 
 minetest.register_craft({
