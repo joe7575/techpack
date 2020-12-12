@@ -340,6 +340,9 @@ minetest.register_craft({
 	},
 })
 
+function tubelib.is_fuel(stack)
+	return stack:get_name() == "tubelib_addons1:biofuel"
+end
 
 tubelib.register_node("tubelib_addons1:reformer", {"tubelib_addons1:reformer_defect"}, {
 	on_pull_item = function(pos, side)
