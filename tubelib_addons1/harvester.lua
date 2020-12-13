@@ -216,6 +216,9 @@ local function harvest_field(this, meta)
 	end
 	for y_pos = start_y_pos,stop_y_pos,-1 do
 		pos.y = y_pos
+		if minetest.is_protected(pos, this.owner) then
+			return true
+		end
 		local node = minetest.get_node_or_nil(pos)
 		if node and node.name ~= "air" then
 			local order = tubelib_addons1.FarmingNodes[node.name] or tubelib_addons1.Flowers[node.name]
