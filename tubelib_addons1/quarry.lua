@@ -122,7 +122,7 @@ local function allow_metadata_inventory_put(pos, listname, index, stack, player)
 	local inv = M(pos):get_inventory()
 	if listname == "main" then
 		return stack:get_count()
-	elseif listname == "fuel" and stack:get_name() == "tubelib_addons1:biofuel" then
+	elseif listname == "fuel" and tubelib.is_fuel(stack) then
 		return stack:get_count()
 	end
 	return 0
@@ -164,8 +164,14 @@ local function quarry_next_node(pos, meta)
 	-- check fuel
 	local fuel = meta:get_int("fuel") or 0
 	if fuel <= 0 then
-		if tubelib.get_this_item(meta, "fuel", 1) == nil then
+		local fuel_item = tubelib.get_this_item(meta, "fuel", 1)
+		if fuel_item == nil then
 			State:fault(pos, meta)
+			return
+		end
+		if not tubelib.is_fuel(fuel_item) then
+			State:fault(pos, meta)
+			tubelib.put_item(meta, "fuel", fuel_item)
 			return
 		end
 		fuel = BURNING_TIME
@@ -443,6 +449,9 @@ tubelib.register_node("tubelib_addons1:quarry",
 		return tubelib.get_item(M(pos), "main")
 	end,
 	on_push_item = function(pos, side, item)
+		if not tubelib.is_fuel(item) then
+			return false
+		end
 		return tubelib.put_item(M(pos), "fuel", item)
 	end,
 	on_unpull_item = function(pos, side, item)
