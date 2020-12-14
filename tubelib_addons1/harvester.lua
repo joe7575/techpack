@@ -145,6 +145,16 @@ local function remove_all_sapling_items(pos)
 	end
 end
 
+local function is_plantable_ground(node)
+	if minetest.get_item_group(node.name, "soil") ~= 0 then
+		return true
+	end
+	if minetest.get_item_group(node.name, "sand") ~= 0 then
+		return true
+	end
+	return false
+end
+
 -- Remove wood/leave nodes and place sapling if necessary
 -- Return false if inventory is full
 -- else return true
@@ -161,7 +171,7 @@ local function remove_or_replace_node(this, pos, inv, node, order)
 		minetest.remove_node(pos)
 		inv:add_item("main", ItemStack(order.drop))
 		this.num_items = this.num_items + 1
-		if tubelib_addons1.GroundNodes[next_node.name] ~= nil and order.plant then  -- hit the ground?
+		if is_plantable_ground(next_node) and order.plant then  -- hit the ground?
 			minetest.set_node(pos, {name=order.plant, paramtype2 = "wallmounted", param2=1})
 			if order.t1 ~= nil then 
 				-- We have to simulate "on_place" and start the timer by hand
