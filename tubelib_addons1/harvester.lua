@@ -237,7 +237,7 @@ local function harvest_field(this, meta)
 		if node and node.name ~= "air" then
 			local order = tubelib_addons1.FarmingNodes[node.name] or tubelib_addons1.Flowers[node.name]
 			if order then
-				if not remove_or_replace_node(this, pos, inv, node, order) then
+				if not minetest.is_protected(pos, this.owner) and not remove_or_replace_node(this, pos, inv, node, order) then
 					return false
 				end
 			else 	
