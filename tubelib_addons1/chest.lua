@@ -3,14 +3,17 @@
 	Tubelib Addons 1
 	================
 
-	Copyright (C) 2017-2018 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 	
 	chest.lua
 
 ]]--
+
+-- Load support for I18n
+local S = tubelib_addons1.S
 
 local PlayerActions = {}
 local InventoryState = {}
@@ -74,7 +77,7 @@ local function formspec()
 end
 
 minetest.register_node("tubelib_addons1:chest", {
-	description = "Tubelib Protected Chest",
+	description = S("Tubelib Protected Chest"),
 	tiles = {
 		-- up, down, right, left, back, front
 		"default_chest_top.png^tubelib_addons1_frame.png",
@@ -97,7 +100,7 @@ minetest.register_node("tubelib_addons1:chest", {
 		meta:set_string("number", number)
 		meta:set_string("owner", placer:get_player_name())
 		meta:set_string("formspec", formspec())
-		meta:set_string("infotext", "Tubelib Protected Chest "..number)
+		meta:set_string("infotext", S("Tubelib Protected Chest").." "..number)
 	end,
 
 	can_dig = function(pos, player)
@@ -157,7 +160,7 @@ tubelib.register_node("tubelib_addons1:chest", {}, {
 				local meta = minetest.get_meta(pos)
 				meta:set_string("dest_num", payload)
 				local number = meta:get_string("number")
-				meta:set_string("infotext", "Tubelib Protected Chest "..number.." connected with "..payload)
+				meta:set_string("infotext", S("Tubelib Protected Chest").." "..number.." "..S("connected with").." "..payload)
 				return true
 			end
 		else

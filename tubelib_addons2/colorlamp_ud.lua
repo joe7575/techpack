@@ -3,14 +3,17 @@
 	Tubelib Addons 2
 	================
 
-	Copyright (C) 2017-2018 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 
 	colorlamp_ud.lua which requires the mod unifieddyes:
 	
 ]]--
+
+-- Load support for I18n
+local S = tubelib_addons2.S
 
 local function switch_on(pos, node, player)
 	if player == nil or not minetest.is_protected(pos, player:get_player_name()) then
@@ -27,13 +30,13 @@ local function switch_off(pos, node, player)
 end	
 
 minetest.register_node("tubelib_addons2:lamp_off", {
-	description = "Tubelib Color Lamp",
+	description = S("Tubelib Color Lamp"),
 	tiles = {"tubelib_addons2_lamp.png^[colorize:#000000:100"},
 
 	after_place_node = function(pos, placer, itemstack, pointed_thing)
 		local number = tubelib.add_node(pos, "tubelib_addons2:lamp_off")
 		local meta = minetest.get_meta(pos)
-		meta:set_string("infotext", "Tubelib Color Lamp "..number)
+		meta:set_string("infotext", S("Tubelib Color Lamp").." "..number)
 		unifieddyes.recolor_on_place(pos, placer, itemstack, pointed_thing)
 	end,
 
@@ -60,7 +63,7 @@ minetest.register_node("tubelib_addons2:lamp_off", {
 
 
 minetest.register_node("tubelib_addons2:lamp_on", {
-	description = "Tubelib Color Lamp",
+	description = S("Tubelib Color Lamp"),
 	tiles = {"tubelib_addons2_lamp.png"},
 
 	on_rightclick = switch_off,
@@ -108,7 +111,7 @@ minetest.register_craft({
 --
 for idx=1,12 do
 	minetest.register_node("tubelib_addons2:lamp"..idx, {
-		description = "Tubelib Color Lamp "..idx,
+		description = S("Tubelib Color Lamp").." "..idx,
 		tiles = {"tubelib_addons2_lamp.png"},
 		paramtype = 'light',
 		groups = {choppy=2, cracky=1, not_in_creative_inventory=1},
@@ -143,7 +146,7 @@ minetest.register_lbm({
 		minetest.swap_node(pos, node)
 		local number = meta:get_int("number") or 0
 		number = string.format("%.04u", number)
-		meta:set_string("infotext", "Tubelib Color Lamp "..number)
+		meta:set_string("infotext", S("Tubelib Color Lamp").." "..number)
 	end
 })
 

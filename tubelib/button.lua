@@ -3,9 +3,9 @@
 	Tube Library
 	============
 
-	Copyright (C) 2017-2019 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 
 	button.lua:
@@ -14,9 +14,11 @@
 
 ]]--
 
+-- Load support for I18n
+local S = tubelib.S
 
 local function switch_on(pos, node)
-	if tubelib.data_not_corrupted(pos) then
+	if tubelib.data_not_corrupted(pos, true) then
 		node.name = "tubelib:button_active"
 		minetest.swap_node(pos, node)
 		minetest.sound_play("button", {
@@ -41,7 +43,7 @@ local function switch_on(pos, node)
 end
 
 local function switch_off(pos)
-	if tubelib.data_not_corrupted(pos) then
+	if tubelib.data_not_corrupted(pos, true) then
 		local node = minetest.get_node(pos)
 		node.name = "tubelib:button"
 		minetest.swap_node(pos, node)
@@ -65,7 +67,7 @@ end
 
 
 minetest.register_node("tubelib:button", {
-	description = "Tubelib Button/Switch",
+	description = S("Tubelib Button/Switch"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_front.png',
@@ -81,14 +83,14 @@ minetest.register_node("tubelib:button", {
 		local own_num = tubelib.add_node(pos, "tubelib:button")
 		meta:set_string("own_num", own_num)
 		meta:set_string("formspec", "size[7.5,6]"..
-		"dropdown[0.2,0;3;type;switch,button 2s,button 4s,button 8s,button 16s;1]".. 
-		"field[0.5,2;7,1;numbers;Insert destination node number(s);]" ..
-		"checkbox[1,3;public;public;false]"..
-		"button_exit[2,4;3,1;exit;Save]")
+		"dropdown[0.2,0;3;type;"..S("switch,button 2s,button 4s,button 8s,button 16s")..";1]".. 
+		"field[0.5,2;7,1;numbers;"..S("Insert destination node number(s)")..";]" ..
+		"checkbox[1,3;public;"..S("public")..";false]"..
+		"button_exit[2,4;3,1;exit;"..S("Save").."]")
 		meta:set_string("placer_name", placer:get_player_name())
 		meta:set_string("public", "false")
 		meta:set_int("cycle_time", 0)
-		meta:set_string("infotext", "Tubelib Button "..own_num)
+		meta:set_string("infotext", S("Tubelib Button").." "..own_num)
 	end,
 
 	on_receive_fields = function(pos, formname, fields, player)
@@ -96,7 +98,7 @@ minetest.register_node("tubelib:button", {
 		if tubelib.check_numbers(fields.numbers) then  -- <<=== tubelib
 			meta:set_string("numbers", fields.numbers)
 			local own_num = meta:get_string("own_num")
-			meta:set_string("infotext", "Tubelib Button "..own_num..", connected with block "..fields.numbers)
+			meta:set_string("infotext", S("Tubelib Button").." "..own_num..", "..S("connected with block").." "..fields.numbers)
 		else
 			return
 		end
@@ -142,7 +144,7 @@ minetest.register_node("tubelib:button", {
 
 
 minetest.register_node("tubelib:button_active", {
-	description = "Tubelib Button/Switch",
+	description = S("Tubelib Button/Switch"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_front.png',

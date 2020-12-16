@@ -3,9 +3,9 @@
 	Tubelib Addons 3
 	================
 
-	Copyright (C) 2018 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 	
 	pusher.lua
@@ -14,8 +14,10 @@
 
 ]]--
 
+-- Load support for I18n
+local S = tubelib_addons3.S
+
 -- for lazy programmers
-local S = function(pos) if pos then return minetest.pos_to_string(pos) end end
 local P = minetest.string_to_pos
 local M = minetest.get_meta
 
@@ -27,7 +29,7 @@ local State = tubelib.NodeStates:new({
 	node_name_passive = "tubelib_addons3:pusher",
 	node_name_active = "tubelib_addons3:pusher_active",
 	node_name_defect = "tubelib_addons3:pusher_defect",
-	infotext_name = "HighPerf Pusher",
+	infotext_name = S("HighPerf Pusher"),
 	cycle_time = CYCLE_TIME,
 	standby_ticks = STANDBY_TICKS,
 	has_item_meter = true,
@@ -60,7 +62,7 @@ local function keep_running(pos, elapsed)
 end	
 
 minetest.register_node("tubelib_addons3:pusher", {
-	description = "HighPerf Pusher",
+	description = S("HighPerf Pusher"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_pusher1.png^tubelib_addons3_node_frame4.png',
@@ -102,7 +104,7 @@ minetest.register_node("tubelib_addons3:pusher", {
 
 
 minetest.register_node("tubelib_addons3:pusher_active", {
-	description = "HighPerf Pusher",
+	description = S("HighPerf Pusher"),
 	tiles = {
 		-- up, down, right, left, back, front
 		{
@@ -167,7 +169,7 @@ minetest.register_node("tubelib_addons3:pusher_active", {
 })
 
 minetest.register_node("tubelib_addons3:pusher_defect", {
-	description = "HighPerf Pusher",
+	description = S("HighPerf Pusher"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_pusher1.png^tubelib_addons3_node_frame4.png',

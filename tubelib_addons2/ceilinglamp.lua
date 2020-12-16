@@ -3,15 +3,17 @@
 	Tubelib Addons 2
 	================
 
-	Copyright (C) 2017-2018 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 
 	ceilinglamp.lua:
 	
 ]]--
 
+-- Load support for I18n
+local S = tubelib_addons2.S
 
 local function switch_on(pos, node)
 	node.name = "tubelib_addons2:ceilinglamp_on"
@@ -27,7 +29,7 @@ local function switch_off(pos, node)
 end	
 
 minetest.register_node("tubelib_addons2:ceilinglamp", {
-	description = "Tubelib Ceiling Lamp",
+	description = S("Tubelib Ceiling Lamp"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_addons2_ceilinglamp_top.png',
@@ -53,7 +55,7 @@ minetest.register_node("tubelib_addons2:ceilinglamp", {
 	after_place_node = function(pos, placer)
 		local number = tubelib.add_node(pos, "tubelib_addons2:ceilinglamp")
 		local meta = minetest.get_meta(pos)
-		meta:set_string("infotext", "Tubelib Ceiling Lamp "..number)
+		meta:set_string("infotext", S("Tubelib Ceiling Lamp").." "..number)
 	end,
 
 	on_rightclick = function(pos, node, clicker)
@@ -76,7 +78,7 @@ minetest.register_node("tubelib_addons2:ceilinglamp", {
 })
 
 minetest.register_node("tubelib_addons2:ceilinglamp_on", {
-	description = "Tubelib Ceiling Lamp",
+	description = S("Tubelib Ceiling Lamp"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_addons2_ceilinglamp_top.png',

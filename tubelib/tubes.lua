@@ -3,14 +3,17 @@
 	Tubes based on tubelib2
 	=======================
 
-	Copyright (C) 2018 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 
 	tubes.lua: Node registration and API functions to move items via tubes
 
 ]]--
+
+-- Load support for I18n
+local S = tubelib.S
 
 -- used for registered nodes
 tubelib.KnownNodes = {
@@ -32,8 +35,17 @@ local Tube = tubelib2.Tube:new({
 
 tubelib.Tube = Tube
 
+local function ON_BLAST(id)
+	return function (pos)
+		local node = minetest.get_node(pos)
+		minetest.remove_node(pos)
+		Tube:after_dig_tube(pos, node)
+		return {id}
+	end
+end
+
 minetest.register_node("tubelib:tubeS", {
-	description = "Tubelib Tube",
+	description = S("Tubelib Tube"),
 	tiles = { -- Top, base, right, left, front, back
 		"tubelib_tube.png^[transformR90",
 		"tubelib_tube.png^[transformR90",
@@ -77,10 +89,11 @@ minetest.register_node("tubelib:tubeS", {
 	is_ground_content = false,
 	groups = {choppy=2, cracky=3},
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = ON_BLAST("tubelib:tubeS"),
 })
 
 minetest.register_node("tubelib:tubeA", {
-	description = "Tubelib Tube",
+	description = S("Tubelib Tube"),
 	tiles = { -- Top, base, right, left, front, back
 		"tubelib_knee2.png",
 		"tubelib_hole2.png^[transformR180",
@@ -118,6 +131,7 @@ minetest.register_node("tubelib:tubeA", {
 	groups = {choppy=2, cracky=3, not_in_creative_inventory=1},
 	sounds = default.node_sound_wood_defaults(),
 	drop = "tubelib:tubeS",
+	on_blast = ON_BLAST("tubelib:tubeA"),
 })
 
 minetest.register_craft({

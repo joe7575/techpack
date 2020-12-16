@@ -3,9 +3,9 @@
 	SmartLine
 	=========
 
-	Copyright (C) 2018 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 
 	repeater.lua:
@@ -13,17 +13,20 @@
 
 ]]--
 
+-- Load support for I18n
+local S = smartline.S
+
 local OVER_LOAD_MAX = 5
 
 local function formspec(meta)
 	local numbers = meta:get_string("numbers")
 	return "size[7,5]"..
-		"field[0.5,2;6,1;number;Destination node numbers;"..numbers.."]" ..
-		"button_exit[1,3;2,1;exit;Save]"
+		"field[0.5,2;6,1;number;"..S("Destination node numbers")..";"..numbers.."]" ..
+		"button_exit[1,3;2,1;exit;"..S("Save").."]"
 end	
 
 minetest.register_node("smartline:repeater", {
-	description = "SmartLine Repeater",
+	description = S("SmartLine Repeater"),
 	inventory_image = "smartline_repeater_inventory.png",
 	tiles = {
 		-- up, down, right, left, back, front
@@ -48,7 +51,7 @@ minetest.register_node("smartline:repeater", {
 		local own_number = tubelib.add_node(pos, "smartline:repeater")
 		meta:set_string("own_number", own_number)
 		meta:set_string("formspec", formspec(meta))
-		meta:set_string("infotext", "SmartLine Repeater "..own_number..": not connected")
+		meta:set_string("infotext", S("SmartLine Repeater").." "..own_number..": "..S("not connected"))
 		meta:set_string("owner", placer:get_player_name())
 		meta:set_int("overload_cnt", 0)
 		minetest.get_node_timer(pos):start(1)
@@ -64,7 +67,7 @@ minetest.register_node("smartline:repeater", {
 		if tubelib.check_numbers(fields.number) then
 			meta:set_string("numbers", fields.number)
 			local own_number = meta:get_string("own_number")
-			meta:set_string("infotext", "SmartLine Repeater "..own_number..": connected with "..fields.number)
+			meta:set_string("infotext", S("SmartLine Repeater").." "..own_number..": "..S("connected with").." "..fields.number)
 			meta:set_string("formspec", formspec(meta))
 		end
 		
@@ -114,12 +117,12 @@ tubelib.register_node("smartline:repeater", {}, {
 		meta:set_int("overload_cnt", overload_cnt)
 		if overload_cnt > OVER_LOAD_MAX then
 			local own_number = meta:get_string("own_number")
-			meta:set_string("infotext", "SmartLine Repeater "..own_number..": fault (overloaded)")
+			meta:set_string("infotext", S("SmartLine Repeater").." "..own_number..": "..S("fault (overloaded)"))
 			minetest.get_node_timer(pos):stop()
 			return false
 		elseif topic == "set_numbers" then
 			local own_number = meta:get_string("own_number")
-			meta:set_string("infotext", "SmartLine Repeater "..own_number..": connected with "..payload)
+			meta:set_string("infotext", S("SmartLine Repeater").." "..own_number..": "..S("connected with").." "..payload)
 			meta:set_string("numbers", payload)
 			meta:set_string("formspec", formspec(meta))
 			return true

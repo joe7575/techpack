@@ -3,9 +3,9 @@
 	Tubelib Addons 3
 	================
 
-	Copyright (C) 2018 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 	
 	chest.lua
@@ -13,6 +13,9 @@
 	A high performance chest
 
 ]]--
+
+-- Load support for I18n
+local S = tubelib_addons3.S
 
 local PlayerActions = {}
 local InventoryState = {}
@@ -76,7 +79,7 @@ local function formspec()
 end
 
 minetest.register_node("tubelib_addons3:chest", {
-	description = "HighPerf Chest",
+	description = S("HighPerf Chest"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_addons3_chest_bottom.png',
@@ -99,7 +102,7 @@ minetest.register_node("tubelib_addons3:chest", {
 		meta:set_string("number", number)
 		meta:set_string("owner", placer:get_player_name())
 		meta:set_string("formspec", formspec())
-		meta:set_string("infotext", "HighPerf Chest "..number)
+		meta:set_string("infotext", S("HighPerf Chest").." "..number)
 	end,
 
 	can_dig = function(pos,player)
@@ -168,7 +171,7 @@ tubelib.register_node("tubelib_addons3:chest", {}, {
 				local meta = minetest.get_meta(pos)
 				meta:set_string("dest_num", payload)
 				local number = meta:get_string("number")
-				meta:set_string("infotext", "HighPerf Chest "..number.." connected with "..payload)
+				meta:set_string("infotext", S("HighPerf Chest").." "..number.." "..S("connected with").." "..payload)
 				return true
 			end
 		else

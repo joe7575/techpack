@@ -1,0 +1,85 @@
+# textdomain: smartline
+
+
+
+### button.lua ###
+
+Insert destination block number(s)=
+SmartLine Button=
+SmartLine Button/Switch=
+connected with block=
+switch,button 2s,button 4s,button 8s,button 16s=
+
+### button.lua ###
+### collector.lua ###
+### playerdetector.lua ###
+### repeater.lua ###
+
+Save=
+
+### collector.lua ###
+
+Node number to send the events to:=
+Node numbers to read the states from:=
+Send an event if state is equal or larget than:=
+SmartLine State Collector=
+
+### display.lua ###
+
+SmartLine Display=
+
+### playerdetector.lua ###
+
+Input the number(s) of the receiving node(s).=
+Input the player name(s) separated by blanks,=
+Player Detector=
+Player Detector Help=
+Player name(s):=
+Receiver node numbers:=
+Separate numbers via blanks, like '0123 0234'.=
+SmartLine Player Detector=
+or leave it blank for all players.=
+
+### playerdetector.lua ###
+### sequencer.lua ###
+### timer.lua ###
+
+close=
+help=
+
+### repeater.lua ###
+
+Destination node numbers=
+SmartLine Repeater=
+connected with=
+fault (overloaded)=
+not connected=
+
+### sequencer.lua ###
+
+Offset/s=
+Run endless=
+SmartLine Sequencer=
+
+SmartLine Sequencer Help@n	@nDefine a sequence of commands to control other machines.@nNumbers(s) are the node numbers, the command shall sent to.@nThe commands 'on'/'off' are used for machines and other nodes.@nOffset is the time to the next line in seconds (1..999).@nIf endless is set, the Sequencer restarts again and again.@nThe command '  ' does nothing, only consuming the offset time.@n=
+
+running=
+stopped=
+
+### sequencer.lua ###
+### timer.lua ###
+
+Command=
+Number(s)=
+
+### signaltower.lua ###
+
+SmartLine Signal Tower=
+
+### timer.lua ###
+
+SmartLine Timer=
+
+SmartLine Timer Help@n@nThe Timer is for a daytime controlled sending of commands@ne.g. to turn street lights on/off. The timer checks the @ntime every few seconds. If the block was just loaded, @nthe timer will check the last 4 hours for commands@nthat still need to be executed.=
+
+Time=

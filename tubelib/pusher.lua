@@ -3,9 +3,9 @@
 	Tube Library
 	============
 
-	Copyright (C) 2017 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 
 	pusher.lua:
@@ -29,8 +29,10 @@
 --               |        |/
 --               +--------+
 
+-- Load support for I18n
+local S = tubelib.S
+
 -- for lazy programmers
-local S = function(pos) if pos then return minetest.pos_to_string(pos) end end
 local P = minetest.string_to_pos
 local M = minetest.get_meta
 
@@ -42,7 +44,7 @@ local State = tubelib.NodeStates:new({
 	node_name_passive = "tubelib:pusher",
 	node_name_active = "tubelib:pusher_active",
 	node_name_defect = "tubelib:pusher_defect",
-	infotext_name = "Tubelib Pusher",
+	infotext_name = S("Tubelib Pusher"),
 	cycle_time = CYCLE_TIME,
 	standby_ticks = STANDBY_TICKS,
 	has_item_meter = true,
@@ -75,7 +77,7 @@ local function keep_running(pos, elapsed)
 end	
 
 minetest.register_node("tubelib:pusher", {
-	description = "Tubelib Pusher",
+	description = S("Tubelib Pusher"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_pusher1.png',
@@ -117,7 +119,7 @@ minetest.register_node("tubelib:pusher", {
 
 
 minetest.register_node("tubelib:pusher_active", {
-	description = "Tubelib Pusher",
+	description = S("Tubelib Pusher"),
 	tiles = {
 		-- up, down, right, left, back, front
 		{
@@ -182,7 +184,7 @@ minetest.register_node("tubelib:pusher_active", {
 })
 
 minetest.register_node("tubelib:pusher_defect", {
-	description = "Tubelib Pusher",
+	description = S("Tubelib Pusher"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_pusher1.png',

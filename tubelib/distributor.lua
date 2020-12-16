@@ -3,9 +3,9 @@
 	Tube Library
 	============
 
-	Copyright (C) 2017-2019 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 
 	distributor.lua:
@@ -19,8 +19,10 @@
 	   response is "running", "stopped", "standby", "defect", or "not supported"
 ]]--
 
+-- Load support for I18n
+local S = tubelib.S
+
 -- for lazy programmers
-local S = function(pos) if pos then return minetest.pos_to_string(pos) end end
 local P = minetest.string_to_pos
 local M = minetest.get_meta
 
@@ -62,7 +64,7 @@ local State = tubelib.NodeStates:new({
 	node_name_passive = "tubelib:distributor",
 	node_name_active = "tubelib:distributor_active",
 	node_name_defect = "tubelib:distributor_defect",
-	infotext_name = "Tubelib Distributor",
+	infotext_name = S("Tubelib Distributor"),
 	cycle_time = CYCLE_TIME,
 	standby_ticks = STANDBY_TICKS,
 	aging_factor = 10,
@@ -353,7 +355,7 @@ local function change_filter_settings(pos, slot, val)
 end
 
 minetest.register_node("tubelib:distributor", {
-	description = "Tubelib Distributor",
+	description = S("Tubelib Distributor"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_distributor.png',
@@ -413,7 +415,7 @@ minetest.register_node("tubelib:distributor", {
 
 
 minetest.register_node("tubelib:distributor_active", {
-	description = "Tubelib Distributor",
+	description = S("Tubelib Distributor"),
 	tiles = {
 		-- up, down, right, left, back, front
 		{
@@ -451,7 +453,7 @@ minetest.register_node("tubelib:distributor_active", {
 })
 
 minetest.register_node("tubelib:distributor_defect", {
-	description = "Tubelib Distributor",
+	description = S("Tubelib Distributor"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_distributor.png',

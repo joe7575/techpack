@@ -3,9 +3,9 @@
 	Tubelib Addons 1
 	================
 
-	Copyright (C) 2017-2019 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 	
 	quarry.lua
@@ -20,8 +20,11 @@
 
 ]]--
 
+-- Load support for I18n
+local S = tubelib_addons1.S
+
 -- for lazy programmers
-local S = function(pos) if pos then return minetest.pos_to_string(pos) end end
+local P2S = function(pos) if pos then return minetest.pos_to_string(pos) end end
 local P = minetest.string_to_pos
 local M = minetest.get_meta
 
@@ -55,10 +58,10 @@ local function formspec(self, pos, meta)
 	default.gui_bg_img..
 	default.gui_slots..
 	"dropdown[0,0;1.5;level;2,1,0,-1,-2,-3,-5,-10,-15,-20;"..Level2Idx[start_level].."]".. 
-	"label[1.6,0.2;Start level]"..
+	"label[1.6,0.2;"..S("Start level").."]"..
 	"dropdown[0,1;1.5;depth;1,2,3,5,10,15,20,25,50,100;"..Depth2Idx[depth].."]".. 
-	"label[1.6,1.2;Digging depth]"..
-	"checkbox[0,2;endless;Run endless;"..endless.."]"..
+	"label[1.6,1.2;"..S("Digging depth").."]"..
+	"checkbox[0,2;endless;"..S("Run endless")..";"..endless.."]"..
 	"list[context;main;5,0;4,4;]"..
 	"list[context;fuel;1.5,3;1,1;]"..
 	"item_image[1.5,3;1,1;tubelib_addons1:biofuel]"..
@@ -74,7 +77,7 @@ local State = tubelib.NodeStates:new({
 	node_name_passive = "tubelib_addons1:quarry",
 	node_name_active = "tubelib_addons1:quarry_active",
 	node_name_defect = "tubelib_addons1:quarry_defect",
-	infotext_name = "Tubelib Quarry",
+	infotext_name = S("Tubelib Quarry"),
 	cycle_time = CYCLE_TIME,
 	standby_ticks = STANDBY_TICKS,
 	has_item_meter = true,
@@ -119,7 +122,7 @@ local function allow_metadata_inventory_put(pos, listname, index, stack, player)
 	local inv = M(pos):get_inventory()
 	if listname == "main" then
 		return stack:get_count()
-	elseif listname == "fuel" and stack:get_name() == "tubelib_addons1:biofuel" then
+	elseif listname == "fuel" and tubelib.is_fuel(stack) then
 		return stack:get_count()
 	end
 	return 0
@@ -161,8 +164,14 @@ local function quarry_next_node(pos, meta)
 	-- check fuel
 	local fuel = meta:get_int("fuel") or 0
 	if fuel <= 0 then
-		if tubelib.get_this_item(meta, "fuel", 1) == nil then
+		local fuel_item = tubelib.get_this_item(meta, "fuel", 1)
+		if fuel_item == nil then
 			State:fault(pos, meta)
+			return
+		end
+		if not tubelib.is_fuel(fuel_item) then
+			State:fault(pos, meta)
+			tubelib.put_item(meta, "fuel", fuel_item)
 			return
 		end
 		fuel = BURNING_TIME
@@ -209,10 +218,11 @@ local function quarry_next_node(pos, meta)
 		return
 	end
 	meta:set_int("idx", idx)
-	meta:set_string("quarry_pos", S(quarry_pos))
+	meta:set_string("quarry_pos", P2S(quarry_pos))
 
 	if minetest.is_protected(quarry_pos, owner) then
-		minetest.chat_send_player(owner, "[Tubelib Quarry] Area is protected!")
+		minetest.chat_send_player(owner, S("[Tubelib Quarry] Area is protected!") ..
+		  " " .. minetest.pos_to_string(quarry_pos) )
 		State:fault(pos, meta)
 		return
 	end
@@ -226,15 +236,15 @@ local function quarry_next_node(pos, meta)
 			if inv:room_for_item("main", ItemStack(order.drop)) then
 				minetest.remove_node(quarry_pos)
 				inv:add_item("main", ItemStack(order.drop))
-				meta:set_string("infotext", "Tubelib Quarry "..number..
-						": running "..idx.."/"..(start_y-quarry_pos.y+1))
+				meta:set_string("infotext", S("Tubelib Quarry").." "..number..
+						": "..S("running").." "..idx.."/"..(start_y-quarry_pos.y+1))
 				State:keep_running(pos, meta, COUNTDOWN_TICKS, 1)
 			else
 				State:blocked(pos, meta)
 			end
 		else
-			meta:set_string("infotext", "Tubelib Quarry "..number..
-					": running "..idx.."/"..(start_y-quarry_pos.y+1))
+			meta:set_string("infotext", S("Tubelib Quarry").." "..number..
+					": "..S("running").." "..idx.."/"..(start_y-quarry_pos.y+1))
 		end
 	end
 end
@@ -284,7 +294,7 @@ local function on_receive_fields(pos, formname, fields, player)
 end
 
 minetest.register_node("tubelib_addons1:quarry", {
-	description = "Tubelib Quarry",
+	description = S("Tubelib Quarry"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_front.png',
@@ -336,7 +346,7 @@ minetest.register_node("tubelib_addons1:quarry", {
 })
 
 minetest.register_node("tubelib_addons1:quarry_active", {
-	description = "Tubelib Quarry",
+	description = S("Tubelib Quarry"),
 	tiles = {
 		-- up, down, right, left, back, front
 
@@ -374,7 +384,7 @@ minetest.register_node("tubelib_addons1:quarry_active", {
 })
 
 minetest.register_node("tubelib_addons1:quarry_defect", {
-	description = "Tubelib Quarry",
+	description = S("Tubelib Quarry"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_front.png',
@@ -439,6 +449,9 @@ tubelib.register_node("tubelib_addons1:quarry",
 		return tubelib.get_item(M(pos), "main")
 	end,
 	on_push_item = function(pos, side, item)
+		if not tubelib.is_fuel(item) then
+			return false
+		end
 		return tubelib.put_item(M(pos), "fuel", item)
 	end,
 	on_unpull_item = function(pos, side, item)

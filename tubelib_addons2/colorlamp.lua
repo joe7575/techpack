@@ -3,14 +3,17 @@
 	Tubelib Addons 2
 	================
 
-	Copyright (C) 2017-2018 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 
 	colorlamp.lua:
 	
 ]]--
+
+-- Load support for I18n
+local S = tubelib_addons2.S
 
 local tColors = {"#0000FF", "#00FFFF", "#00FF00", "#FFFF00", "#FF0000", "#FF00FF",
                  "#FFFFFF", "#000000", "#3BC23B", "#CA3131", "#FFA500", "#FFC0CB"}
@@ -24,7 +27,7 @@ local function switch_node(pos, num, player)
 		minetest.swap_node(pos, node)
 		local number = meta:get_int("number")
 		number = string.format("%.04u", number)
-		meta:set_string("infotext", "Tubelib Color Lamp "..number)
+		meta:set_string("infotext", S("Tubelib Color Lamp").." "..number)
 		if num ~= "" then
 			meta:set_int("color", num)
 		end
@@ -32,7 +35,7 @@ local function switch_node(pos, num, player)
 end	
 
 minetest.register_node("tubelib_addons2:lamp", {
-	description = "Tubelib Color Lamp",
+	description = S("Tubelib Color Lamp"),
 	tiles = {"tubelib_addons2_lamp.png^[colorize:#000000:100"},
 
 	after_place_node = function(pos, placer)
@@ -43,7 +46,7 @@ minetest.register_node("tubelib_addons2:lamp", {
 		meta:set_string("formspec", "size[3,2]"..
 		"label[0,0;Select color]"..
 		"dropdown[0,0.5;3;type;"..sColor..";1]".. 
-		"button_exit[0.5,1.5;2,1;exit;Save]")
+		"button_exit[0.5,1.5;2,1;exit;"..S("Save").."]")
 		meta:set_int("color", 1)
 	end,
 
@@ -96,7 +99,7 @@ minetest.register_craft({
 
 for idx,color in ipairs(tColors) do
 	minetest.register_node("tubelib_addons2:lamp"..idx, {
-		description = "Tubelib Color Lamp",
+		description = S("Tubelib Color Lamp"),
 		tiles = {
 			"tubelib_addons2_lamp.png^[colorize:"..color..":120",
 		},

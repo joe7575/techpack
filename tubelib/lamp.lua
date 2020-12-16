@@ -3,9 +3,9 @@
 	Tube Library
 	============
 
-	Copyright (C) 2017 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 
 	lamp.lua:
@@ -18,6 +18,9 @@
 
 ]]--
 
+-- Load support for I18n
+local S = tubelib.S
+
 local function switch_on(pos, node)
 	node.name = "tubelib:lamp_on"
 	minetest.swap_node(pos, node)
@@ -29,7 +32,7 @@ local function switch_off(pos, node)
 end	
 
 minetest.register_node("tubelib:lamp", {
-	description = "Tubelib Lamp",
+	description = S("Tubelib Lamp"),
 	tiles = {
 		'tubelib_lamp.png',
 	},
@@ -37,7 +40,7 @@ minetest.register_node("tubelib:lamp", {
 	after_place_node = function(pos, placer)
 		local number = tubelib.add_node(pos, "tubelib:lamp")  -- <<=== tubelib
 		local meta = minetest.get_meta(pos)
-		meta:set_string("infotext", "Tubelib Lamp "..number)
+		meta:set_string("infotext", S("Tubelib Lamp").." "..number)
 	end,
 
 	on_rightclick = function(pos, node, clicker)
@@ -60,7 +63,7 @@ minetest.register_node("tubelib:lamp", {
 })
 
 minetest.register_node("tubelib:lamp_on", {
-	description = "Tubelib Lamp",
+	description = S("Tubelib Lamp"),
 	tiles = {
 		'tubelib_lamp.png',
 	},

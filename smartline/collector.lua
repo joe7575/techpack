@@ -3,9 +3,9 @@
 	SmartLine
 	=========
 
-	Copyright (C) 2018-2019 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 
 	collector.lua:
@@ -13,6 +13,9 @@
 	Collects states from other nodes, acting as a state concentrator.
 
 ]]--
+
+-- Load support for I18n
+local S = smartline.S
 
 local CYCLE_TIME = 1
 
@@ -30,11 +33,11 @@ local function formspec(meta)
 		default.gui_bg..
 		default.gui_bg_img..
 		default.gui_slots..
-		"field[0.3,0.6;9,1;poll_numbers;Node numbers to read the states from:;"..poll_numbers.."]" ..
-		"field[0.3,2;9,1;event_number;Node number to send the events to:;"..event_number.."]" ..
-		"label[1.3,2.8;Send an event if state is equal or larget than:]"..
+		"field[0.3,0.6;9,1;poll_numbers;"..S("Node numbers to read the states from:")..";"..poll_numbers.."]" ..
+		"field[0.3,2;9,1;event_number;"..S("Node number to send the events to:")..";"..event_number.."]" ..
+		"label[1.3,2.8;"..S("Send an event if state is equal or larget than:").."]"..
 		"dropdown[1.2,3.4;7,4;severity;1 standby,2 blocked,3 fault,4 defect;"..dropdown_pos.."]"..
-		"button_exit[3,5;2,1;exit;Save]"
+		"button_exit[3,5;2,1;exit;"..S("Save").."]"
 end	
 
 
@@ -50,7 +53,7 @@ local function send_event(meta)
 		else
 			tubelib.send_message(event_number, owner, nil, "off", own_number)
 		end
-		meta:set_string("infotext", "SmartLine State Collector "..own_number..': "'..lStates[state]..'"')
+		meta:set_string("infotext", S("SmartLine State Collector").." "..own_number..': "'..lStates[state]..'"')
 		meta:set_int("stored_state", state)
 		meta:set_int("state", 0)
 	end
@@ -74,7 +77,7 @@ local function on_timer(pos,elapsed)
 		
 		if poll_numbers == "" then
 			local own_number = meta:get_string("own_number")
-			meta:set_string("infotext", "SmartLine State Collector "..own_number..": stopped")
+			meta:set_string("infotext", S("SmartLine State Collector").." "..own_number..": stopped")
 			meta:set_int("state", 0)
 			meta:set_int("stored_state", 0)
 			return false
@@ -94,7 +97,7 @@ local function on_timer(pos,elapsed)
 end
 
 minetest.register_node("smartline:collector", {
-	description = "SmartLine State Collector",
+	description = S("SmartLine State Collector"),
 	inventory_image = "smartline_collector_inventory.png",
 	tiles = {
 		-- up, down, right, left, back, front
@@ -121,7 +124,7 @@ minetest.register_node("smartline:collector", {
 		meta:set_string("poll_numbers", "")
 		meta:set_string("event_number", "")
 		meta:set_string("formspec", formspec(meta))
-		meta:set_string("infotext", "SmartLine State Collector "..own_number)
+		meta:set_string("infotext", S("SmartLine State Collector").." "..own_number)
 		meta:set_string("owner", placer:get_player_name())
 	end,
 
@@ -145,7 +148,7 @@ minetest.register_node("smartline:collector", {
 				if not timer:is_started() then
 					timer:start(CYCLE_TIME)
 				end
-				meta:set_string("infotext", "SmartLine State Collector "..own_number..": running")
+				meta:set_string("infotext", S("SmartLine State Collector").." "..own_number..": running")
 			else
 				if timer:is_started() then
 					timer:stop()

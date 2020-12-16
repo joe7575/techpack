@@ -3,10 +3,10 @@
 	Tube Library
 	============
 
-	Copyright (C) 2019 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 	Code derived from wordedit (sfan5, Anthony Zhang (Uberi/Temperest), and Brett O'Donnell (cornernote))
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 
 	mark.lua:

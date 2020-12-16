@@ -3,14 +3,17 @@
 	Tubelib Addons 2
 	================
 
-	Copyright (C) 2017 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 
 	accesscontrol.lua:
 	
 ]]--
+
+-- Load support for I18n
+local S = tubelib_addons2.S
 
 local function switch_on(pos, meta)
 	if tubelib.data_not_corrupted(pos) then
@@ -47,9 +50,9 @@ local function formspec1(numbers)
 	default.gui_bg..
 	default.gui_bg_img..
 	default.gui_slots..
-	"field[0.5,1;5,1;numbers;Door block numbers:;"..numbers.."]" ..
-	"field[0.5,2.5;5,1;code;Access code (4 digits):;]" ..
-	"button_exit[1.5,3.5;2,1;exit;Save]"
+	"field[0.5,1;5,1;numbers;"..S("Door block numbers:")..";"..numbers.."]" ..
+	"field[0.5,2.5;5,1;code;"..S("Access code (4 digits):")..";]" ..
+	"button_exit[1.5,3.5;2,1;exit;"..S("Save").."]"
 end
 
 local function formspec2(code)
@@ -57,7 +60,7 @@ local function formspec2(code)
 	default.gui_bg..
 	default.gui_bg_img..
 	default.gui_slots..
-	"field[0.5,1;3.6,1;code;Enter access code;"..code.."]" ..
+	"field[0.5,1;3.6,1;code;"..S("Enter access code")..";"..code.."]" ..
 	"button[0.4,2;1,1;b1;1]" ..
 	"button[1.6,2;1,1;b2;2]" ..
 	"button[2.8,2;1,1;b3;3]" ..
@@ -67,11 +70,11 @@ local function formspec2(code)
 	"button[0.4,4;1,1;b7;7]" ..
 	"button[1.6,4;1,1;b8;8]" ..
 	"button[2.8,4;1,1;b9;9]" ..
-	"button_exit[1.6,5;1,1;ok;OK]"
+	"button_exit[1.6,5;1,1;ok;"..S("OK").."]"
 end
 
 minetest.register_node("tubelib_addons2:accesscontrol", {
-	description = "Tubelib Access Lock",
+	description = S("Tubelib Access Lock"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'default_steel_block.png',
@@ -99,7 +102,7 @@ minetest.register_node("tubelib_addons2:accesscontrol", {
 					meta:set_string("numbers", fields.numbers)
 					meta:set_string("code", fields.code)
 					meta:mark_as_private("code")
-					meta:set_string("infotext", "Tubelib Access Lock, Enter access code")
+					meta:set_string("infotext", S("Tubelib Access Lock, Enter access code"))
 					meta:set_string("formspec", formspec2(""))
 				end
 			end

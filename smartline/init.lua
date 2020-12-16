@@ -3,14 +3,17 @@
 	SmartLine
 	=========
 	
-	Copyright (C) 2018 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 
 ]]--
 
 smartline = {}
+
+-- Load support for I18n
+smartline.S = minetest.get_translator("smartline")
 
 local MP = minetest.get_modpath("smartline")
 

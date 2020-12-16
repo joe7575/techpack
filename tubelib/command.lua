@@ -3,9 +3,9 @@
 	Tube Library
 	============
 
-	Copyright (C) 2017-2019 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 
 	command.lua:
@@ -607,9 +607,11 @@ function tubelib.temporary_remove_node(pos, number, name, add_data)
 		add_data.name = name
 		TemporaryRemovedNodes[key] = add_data
 	else
-		local data = table.copy(TemporaryRemovedNodes[key])
-		TemporaryRemovedNodes[key] = nil
-		return data
+		if TemporaryRemovedNodes[key] then
+			local data = table.copy(TemporaryRemovedNodes[key])
+			TemporaryRemovedNodes[key] = nil
+			return data
+		end
 	end
 end
 

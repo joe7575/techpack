@@ -1,5 +1,8 @@
+-- Load support for I18n
+local S = tubelib.S
+
 minetest.register_node("tubelib:defect_dummy", {
-	description = "Corrupted Tubelib Node",
+	description = S("Corrupted Tubelib Node"),
 	tiles = {
 		"tubelib_front.png",
 		"tubelib_front.png",
@@ -22,7 +25,7 @@ local function already_reported(pos)
 end
 
 
-function tubelib.data_not_corrupted(pos)	
+function tubelib.data_not_corrupted(pos, has_no_info)	
 	if minetest.pos_to_string(pos) ~= minetest.get_meta(pos):get_string("my_pos") then
 		-- node number corrupt?
 		local meta = minetest.get_meta(pos)
@@ -42,6 +45,13 @@ function tubelib.data_not_corrupted(pos)
 				report(pos)
 			end
 		end
+		
+		-- button like odes
+		if has_no_info then 
+			minetest.get_meta(pos):get_string("my_pos", minetest.pos_to_string(pos))
+			return true 
+		end
+		
 		-- node moved?
 		local info = tubelib.get_node_info(number)
 		if not info or not vector.equals(info.pos, pos) then

@@ -1,0 +1,75 @@
+# textdomain: tubelib_addons1
+
+
+
+### autocrafter.lua ###
+
+Tubelib Autocrafter=Tubelib Autocrafter
+
+### chest.lua ###
+
+Tubelib Protected Chest=Tubelib geschützte Kiste
+connected with=verbunden mit
+
+### detector.lua ###
+
+Insert destination node number(s)=Geben Sie die Zielknotennummer(n) ein.
+Save=Speichern
+Tubelib Detector=Tubelib Detektor
+Tubelib Detector, connected=Tubelib Detektor, verbunden
+Tubelib Detector, unconfigured=Tubelib Detektor, nicht konfiguriert
+
+### fermenter.lua ###
+
+Bio Gas=Biogas
+Fermenter=Fermenter
+Fermenter will not fit there=Fermenter wird dort nicht passen
+Reformer=Reformer
+Tubelib Fermenter=Tubelib Fermenter
+Tubelib Fermenter Top=Tubelib Fermenter Oberteil
+Tubelib Fermenter defect=Tubelib Fermenter defekt
+
+### funnel.lua ###
+
+Tubelib Funnel=Tubelib Trichter
+
+### grinder.lua ###
+
+Grinding=Mahlen
+Tubelib Grinder=Tubelib Mühle
+
+### harvester.lua ###
+
+: running (=: läuft (
+Area radius=Flächenradius
+Tubelib Harvester=Tubelib Ernter
+Tubelib Harvester Base=Tubelib Ernter Basis
+
+### harvester.lua ###
+### quarry.lua ###
+
+Run endless=endlos laufen
+
+### liquidsampler.lua ###
+
+Liquid Sampler=Flüssigkeitsaufnehmer
+
+### pusher_fast.lua ###
+
+Fast Pusher=Schneller Schieber
+
+### quarry.lua ###
+
+Digging depth=Grabetiefe
+Start level=Startebene
+Tubelib Quarry=Tubelib Steinbrecher
+[Tubelib Quarry] Area is protected!=[Tubelib Steinbrecher] Gebiet ist geschützt!
+running=läuft
+
+### reformer.lua ###
+
+Bio Fuel=Biotreibstoff
+Reformer will not fit there=Reformer wird dort nicht passen
+Tubelib Reformer=Tubelib Reformer
+Tubelib Reformer Top=Tubelib Reformer Oberteil
+Tubelib Reformer defect=Tubelib Reformer defekt

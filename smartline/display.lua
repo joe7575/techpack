@@ -3,15 +3,17 @@
 	SmartLine
 	=========
 
-	Copyright (C) 2018 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 
 	display.lua:
 
 ]]--
 
+-- Load support for I18n
+local S = smartline.S
   
   
 lcdlib.register_display_entity("smartline:entity")
@@ -42,7 +44,7 @@ local lcd_box = {
 }
 
 minetest.register_node("smartline:display", {
-	description = "SmartLine Display",
+	description = S("SmartLine Display"),
 	inventory_image = 'smartline_display_inventory.png',
 	tiles = {"smartline_display.png"},
 	drawtype = "nodebox",

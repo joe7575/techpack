@@ -1,0 +1,30 @@
+# textdomain: tubelib_addons3
+
+
+
+### chest.lua ###
+
+HighPerf Chest=
+connected with=
+
+### distributor.lua ###
+
+HighPerf Distributor=
+
+### funnel.lua ###
+
+HighPerf Funnel=
+
+### pusher.lua ###
+
+HighPerf Pusher=
+
+### pushing_chest.lua ###
+
+HighPerf Pushing Chest=
+
+### teleporter.lua ###
+
+Enter channel string=
+Save=
+Tubelib Teleporter=

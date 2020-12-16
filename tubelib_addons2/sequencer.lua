@@ -3,14 +3,17 @@
 	Tubelib Addons 2
 	================
 
-	Copyright (C) 2017 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 
 	sequencer.lua:
 	
 ]]--
+
+-- Load support for I18n
+local S = tubelib_addons2.S
 
 local RUNNING_STATE = 1
 local STOP_STATE = 0
@@ -26,16 +29,16 @@ local function formspec(state, rules, endless)
 		default.gui_bg..
 		default.gui_bg_img..
 		default.gui_slots..
-		"label[0,0;Number(s)]label[2.1,0;Command]label[6.4,0;Offset/s]"}
+		"label[0,0;Number(s)]label[2.1,0;"..S("Command").."]label[6.4,0;Offset/s]"}
 		
 	for idx, rule in ipairs(rules or {}) do
 		tbl[#tbl+1] = "field[0.2,"..(-0.2+idx)..";2,1;num"..idx..";;"..(rule.num or "").."]"
 		tbl[#tbl+1] = "dropdown[2,"..(-0.4+idx)..";3.9,1;act"..idx..";"..sAction..";"..(rule.act or "").."]"
 		tbl[#tbl+1] = "field[6.2,"..(-0.2+idx)..";2,1;offs"..idx..";;"..(rule.offs or "").."]"
 	end
-	tbl[#tbl+1] = "checkbox[0,8.5;endless;Run endless;"..endless.."]"
+	tbl[#tbl+1] = "checkbox[0,8.5;endless;"..S("Run endless")..";"..endless.."]"
 	tbl[#tbl+1] = "image_button[5,8.5;1,1;".. tubelib.state_button(state) ..";button;]"
-	tbl[#tbl+1] = "button[6.2,8.5;1.5,1;help;help]"
+	tbl[#tbl+1] = "button[6.2,8.5;1.5,1;"..S("help")..";help]"
 	
 	return table.concat(tbl)
 end
@@ -45,14 +48,14 @@ local function formspec_help()
 		default.gui_bg..
 		default.gui_bg_img..
 		default.gui_slots..
-		"label[2,0;Sequencer Help]"..
-		"label[0,1;Define a sequence of commands\nto control other machines.]"..
-		"label[0,2.2;Numbers(s) are the node numbers,\nthe command shall sent to.]"..
-		"label[0,3.4;The commands 'on'/'off' are used\n for machines and other nodes.]"..
-		"label[0,4.6;Offset is the time to the\nnext line in seconds (1..999).]"..
-		"label[0,5.8;If endless is set, the Sequencer\nrestarts again and again.]"..
-		"label[0,7;The command '  ' does nothing,\nonly consuming the offset time.]"..
-		"button[3,8;2,1;exit;close]"
+		"label[2,0;"..S("Sequencer Help").."]"..
+		"label[0,1;"..S("Define a sequence of commands\nto control other machines.").."]"..
+		"label[0,2.2;"..S("Numbers(s) are the node numbers,\nthe command shall sent to.").."]"..
+		"label[0,3.4;"..S("The commands 'on'/'off' are used\n for machines and other nodes.").."]"..
+		"label[0,4.6;"..S("Offset is the time to the\nnext line in seconds (1..999).").."]"..
+		"label[0,5.8;"..S("If endless is set, the Sequencer\nrestarts again and again.").."]"..
+		"label[0,7;"..S("The command '  ' does nothing,\nonly consuming the offset time.").."]"..
+		"button[3,8;2,1;"..S("exit")..";close]"
 end
 
 local function stop_the_sequencer(pos)
@@ -60,7 +63,7 @@ local function stop_the_sequencer(pos)
 	local meta = minetest.get_meta(pos)
 	local number = meta:get_string("number")
 	meta:set_int("running", STOP_STATE)
-	meta:set_string("infotext", "Tubelib Sequencer "..number..": stopped")
+	meta:set_string("infotext", S("Tubelib Sequencer").." "..number..": stopped")
 	local rules = minetest.deserialize(meta:get_string("rules"))
 	local endless = meta:get_int("endless") or 0
 	meta:set_string("formspec", formspec(tubelib.STOPPED, rules, endless))
@@ -111,7 +114,7 @@ local function check_rules(pos, elapsed)
 					if index == 1 and offs < 1 then
 						offs = 1
 					end
-					meta:set_string("infotext", "Tubelib Sequencer "..number..": running ("..index.."/"..NUM_SLOTS..")")
+					meta:set_string("infotext", S("Tubelib Sequencer").." "..number..": running ("..index.."/"..NUM_SLOTS..")")
 					meta:set_int("index", index)
 					if offs > 0 then
 						minetest.after(0, restart_timer, pos, offs)
@@ -133,7 +136,7 @@ local function start_the_sequencer(pos)
 	local number = meta:get_string("number")
 	meta:set_int("running", 1)
 	meta:set_int("index", 1)
-	meta:set_string("infotext", "Tubelib Sequencer "..number..": running (1/"..NUM_SLOTS..")")
+	meta:set_string("infotext", S("Tubelib Sequencer").." "..number..": running (1/"..NUM_SLOTS..")")
 	local rules = minetest.deserialize(meta:get_string("rules"))
 	local endless = meta:get_int("endless") or 0
 	meta:set_string("formspec", formspec(tubelib.RUNNING, rules, endless))
@@ -196,7 +199,7 @@ local function 	on_receive_fields(pos, formname, fields, player)
 end
 
 minetest.register_node("tubelib_addons2:sequencer", {
-	description = "Tubelib Sequencer",
+	description = S("Tubelib Sequencer"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_front.png',

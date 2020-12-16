@@ -3,14 +3,17 @@
 	Tubelib Addons 2
 	================
 
-	Copyright (C) 2017 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 
 	timer.lua:
 	
 ]]--
+
+-- Load support for I18n
+local S = tubelib_addons2.S
 
 local CYCLE_TIME = 8
 
@@ -37,7 +40,7 @@ local function formspec(events, numbers, actions)
 		default.gui_bg_img..
 		default.gui_slots..
 			
-		"label[0,0;Time]label[2.3,0;Number(s)]label[4.5,0;Command]"..
+		"label[0,0;"..S("Time").."]label[2.3,0;"..S("Number(s)").."]label[4.5,0;"..S("Command").."]"..
 		"dropdown[0,1;2,1;e1;"..sTime..";"..events[1].."]".. 
 		"field[2.3,1.2;2,1;n1;;"..numbers[1].."]" ..
 		"dropdown[4.5,1;3,1;a1;"..sAction..";"..tAction[actions[1]].."]".. 
@@ -97,7 +100,7 @@ local function check_rules(pos,elapsed)
 			done = {false,false,false,false,false,false}
 		end
 		meta:set_string("done",  minetest.serialize(done))
-		meta:set_string("infotext","Tubelib Timer "..hour..":00")
+		meta:set_string("infotext", S("Tubelib Timer").." "..hour..":00")
 		return true
 	end
 	return false
@@ -105,7 +108,7 @@ end
 
 
 minetest.register_node("tubelib_addons2:timer", {
-	description = "Tubelib Timer",
+	description = S("Tubelib Timer"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_front.png',

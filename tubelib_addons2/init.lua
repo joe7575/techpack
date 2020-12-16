@@ -3,12 +3,18 @@
 	Tubelib Addons 2
 	================
 
-	Copyright (C) 2017,2018 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 
 ]]--
+
+tubelib_addons2 = {}
+
+
+-- Load support for I18n
+tubelib_addons2.S = minetest.get_translator("tubelib_addons2")
 
 dofile(minetest.get_modpath("tubelib_addons2") .. "/timer.lua")
 dofile(minetest.get_modpath("tubelib_addons2") .. "/sequencer.lua")

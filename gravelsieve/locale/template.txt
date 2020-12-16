@@ -1,0 +1,14 @@
+# textdomain: gravelsieve
+
+
+
+### hammer.lua ###
+
+Hammer converts Cobblestone into Gravel=
+
+### init.lua ###
+
+Automatic Gravel Sieve=
+Compressed Gravel=
+Gravel Sieve=
+Sieved Gravel=

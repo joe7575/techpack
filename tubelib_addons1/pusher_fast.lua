@@ -3,9 +3,9 @@
 	Tubelib Addons 1
 	================
 
-	Copyright (C) 2017-2018 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 
 	pusher_fast.lua:
@@ -29,8 +29,10 @@
 --               |        |/
 --               +--------+
 
+-- Load support for I18n
+local S = tubelib_addons1.S
+
 -- for lazy programmers
-local S = function(pos) if pos then return minetest.pos_to_string(pos) end end
 local P = minetest.string_to_pos
 local M = minetest.get_meta
 
@@ -42,7 +44,7 @@ local State = tubelib.NodeStates:new({
 	node_name_passive = "tubelib_addons1:pusher_fast",
 	node_name_active = "tubelib_addons1:pusher_fast_active",
 	node_name_defect = "tubelib_addons1:pusher_fast_defect",
-	infotext_name = "Fast Pusher",
+	infotext_name = S("Fast Pusher"),
 	cycle_time = CYCLE_TIME,
 	standby_ticks = STANDBY_TICKS,
 	has_item_meter = true,
@@ -75,7 +77,7 @@ local function keep_running(pos, elapsed)
 end	
 
 minetest.register_node("tubelib_addons1:pusher_fast", {
-	description = "Fast Pusher",
+	description = S("Fast Pusher"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_addons1_pusher.png',
@@ -117,7 +119,7 @@ minetest.register_node("tubelib_addons1:pusher_fast", {
 
 
 minetest.register_node("tubelib_addons1:pusher_fast_active", {
-	description = "Fast Pusher",
+	description = S("Fast Pusher"),
 	tiles = {
 		-- up, down, right, left, back, front
 		{
@@ -182,7 +184,7 @@ minetest.register_node("tubelib_addons1:pusher_fast_active", {
 })
 
 minetest.register_node("tubelib_addons1:pusher_fast_defect", {
-	description = "Fast Pusher",
+	description = S("Fast Pusher"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_addons1_pusher.png',

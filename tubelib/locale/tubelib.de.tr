@@ -1,0 +1,69 @@
+# textdomain: tubelib
+
+
+
+### basalt.lua ###
+
+Basalt Stone=Basaltstein
+Basalt Stone Block=Basaltsteinblock
+Basalt Stone Brick=Basaltsteinziegel
+
+### blackhole.lua ###
+
+Tubelib Black Hole=Tubelib Schwarzes Loch
+items disappeared=Gegenstände verschwunden
+
+### button.lua ###
+
+Insert destination node number(s)=Zielblocknummer(n) eingeben
+Save=Speichern
+Tubelib Button=Tubelib Taster
+Tubelib Button/Switch=Tubelib Taster/Schalter
+connected with block=verbunden mit Block
+public=öffentlich
+switch,button 2s,button 4s,button 8s,button 16s=Schalter,Taster 2s,Taster 4s,Taster 8s,Taster 16s
+
+### defect.lua ###
+
+Corrupted Tubelib Node=beschädigter Tubelib Block
+
+### distributor.lua ###
+
+Tubelib Distributor=Tubelib Verteiler
+
+### forceload.lua ###
+
+Area=Bereich
+
+Area already loaded or max. number of Forceload Blocks reached!=Bereich bereits geladen oder max. Anzahl von Forceload Blöcken erreicht!
+
+List of your Forceload Blocks=Liste deiner Forceload Blöcke
+Punch the block to make the area visible.=Schlage den Block um den Bereich anzuzeigen
+Tubelib Forceload Block=Tubelib Forceload Block
+loaded!=geladen!
+to=bis
+
+### init.lua ###
+
+Tubelib WLAN Chip=Tubelib WLAN Chip
+
+### lamp.lua ###
+
+Tubelib Lamp=Tubelib Lampe
+
+### pusher.lua ###
+
+Tubelib Pusher=Tubelib Schieber
+
+### repairkit.lua ###
+
+Tubelib End Wrench (use @= read status, place @= destroy)=Tubelib Gabelschlüssel (benutzen @= Status lesen, platzieren @= zerstören)
+Tubelib Repair Kit=Tubelib Reparatur Kit
+[Tubelib] Node repaired=[Tubelib] Block repariert
+[Tubelib] state=Tubelib Zustand
+aging=altern
+counter=Zähler
+
+### tubes.lua ###
+
+Tubelib Tube=Tubelib Röhre

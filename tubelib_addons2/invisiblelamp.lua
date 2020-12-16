@@ -3,15 +3,17 @@
 	Tubelib Addons 2
 	================
 
-	Copyright (C) 2017-2018 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 
 	invisiblelamp.lua:
 	
 ]]--
 
+-- Load support for I18n
+local S = tubelib_addons2.S
 
 local function switch_on(pos, node)
 	node.name = "tubelib_addons2:invisiblelamp_on"
@@ -27,7 +29,7 @@ local function switch_off(pos, node)
 end	
 
 minetest.register_node("tubelib_addons2:invisiblelamp", {
-	description = "Tubelib Invisible Lamp",
+	description = S("Tubelib Invisible Lamp"),
 	drawtype = "glasslike_framed_optional",
 	tiles = {"tubelib_addons2_invisiblelamp.png"},
 	inventory_image = 'tubelib_addons2_invisiblelamp_inventory.png',
@@ -35,7 +37,7 @@ minetest.register_node("tubelib_addons2:invisiblelamp", {
 	after_place_node = function(pos, placer)
 		local number = tubelib.add_node(pos, "tubelib_addons2:invisiblelamp")
 		local meta = minetest.get_meta(pos)
-		meta:set_string("infotext", "Tubelib Invisible Lamp "..number)
+		meta:set_string("infotext", S("Tubelib Invisible Lamp").." "..number)
 	end,
 
 	on_rightclick = function(pos, node, clicker)
@@ -58,7 +60,7 @@ minetest.register_node("tubelib_addons2:invisiblelamp", {
 })
 
 minetest.register_node("tubelib_addons2:invisiblelamp_on", {
-	description = "Tubelib Invisible Lamp",
+	description = S("Tubelib Invisible Lamp"),
 	drawtype = "glasslike_framed_optional",
 	tiles = {"tubelib_addons2_invisiblelamp.png"},
 	

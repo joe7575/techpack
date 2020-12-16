@@ -1,0 +1,118 @@
+# textdomain: tubelib_addons2
+
+
+
+### accesscontrol.lua ###
+
+Access code (4 digits):=Zugangscode (4 Zahlen):
+Door block numbers:=Türblocknummern:
+Enter access code=Zugangscode eingeben
+OK=OK
+Tubelib Access Lock=Tubelib Zugangsschloss
+Tubelib Access Lock, Enter access code=Tubelib Zugangsschloss, Zugangscode eingeben
+
+### accesscontrol.lua ###
+### colorlamp.lua ###
+### doorblock.lua ###
+### gateblock.lua ###
+### logic_not.lua ###
+### mesecons_converter.lua ###
+### repeater.lua ###
+
+Save=Speichern
+
+### ceilinglamp.lua ###
+
+Tubelib Ceiling Lamp=Tubelib Deckenleuchte
+
+### colorlamp.lua ###
+### colorlamp_ud.lua ###
+
+Tubelib Color Lamp=Tubelib Farblampe
+
+### doorblock.lua ###
+
+Select texture=Wähle Textur
+Tubelib Door Block=Tubelib Türblock
+
+### gateblock.lua ###
+
+Tubelib Gate Block=Tubelib Torblock
+
+### industriallamp.lua ###
+
+Tubelib Industrial Lamp=Tubelib Industrielampe
+
+### invisiblelamp.lua ###
+
+Tubelib Invisible Lamp=Tubelib Unsichtbare Lampe
+
+### logic_not.lua ###
+
+#WARNING: AUTOTRANSLATED BY GOOGLE TRANSLATE
+Tubelib Logic Not=Tubelib Logisches NOT
+
+### logic_not.lua ###
+### mesecons_converter.lua ###
+### repeater.lua ###
+
+: connected with=: verbunden mit
+: not connected=: nicht verbunden
+Destination node numbers=Zielknotennummern
+
+### mesecons_converter.lua ###
+
+Tubelib Mesecons Converter=Tubelib Mesecons Konverter
+
+### mesecons_converter.lua ###
+### repeater.lua ###
+
+: fault (overloaded)=: Fehler (überlastet)
+
+### programmer.lua ###
+
+Tubelib Programmer=Tubelib Programmer
+[Tubelib Programmer] Error: programmer not supported!=[Tubelib Programmer] Fehler: Programmer wird nicht unterstützt!
+[Tubelib Programmer] Unknown node on=[Tubelib Programmer] Unbekannter Knoten an
+[Tubelib Programmer] foreign or unknown node!=[Tubelib Programmer] fremder oder unbekannter Knoten!
+[Tubelib Programmer] node programmed!=[Tubelib Programmer] Knoten programmiert!
+[Tubelib Programmer] number=[Tubelib Programmer] Nummer
+[Tubelib Programmer] programmer reset=[Tubelib Programmer] Programmer zurückgesetzt
+read=lesen
+
+### repeater.lua ###
+
+#WARNING: AUTOTRANSLATED BY GOOGLE TRANSLATE
+Tubelib Repeater=Tubelib Repeater
+
+### sequencer.lua ###
+
+Define a sequence of commands@nto control other machines.=Definieren Sie eine Folge von Befehlen@nandere Maschinen zu steuern.
+If endless is set, the Sequencer@nrestarts again and again.=Wenn endlos eingestellt ist, wird der Sequenzer@nimmer wieder neu gestartet.
+Numbers(s) are the node numbers,@nthe command shall sent to.=Zahlen sind die Knotennummern,@nzu denen der Befehl gesendet werden soll.
+Offset is the time to the@nnext line in seconds (1..999).=Offset ist die Zeit bis zur@nnächste Zeile in Sekunden (1..999).
+Run endless=Laufe endlos
+Sequencer Help=Sequenzer-Hilfe
+
+The command '  ' does nothing,@nonly consuming the offset time.=Der Befehl '' macht nichts,@nverbraucht nur die Wartezeit.
+
+The commands 'on'/'off' are used@n for machines and other nodes.=Die Befehle 'ein'/'aus' werden@nfür Maschinen und andere Knoten verwendet.
+
+Tubelib Sequencer=Tubelib Sequenzer
+exit=raus
+help=Hilfe
+
+### sequencer.lua ###
+### timer.lua ###
+
+Command=Befehl
+
+### streetlamp.lua ###
+
+Tubelib Street Lamp=Tubelib Straßenlaterne
+
+### timer.lua ###
+
+Number(s)=Nummer(n)
+Time=Zeit
+Tubelib Timer=Tubelib Timer

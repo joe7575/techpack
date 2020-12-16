@@ -3,9 +3,9 @@
 	Tubelib Addons 3
 	================
 
-	Copyright (C) 2017-2018 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 	
 	teleporter.lua
@@ -14,14 +14,17 @@
 
 ]]--
 
+-- Load support for I18n
+local S = tubelib_addons3.S
+
 local Tube = tubelib.Tube
 
 local sFormspec = "size[7.5,3]"..
-	"field[0.5,1;7,1;channel;Enter channel string;]" ..
-	"button_exit[2,2;3,1;exit;Save]"
+	"field[0.5,1;7,1;channel;"..S("Enter channel string")..";]" ..
+	"button_exit[2,2;3,1;exit;"..S("Save").."]"
 
 minetest.register_node("tubelib_addons3:teleporter", {
-	description = "Tubelib Teleporter",
+	description = S("Tubelib Teleporter"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_addons3_chest_bottom.png',

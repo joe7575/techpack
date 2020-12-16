@@ -3,14 +3,17 @@
 	Tubelib Addons 2
 	================
 
-	Copyright (C) 2017 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 
 	programmer.lua:
 	
 ]]--
+
+-- Load support for I18n
+local S = tubelib_addons2.S
 
 local function join_to_string(tbl)
 	local t = {}
@@ -23,7 +26,7 @@ end
 
 local function reset_programmer(itemstack, user, pointed_thing)
 	user:set_attribute("tubelib_prog_numbers", nil)
-	minetest.chat_send_player(user:get_player_name(), "[Tubelib Programmer] programmer reset")
+	minetest.chat_send_player(user:get_player_name(), S("[Tubelib Programmer] programmer reset"))
 	return itemstack
 end	
 
@@ -35,9 +38,9 @@ local function read_number(itemstack, user, pointed_thing)
 			local numbers = minetest.deserialize(user:get_attribute("tubelib_prog_numbers")) or {}
 			numbers[number] = true
 			user:set_attribute("tubelib_prog_numbers", minetest.serialize(numbers))
-			minetest.chat_send_player(user:get_player_name(), "[Tubelib Programmer] number "..number.." read")
+			minetest.chat_send_player(user:get_player_name(), S("[Tubelib Programmer] number").." "..number.." "..S("read"))
 		else
-			minetest.chat_send_player(user:get_player_name(), "[Tubelib Programmer] Unknown node on "..minetest.pos_to_string(pos))
+			minetest.chat_send_player(user:get_player_name(), S("[Tubelib Programmer] Unknown node on").." "..minetest.pos_to_string(pos))
 		end
 	else
 		return reset_programmer(itemstack, user, pointed_thing)
@@ -55,14 +58,14 @@ local function program_numbers(itemstack, placer, pointed_thing)
 		local text = join_to_string(numbers)
 		local player_name = placer:get_player_name()
 		if meta and meta:get_string("owner") ~= player_name then
-			minetest.chat_send_player(player_name, "[Tubelib Programmer] foreign or unknown node!")			
+			minetest.chat_send_player(player_name, S("[Tubelib Programmer] foreign or unknown node!"))
 			return itemstack
 		end
 		local res = tubelib.send_request(node_number, "set_numbers", text)
 		if res == true then
-			minetest.chat_send_player(player_name, "[Tubelib Programmer] node programmed!")
+			minetest.chat_send_player(player_name, S("[Tubelib Programmer] node programmed!"))
 		else
-			minetest.chat_send_player(player_name, "[Tubelib Programmer] Error: programmer not supported!")
+			minetest.chat_send_player(player_name, S("[Tubelib Programmer] Error: programmer not supported!"))
 		end
 		return itemstack
 	else
@@ -71,7 +74,7 @@ local function program_numbers(itemstack, placer, pointed_thing)
 end
 
 minetest.register_craftitem("tubelib_addons2:programmer", {
-	description = "Tubelib Programmer",
+	description = S("Tubelib Programmer"),
 	inventory_image = "tubelib_addons2_programmer.png",
 	stack_max = 1,
 	wield_image = "tubelib_addons2_programmer_wield.png",

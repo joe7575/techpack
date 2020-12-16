@@ -3,9 +3,9 @@
 	Tubelib Addons 1
 	================
 
-	Copyright (C) 2017-2019 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 
 	reformer.lua
@@ -15,8 +15,10 @@
 
 ]]--
 
+-- Load support for I18n
+local S = tubelib_addons1.S
+
 -- for lazy programmers
-local S = function(pos) if pos then return minetest.pos_to_string(pos) end end
 local P = minetest.string_to_pos
 local M = minetest.get_meta
 
@@ -46,7 +48,7 @@ end
 local State = tubelib.NodeStates:new({
 	node_name_passive = "tubelib_addons1:reformer",
 	node_name_defect = "tubelib_addons1:reformer_defect",
-	infotext_name = "Tubelib Reformer",
+	infotext_name = S("Tubelib Reformer"),
 	cycle_time = CYCLE_TIME,
 	standby_ticks = STANDBY_TICKS,
 	has_item_meter = true,
@@ -157,7 +159,7 @@ end
 
 
 minetest.register_node("tubelib_addons1:reformer", {
-	description = "Tubelib Reformer",
+	description = S("Tubelib Reformer"),
 	inventory_image = "tubelib_addons1_reformer_inventory.png",
 	tiles = {
 		-- up, down, right, left, back, front
@@ -188,7 +190,7 @@ minetest.register_node("tubelib_addons1:reformer", {
 			State:node_init(pos, number)
 		else
 			minetest.remove_node(pos)
-			minetest.chat_send_player(placer:get_player_name(), "Reformer will not fit there")
+			minetest.chat_send_player(placer:get_player_name(), S("Reformer will not fit there"))
 			return true
 		end
 	end,
@@ -227,7 +229,7 @@ minetest.register_node("tubelib_addons1:reformer", {
 })
 
 minetest.register_node("tubelib_addons1:reformer_defect", {
-	description = "Tubelib Reformer defect",
+	description = S("Tubelib Reformer defect"),
 	inventory_image = "tubelib_addons1_reformer_inventory.png",
 	tiles = {
 		-- up, down, right, left, back, front
@@ -259,7 +261,7 @@ minetest.register_node("tubelib_addons1:reformer_defect", {
 			State:defect(pos, M(pos))
 		else
 			minetest.remove_node(pos)
-			minetest.chat_send_player(placer:get_player_name(), "Reformer will not fit there")
+			minetest.chat_send_player(placer:get_player_name(), S("Reformer will not fit there"))
 			return true
 		end
 	end,
@@ -300,7 +302,7 @@ minetest.register_node("tubelib_addons1:reformer_defect", {
 
 
 minetest.register_node("tubelib_addons1:reformer_top", {
-	description = "Tubelib Reformer Top",
+	description = S("Tubelib Reformer Top"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_front.png',
@@ -320,7 +322,7 @@ minetest.register_node("tubelib_addons1:reformer_top", {
 })
 
 minetest.register_craftitem("tubelib_addons1:biofuel", {
-	description = "Bio Fuel",
+	description = S("Bio Fuel"),
 	inventory_image = "tubelib_addons1_biofuel.png",
 })
 
@@ -340,6 +342,9 @@ minetest.register_craft({
 	},
 })
 
+function tubelib.is_fuel(stack)
+	return stack:get_name() == "tubelib_addons1:biofuel"
+end
 
 tubelib.register_node("tubelib_addons1:reformer", {"tubelib_addons1:reformer_defect"}, {
 	on_pull_item = function(pos, side)

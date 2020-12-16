@@ -1,0 +1,85 @@
+# textdomain: smartline
+
+
+
+### button.lua ###
+
+Insert destination block number(s)=Zielblocknummer(n) eingeben
+SmartLine Button=SmartLine Taster
+SmartLine Button/Switch=SmartLine Taster/Schalter
+connected with block=verbunden mit Block
+switch,button 2s,button 4s,button 8s,button 16s=Schalter,Taster 2s,Taster 4s,Taster 8s,Taster 16s
+
+### button.lua ###
+### collector.lua ###
+### playerdetector.lua ###
+### repeater.lua ###
+
+Save=Speichern
+
+### collector.lua ###
+
+Node number to send the events to:=Knotennummer, an den die Events gesendet werden sollen:
+Node numbers to read the states from:=Knotennummers, von wo der Status gelesen werden soll:
+Send an event if state is equal or larget than:=Sende einen Event, wenn der Status gleich oder größer ist als:
+SmartLine State Collector=SmartLine Status Sammler
+
+### display.lua ###
+
+SmartLine Display=SmartLine Display
+
+### playerdetector.lua ###
+
+Input the number(s) of the receiving node(s).=Gib die Nummer(n) der Empfangsblöcke ein.
+Input the player name(s) separated by blanks,=Gebe sie Spielernamen getrennt durch Leerzeichen ein,
+Player Detector=Spieler Detektor
+Player Detector Help=Spieler Detektor Hilfe
+Player name(s):=Spielername(n):
+Receiver node numbers:=Empfangsblocknummer(n):
+Separate numbers via blanks, like '0123 0234'.=Separiere die Nummern mit Leerzeichen, wie '0123 0234'.
+SmartLine Player Detector=SmartLine Spieler Detektor
+or leave it blank for all players.=oder lasse es leer für alle Spieler.
+
+### playerdetector.lua ###
+### sequencer.lua ###
+### timer.lua ###
+
+close=schließen
+help=Hilfe
+
+### repeater.lua ###
+
+Destination node numbers=Zielknotennummern
+SmartLine Repeater=SmartLine Wiederholer
+connected with=verbunden mit
+fault (overloaded)=Fehler (überlastet)
+not connected=nicht verbunden
+
+### sequencer.lua ###
+
+Offset/s=Offset/s
+Run endless=Laufe endlos
+SmartLine Sequencer=SmartLine Sequenzer
+
+SmartLine Sequencer Help@n	@nDefine a sequence of commands to control other machines.@nNumbers(s) are the node numbers, the command shall sent to.@nThe commands 'on'/'off' are used for machines and other nodes.@nOffset is the time to the next line in seconds (1..999).@nIf endless is set, the Sequencer restarts again and again.@nThe command '  ' does nothing, only consuming the offset time.@n=SmartLine Sequenzer Hilfe@n  @nDefiniere eine Sequenz von Kommandos um andere Maschinen zu steuern.@nNummern sind Blocknummern, wo die Kommandos hingesendet werden sollen@nDas Kommando 'on'/'off' wird für Maschinen und andere Blöcke verwendet@nOffset ist die Zeit zur nächsten Zeile in Sekunden (1..999).@nWird 'endlos' angeklickt, startet der Sequenzer immer wieder neu.@nDas Kommando '  ' macht nichts, die die Zeit zu verbrauchen.@n
+
+running=läuft
+stopped=gestoppt
+
+### sequencer.lua ###
+### timer.lua ###
+
+Command=Kommando
+Number(s)=Nummer(m)
+
+### signaltower.lua ###
+
+SmartLine Signal Tower=SmartLine Signalturm
+
+### timer.lua ###
+
+SmartLine Timer=SmartLine Timer
+
+SmartLine Timer Help@n@nThe Timer is for a daytime controlled sending of commands@ne.g. to turn street lights on/off. The timer checks the @ntime every few seconds. If the block was just loaded, @nthe timer will check the last 4 hours for commands@nthat still need to be executed.=SmartLine Timer Hilfe@n@nDer Timer st zum Tageszeit abhängigem Senden von Kommandos@nDer Timer prüft die regeln alle paar Sekunden.@nFalls die Block gerade erst aktiviert wurde (Spieler kommt in die Nähe),@nwerden auch die Kommandos der letzten 4 Spielstunden@ngeprüft und ggf. ausgeführt.
+
+Time=Zeit

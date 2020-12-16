@@ -3,9 +3,9 @@
 	Tubelib Addons 3
 	================
 
-	Copyright (C) 2019 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 	
 	funnel.lua
@@ -13,6 +13,9 @@
 	A high performance funnel
 	
 ]]--
+
+-- Load support for I18n
+local S = tubelib_addons3.S
 
 local function allow_metadata_inventory_put(pos, listname, index, stack, player)
 	if minetest.is_protected(pos, player:get_player_name()) then
@@ -62,7 +65,7 @@ local function scan_for_objects(pos, elapsed)
 end
 
 minetest.register_node("tubelib_addons3:funnel", {
-	description = "HighPerf Funnel",
+	description = S("HighPerf Funnel"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_addons1_funnel_top.png^tubelib_addons3_node_frame4.png',

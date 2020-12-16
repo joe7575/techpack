@@ -3,9 +3,9 @@
 	SmartLine
 	=========
 
-	Copyright (C) 2018 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 
 	button.lua:
@@ -13,9 +13,11 @@
 
 ]]--
 
+-- Load support for I18n
+local S = smartline.S
 
 local function switch_on(pos, node)
-	if tubelib.data_not_corrupted(pos) then
+	if tubelib.data_not_corrupted(pos, true) then
 		node.name = "smartline:button_active"
 		minetest.swap_node(pos, node)
 		minetest.sound_play("button", {
@@ -40,7 +42,7 @@ local function switch_on(pos, node)
 end
 
 local function switch_off(pos)
-	if tubelib.data_not_corrupted(pos) then
+	if tubelib.data_not_corrupted(pos, true) then
 		local node = minetest.get_node(pos)
 		node.name = "smartline:button"
 		minetest.swap_node(pos, node)
@@ -64,7 +66,7 @@ end
 
 
 minetest.register_node("smartline:button", {
-	description = "SmartLine Button/Switch",
+	description = S("SmartLine Button/Switch"),
 	inventory_image = "smartline_button_inventory.png",
 	tiles = {
 		-- up, down, right, left, back, front
@@ -89,22 +91,23 @@ minetest.register_node("smartline:button", {
 		local own_num = tubelib.add_node(pos, "smartline:button")
 		meta:set_string("own_num", own_num)
 		meta:set_string("formspec", "size[5,6]"..
-		"dropdown[0.2,0;3;type;switch,button 2s,button 4s,button 8s,button 16s;1]".. 
-		"field[0.5,2;3,1;numbers;Insert destination block number(s);]" ..
+		"dropdown[0.2,0;3;type;"..S("switch,button 2s,button 4s,button 8s,button 16s")..";1]".. 
+		"field[0.5,2;3,1;numbers;"..S("Insert destination block number(s)")..";]" ..
 		"checkbox[1,3;public;public;false]"..
-		"button_exit[1,4;2,1;exit;Save]")
+		"button_exit[1,4;2,1;exit;"..S("Save").."]")
 		meta:set_string("placer_name", placer:get_player_name())
 		meta:set_string("public", "false")
 		meta:set_int("cycle_time", 0)
-		meta:set_string("infotext", "SmartLine Button "..own_num)
+		meta:set_string("infotext", S("SmartLine Button").." "..own_num)
 	end,
 
 	on_receive_fields = function(pos, formname, fields, player)
 		local meta = minetest.get_meta(pos)
+		print(dump(fields))
 		if tubelib.check_numbers(fields.numbers) then
 			meta:set_string("numbers", fields.numbers)
 			local own_num = meta:get_string("own_num")
-			meta:set_string("infotext", "SmartLine Button "..own_num..", connected with block "..fields.numbers)
+			meta:set_string("infotext", S("SmartLine Button").." "..own_num..", "..S("connected with block").." "..fields.numbers)
 		else
 			return
 		end
@@ -153,7 +156,7 @@ minetest.register_node("smartline:button", {
 
 
 minetest.register_node("smartline:button_active", {
-	description = "SmartLine Button/Switch",
+	description = S("SmartLine Button/Switch"),
 	tiles = {
 		-- up, down, right, left, back, front
 		"smartline.png",

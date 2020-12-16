@@ -3,16 +3,18 @@
 	Tube Library
 	============
 
-	Copyright (C) 2017-2018 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 
 	repairkit.lua:
 ]]--
 
+-- Load support for I18n
+local S = tubelib.S
+
 -- for lazy programmers
-local S = function(pos) if pos then return minetest.pos_to_string(pos) end end
 local P = minetest.string_to_pos
 local M = minetest.get_meta
 
@@ -29,7 +31,7 @@ local function repair_node(itemstack, user, pointed_thing)
 	local pos = pointed_thing.under
 	if pos then
 		if tubelib.repair_node(pos) then
-			minetest.chat_send_player(user:get_player_name(), "[Tubelib] Node repaired")
+			minetest.chat_send_player(user:get_player_name(), S("[Tubelib] Node repaired"))
 			itemstack:take_item()
 			return itemstack
 		end
@@ -47,14 +49,14 @@ local function read_state(itemstack, user, pointed_thing)
 			local aging = tubelib.send_request(number, "aging", nil)
 			if state and counter and aging then
 				if type(counter) ~= "number" then counter = "unknown" end
-				minetest.chat_send_player(user:get_player_name(), "[Tubelib] state ="..state..", counter = "..counter..", aging = "..aging)
+				minetest.chat_send_player(user:get_player_name(), S("[Tubelib] state").." ="..state..", "..S("counter").." = "..counter..", "..S("aging").." = "..aging)
 			end
 		end
 	end
 end
 
 minetest.register_craftitem("tubelib:repairkit", {
-	description = "Tubelib Repair Kit",
+	description = S("Tubelib Repair Kit"),
 	inventory_image = "tubelib_repairkit.png",
 	wield_image = "tubelib_repairkit.png^[transformR270",
 	groups = {cracky=1, book=1},
@@ -64,7 +66,7 @@ minetest.register_craftitem("tubelib:repairkit", {
 
 
 minetest.register_node("tubelib:end_wrench", {
-	description = "Tubelib End Wrench (use = read status, place = destroy)",
+	description = S("Tubelib End Wrench (use = read status, place = destroy)"),
 	inventory_image = "tubelib_end_wrench.png",
 	wield_image = "tubelib_end_wrench.png",
 	groups = {cracky=1, book=1},

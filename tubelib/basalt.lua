@@ -3,14 +3,17 @@
 	Tube Library
 	============
 
-	Copyright (C) 2019 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 
 	basalt.lua:
 	
 ]]--
+
+-- Load support for I18n
+local S = tubelib.S
 
 if tubelib.basalt_stone_enabled then
 	-- Replace default:stone with tubelib:basalt which is useless for ore generation.
@@ -25,14 +28,14 @@ if tubelib.basalt_stone_enabled then
 	end
 
 	minetest.register_node("tubelib:basalt_stone", {
-		description = "Basalt Stone",
+		description = S("Basalt Stone"),
 		tiles = {"default_stone.png^[brighten"},
 		groups = {cracky = 3, stone = 1},
 		drop = "default:silver_sand",
 		sounds = default.node_sound_stone_defaults(),
 	})
 	minetest.register_node("tubelib:basalt_stone_brick", {
-		description = "Basalt Stone Brick",
+		description = S("Basalt Stone Brick"),
 		paramtype2 = "facedir",
 		place_param2 = 0,
 		tiles = {"default_stone_brick.png^[brighten"},
@@ -42,7 +45,7 @@ if tubelib.basalt_stone_enabled then
 	})
 
 	minetest.register_node("tubelib:basalt_stone_block", {
-		description = "Basalt Stone Block",
+		description = S("Basalt Stone Block"),
 		tiles = {"default_stone_block.png^[brighten"},
 		is_ground_content = false,
 		groups = {cracky = 2, stone = 1},

@@ -3,15 +3,17 @@
 	Tubelib Addons 2
 	================
 
-	Copyright (C) 2017-2018 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 
 	streetlamp.lua:
 	
 ]]--
 
+-- Load support for I18n
+local S = tubelib_addons2.S
 
 local function switch_on(pos, node)
 	node.name = "tubelib_addons2:streetlamp_on"
@@ -24,7 +26,7 @@ local function switch_off(pos, node)
 end	
 
 minetest.register_node("tubelib_addons2:streetlamp", {
-	description = "Tubelib Street Lamp",
+	description = S("Tubelib Street Lamp"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_addons2_streetlamp_top.png',
@@ -50,7 +52,7 @@ minetest.register_node("tubelib_addons2:streetlamp", {
 	after_place_node = function(pos, placer)
 		local number = tubelib.add_node(pos, "tubelib_addons2:streetlamp")
 		local meta = minetest.get_meta(pos)
-		meta:set_string("infotext", "Tubelib Street Lamp "..number)
+		meta:set_string("infotext", S("Tubelib Street Lamp").." "..number)
 	end,
 
 	on_rightclick = function(pos, node, clicker)
@@ -73,7 +75,7 @@ minetest.register_node("tubelib_addons2:streetlamp", {
 })
 
 minetest.register_node("tubelib_addons2:streetlamp_on", {
-	description = "Tubelib Street Lamp",
+	description = S("Tubelib Street Lamp"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_addons2_streetlamp_top.png',

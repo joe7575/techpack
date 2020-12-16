@@ -3,15 +3,17 @@
 	SmartLine
 	=========
 
-	Copyright (C) 2018 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 
 	signaltower.lua:
 
 ]]--
 
+-- Load support for I18n
+local S = smartline.S
 
 local function switch_on(pos, node, color)
 	local meta = minetest.get_meta(pos)
@@ -28,7 +30,7 @@ local function switch_off(pos, node)
 end	
 
 minetest.register_node("smartline:signaltower", {
-	description = "SmartLine Signal Tower",
+	description = S("SmartLine Signal Tower"),
 	tiles = {
 		'smartline_signaltower_top.png',
 		'smartline_signaltower_top.png',
@@ -47,7 +49,7 @@ minetest.register_node("smartline:signaltower", {
 		local number = tubelib.add_node(pos, "smartline:signaltower")
 		local meta = minetest.get_meta(pos)
 		meta:set_string("state", "off")
-		meta:set_string("infotext", "SmartLine Signal Tower "..number)
+		meta:set_string("infotext", S("SmartLine Signal Tower").." "..number)
 	end,
 
 	on_rightclick = function(pos, node, clicker)
@@ -71,7 +73,7 @@ minetest.register_node("smartline:signaltower", {
 
 for _,color in ipairs({"green", "amber", "red"}) do
 	minetest.register_node("smartline:signaltower_"..color, {
-		description = "SmartLine Signal Tower",
+		description = S("SmartLine Signal Tower"),
 		tiles = {
 			'smartline_signaltower_top.png',
 			'smartline_signaltower_top.png',

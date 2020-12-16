@@ -3,17 +3,20 @@
 	Tube Library
 	============
 
-	Copyright (C) 2017-2019 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 
 	forceload.lua:
 	
 ]]--
 
+-- Load support for I18n
+local S = tubelib.S
+
 -- for lazy programmers
-local S = function(pos) if pos then return minetest.pos_to_string(pos) end end
+local P2S = function(pos) if pos then return minetest.pos_to_string(pos) end end
 local P = minetest.string_to_pos
 local M = minetest.get_meta
 
@@ -109,22 +112,22 @@ local function formspec(player)
 	default.gui_bg..
 	default.gui_bg_img..
 	default.gui_slots..
-	"label[0,0;List of your Forceload Blocks:]"
+	"label[0,0;"..S("List of your Forceload Blocks")..":]"
 	
 	for idx,pos in ipairs(lPos) do
 		local pos1, pos2 = calc_area(pos)
 		local ypos = 0.2 + idx * 0.4
 		tRes[#tRes+1] = "label[0,"..ypos..";"..idx.."]"
-		tRes[#tRes+1] = "label[0.8,"..ypos..";"..S(pos1).."]"
-		tRes[#tRes+1] = "label[3.2,"..ypos..";to]"
-		tRes[#tRes+1] = "label[4,"..ypos..";"..S(pos2).."]"
+		tRes[#tRes+1] = "label[0.8,"..ypos..";"..P2S(pos1).."]"
+		tRes[#tRes+1] = "label[3.2,"..ypos..";"..S("to").."]"
+		tRes[#tRes+1] = "label[4,"..ypos..";"..P2S(pos2).."]"
 	end
 	return table.concat(tRes)
 end
 
 
 minetest.register_node("tubelib:forceload", {
-	description = "Tubelib Forceload Block",
+	description = S("Tubelib Forceload Block"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_front.png',
@@ -145,13 +148,13 @@ minetest.register_node("tubelib:forceload", {
 		if add_pos(pos, placer) then
 			minetest.forceload_block(pos, true)
 			local pos1, pos2, num, max = get_data(pos, placer)
-			M(pos):set_string("infotext", "Area "..S(pos1).." to "..S(pos2).." loaded!\n"..
-				"Punch the block to make the area visible.")
-			chat(placer, "Area ("..num.."/"..max..") "..S(pos1).." to "..S(pos2).." loaded!")
+			M(pos):set_string("infotext", S("Area").." "..P2S(pos1).." "..S("to").." "..P2S(pos2).." "..S("loaded!").."\n"..
+				S("Punch the block to make the area visible."))
+			chat(placer, S("Area").." ("..num.."/"..max..") "..P2S(pos1).." "..S("to").." "..P2S(pos2).." "..S("loaded!"))
 			tubelib.mark_region(placer:get_player_name(), pos1, pos2)
 			M(pos):set_string("owner", placer:get_player_name())
 		else
-			chat(placer, "Area already loaded or max. number of Forceload Blocks reached!")
+			chat(placer, S("Area already loaded or max. number of Forceload Blocks reached!"))
 			minetest.remove_node(pos)
 			return itemstack
 		end

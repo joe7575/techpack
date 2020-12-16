@@ -3,24 +3,27 @@
 	Tubelib Addons 2
 	================
 
-	Copyright (C) 2017 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 
 	logic_not.lua:
 	
 ]]--
 
+-- Load support for I18n
+local S = tubelib_addons2.S
+
 local function formspec(meta)
 	local numbers = meta:get_string("numbers")
 	return "size[7,5]"..
-		"field[0.5,2;6,1;number;Destination node numbers;"..numbers.."]" ..
-		"button_exit[1,3;2,1;exit;Save]"
+		"field[0.5,2;6,1;number;"..S("Destination node numbers")..";"..numbers.."]" ..
+		"button_exit[1,3;2,1;exit;"..S("Save").."]"
 end	
 
 minetest.register_node("tubelib_addons2:logic_not", {
-	description = "Tubelib Logic Not",
+	description = S("Tubelib Logic Not"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_front.png',
@@ -33,7 +36,7 @@ minetest.register_node("tubelib_addons2:logic_not", {
 		local own_number = tubelib.add_node(pos, "tubelib_addons2:logic_not")
 		meta:set_string("own_number", own_number)
 		meta:set_string("formspec", formspec(meta))
-		meta:set_string("infotext", "Tubelib Logic Not "..own_number..": not connected")
+		meta:set_string("infotext", S("Tubelib Logic Not").." "..own_number..S(": not connected"))
 		meta:set_string("owner", placer:get_player_name())
 	end,
 
@@ -47,7 +50,7 @@ minetest.register_node("tubelib_addons2:logic_not", {
 		if tubelib.check_numbers(fields.number) then
 			meta:set_string("numbers", fields.number)
 			local own_number = meta:get_string("own_number")
-			meta:set_string("infotext", "Tubelib Logic Not "..own_number..": connected with "..fields.number)
+			meta:set_string("infotext", S("Tubelib Logic Not").." "..own_number..S(": connected with").." "..fields.number)
 			meta:set_string("formspec", formspec(meta))
 		end
 	end,
@@ -82,7 +85,7 @@ tubelib.register_node("tubelib_addons2:logic_not", {}, {
 			local numbers = meta:get_string("numbers")
 			local own_number = meta:get_string("own_number")
 			if topic == "set_numbers" then
-				meta:set_string("infotext", "Tubelib Logic Not "..own_number..": connected with "..payload)
+				meta:set_string("infotext", S("Tubelib Logic Not").." "..own_number..S(": connected with").." "..payload)
 				meta:set_string("numbers", payload)
 				meta:set_string("formspec", formspec(meta))
 				return true

@@ -1,0 +1,69 @@
+# textdomain: tubelib
+
+
+
+### basalt.lua ###
+
+Basalt Stone=
+Basalt Stone Block=
+Basalt Stone Brick=
+
+### blackhole.lua ###
+
+Tubelib Black Hole=
+items disappeared=
+
+### button.lua ###
+
+Insert destination node number(s)=
+Save=
+Tubelib Button=
+Tubelib Button/Switch=
+connected with block=
+public=
+switch,button 2s,button 4s,button 8s,button 16s=
+
+### defect.lua ###
+
+Corrupted Tubelib Node=
+
+### distributor.lua ###
+
+Tubelib Distributor=
+
+### forceload.lua ###
+
+Area=
+
+Area already loaded or max. number of Forceload Blocks reached!=
+
+List of your Forceload Blocks=
+Punch the block to make the area visible.=
+Tubelib Forceload Block=
+loaded!=
+to=
+
+### init.lua ###
+
+Tubelib WLAN Chip=
+
+### lamp.lua ###
+
+Tubelib Lamp=
+
+### pusher.lua ###
+
+Tubelib Pusher=
+
+### repairkit.lua ###
+
+Tubelib End Wrench (use @= read status, place @= destroy)=
+Tubelib Repair Kit=
+[Tubelib] Node repaired=
+[Tubelib] state=
+aging=
+counter=
+
+### tubes.lua ###
+
+Tubelib Tube=

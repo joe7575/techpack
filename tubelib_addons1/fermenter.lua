@@ -3,9 +3,9 @@
 	Tubelib Addons 1
 	================
 
-	Copyright (C) 2017-2019 Joachim Stolberg
+	Copyright (C) 2017-2020 Joachim Stolberg
 
-	LGPLv2.1+
+	AGPL v3
 	See LICENSE.txt for more information
 
 	fermenter.lua
@@ -15,8 +15,10 @@
 
 ]]--
 
+-- Load support for I18n
+local S = tubelib_addons1.S
+
 -- for lazy programmers
-local S = function(pos) if pos then return minetest.pos_to_string(pos) end end
 local P = minetest.string_to_pos
 local M = minetest.get_meta
 
@@ -46,7 +48,7 @@ end
 local State = tubelib.NodeStates:new({
 	node_name_passive = "tubelib_addons1:fermenter",
 	node_name_defect = "tubelib_addons1:fermenter_defect",
-	infotext_name = "Tubelib Fermenter",
+	infotext_name = S("Tubelib Fermenter"),
 	cycle_time = CYCLE_TIME,
 	standby_ticks = STANDBY_TICKS,
 	has_item_meter = true,
@@ -161,7 +163,7 @@ local function on_receive_fields(pos, formname, fields, player)
 end
 
 minetest.register_node("tubelib_addons1:fermenter", {
-	description = "Tubelib Fermenter",
+	description = S("Tubelib Fermenter"),
 	inventory_image = "tubelib_addons1_fermenter_inventory.png",
 	tiles = {
 		-- up, down, right, left, back, front
@@ -192,7 +194,7 @@ minetest.register_node("tubelib_addons1:fermenter", {
 			State:node_init(pos, number)
 		else
 			minetest.remove_node(pos)
-			minetest.chat_send_player(placer:get_player_name(), "Fermenter will not fit there")
+			minetest.chat_send_player(placer:get_player_name(), S("Fermenter will not fit there"))
 			return true
 		end
 	end,
@@ -231,7 +233,7 @@ minetest.register_node("tubelib_addons1:fermenter", {
 })
 
 minetest.register_node("tubelib_addons1:fermenter_defect", {
-	description = "Tubelib Fermenter defect",
+	description = S("Tubelib Fermenter defect"),
 	inventory_image = "tubelib_addons1_fermenter_inventory.png",
 	tiles = {
 		-- up, down, right, left, back, front
@@ -263,7 +265,7 @@ minetest.register_node("tubelib_addons1:fermenter_defect", {
 			State:defect(pos, M(pos))
 		else
 			minetest.remove_node(pos)
-			minetest.chat_send_player(placer:get_player_name(), "Fermenter will not fit there")
+			minetest.chat_send_player(placer:get_player_name(), S("Fermenter will not fit there"))
 			return true
 		end
 	end,
@@ -303,7 +305,7 @@ minetest.register_node("tubelib_addons1:fermenter_defect", {
 })
 
 minetest.register_node("tubelib_addons1:fermenter_top", {
-	description = "Tubelib Fermenter Top",
+	description = S("Tubelib Fermenter Top"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_front.png',
@@ -323,25 +325,30 @@ minetest.register_node("tubelib_addons1:fermenter_top", {
 })
 
 minetest.register_craftitem("tubelib_addons1:biogas", {
-	description = "Bio Gas",
+	description = S("Bio Gas"),
 	inventory_image = "tubelib_addons1_biogas.png",
 })
 
 if minetest.global_exists("unified_inventory") then
 	unified_inventory.register_craft_type("fermenting", {
-		description = "Fermenter",
+		description = S("Fermenter"),
 		icon = "tubelib_addons1_fermenter_inventory.png",
 		width = 2,
 		height = 2,
 	})
 	unified_inventory.register_craft_type("reforming", {
-		description = "Reformer",
+		description = S("Reformer"),
 		icon = "tubelib_addons1_reformer_inventory.png",
 		width = 2,
 		height = 2,
 	})
+
+	local leaves_table = {}
+	for i = 1, NUM_LEAVES do
+		table.insert(leaves_table, "group:leaves")
+	end
 	unified_inventory.register_craft({
-		items = {"group:leaves", "group:leaves"},
+		items = leaves_table,
 		output = "tubelib_addons1:biogas",
 		type = "fermenting"
 	})
