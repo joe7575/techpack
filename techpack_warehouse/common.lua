@@ -188,10 +188,8 @@ function techpack_warehouse.numbers_to_shift(self, meta, item)
 		if item_name == name then
 			local stack_size = inv:get_stack("main", idx):get_count()
 			if stack_size == self.inv_size then -- full?
-				Cache[number][idx] = "" -- delete for searching
 			elseif (stack_size + num_items) > self.inv_size then -- limit will be reached?
 				inv:set_stack("main", idx, ItemStack({name = item_name, count = self.inv_size}))
-				Cache[number][idx] = "" -- delete for searching
 				-- search with the rest for further slots
 				num_items = num_items - (self.inv_size - stack_size)
 			else
