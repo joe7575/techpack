@@ -1,6 +1,27 @@
 # Release Notes for ModPack TechPack [techpack]
 
 
+## V2.04.01 (2020-12-18)
+
+### Additions
+
+### Removals
+
+### Changes
+- Suggestion to check replanting against commonly plantable nodes
+  instead of quarry-able GroundNodes (pull request #60 from oversword)
+- Add a on_blast callback to tubes so they update after being destroyed
+  (pull request #58 from oversword)
+- Disallow non-fuel items to be accepted as fuel quarries and harvesters
+  (pull request #57 from oversword)
+- Check harvester protection for each node it attempts to harvest
+  (pull request #59 from oversword)
+
+### Fixes
+- Warehouse voiding items when both pushing in and pulling out
+  (issue #61, fixed by oversword)
+
+
 
 ## V2.04.00 (2020-11-20)
 
