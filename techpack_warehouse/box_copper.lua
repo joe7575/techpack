@@ -132,7 +132,7 @@ tubelib.register_node(NODE_NAME,
 	on_push_item = function(pos, side, item)
 		local meta = M(pos)
 		meta:set_string("push_dir", wh.Turn180[side])
-		local num = wh.numbers_to_shift(Box, meta, item)
+		local num = wh.inv_add_item(Box, meta, item)
 		if num > 0 then
 			item:set_count(num)
 			return tubelib.put_item(meta, "shift", item)
@@ -146,7 +146,14 @@ tubelib.register_node(NODE_NAME,
 		return tubelib.get_item(M(pos), "main")
 	end,
 	on_unpull_item = function(pos, side, item)
-		return tubelib.put_item(M(pos), "main", item)
+		local meta = M(pos)
+		local num = wh.inv_add_item(Box, meta, item)
+		if num > 0 then
+			-- this should never happen, but better safe than sorry
+			item:set_count(num)
+			return tubelib.put_item(meta, "shift", item)
+		end
+		return true
 	end,
 
 	on_recv_message = function(pos, topic, payload)
