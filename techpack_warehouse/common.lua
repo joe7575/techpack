@@ -22,8 +22,6 @@ local COUNTDOWN_TICKS = 2
 local CYCLE_TIME = 2
 
 
-local Cache = {}
-
 techpack_warehouse.Box = {}
 techpack_warehouse.Turn180 = {F="B", L="R", B="F", R="L", U="D", D="U"}
 
@@ -167,37 +165,33 @@ function techpack_warehouse.Box:new(attr)
 	return o
 end
 
-function techpack_warehouse.numbers_to_shift(self, meta, item)
-	-- check cache
-	local number = meta:get_string("tubelib_number")
-	local item_name = item:get_name()
-	if not Cache[number] then
-		local inv = meta:get_inventory()
-		Cache[number] = {}
-		for idx,items in ipairs(inv:get_list("filter")) do
-			Cache[number][idx] = items:get_name()
-		end
-	end
-
-	-- determine number to shift
+-- We can't use the standard function "inv:add_item()" because this function
+-- would not allow to add more than the default 99 items per stack.
+function techpack_warehouse.inv_add_item(self, meta, item)
 	local num_items = item:get_count()
-	local inv_size = meta:get_int("inv_size")
+	local item_name = item:get_name()
 	local inv = meta:get_inventory()
+	local main_list = inv:get_list("main")
 
-	for idx, name in ipairs(Cache[number]) do
-		if item_name == name then
-			local stack_size = inv:get_stack("main", idx):get_count()
-			if stack_size == self.inv_size then -- full?
-			elseif (stack_size + num_items) > self.inv_size then -- limit will be reached?
-				inv:set_stack("main", idx, ItemStack({name = item_name, count = self.inv_size}))
-				-- search with the rest for further slots
-				num_items = num_items - (self.inv_size - stack_size)
-			else
-				inv:set_stack("main", idx, ItemStack({name = item_name, count = stack_size + num_items}))
-				return 0
+	for idx, stack in ipairs(main_list) do
+		-- If item configured
+		if item_name == inv:get_stack("filter", idx):get_name() then
+			local stack_size = stack:get_count()
+			-- If there is some space for further items
+			if stack_size < self.inv_size then
+				local new_stack_size = math.min(self.inv_size, stack_size + num_items)
+				main_list[idx] = ItemStack({name = item_name, count = new_stack_size})
+				-- calc new number of items
+				num_items = num_items - (new_stack_size - stack_size)
+				-- If everything is distributed
+				if num_items == 0 then
+					break
+				end
 			end
 		end
 	end
+
+	inv:set_list("main", main_list)
 	return num_items
 end
 
@@ -216,7 +210,6 @@ function techpack_warehouse.allow_metadata_inventory_put(self, pos, listname, in
 		return math.min(stack:get_count(), self.inv_size - main_stack:get_count())
 	elseif listname == "filter" and item_name == main_stack:get_name() then
 		local number = M(pos):get_string("tubelib_number")
-		Cache[number] = nil
 		return 1
 	elseif listname == "shift" then
 		return stack:get_count()
@@ -227,7 +220,6 @@ end
 function techpack_warehouse.on_metadata_inventory_put(pos, listname, index, stack, player)
 	if listname == "input" then
 		local number = M(pos):get_string("tubelib_number")
-		Cache[number] = nil
 		minetest.after(0.5, move_to_main, pos, index)
 	end
 end
@@ -240,14 +232,11 @@ function techpack_warehouse.allow_metadata_inventory_take(pos, listname, index, 
 	local main_stack = inv:get_stack("main", index)
 	local number = M(pos):get_string("tubelib_number")
 	if listname == "main" then
-		Cache[number] = nil
 		minetest.after(0.1, move_to_player_inv, player:get_player_name(), pos, index)
 		return 0
 	elseif listname == "filter" and main_stack:is_empty() then
-		Cache[number] = nil
 		return 1
 	elseif listname == "shift" then
-		Cache[number] = nil
 		return stack:get_count()
 	end
 	return 0
@@ -262,7 +251,6 @@ function techpack_warehouse.on_receive_fields(self, pos, formname, fields, playe
 		return
 	end
 	local number = M(pos):get_string("tubelib_number")
-	Cache[number] = nil
 	self.State:state_button_event(pos, fields)
 end
 
