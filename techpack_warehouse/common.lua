@@ -209,7 +209,6 @@ function techpack_warehouse.allow_metadata_inventory_put(self, pos, listname, in
 	if listname == "input" and item_name == stack:get_name() then
 		return math.min(stack:get_count(), self.inv_size - main_stack:get_count())
 	elseif listname == "filter" and item_name == main_stack:get_name() then
-		local number = M(pos):get_string("tubelib_number")
 		return 1
 	elseif listname == "shift" then
 		return stack:get_count()
@@ -219,7 +218,6 @@ end
 
 function techpack_warehouse.on_metadata_inventory_put(pos, listname, index, stack, player)
 	if listname == "input" then
-		local number = M(pos):get_string("tubelib_number")
 		minetest.after(0.5, move_to_main, pos, index)
 	end
 end
@@ -230,7 +228,6 @@ function techpack_warehouse.allow_metadata_inventory_take(pos, listname, index, 
 	end
 	local inv = M(pos):get_inventory()
 	local main_stack = inv:get_stack("main", index)
-	local number = M(pos):get_string("tubelib_number")
 	if listname == "main" then
 		minetest.after(0.1, move_to_player_inv, player:get_player_name(), pos, index)
 		return 0
@@ -250,7 +247,6 @@ function techpack_warehouse.on_receive_fields(self, pos, formname, fields, playe
 	if minetest.is_protected(pos, player:get_player_name()) then
 		return
 	end
-	local number = M(pos):get_string("tubelib_number")
 	self.State:state_button_event(pos, fields)
 end
 
