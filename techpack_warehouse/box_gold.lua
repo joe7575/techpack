@@ -95,6 +95,7 @@ minetest.register_node(NODE_NAME.."_active", {
 	groups = {crumbly=0, not_in_creative_inventory=1},
 	is_ground_content = false,
 	sounds = default.node_sound_metal_defaults(),
+	drop = NODE_NAME,
 })
 
 minetest.register_node(NODE_NAME.."_defect", {

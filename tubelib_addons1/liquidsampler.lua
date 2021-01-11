@@ -215,6 +215,7 @@ minetest.register_node("tubelib_addons1:liquidsampler_active", {
 	groups = {crumbly=0, not_in_creative_inventory=1},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
+	drop = "tubelib_addons1:liquidsampler",
 })
 
 minetest.register_node("tubelib_addons1:liquidsampler_defect", {
