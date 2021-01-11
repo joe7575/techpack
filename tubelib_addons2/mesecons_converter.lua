@@ -151,7 +151,7 @@ tubelib.register_node("tubelib_addons2:mesecons_converter", {}, {
 			meta:set_string("infotext", S("Tubelib Mesecons Converter").." "..own_number..S(": connected with").." "..payload)
 			meta:set_string("numbers", payload)
 			meta:set_string("formspec", formspec(meta))
+			return true
 		end
-		return true
 	end,
 })		
