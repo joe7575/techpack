@@ -16,6 +16,7 @@
 
 -- Load support for I18n
 local S = tubelib_addons3.S
+local M = minetest.get_meta
 
 local Tube = tubelib.Tube
 
@@ -41,6 +42,9 @@ minetest.register_node("tubelib_addons3:teleporter", {
 		local tube_dir = ((minetest.dir_to_facedir(placer:get_look_dir()) + 1) % 4) + 1
 		Tube:prepare_pairing(pos, tube_dir, sFormspec)
 		Tube:after_place_node(pos, {tube_dir})
+		local meta = M(pos)
+		local valid_dirs = minetest.serialize({[tube_dir]=true})
+		meta:set_string('valid_dirs', valid_dirs)
 	end,
 
 	on_receive_fields = function(pos, formname, fields, player)
