@@ -193,6 +193,9 @@ minetest.register_node("tubelib_addons1:grinder_active", {
 		"tubelib_front.png",
 	},
 
+	diggable = false,
+	can_dig = function() return false end,
+
 	on_rotate = screwdriver.disallow,
 	on_timer = keep_running,
 	on_receive_fields = on_receive_fields,

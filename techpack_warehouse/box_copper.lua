@@ -87,6 +87,9 @@ minetest.register_node(NODE_NAME.."_active", {
 	on_metadata_inventory_put = wh.on_metadata_inventory_put,
 	allow_metadata_inventory_take = wh.allow_metadata_inventory_take,
 	allow_metadata_inventory_move = wh.allow_metadata_inventory_move,
+  
+	diggable = false,
+	can_dig = function() return false end,
 	
 	on_rotate = screwdriver.disallow,
 	paramtype = "light",

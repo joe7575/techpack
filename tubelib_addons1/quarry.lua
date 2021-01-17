@@ -372,6 +372,9 @@ minetest.register_node("tubelib_addons1:quarry_active", {
 	on_timer = keep_running,
 	on_rotate = screwdriver.disallow,
 
+	diggable = false,
+	can_dig = function() return false end,
+
 	allow_metadata_inventory_put = allow_metadata_inventory_put,
 	allow_metadata_inventory_take = allow_metadata_inventory_take,
 	
