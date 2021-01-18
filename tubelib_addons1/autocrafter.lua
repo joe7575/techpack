@@ -353,6 +353,9 @@ minetest.register_node("tubelib_addons1:autocrafter_active", {
 			},
 		},
 	},
+
+	diggable = false,
+	can_dig = function() return false end,
 	
 	on_rotate = screwdriver.disallow,
 	on_timer = keep_running,

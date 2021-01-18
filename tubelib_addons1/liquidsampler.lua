@@ -202,6 +202,9 @@ minetest.register_node("tubelib_addons1:liquidsampler_active", {
 		'tubelib_addons1_liquidsampler.png',
 	},
 
+	diggable = false,
+	can_dig = function() return false end,
+
 	on_rotate = screwdriver.disallow,
 	on_timer = keep_running,
 	on_receive_fields = on_receive_fields,

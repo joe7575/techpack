@@ -174,6 +174,9 @@ minetest.register_node("tubelib_addons1:pusher_fast_active", {
 	
 	on_timer = keep_running,
 	on_rotate = screwdriver.disallow,
+
+	diggable = false,
+	can_dig = function() return false end,
 	
 	paramtype = "light",
 	sunlight_propagates = true,
