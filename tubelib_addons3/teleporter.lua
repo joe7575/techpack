@@ -39,12 +39,9 @@ minetest.register_node("tubelib_addons3:teleporter", {
 	after_place_node = function(pos, placer)
 		tubelib.add_node(pos, "tubelib_addons3:teleporter")
 		-- determine the tube side
-		local tube_dir = ((minetest.dir_to_facedir(placer:get_look_dir()) + 1) % 4) + 1
+		local tube_dir = tubelib2.side_to_dir("R", minetest.dir_to_facedir(placer:get_look_dir()))
 		Tube:prepare_pairing(pos, tube_dir, sFormspec)
 		Tube:after_place_node(pos, {tube_dir})
-		local meta = M(pos)
-		local valid_dirs = minetest.serialize({[tube_dir]=true})
-		meta:set_string('valid_dirs', valid_dirs)
 	end,
 
 	on_receive_fields = function(pos, formname, fields, player)
@@ -78,4 +75,4 @@ minetest.register_craft({
 	},
 })
 
-Tube:add_secondary_node_names({"tubelib_addons3:teleporter"})
+Tube:add_secondary_node_names({"tubelib_addons3:teleporter"}, {B=false, R=true, F=false, L=false, D=false, U=false})
