@@ -75,4 +75,4 @@ minetest.register_craft({
 	},
 })
 
-Tube:add_secondary_node_names({"tubelib_addons3:teleporter"}, {B=false, R=false, F=false, L=true, D=false, U=false})
+Tube:add_secondary_node_names({"tubelib_addons3:teleporter"}, {B=false, R=true, F=false, L=false, D=false, U=false})
