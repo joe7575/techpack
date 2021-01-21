@@ -411,7 +411,6 @@ function tubelib.pull_items(pos, side, player_name)
 	return nil
 end
 
-
 function tubelib.push_items(pos, side, items, player_name)
 	local npos, nside, name = get_dest_node(pos, side)
 	if npos == nil then return end
@@ -439,7 +438,6 @@ end
 function tubelib.pull_stack(pos, side, player_name)
 	local npos, nside, name = get_dest_node(pos, side)
 	if npos == nil then return end
-
 	if tubelib_NodeDef[name] then
 		if Tube:is_valid_side(name, nside) == false then
 			return false
