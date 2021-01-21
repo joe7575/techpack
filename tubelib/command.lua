@@ -340,8 +340,8 @@ function tubelib.register_node(name, add_names, node_definition)
 	end
 	if node_definition.on_pull_item or node_definition.on_push_item or
 			node_definition.is_pusher then
-		Tube:add_secondary_node_names({name})
-		Tube:add_secondary_node_names(add_names)
+		Tube:add_secondary_node_names({name}, node_definition.valid_sides)
+		Tube:add_secondary_node_names(add_names, node_definition.valid_sides)
 
 		tubelib.KnownNodes[name] = true
 		for _,n in ipairs(add_names) do
