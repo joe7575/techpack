@@ -404,7 +404,7 @@ function tubelib.pull_items(pos, side, player_name)
 	if npos == nil then return end
 	if tubelib_NodeDef[name] and tubelib_NodeDef[name].on_pull_item then
 		if Tube:is_valid_side(name, nside) == false then
-			return false
+			return nil
 		end
 		return tubelib_NodeDef[name].on_pull_item(npos, nside, player_name)
 	end
@@ -440,7 +440,7 @@ function tubelib.pull_stack(pos, side, player_name)
 	if npos == nil then return end
 	if tubelib_NodeDef[name] then
 		if Tube:is_valid_side(name, nside) == false then
-			return false
+			return nil
 		end
 		if tubelib_NodeDef[name].on_pull_stack then
 			return tubelib_NodeDef[name].on_pull_stack(npos, nside, player_name)
