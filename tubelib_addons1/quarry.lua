@@ -448,6 +448,7 @@ minetest.register_craft({
 
 tubelib.register_node("tubelib_addons1:quarry", 
 	{"tubelib_addons1:quarry_active", "tubelib_addons1:quarry_defect"}, {
+	valid_sides = {L=false},
 	on_pull_item = function(pos, side)
 		return tubelib.get_item(M(pos), "main")
 	end,
