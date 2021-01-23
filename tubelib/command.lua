@@ -349,6 +349,12 @@ function tubelib.register_node(name, add_names, node_definition)
 				Tube:set_valid_sides(n, node_definition.valid_sides)
 			end
 		end
+		if node_definition.invalid_sides then
+			Tube:set_invalid_sides(name, node_definition.invalid_sides)
+			for _,n in ipairs(add_names) do
+				Tube:set_invalid_sides(n, node_definition.invalid_sides)
+			end
+		end
 		tubelib.KnownNodes[name] = true
 		for _,n in ipairs(add_names) do
 			tubelib.KnownNodes[n] = true
