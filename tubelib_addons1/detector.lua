@@ -132,7 +132,7 @@ minetest.register_craft({
 
 
 tubelib.register_node("tubelib_addons1:detector", {"tubelib_addons1:detector_active"}, {
-	valid_sides = {R=true, L=true, B=false, F=false, D=false, U=false},
+	valid_sides = {"R","L"},
 	on_push_item = function(pos, side, item)
 		if side ~= "L" then return false end
 		local player_name = minetest.get_meta(pos):get_string("player_name")

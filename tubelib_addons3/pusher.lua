@@ -219,7 +219,7 @@ minetest.register_craft({
 tubelib.register_node("tubelib_addons3:pusher", 
 	{"tubelib_addons3:pusher_active", "tubelib_addons3:pusher_defect"}, {
 	is_pusher = true,           -- is a pulling/pushing node
-	valid_sides = {R=true, L=true, B=false, F=false, D=false, U=false},
+	valid_sides = {"R","L"},
 
 	on_recv_message = function(pos, topic, payload)
 		local resp = State:on_receive_message(pos, topic, payload)

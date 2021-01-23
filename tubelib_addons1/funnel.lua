@@ -139,7 +139,7 @@ minetest.register_craft({
 
 
 tubelib.register_node("tubelib_addons1:funnel", {}, {
-	valid_sides = {U=false},
+	invalid_sides = {"U"},
 	on_pull_item = function(pos, side)
 		local meta = minetest.get_meta(pos)
 		return tubelib.get_item(meta, "main")

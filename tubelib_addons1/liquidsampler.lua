@@ -281,7 +281,7 @@ minetest.register_craft({
 
 tubelib.register_node("tubelib_addons1:liquidsampler", 
 	{"tubelib_addons1:liquidsampler_active", "tubelib_addons1:liquidsampler_defect"}, {
-	valid_sides = {L=false},
+	invalid_sides = {"L"},
 	on_pull_item = function(pos, side)
 		return tubelib.get_item(M(pos), "dst")
 	end,
