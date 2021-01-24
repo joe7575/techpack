@@ -1,4 +1,4 @@
-# TechPack V2.04
+# TechPack V2.05
 
 TechPack, a Mining, Crafting, &amp; Farming Modpack for Minetest.
 
@@ -114,9 +114,22 @@ The value 200 (default) results in a lifetime for standard machines of about 200
 
 
 ### License
-Copyright (C) 2017-2020 Joachim Stolberg  
+Copyright (C) 2017-2021 Joachim Stolberg
 Code: Licensed under the GNU AGPL version 3 or later. See LICENSE.txt  
 Textures: CC BY-SA 3.0  
+
+
+## Credits
+
+### Contributors
+
+- oversword (PR #43, #57, #58, #59, #60, #62, #68, #74, #76)
+- afkplayer5000 (PR #70, #71)
+- andrenete (PR #37, #66)
+- fluxionary (PR #27, #28, #30, #31, #34, #54)
+- Arigatas (PR #51, #53)
+- realmicu (PR #6, #8, #12)
+- theFox6 (PR #3, #4)
 
 
 ### Dependencies 
@@ -152,7 +165,7 @@ tubelib_addons1 optional: unified_inventory
 - 2019-01-28  V2.02  * Logic Not added, output reduction on Harvester, Fermenter, and Gravel Sieve
 - 2019-04-23  V2.03  * Piston/WorldEdit/replacer detection added, farming and grinder recipes added
 - 2020-11-20  V2.04  * Switch to AGPL v3, adapt to minetest 5.3, add translation support, fix minor bugs
-
+- 2021-01-24  V2.05  * PR #74, #76: Implement checks for valid connection sides for many nodes
 
 ## New in v2 (from players point of view)
 - Almost all machines break after a certain amount of time (switch into the state 'defect') and have to be repaired.

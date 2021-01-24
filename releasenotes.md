@@ -1,6 +1,23 @@
 # Release Notes for ModPack TechPack [techpack]
 
 
+## V2.05.00 (2021-01-24)
+
+### Additions
+
+### Removals
+
+### Changes
+- Pushers only connect from the left & right
+- Detectors only connect from the left & right, still need condition to stop pushing in from the right
+- Funnels refuse to connect from the top
+- Liquid samplers & quarries refuse to connect from the front (left)
+- Black hole push filter replaced with valid_sides logic
+
+### Fixes
+- Pushers can be used to send items into the invalid faces of a node (#72)
+
+
 ## V2.04.01 (2020-12-18)
 
 ### Additions

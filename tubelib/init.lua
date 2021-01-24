@@ -97,8 +97,8 @@ minetest.register_craft({
 })
 
 
-if tubelib2.version < 0.8 then
-	minetest.log("error", "TechPack/Tubelib requires tubelib2 version 0.8 or newer!!!")
+if tubelib2.version < 2.0 then
+	minetest.log("error", "TechPack/Tubelib requires tubelib2 version 2.0 or newer!!!")
 else
 	dofile(minetest.get_modpath("tubelib") .. "/tubes.lua")
 	dofile(minetest.get_modpath("tubelib") .. "/command.lua")
