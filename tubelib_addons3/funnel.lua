@@ -141,6 +141,7 @@ minetest.register_craft({
 
 
 tubelib.register_node("tubelib_addons3:funnel", {}, {
+	invalid_sides = {"U"},
 	on_pull_stack = function(pos, side)
 		local meta = minetest.get_meta(pos)
 		return tubelib.get_stack(meta, "main")

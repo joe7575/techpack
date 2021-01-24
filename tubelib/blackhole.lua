@@ -76,15 +76,13 @@ tubelib.register_node("tubelib:blackhole", {}, {
 	on_pull_item = nil,  		-- not needed
 	on_unpull_item = nil,		-- not needed
 	
+	valid_sides = {"L"},
 	on_push_item = function(pos, side, item)
-		if side == "L" then
-			local meta = minetest.get_meta(pos)
-			local disappeared = meta:get_int("disappeared") + item:get_count()
-			meta:set_int("disappeared", disappeared)
-			meta:set_string("infotext", disappeared.." "..S("items disappeared"))
-			return true		
-		end
-		return false
+		local meta = minetest.get_meta(pos)
+		local disappeared = meta:get_int("disappeared") + item:get_count()
+		meta:set_int("disappeared", disappeared)
+		meta:set_string("infotext", disappeared.." "..S("items disappeared"))
+		return true
 	end,
 	
 	on_recv_message = function(pos, topic, payload)

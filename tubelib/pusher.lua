@@ -238,7 +238,7 @@ tubelib.register_node("tubelib:pusher",
 	on_push_item = nil,			-- pusher has no inventory
 	on_unpull_item = nil,		-- pusher has no inventory
 	is_pusher = true,           -- is a pulling/pushing node
-	
+	valid_sides = {"R","L"},
 	on_recv_message = function(pos, topic, payload)
 		local resp = State:on_receive_message(pos, topic, payload)
 		if resp then
