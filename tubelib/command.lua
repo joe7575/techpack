@@ -186,33 +186,13 @@ local function register_lbm(name, nodenames)
 	})
 end
 
-
-local DirToSide = {"B", "R", "F", "L", "D", "U"}
-
-local function dir_to_side(dir, param2)
-	if dir < 5 then
-		dir = (((dir - 1) - (param2 % 4)) % 4) + 1
-	end
-	return DirToSide[dir]
-end
-
-local SideToDir = {B=1, R=2, F=3, L=4, D=5, U=6}
-
-local function side_to_dir(side, param2)
-	local dir = SideToDir[side]
-	if dir < 5 then
-		dir = (((dir - 1) + (param2 % 4)) % 4) + 1
-	end
-	return dir
-end
-
 local function get_dest_node(pos, side)
 	local _,node = Tube:get_node(pos)
-	local dir = side_to_dir(side, node.param2)
+	local dir = tubelib2.side_to_dir(side, node.param2)
 	local spos, sdir = Tube:get_connected_node_pos(pos, dir)
 	if not (spos and sdir) then return end
 	_,node = Tube:get_node(spos)
-	local out_side = dir_to_side(tubelib2.Turn180Deg[sdir], node.param2)
+	local out_side = tubelib2.dir_to_side(tubelib2.Turn180Deg[sdir], node.param2)
 	return spos, out_side, Name2Name[node.name] or node.name
 end
 
@@ -363,6 +343,18 @@ function tubelib.register_node(name, add_names, node_definition)
 		Tube:add_secondary_node_names({name})
 		Tube:add_secondary_node_names(add_names)
 
+		if node_definition.valid_sides then
+			Tube:set_valid_sides(name, node_definition.valid_sides)
+			for _,n in ipairs(add_names) do
+				Tube:set_valid_sides(n, node_definition.valid_sides)
+			end
+		end
+		if node_definition.invalid_sides then
+			Tube:set_invalid_sides(name, node_definition.invalid_sides)
+			for _,n in ipairs(add_names) do
+				Tube:set_invalid_sides(n, node_definition.invalid_sides)
+			end
+		end
 		tubelib.KnownNodes[name] = true
 		for _,n in ipairs(add_names) do
 			tubelib.KnownNodes[n] = true
@@ -423,6 +415,9 @@ function tubelib.pull_items(pos, side, player_name)
 	local npos, nside, name = get_dest_node(pos, side)
 	if npos == nil then return end
 	if tubelib_NodeDef[name] and tubelib_NodeDef[name].on_pull_item then
+		if Tube:is_valid_side(name, nside) == false then
+			return nil
+		end
 		return tubelib_NodeDef[name].on_pull_item(npos, nside, player_name)
 	end
 	return nil
@@ -432,6 +427,9 @@ function tubelib.push_items(pos, side, items, player_name)
 	local npos, nside, name = get_dest_node(pos, side)
 	if npos == nil then return end
 	if tubelib_NodeDef[name] and tubelib_NodeDef[name].on_push_item then
+		if Tube:is_valid_side(name, nside) == false then
+			return false
+		end
 		return tubelib_NodeDef[name].on_push_item(npos, nside, items, player_name)
 	elseif name == "air" then
 		minetest.add_item(npos, items)
@@ -453,6 +451,9 @@ function tubelib.pull_stack(pos, side, player_name)
 	local npos, nside, name = get_dest_node(pos, side)
 	if npos == nil then return end
 	if tubelib_NodeDef[name] then
+		if Tube:is_valid_side(name, nside) == false then
+			return nil
+		end
 		if tubelib_NodeDef[name].on_pull_stack then
 			return tubelib_NodeDef[name].on_pull_stack(npos, nside, player_name)
 		elseif tubelib_NodeDef[name].on_pull_item then
