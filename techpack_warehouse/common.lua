@@ -209,7 +209,8 @@ function techpack_warehouse.allow_metadata_inventory_put(self, pos, listname, in
 	local main_stack = inv:get_stack("main", index)
 	local item_name = inv:get_stack("filter", index):get_name()
 	if listname == "input" and item_name == stack:get_name() then
-		return math.min(stack:get_count(), self.inv_size - main_stack:get_count())
+		local input_stack = inv:get_stack("input", index)
+		return math.min(stack:get_count(), self.inv_size - main_stack:get_count() - input_stack:get_count())
 	elseif listname == "filter" and item_name == main_stack:get_name() then
 		return 1
 	elseif listname == "shift" then
