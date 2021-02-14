@@ -52,7 +52,7 @@ local settings_get
 if minetest.setting_get then
 	settings_get = minetest.setting_get
 else
-	settings_get = function(...) endminetest.settings:get(...) end
+	settings_get = function(...) return minetest.settings:get(...) end
 end
 gravelsieve.ore_rarity = tonumber(settings_get("gravelsieve_ore_rarity")) or 1.16
 gravelsieve.ore_max_elevation = tonumber(settings_get("gravelsieve_ore_max_elevation")) or 0
@@ -60,7 +60,9 @@ gravelsieve.ore_min_elevation = tonumber(settings_get("gravelsieve_ore_min_eleva
 local y_spread = math.max(1 + gravelsieve.ore_max_elevation - gravelsieve.ore_min_elevation, 1)
 
 -- Increase the probability over the natural occurrence
-local PROBABILITY_FACTOR = 3
+local PROBABILITY_FACTOR = tonumber(settings_get("gravelsieve_probability_factor")) or 3
+
+local STEP_DELAY = tonumber(settings_get("gravelsieve_step_delay")) or 1.0
 
 -- tubelib aging feature
 local AGING_LEVEL1 = nil
@@ -74,6 +76,8 @@ end
 gravelsieve.ore_probability = {
 }
 
+gravelsieve.process_probabilities = {}
+
 
 -- Pipeworks support
 local pipeworks_after_dig = nil
@@ -82,10 +86,6 @@ local pipeworks_after_place = function(pos, placer) end
 if minetest.get_modpath("pipeworks") and pipeworks ~= nil then
 	pipeworks_after_dig = pipeworks.after_dig
 	pipeworks_after_place = pipeworks.after_place
-end
-
-local function harmonic_sum(a, b)
-	return 1 / ((1 / a) + (1 / b))
 end
 
 local function calculate_probability(item)
@@ -97,7 +97,7 @@ end
 
 local function pairs_by_values(t, f)
     if not f then
-        f = function(a, b) return a < b end
+        f = function(a, b) return a > b end
     end
     local s = {}
     for k, v in pairs(t) do
@@ -146,13 +146,14 @@ local function add_ores()
 				local count
 				drop, count = parse_drop(drop)
 
-				local probability = calculate_probability(item) / count
+				local probability = calculate_probability(item)
 				if probability > 0 then
+					local probabilityFraction = count / probability
 					local cur_probability = gravelsieve.ore_probability[drop]
 					if cur_probability then
-						gravelsieve.ore_probability[drop] = harmonic_sum(cur_probability, probability)
+						gravelsieve.ore_probability[drop] = cur_probability+probabilityFraction
 					else
-						gravelsieve.ore_probability[drop] = probability
+						gravelsieve.ore_probability[drop] = probabilityFraction
 					end
 				end
 			end
@@ -161,13 +162,117 @@ local function add_ores()
 	minetest.log("action", "[gravelsieve] ore probabilties:")
 	local overall_probability = 0.0
 	for name,probability in pairs_by_values(gravelsieve.ore_probability) do
-		minetest.log("action", ("[gravelsieve] %-32s: 1 / %.02f"):format(name, probability))
-		overall_probability = overall_probability + 1.0/probability
+		minetest.log("action", ("[gravelsieve] %-32s: 1 / %.02f"):format(name, 1.0/probability))
+		overall_probability = overall_probability + probability
 	end
 	minetest.log("action", ("[gravelsieve] Overall probability %f"):format(overall_probability))
 end
 
-minetest.after(1, add_ores)
+local function default_configuration()
+	local normal_gravel = "default:gravel"
+	local sieved_gravel = "gravelsieve:sieved_gravel"
+	local gravel_probabilities = table.copy(gravelsieve.ore_probability)
+	local overall_probability = 0
+	for _,v in pairs(gravel_probabilities) do
+		overall_probability = overall_probability+v
+	end
+	local remainder_probability = 0
+	if overall_probability < 1 then
+		remainder_probability = 1-overall_probability
+	end
+	gravel_probabilities[normal_gravel] = remainder_probability/2.0
+	gravel_probabilities[sieved_gravel] = remainder_probability/2.0
+
+	return {
+		[normal_gravel] = gravel_probabilities,
+		[sieved_gravel] = {
+			[sieved_gravel] = 1
+		}
+	}
+end
+
+local function normalize_probabilities(conf)
+	local total = 0
+	for _,val in pairs(conf) do
+		if val >= 0 then
+			total = total + val
+		end
+	end
+	local normalized = {}
+	for key,val in pairs(conf) do
+		if val >= 0 then
+			normalized[key] = val/total
+		end
+	end
+	return normalized
+end
+
+local function normalize_config(current_config)
+	local normalized_config = {}
+	-- Normalize all inputs so their output probabilities always add up to 1
+	for input, output_probabilities in pairs(current_config) do
+		if output_probabilities then
+			normalized_config[input] = normalize_probabilities(output_probabilities)
+		end
+	end
+	return normalized_config
+end
+
+local function merge_config(def_conf, new_conf)
+	local result_conf = table.copy(def_conf)
+	for key,val in pairs(new_conf) do
+		if type(val) == 'table' and type(result_conf[key]) == 'table' then
+			result_conf[key] = merge_config(result_conf[key], val)
+		else
+			result_conf[key] = val
+		end
+	end
+	return result_conf
+end
+
+local function configure_probabilities_step(current_config, funct_or_table)
+	local var_type = type(funct_or_table)
+	local conf
+	if var_type == 'function' then
+		conf = funct_or_table()
+	elseif var_type == 'table' then
+		conf = funct_or_table
+	end
+	if conf then
+		return merge_config(current_config, conf)
+	end
+	return current_config
+end
+
+local configured = false
+local set_probabilities = {default_configuration}
+
+function gravelsieve.set_probabilities(funct_or_table)
+	if configured then
+		-- This is here so you can do hard overrides after everything has loaded if you need to
+		-- Otherwise the order mods are loaded may cause them to override your configs
+		local current_config = gravelsieve.process_probabilities
+		current_config = configure_probabilities_step(current_config, funct_or_table)
+		gravelsieve.process_probabilities = normalize_config(current_config)
+	else
+		-- Build up a list of callbacks to be run after all mods are loaded
+		table.insert(set_probabilities, funct_or_table)
+	end
+end
+
+local function configure_probabilities()
+	configured = true
+	add_ores()
+	local current_config = {}
+
+	-- Run through all configs in order and merge them
+	for _,funct_or_table in ipairs(set_probabilities) do
+		current_config = configure_probabilities_step(current_config, funct_or_table)
+	end
+	gravelsieve.process_probabilities = normalize_config(current_config)
+end
+
+minetest.after(1, configure_probabilities)
 
 local sieve_formspec =
 	"size[8,8]"..
@@ -240,47 +345,34 @@ local function swap_node(pos, meta, start)
 end
 
 -- place ores to dst according to the calculated probability
-local function random_ore(inv, src)
-	local num
-	for ore, probability in pairs(gravelsieve.ore_probability) do
-		if math.random(probability) == 1 then
-			local item = ItemStack(ore)
-			if inv:room_for_item("dst", item) then
-				inv:add_item("dst", item)
-				return true     -- ore placed
+local function move_random_ore(inv, item)
+	local running_total = 0
+	local probabilities = gravelsieve.process_probabilities[item]
+	local chosen = math.random()
+	for ore, probability in pairs(probabilities) do
+		running_total = running_total + probability
+		if chosen < running_total then
+			local ore_item = ItemStack(ore)
+			if not inv:room_for_item("dst", ore_item) then
+				return false
 			end
+			inv:add_item("dst", ore_item)
+			return true
 		end
 	end
-	return false    -- gravel has to be moved
+	return false    -- Failure, this shouldn't really happen but might due to floating point errors
 end
-
-
-local function add_gravel_to_dst(meta, inv)
-	-- maintain a counter for gravel kind selection
-	local gravel_cnt = meta:get_int("gravel_cnt") + 1
-	meta:set_int("gravel_cnt", gravel_cnt)
-
-	if (gravel_cnt % 2) == 0 then  -- gravel or sieved gravel?
-		inv:add_item("dst", ItemStack("default:gravel"))        -- add to dest
-	else
-		inv:add_item("dst", ItemStack("gravelsieve:sieved_gravel")) -- add to dest
-	end
-end
-
 
 -- move gravel and ores to dst
-local function move_src2dst(meta, pos, inv, src, dst)
+local function move_src2dst(meta, pos, inv, item, dst)
+	local src = ItemStack(item)
 	if inv:room_for_item("dst", dst) and inv:contains_item("src", src) then
 		local res = swap_node(pos, meta, false)
 		if res then                                     -- time to move one item?
-			if src:get_name() == "default:gravel" then  -- will we find ore?
-				if not random_ore(inv, src) then        -- no ore found?
-					add_gravel_to_dst(meta, inv)
-				end
-			else
-				inv:add_item("dst", ItemStack("gravelsieve:sieved_gravel")) -- add to dest
+			local processed = move_random_ore(inv, item)
+			if processed then
+				inv:remove_item("src", src)
 			end
-			inv:remove_item("src", src)
 		end
 		return true  -- process finished
 	end
@@ -291,19 +383,16 @@ end
 local function sieve_node_timer(pos, elapsed)
 	local meta = minetest.get_meta(pos)
 	local inv = meta:get_inventory()
-	local gravel = ItemStack("default:gravel")
-	local gravel_sieved = ItemStack("gravelsieve:sieved_gravel")
 
-	if move_src2dst(meta, pos, inv, gravel) then
-		aging(pos, meta)
-		return true
-	elseif move_src2dst(meta, pos, inv, gravel_sieved) then
-		aging(pos, meta)
-		return true
-	else
-		minetest.get_node_timer(pos):stop()
-		return false
+	for item,probabilities in pairs(gravelsieve.process_probabilities) do
+		if probabilities and move_src2dst(meta, pos, inv, item) then
+			aging(pos, meta)
+			return true
+		end
 	end
+
+	minetest.get_node_timer(pos):stop()
+	return false
 end
 
 
@@ -356,7 +445,7 @@ for idx = 0,4 do
 					local meta = minetest.get_meta(pos)
 					swap_node(pos, meta, true)
 				else
-					minetest.get_node_timer(pos):start(1.0)
+					minetest.get_node_timer(pos):start(STEP_DELAY)
 				end
 				return inv:add_item("src", stack)
 			end,
@@ -425,7 +514,7 @@ for idx = 0,4 do
 				local meta = minetest.get_meta(pos)
 				swap_node(pos, meta, true)
 			else
-				minetest.get_node_timer(pos):start(1.0)
+				minetest.get_node_timer(pos):start(STEP_DELAY)
 			end
 		end,
 
@@ -440,7 +529,7 @@ for idx = 0,4 do
 					meta:set_int("gravel_cnt", 0)
 				end
 			else
-				minetest.get_node_timer(pos):start(1.0)
+				minetest.get_node_timer(pos):start(STEP_DELAY)
 			end
 		end,
 
@@ -449,7 +538,7 @@ for idx = 0,4 do
 				local meta = minetest.get_meta(pos)
 				swap_node(pos, meta, true)
 			else
-				minetest.get_node_timer(pos):start(1.0)
+				minetest.get_node_timer(pos):start(STEP_DELAY)
 			end
 		end,
 
@@ -559,7 +648,7 @@ if minetest.global_exists("tubelib") then
 			return tubelib.get_item(meta, "dst")
 		end,
 		on_push_item = function(pos, side, item)
-			minetest.get_node_timer(pos):start(1.0)
+			minetest.get_node_timer(pos):start(STEP_DELAY)
 			local meta = minetest.get_meta(pos)
 			return tubelib.put_item(meta, "src", item)
 		end,
@@ -568,7 +657,7 @@ if minetest.global_exists("tubelib") then
 			return tubelib.put_item(meta, "dst", item)
 		end,
 		on_node_load = function(pos)
-			minetest.get_node_timer(pos):start(1.0)
+			minetest.get_node_timer(pos):start(STEP_DELAY)
 		end,
 		on_node_repair = function(pos)
 			local meta = minetest.get_meta(pos)
@@ -579,7 +668,7 @@ if minetest.global_exists("tubelib") then
 			inv:set_size('src', 1)
 			inv:set_size('dst', 16)
 			swap_node(pos, meta, false)
-			minetest.get_node_timer(pos):start(1.0)
+			minetest.get_node_timer(pos):start(STEP_DELAY)
 			return true
 		end,
 	})
