@@ -83,7 +83,7 @@ local function allow_metadata_inventory_take(pos, listname, index, stack, player
 end
 
 local function grinding(pos, meta, inv)
-	for _,stack in ipairs(inv:get_list("src")) do
+	for _,stack in ipairs(inv:get_list("src") or {}) do
 		if not stack:is_empty() then
 			local name = stack:get_name()
 			if Recipes[name] then
