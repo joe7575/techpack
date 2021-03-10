@@ -24,6 +24,7 @@ local M = minetest.get_meta
 local STANDBY_TICKS = 5
 local COUNTDOWN_TICKS = 5
 local CYCLE_TIME = 2
+local FIRST_CYCLE = 0.5
 
 local State = tubelib.NodeStates:new({
 	node_name_passive = "tubelib_addons3:pusher",
@@ -31,6 +32,7 @@ local State = tubelib.NodeStates:new({
 	node_name_defect = "tubelib_addons3:pusher_defect",
 	infotext_name = S("HighPerf Pusher"),
 	cycle_time = CYCLE_TIME,
+	first_cycle_time = FIRST_CYCLE,
 	standby_ticks = STANDBY_TICKS,
 	has_item_meter = true,
 	aging_factor = 50,
@@ -46,7 +48,9 @@ local function pushing(pos, meta)
 			State:blocked(pos, meta)
 			return
 		end
-		State:keep_running(pos, meta, COUNTDOWN_TICKS, 1)
+		if State.get_state(pos, meta) ~= tubelib.STOPPED then
+			State:keep_running(pos, meta, COUNTDOWN_TICKS, 1)
+		end
 		return
 	end
 	State:idle(pos, meta)

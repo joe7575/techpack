@@ -84,6 +84,7 @@ function NodeStates:new(attr)
 	local o = {
 		-- mandatory
 		cycle_time = attr.cycle_time, -- for running state
+		first_cycle_time = attr.first_cycle_time, -- for first run, not required
 		standby_ticks = attr.standby_ticks, -- for standby state
 		has_item_meter = attr.has_item_meter, -- true/false
 		-- optional
@@ -175,8 +176,26 @@ function NodeStates:start(pos, meta, called_from_on_timer)
 		if self.formspec_func then
 			meta:set_string("formspec", self.formspec_func(self, pos, meta))
 		end
-		minetest.get_node_timer(pos):start(self.cycle_time)
+		local cycle_time = self.cycle_time
+		if self.first_cycle_time then
+			if meta:get_int("tubelib_first_run") == 1 then
+				meta:set_int("tubelib_first_run", 0)
+				cycle_time = self.cycle_time
+			else
+				meta:set_int("tubelib_first_run", 1)
+				cycle_time = self.first_cycle_time
+			end
+		end
+		minetest.get_node_timer(pos):start(cycle_time)
 		return true
+	end
+	if self.first_cycle_time and meta:get_int("tubelib_first_run") == 1 then
+		local cycle_time = self.cycle_time
+		local timer = minetest.get_node_timer(pos)
+		minetest.after(0, function ()
+			timer:set(cycle_time, timer:get_elapsed())
+		end)
+		meta:set_int("tubelib_first_run", 0)
 	end
 	return false
 end
