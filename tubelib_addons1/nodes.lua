@@ -110,6 +110,8 @@ if farming.mod == "redo" then
 	fn('farming:onion_5',     'farming:onion 2',        'farming:onion_1')
 	fn('farming:pea_5',       'farming:pea_pod 3',      'farming:pea_1')
 	fn('farming:pepper_5',    'farming:pepper 2',       'farming:pepper_1')
+	fn('farming:pepper_6',    'farming:pepper_yellow 2','farming:pepper_1')
+	fn('farming:pepper_7',    'farming:pepper_red 2',   'farming:pepper_1')
 	fn('farming:pineapple_8', 'farming:pineapple 1',    'farming:pineapple_1')
 end
 
