@@ -254,6 +254,21 @@ gn("ethereal:illumishroom")
 gn("ethereal:illumishroom2")
 gn("ethereal:illumishroom3")
 
+-------------------------------------------------------------------------------
+-- underch Ground
+-------------------------------------------------------------------------------
+
+if minetest.get_modpath("underch") then
+	for regnodename,v in pairs(minetest.registered_nodes) do
+		if string.find(regnodename, "underch:") then
+			if string.find(regnodename, "_cobble") and not string.find(regnodename, "_wall") then
+				gnname = string.gsub(regnodename, "_cobble", "")
+				print("tubelib_addons1.register_ground_node: " .. gnname)
+				gn(gnname, regnodename)
+			end
+		end
+	end
+end
 
 -------------------------------------------------------------------------------
 -- Registered flowers
