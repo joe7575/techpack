@@ -337,6 +337,17 @@ else
 	tubelib.add_grinder_recipe({input="default:sand", output="default:clay"})
 end
 
+if minetest.get_modpath("underch") then
+	for regnodename,v in pairs(minetest.registered_nodes) do
+		if string.find(regnodename, "underch:") then
+			if string.find(regnodename, "_cobble") and not string.find(regnodename, "_wall") then
+				print("tubelib.add_grinder_recipe: " .. regnodename)
+				tubelib.add_grinder_recipe({input=regnodename, output="default:gravel"})
+			end
+		end
+	end
+end
+
 tubelib.add_grinder_recipe({input="default:sandstone", output="default:sand 4"})
 tubelib.add_grinder_recipe({input="default:desert_sandstone", output="default:desert_sand 4"})
 tubelib.add_grinder_recipe({input="default:silver_sandstone", output="default:silver_sand 4"})
