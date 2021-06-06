@@ -1,6 +1,22 @@
 # Release Notes for ModPack TechPack [techpack]
 
 
+## V2.06.00 (2021-06-06)
+
+### Additions
+- Add chest cart for the mod minecart (optional)
+- Add support for the mod "underch" (#88)
+
+### Removals
+
+### Changes
+- Account for new red & yellow pepper varieties (#86)
+- Pusher improvements (#84, #83)
+
+### Fixes
+- Fix crash with "ethereal:strawberry" (#89)
+
+
 ## V2.05.00 (2021-01-24)
 
 ### Additions

@@ -57,6 +57,13 @@ tn("default:pine_tree",   "default:pine_tree",   "default:pine_sapling")
 tn("default:acacia_tree", "default:acacia_tree", "default:acacia_sapling")
 tn("default:jungletree",  "default:jungletree",  "default:junglesapling")
 
+tn("default:bush_stem", "default:bush_stem", "default:bush_sapling")
+tn("default:acacia_bush_stem", "default:acacia_bush_stem", "default:acacia_bush_sapling")
+tn("default:pine_bush_stem", "default:pine_bush_stem", "default:pine_bush_sapling")
+
+fn("default:pine_bush_needles")
+tubelib_addons1.FarmingNodes["default:pine_bush_needles"].leaves = true -- accepted as leaves
+
 fn("default:leaves")
 fn("default:aspen_leaves")
 fn("default:pine_needles")

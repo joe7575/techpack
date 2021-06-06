@@ -1,4 +1,4 @@
-# TechPack V2.05
+# TechPack V2.06
 
 TechPack, a Mining, Crafting, &amp; Farming Modpack for Minetest.
 
@@ -27,6 +27,7 @@ TechPack is a collection of following Mods:
 **The moved/copied nodes will not have valid node numbers, which could lead to a server crash.**
 
 TechPack provides:
+
 - lumber tubes to connect 2 nodes
 - a Pusher node to pull/push items through tubes
 - a Distributor node with 4 output channels to sort incoming items
@@ -64,9 +65,11 @@ TechPack provides:
 - a Display node for text outputs of the Controller
 - Metal ladders, stairways, and bridges
 - Warehouse Boxes in steel, copper, and gold
+- A chect cart for the mod minecart
 
 
 TechPack supports the following mods:
+
 - Farming Redo (Harvester, Fermenter)
 - Ethereal (Harvester, Quarry, Fermenter)
 - Pipeworks (Gravel Sieve)
@@ -75,12 +78,14 @@ TechPack supports the following mods:
 
 
 ### Configuration
+
 The following can be changed in the minetest menu (Settings -> Advanced Settings -> Mods -> tubelib) or directly in 'minetest.conf'
 - Maximum number of Forceload Blocks per player
 - Enable Basalt Stone (and disable ore generation via Cobblestone generator)
 - Machine aging value to calculate the lifetime of machines
 
 Example for 'minetest.conf':
+
 ```LUA
 tubelib_basalt_stone_enabled = false
 tubelib_max_num_forceload_blocks = 12
@@ -88,6 +93,7 @@ tubelib_machine_aging_value = 200
 ```
 
 Example for a v1 compatible 'minetest.conf':
+
 ```LUA
 tubelib_basalt_stone_enabled = false
 tubelib_max_num_forceload_blocks = 0
@@ -96,24 +102,30 @@ tubelib_machine_aging_value = 999999
 
 
 #### Maximum number of Forceload Blocks per player
-Default value is 12.  
+
+Default value is 12.
 I higher number allows to build larger farms and machines which keep loaded, but increases the server load, too.
 But the areas are only loaded when the player is online.
 To be able to use e.g. 12 forceloaded blocks per player, the pararamter 'max_forceloaded_blocks' in 'minetest.conf' has to be ajusted. 
 
+
 #### Enable Basalt Stone (and disable ore generation via Cobblestone generator)
-The lava/water Cobblestone generator allows to produce infinite Cobblestone. By means of Quarry, 
+
+The lava/water Cobblestone generator allows to produce infinite Cobblestone. By means of Quarry,
 Grinder, and Gravel Sieve it allows to infinite generate ores.  
 This can be disabled by means of the setting parameter. If enabled, the Cobblestone 
 generator generates Basalt instead, which only can be used for building purposes.
 
+
 #### Machine aging value to calculate the lifetime of machines
-Default value is 200.  
+
+Default value is 200.
 This aging value is used to calculate the lifetime of machines before they go defect.
 The value 200 (default) results in a lifetime for standard machines of about 2000 - 8000 item processing cycles (~2-4 hours).
 
 
 ### License
+
 Copyright (C) 2017-2021 Joachim Stolberg
 Code: Licensed under the GNU AGPL version 3 or later. See LICENSE.txt  
 Textures: CC BY-SA 3.0  
@@ -121,26 +133,33 @@ Textures: CC BY-SA 3.0
 
 ## Credits
 
+
 ### Contributors
 
-- oversword (PR #43, #57, #58, #59, #60, #62, #68, #74, #76)
+- oversword (PR #43, #57, #58, #59, #60, #62, #68, #74, #76, and many more)
 - afkplayer5000 (PR #70, #71)
 - andrenete (PR #37, #66)
 - fluxionary (PR #27, #28, #30, #31, #34, #54)
 - Arigatas (PR #51, #53)
 - realmicu (PR #6, #8, #12)
 - theFox6 (PR #3, #4)
+- superfloh247 (PR #89, #88, #87)
+- SciFurz (via forum)
 
 
 ### Dependencies 
-default, doors, intllib, basic_materials  
+
+default, doors, intllib, basic_materials
 tubelib2 (![GitHub](https://github.com/joe7575/tubelib2))  
 Tubelib Color Lamps optional: unifieddyes  
 SmartLine Controller optional: mail  
 Gravelsieve optional: moreores, hopper, pipeworks  
 tubelib_addons1 optional: unified_inventory
+tubelib_addons13 optional: minecart
+
 
 ### History 
+
 - 2018-03-18  V1.00  * Tubelib, tubelib_addons1, tubelib_addons2, smartline, and gravelsieve combined to one modpack.
 - 2018-03-24  V1.01  * Support for Ethereal added
 - 2018-03-27  V1.02  * Timer improvements for unloaded areas
@@ -166,8 +185,11 @@ tubelib_addons1 optional: unified_inventory
 - 2019-04-23  V2.03  * Piston/WorldEdit/replacer detection added, farming and grinder recipes added
 - 2020-11-20  V2.04  * Switch to AGPL v3, adapt to minetest 5.3, add translation support, fix minor bugs
 - 2021-01-24  V2.05  * PR #74, #76: Implement checks for valid connection sides for many nodes
+- 2021-06-06  V2.06  * PR #78 - #89, chest cart added
+
 
 ## New in v2 (from players point of view)
+
 - Almost all machines break after a certain amount of time (switch into the state 'defect') and have to be repaired.
 - A Repair Kit is available to repair defect machines.
 - A Forceload block (16x16x16) is added which keeps the corresponding area loaded and the machines operational as far as the player is logged in.
@@ -178,6 +200,7 @@ tubelib_addons1 optional: unified_inventory
 
 
 ## New in v2 (from admins point of view)
+
 - settingtypes introduced with the following settings: tubelib_max_num_forceload_blocks, tubelib_basalt_stone_enabled, tubelib_machine_aging_value
 - the new mods 'techpack_stairway' and 'techpack_warehouse' have to be enabled
 - TechPack depends now on the mod 'basic_materials' and 'tubelib2' (![GitHub](https://github.com/joe7575/tubelib2))
