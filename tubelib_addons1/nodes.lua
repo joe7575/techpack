@@ -118,7 +118,7 @@ end
 -------------------------------------------------------------------------------
 -- Ethereal Farming
 -------------------------------------------------------------------------------
-fn("ethereal:strawberry_8",   "ethereal:strawberry 2",	     "ethereal:strawberry 1")
+fn("ethereal:strawberry_8",   "ethereal:strawberry 2",	     "ethereal:strawberry_1")
 fn("ethereal:onion_5",        "ethereal:wild_onion_plant 2", "ethereal:onion_1")
 
 

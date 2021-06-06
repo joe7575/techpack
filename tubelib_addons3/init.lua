@@ -21,3 +21,7 @@ dofile(minetest.get_modpath("tubelib_addons3") .. '/distributor.lua')
 dofile(minetest.get_modpath("tubelib_addons3") .. '/pushing_chest.lua')
 dofile(minetest.get_modpath("tubelib_addons3") .. '/teleporter.lua')
 dofile(minetest.get_modpath("tubelib_addons3") .. '/funnel.lua')
+
+if minetest.global_exists("minecart") then
+	dofile(minetest.get_modpath("tubelib_addons3") .. '/chest_cart.lua')
+end

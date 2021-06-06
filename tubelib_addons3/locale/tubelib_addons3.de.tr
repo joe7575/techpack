@@ -7,6 +7,10 @@
 HighPerf Chest=HighPerf Kiste
 connected with=verbunden mit
 
+### chest_cart.lua ###
+
+TA Chest Cart=TA Kistenwagen
+
 ### distributor.lua ###
 
 HighPerf Distributor=HighPerf Verteiler
