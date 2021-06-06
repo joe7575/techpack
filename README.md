@@ -65,7 +65,7 @@ TechPack provides:
 - a Display node for text outputs of the Controller
 - Metal ladders, stairways, and bridges
 - Warehouse Boxes in steel, copper, and gold
-- A chect cart for the mod minecart
+- A chest cart for the mod minecart
 
 
 TechPack supports the following mods:
