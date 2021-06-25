@@ -124,6 +124,7 @@ for idx,color in ipairs(tColors) do
 
 		paramtype = 'light',
 		light_source = minetest.LIGHT_MAX,	
+		sounds = default.node_sound_stone_defaults(),
 		groups = {choppy=2, cracky=1, not_in_creative_inventory=1},
 		is_ground_content = false,
 		drop = "tubelib_addons2:lamp"
