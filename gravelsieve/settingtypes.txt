@@ -1,7 +1,4 @@
-# Rarity factor to find ores when sieving with the Gravel Sieve
-# 1.0 is according to the mapgen generator
-# 2.0 means half as many ores as result
-# 0.5 means twice as many ores as result
-gravelsieve_ore_rarity (Rarity factor to find ores) float 1.16
-gravelsieve_ore_max_elevation (Maximum elevation considered when calculating ore distribution) int 0 -30912 30927
-gravelsieve_ore_min_elevation (Minimum elevation considered when calculating ore distribution) int -30912 -30912 30927
+gravelsieve.step_delay (Delay between sieving steps) float 1.0
+gravelsieve.ore_rarity (Multiplier to make ores more or less common than they appear in the world) float 0.387
+gravelsieve.ore_max_elevation (The maximum world height ores will be searched for) int 0
+gravelsieve.ore_min_elevation (The minimum world height ores will be searched for) int -30912
