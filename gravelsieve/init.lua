@@ -627,6 +627,10 @@ if minetest.global_exists("tubelib") then
 			end
 		end,
 
+		allow_metadata_inventory_put = allow_metadata_inventory_put,
+		allow_metadata_inventory_move = allow_metadata_inventory_move,
+		allow_metadata_inventory_take = allow_metadata_inventory_take,
+
 		paramtype = "light",
 		sounds = default.node_sound_wood_defaults(),
 		paramtype2 = "facedir",
