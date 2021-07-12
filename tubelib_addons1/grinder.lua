@@ -364,6 +364,7 @@ if minetest.get_modpath("underch") then
 	end
 end
 
+--Ethereal trees
 if minetest.get_modpath("ethereal") then
 	for k,v in pairs({
 		["ethereal:sakura_trunk"] = "ethereal:sakura_leaves 8",
@@ -378,3 +379,30 @@ if minetest.get_modpath("ethereal") then
 		["ethereal:olive_trunk"] = "ethereal:olive_leaves 8"}
 	) do tubelib.add_grinder_recipe({input=k, output=v}) end
 end
+
+-- Cool Trees
+for _,v in pairs({
+		"baldcypress",
+		"bamboo",
+		"birch",
+		"cherrytree",
+		"chestnuttree",
+		"clementinetree",
+		"ebony",
+		"hollytree",
+		"larch",
+		"lemontree",
+		"mahogany",
+		"maple",
+		"oak",
+		"palm",
+		"plumtree",
+		"pomegranate",
+		"willow"
+	 }) do
+		if minetest.get_modpath(v) then tubelib.add_grinder_recipe({input=v .. ":trunk", output=v .. ":leaves 8"}) end
+end
+
+if minetest.get_modpath("jacaranda") then tubelib.add_grinder_recipe({input="jacaranda:trunk", output = "jacaranda:blossom_leaves 8"}) end
+
+
