@@ -368,7 +368,7 @@ end
 if minetest.get_modpath("ethereal") then
 	for k,v in pairs({
 		["ethereal:sakura_trunk"] = "ethereal:sakura_leaves 8",
-		["ethereal:willow_trunk"] = "ethereal:willow_leaves 8",
+		["ethereal:willow_trunk"] = "ethereal:willow_twig 8",
 		["ethereal:redwood_trunk"] = "ethereal:redwood_leaves 8",
 		["ethereal:frost_tree"] = "ethereal:frost_leaves 8",
 		["ethereal:yellow_trunk"] = "ethereal:yellowleaves 8",
