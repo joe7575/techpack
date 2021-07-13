@@ -317,25 +317,41 @@ function tubelib.add_grinder_recipe(recipe)
 	end
 end	
 
-
-tubelib.add_grinder_recipe({input="default:cobble", output="default:gravel"})
-tubelib.add_grinder_recipe({input="default:desert_cobble", output="default:gravel"})
-tubelib.add_grinder_recipe({input="default:mossycobble", output="default:gravel"})
-tubelib.add_grinder_recipe({input="default:gravel", output="default:sand"})
-tubelib.add_grinder_recipe({input="gravelsieve:sieved_gravel", output="default:sand"})
-tubelib.add_grinder_recipe({input="default:coral_skeleton", output="default:silver_sand"})
-tubelib.add_grinder_recipe({input="tubelib:basalt_stone", output="default:silver_sand"})
+for k,v in pairs({
+	["default:cobble"] = "default:gravel",
+	["default:desert_cobble"] = "default:gravel",
+	["default:mossycobble"] = "default:gravel",
+	["default:gravel"] = "default:sand",
+	["gravelsieve:sieved_gravel"] = "default:sand",
+	["default:coral_skeleton"] = "default:silver_sand",
+	["tubelib:basalt_stone"] = "default:silver_sand",
+	["default:sandstone"] = "default:sand 4",
+	["default:desert_sandstone"] = "default:desert_sand 4",
+	["default:silver_sandstone"] = "default:silver_sand 4",
+	["default:tree"] = "default:leaves 8",
+	["default:jungletree"] = "default:jungleleaves 8",
+	["default:pine_tree"] = "default:pine_needles 8",
+	["default:acacia_tree"] = "default:acacia_leaves 8",
+	["default:aspen_tree"] = "default:aspen_leaves 8"}
+) do
+	tubelib.add_grinder_recipe({input=k, output=v})
+end
 
 if minetest.global_exists("skytest") then
-	tubelib.add_grinder_recipe({input="default:desert_sand", output="skytest:dust"})
-	tubelib.add_grinder_recipe({input="default:silver_sand", output="skytest:dust"})
-	tubelib.add_grinder_recipe({input="default:sand", output="skytest:dust"})
-	tubelib.add_grinder_recipe({input="skytest:dust 12", output="skytest:powder"})
+	temprec = {
+["default:desert_sand"] = "skytest:dust",
+["default:silver_sand"] = "skytest:dust",
+["default:sand"] = "skytest:dust",
+["skytest:dust 12"] = "skytest:powder"}
 else
-	tubelib.add_grinder_recipe({input="default:desert_sand", output="default:clay"})
-	tubelib.add_grinder_recipe({input="default:silver_sand", output="default:clay"})
-	tubelib.add_grinder_recipe({input="default:sand", output="default:clay"})
+	temprec = {
+["default:desert_sand"] = "default:clay",
+["default:silver_sand"] = "default:clay",
+["default:sand"] = "default:clay"}
 end
+
+for k,v in pairs(temprec) do tubelib.add_grinder_recipe({input=k, output=v}) end
+temprec = nil
 
 if minetest.get_modpath("underch") then
 	for regnodename,v in pairs(minetest.registered_nodes) do
@@ -348,12 +364,45 @@ if minetest.get_modpath("underch") then
 	end
 end
 
-tubelib.add_grinder_recipe({input="default:sandstone", output="default:sand 4"})
-tubelib.add_grinder_recipe({input="default:desert_sandstone", output="default:desert_sand 4"})
-tubelib.add_grinder_recipe({input="default:silver_sandstone", output="default:silver_sand 4"})
+--Ethereal trees
+if minetest.get_modpath("ethereal") then
+	for k,v in pairs({
+		["ethereal:sakura_trunk"] = "ethereal:sakura_leaves 8",
+		["ethereal:willow_trunk"] = "ethereal:willow_twig 8",
+		["ethereal:redwood_trunk"] = "ethereal:redwood_leaves 8",
+		["ethereal:frost_tree"] = "ethereal:frost_leaves 8",
+		["ethereal:yellow_trunk"] = "ethereal:yellowleaves 8",
+		["ethereal:palm_trunk"] = "ethereal:palmleaves 8",
+		["ethereal:banana_trunk"] = "ethereal:bananaleaves 8",
+		["ethereal:birch_trunk"] = "ethereal:birch_leaves 8",
+		["ethereal:bamboo"] = "ethereal:bamboo_leaves 8",
+		["ethereal:olive_trunk"] = "ethereal:olive_leaves 8"}
+	) do tubelib.add_grinder_recipe({input=k, output=v}) end
+end
 
-tubelib.add_grinder_recipe({input="default:tree", output="default:leaves 8"})
-tubelib.add_grinder_recipe({input="default:jungletree", output="default:jungleleaves 8"})
-tubelib.add_grinder_recipe({input="default:pine_tree", output="default:pine_needles 8"})
-tubelib.add_grinder_recipe({input="default:acacia_tree", output="default:acacia_leaves 8"})
-tubelib.add_grinder_recipe({input="default:aspen_tree", output="default:aspen_leaves 8"})
+-- Cool Trees
+for _,v in pairs({
+		"baldcypress",
+		"bamboo",
+		"birch",
+		"cherrytree",
+		"chestnuttree",
+		"clementinetree",
+		"ebony",
+		"hollytree",
+		"larch",
+		"lemontree",
+		"mahogany",
+		"maple",
+		"oak",
+		"palm",
+		"plumtree",
+		"pomegranate",
+		"willow"
+	 }) do
+		if minetest.get_modpath(v) then tubelib.add_grinder_recipe({input=v .. ":trunk", output=v .. ":leaves 8"}) end
+end
+
+if minetest.get_modpath("jacaranda") then tubelib.add_grinder_recipe({input="jacaranda:trunk", output = "jacaranda:blossom_leaves 8"}) end
+
+
