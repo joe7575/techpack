@@ -71,6 +71,7 @@ minetest.register_node("tubelib_addons2:lamp_on", {
 	paramtype = "light",
 	paramtype2 = "color",
 	palette = "unifieddyes_palette_extended.png",
+	sounds = default.node_sound_stone_defaults(),
 	groups = {choppy=2, cracky=1, not_in_creative_inventory=1, ud_param2_colorable = 1},
 	
 	on_construct = unifieddyes.on_construct,

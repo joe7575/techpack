@@ -111,8 +111,8 @@ minetest.register_node(NODE_NAME.."_defect", {
 	can_dig = function(pos)
 		return wh.can_dig(Box, pos)
 	end,
-	after_dig_node = function(pos, oldnode, oldmetadata, digger)
-		wh.after_dig_node(Box, pos, oldnode, oldmetadata, digger)
+	on_dig = function(pos, node, player)
+		wh.on_dig_node(Box, pos, node, player)
 	end,
 	allow_metadata_inventory_put = function(pos, listname, index, stack, player)
 		return wh.allow_metadata_inventory_put(Box, pos, listname, index, stack, player)

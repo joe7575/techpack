@@ -55,6 +55,11 @@ minetest.register_node("gravelsieve:sieve_defect", {
             minetest.node_dig(pos, node, puncher, pointed_thing)
         end
     end,
+
+    allow_metadata_inventory_put = gravelsieve.sieve.allow_metadata_inventory_put,
+    allow_metadata_inventory_move = gravelsieve.sieve.allow_metadata_inventory_move,
+    allow_metadata_inventory_take = gravelsieve.sieve.allow_metadata_inventory_take,
+
     after_dig_node = function (pos, oldnode, oldmetadata, digger)
         gravelsieve.api.count.del(pos, digger)
     end,

@@ -350,7 +350,7 @@ minetest.register_node("tubelib_addons1:harvester_base", {
 			return false
 		end
 		local inv = M(pos):get_inventory()
-		return inv:is_empty("main")
+		return inv:is_empty("main") and inv:is_empty("fuel")
 	end,
 
 	on_dig = function(pos, node, player)
@@ -410,7 +410,7 @@ minetest.register_node("tubelib_addons1:harvester_defect", {
 			return false
 		end
 		local inv = M(pos):get_inventory()
-		return inv:is_empty("main")
+		return inv:is_empty("main") and inv:is_empty("fuel")
 	end,
 
 	after_dig_node = function(pos, oldnode, oldmetadata, digger)
