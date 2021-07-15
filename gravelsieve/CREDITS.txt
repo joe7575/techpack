@@ -1,0 +1,41 @@
+--[[
+	Gravel Sieve Mod
+	================
+
+    v20210214.0 by flux
+	forked from v1.09 by JoSt
+	Derived from the work of celeron55, Perttu Ahola (furnace)
+	Pipeworks support added by FiftySix
+
+	Copyright (C) 2021 flux, Oversword, & Blocky Survival server
+	Copyright (C) 2017-2021 Joachim Stolberg
+	Copyright (C) 2011-2016 celeron55, Perttu Ahola <celeron55@gmail.com>
+	Copyright (C) 2011-2016 Various Minetest developers and contributors
+
+	AGPL v3
+	See LICENSE.txt for more information
+
+	History:
+	2017-06-14  v0.01  First version
+	2017-06-15  v0.02  Manually use of the sieve added
+	2017-06-17  v0.03  * Settings bug fixed
+					   * Drop bug fixed
+					   * Compressed Gravel block added (Inspired by Modern Hippie)
+					   * Recipes for Compressed Gravel added
+	2017-06-17  v0.04  * Support for manual and automatic gravel sieve
+					   * Rarity now configurable
+					   * Output is 50% gravel and 50% sieved gravel
+	2017-06-20  v0.05  * Hammer sound bugfix
+	2017-06-24 	v1.00  * Released version w/o any changes
+	2017-07-08  V1.01  * extended for moreores
+	2017-07-09  V1.02  * Cobblestone bugfix (NathanSalapat)
+	                   * ore_probability is now global accessable (bell07)
+	2017-08-29  V1.03  * Fix syntax listring (Jat15)
+	2017-09-08  V1.04  * Adaption to Tubelib
+	2017-11-03  V1.05  * Adaption to Tubelib v0.06
+	2018-01-01  V1.06  * Hopper support added
+	2018-01-02  V1.07  * changed to registered ores
+	2018-02-09  V1.08  * Pipeworks support added, bugfix for issue #7
+	2018-12-28  V1.09  * Ore probability calculation changed (thanks to obl3pplifp)
+	                     tubelib aging added
+]]--
