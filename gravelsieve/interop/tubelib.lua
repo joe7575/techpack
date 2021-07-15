@@ -33,7 +33,6 @@ minetest.register_node("gravelsieve:sieve_defect", {
     on_construct = function(pos)
         local meta = minetest.get_meta(pos)
         meta:set_int("idx", 0)        -- for the 4 sieve phases
-        meta:set_int("gravel_cnt", 0)   -- counter to switch between gravel and sieved gravel
         meta:set_string("node_name", "gravelsieve:auto_sieve")
         meta:set_string("formspec", sieve_formspec)
         local inv = meta:get_inventory()

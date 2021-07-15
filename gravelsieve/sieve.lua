@@ -91,32 +91,34 @@ local function dynamic_args_generator(args)
     return dynamic_args
 end
 
--- place ores to dst according to the calculated probability
-local function generate_output(inv, input_name, args)
-    local output = api.get_random_output(input_name, dynamic_args_generator, args)
+-- move gravel and ores to dst
+local function process_output(meta, pos, inv, output)
     local output_item = ItemStack(output)
     if inv:room_for_item("dst", output_item) then
         inv:add_item("dst", output_item)
+        aging(pos, meta)
         return true
     end
+    meta:set_string("blocked_item", output)
     return false
 end
 
--- move gravel and ores to dst
+-- take gravel from input
 local function process_input(meta, pos, inv, input_name)
     local input_stack = ItemStack(input_name)
     if inv:contains_item("src", input_stack) then
         local is_done = gravelsieve.sieve.step_node(pos, meta, false)
         if is_done then
             -- time to move one item?
-            if generate_output(inv, input_name, {meta=meta}) then
-                inv:remove_item("src", input_stack)
-            end
+            inv:remove_item("src", input_stack)
+            local output = api.get_random_output(input_name, dynamic_args_generator, {meta=meta})
+            process_output(meta, pos, inv, output)
         end
         return true  -- process finished
     end
     return false -- process still running
 end
+
 
 local function choose_input_item(pos)
     local meta = minetest.get_meta(pos)
@@ -134,11 +136,18 @@ end
 local function sieve_node_timer(pos, elapsed)
     local meta = minetest.get_meta(pos)
     local inv = meta:get_inventory()
+    local blocked_output = meta:get_string("blocked_item")
+    if blocked_output and blocked_output ~= "" then
+        local item_output = process_output(meta, pos, inv, blocked_output)
+        if not item_output then
+            return true
+        else
+            meta:set_string("blocked_item", "")
+        end
+    end
     local input_name = choose_input_item(pos)
-
     if input_name then
         if process_input(meta, pos, inv, input_name) then
-            aging(pos, meta)
             return true
         end
     end
@@ -240,7 +249,6 @@ for automatic = 0, 1 do
             on_construct = function(pos)
                 local meta = minetest.get_meta(pos)
                 meta:set_int("idx", idx)        -- for the 4 sieve phases
-                meta:set_int("gravel_cnt", 0)   -- counter to switch between gravel and sieved gravel
                 meta:set_string("node_name", node_name)
                 meta:set_string("formspec", sieve_formspec)
                 local inv = meta:get_inventory()
@@ -285,7 +293,6 @@ for automatic = 0, 1 do
                         -- sieve should be empty
                         meta:set_int("idx", 2)
                         gravelsieve.sieve.step_node(pos, meta, false)
-                        meta:set_int("gravel_cnt", 0)
                     end
                 else
                     minetest.get_node_timer(pos):start(settings.step_delay)
