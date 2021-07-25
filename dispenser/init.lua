@@ -600,10 +600,26 @@ minetest.register_node("dispenser:dispenser", {
 		-- up, down, right, left, back, front
 		'tubelib_front.png',
 		'tubelib_front.png',
-		'tubelib_front.png',
-		'tubelib_front.png',
-		'tubelib_front.png',
-		'tubelib_front.png^tubelib_addons3_node_frame.png',
+		'dispenser_side.png',
+		'dispenser_side.png',
+		'dispenser_side.png',
+		'dispenser_front.png',
+	},
+
+	drawtype = "nodebox",
+	node_box = {
+		type = "fixed",
+		fixed = {
+			{-8/16, -8/16, -8/16,  8/16, -6/16, 8/16},
+			{-8/16, -8/16, -8/16, -6/16,  8/16, 8/16},
+			{-8/16,  6/16, -8/16,  8/16,  8/16, 8/16},
+			{ 6/16, -8/16, -8/16,  8/16,  8/16, 8/16},
+			{-6/16, -6/16, -6/16,  6/16,  6/16, 8/16},
+		},
+	},
+	selection_box = {
+		type = "fixed",
+		fixed = {-8/16, -8/16, -8/16,   8/16, 8/16, 8/16},
 	},
 
 	after_place_node = function(pos, placer)
@@ -654,10 +670,10 @@ minetest.register_node("dispenser:dispenser_active", {
 		-- up, down, right, left, back, front
 		'tubelib_front.png',
 		'tubelib_front.png',
-		'tubelib_front.png',
-		'tubelib_front.png',
-		'tubelib_front.png',
-		'tubelib_front.png^tubelib_addons3_node_frame.png',
+		'dispenser_side.png',
+		'dispenser_side.png',
+		'dispenser_side.png',
+		'dispenser_front.png',
 	},
 
 	on_receive_fields = on_receive_fields,
@@ -686,10 +702,10 @@ minetest.register_node("dispenser:dispenser_defect", {
 		-- up, down, right, left, back, front
 		'tubelib_front.png',
 		'tubelib_front.png',
-		'tubelib_front.png^tubelib_defect.png',
-		'tubelib_front.png^tubelib_defect.png',
-		'tubelib_front.png^tubelib_defect.png',
-		'tubelib_front.png^tubelib_addons3_node_frame.png',
+		'dispenser_side.png^tubelib_defect.png',
+		'dispenser_side.png^tubelib_defect.png',
+		'dispenser_side.png^tubelib_defect.png',
+		'dispenser_front.png',
 	},
 
 	after_place_node = function(pos, placer)
