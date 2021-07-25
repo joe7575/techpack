@@ -1,16 +1,16 @@
 --[[
 
-	Tubelib Addons 3
+	Dispenser
 	================
 
-	Copyright (C) 2017-2020 Joachim Stolberg
+	Copyright (C) 2021 Oversword
 
 	AGPL v3
 	See LICENSE.txt for more information
 
-	dispenser.lua:
+	init.lua:
 	
-	A high performance dispenser
+	A dispenser, capable of interacting with entities and nodes using items
 ]]--
 
 dispenser = {}
@@ -55,6 +55,9 @@ local function allow_metadata_inventory_put(pos, listname, index, stack, player)
 	if minetest.is_protected(pos, player:get_player_name()) then
 		return 0
 	end
+	if index == 10 then
+		return 0
+	end
 	local meta = M(pos)
 	if State:get_state(meta) == tubelib.STANDBY then
 		State:start(pos, meta)
@@ -64,6 +67,9 @@ end
 
 local function allow_metadata_inventory_take(pos, listname, index, stack, player)
 	if minetest.is_protected(pos, player:get_player_name()) then
+		return 0
+	end
+	if index == 10 then
 		return 0
 	end
 	return stack:get_count()
@@ -76,36 +82,37 @@ local function allow_metadata_inventory_move(pos, from_list, from_index, to_list
 	return allow_metadata_inventory_put(pos, to_list, to_index, stack, player)
 end
 
-local PLACEABLE = "placeable"
-local SHOOTABLE = "shootable"
-local USABLE = "usable"
-local default_action = "fault"
 local dispense_configs = {}
 
 local player_overrides = {
-	default = function (item, front, dir, pos, meta)
+	default = function (wield_stack, dispenser_data)
 		return function (key)
+			if key == "set_wielded_item" then
+				return function (player, new_stack)
+					dispenser_data.meta:get_inventory():set_stack("main", dispenser_data.index, new_stack)
+				end
+			end
 			if key:sub(1,4) == "set_" then
 				return function () end
 			end
 			if key == "get_wielded_item" then
 				return function ()
-					return item
+					return wield_stack
 				end
 			end
 			if key == "get_pos" then
 				return function ()
-					return pos
+					return dispenser_data.pos
 				end
 			end
 			if key == "get_look_dir" then
 				return function ()
-					return dir
+					return dispenser_data.dir
 				end
 			end
 			if key == "get_inventory" then
 				return function ()
-					return meta:get_inventory()
+					return dispenser_data.meta:get_inventory()
 				end
 			end
 		end
@@ -134,6 +141,7 @@ local function fake_player(player, overrides)
 	return fake
 end
 
+
 local shoot_speed = 10
 function dispenser.set_shooting_speed(speed)
 	if type(speed) ~= "number" then
@@ -145,49 +153,6 @@ function dispenser.set_shooting_speed(speed)
 	shoot_speed = speed
 end
 
-local function register_dispensable(name, mode)
-	if dispense_configs[name] and dispense_configs[name] ~= mode then
-		minetest.log("warn",
-			("[Tubelib Dispenser] %s is already registered as %s, registering it as %s may change expected behaviour.")
-				:format(name, dispense_configs[name], mode))
-	end
-	dispense_configs[name] = mode
-end
-
-function dispenser.register_placeable(name)
-	register_dispensable(name, PLACEABLE)
-end
-
-function dispenser.register_shootable(name)
-	register_dispensable(name, SHOOTABLE)
-end
-
-function dispenser.register_usable(name, player_override)
-	register_dispensable(name, USABLE)
-	if player_override then
-		player_overrides[name] = player_override
-	end
-end
-
-function dispenser.unregister(name)
-	dispense_configs[name] = nil
-end
-
-function dispenser.set_default_action(action)
-	if action == "use" or action == USABLE then
-		default_action = USABLE
-	elseif action == "shoot" or action == SHOOTABLE then
-		default_action = SHOOTABLE
-	elseif action == "place" or action == PLACEABLE then
-		default_action = PLACEABLE
-	elseif action == "fault" or action == "error" then
-		default_action = "fault"
-	else
-		minetest.log("error",
-			("[Tubelib Dispenser] '%s' is not a valid default action.")
-				:format(action))
-	end
-end
 
 local choice_strategy = "first"
 local choice_strategies = {
@@ -222,99 +187,289 @@ function dispenser.set_choice_strategy(name)
 	choice_strategy = name
 end
 
-local function item_callback(callback, name, item, front, dir, pos, meta)
-	-- We need a player for this to work
-	local player_name = meta:get_string("player_name")
+
+local actions = {
+	rightclick_entity = {
+		player_required = true,
+		entity_required = true,
+		check = function (_, entity)
+			return entity and entity.on_rightclick
+		end,
+		act = function (item_stack, dispenser_data, player, _, entity)
+			if not player then return true, item_stack, "player not logged in" end
+			entity:on_rightclick(player)
+			return true
+		end
+	},
+	punch_entity = {
+		player_required = true,
+		entity_required = true,
+		check = function (_, entity)
+			return entity and entity.on_punch
+		end,
+		act = function (item_stack, dispenser_data, player, _, entity)
+			if not player then return true, item_stack, "player not logged in" end
+			entity:on_punch(player)--puncher, time_from_last_punch, tool_capabilities, dir
+			return true
+		end
+	},
+	rightclick_node = {
+		player_required = true,
+		node_required = true,
+		check = function (_, node)
+			return node and minetest.registered_nodes[node.name].on_rightclick
+		end,
+		act = function (item_stack, dispenser_data, player, node)
+			if not player then return true, item_stack, "player not logged in" end
+			local result = minetest.registered_nodes[node.name].on_rightclick(dispenser_data.front, node, player, item_stack, {
+				type="node",
+				under=dispenser_data.front,
+				above=vector.add(dispenser_data.front, {x=0,y=1,z=0})
+			})--pos, node, clicker, itemstack, pointed_thing
+			return true, result
+		end
+	},
+	punch_node = {
+		player_required = true,
+		node_required = true,
+		check = function (_, node)
+			return node and node.name ~= "air" and minetest.registered_nodes[node.name].on_punch
+		end,
+		act = function (item_stack, dispenser_data, player, node)
+			if not player then return true, item_stack, "player not logged in" end
+			minetest.registered_nodes[node.name].on_punch(dispenser_data.front, node, player, {
+				type="node",
+				under=dispenser_data.front,
+				above=vector.add(dispenser_data.front, {x=0,y=1,z=0})
+			}) -- pos, node, puncher, pointed_thing
+			return true
+		end
+	},
+	use = {
+		player_required = true,
+		check = function (item_stack)
+			local item_name = item_stack:get_name()
+			local def = minetest.registered_items[item_name]
+			return def and def.on_use
+		end,
+		act = function (item_stack, dispenser_data, player)
+			if not player then return true, item_stack, "player not logged in" end
+			local item_name = item_stack:get_name()
+			local result = minetest.registered_items[item_name].on_use(item_stack, player, {
+				type="node",
+				under=dispenser_data.front,
+				above=vector.add(dispenser_data.front, {x=0,y=1,z=0})
+			})
+			return true, result
+		end
+	},
+	place = {
+		player_required = true,
+		check = function (item_stack)
+			local item_name = item_stack:get_name()
+			local def = minetest.registered_items[item_name]
+			return def and def.on_place
+		end,
+		act = function (item_stack, dispenser_data, player)
+			if not player then return true, item_stack, "player not logged in" end
+			local item_name = item_stack:get_name()
+			local result = minetest.registered_items[item_name].on_place(item_stack, player, {
+				type="node",
+				under=dispenser_data.front,
+				above=dispenser_data.front
+			})
+			return true, result
+		end
+	},
+	shoot = {
+		check = function (item_stack)
+			local item_name = item_stack:get_name()
+			return minetest.registered_items[item_name]
+		end,
+		act = function (item_stack, dispenser_data)
+			-- Dispense a node and give it a velocity
+			local entity = minetest.add_item(dispenser_data.front, item_stack:take_item())
+			entity:set_velocity({
+				x = dispenser_data.dir.x*shoot_speed,
+				y = dispenser_data.dir.y*shoot_speed,
+				z = dispenser_data.dir.z*shoot_speed
+			})
+			return true, item_stack
+		end
+	}
+}
+
+local function action_config(action_list)
+	local player_required = false
+	local entity_required = false
+	local node_required = false
+	for _,action_name in ipairs(action_list) do
+		if actions[action_name] then
+			if actions[action_name].player_required then
+				player_required = true
+			end
+			if actions[action_name].entity_required then
+				entity_required = true
+			end
+			if actions[action_name].node_required then
+				node_required = true
+			end
+		end
+	end
+	return {
+		player_required = player_required,
+		entity_required = entity_required,
+		node_required = node_required,
+		action = function (item_stack, dispenser_data, player, node, entity)
+			for _,action_name in ipairs(action_list) do
+				local item_name = item_stack:get_name()
+				local success, result, reason = dispenser.actions["attempt_"..action_name](item_stack, dispenser_data, player, node, entity)
+				if success then
+					return result, reason
+				end
+			end
+			return item_stack, "no action configured"
+		end
+	}
+end
+
+local function parse_config(name, config)
+	if type(config) == "string" then
+		config = {config}
+	end
+	if type(config) == "table" then
+		local accepted_actions = {}
+		for _,action_name in ipairs(config) do
+			if actions[action_name] then
+				table.insert(accepted_actions, action_name)
+			else
+				minetest.log("error",
+						("[Tubelib Dispenser] %s is not a valid action for %s."):format(action_name, name))
+			end
+		end
+		if #accepted_actions == 0 then
+			minetest.log("error", 
+					("[Tubelib Dispenser] %s has not been provided any actions, "..
+						"you should unregister this item if you expect it to have no action."):format(name))
+			return
+		end
+		config = action_config(accepted_actions)
+	elseif type(config) == "function" then
+		config = {
+			player_required = true,
+			entity_required = true,
+			node_required = true,
+			action = config
+		}
+	else
+		minetest.log("error",
+				("[Tubelib Dispenser] a dispense action must be the name of an action (string), "..
+					"a list of names (table), or a custom function: %s given for %s."):format(type(config), name))
+		return
+	end
+
+	return config
+end
+
+
+function dispenser.register_dispensable(item_name, config, overrides)
+	if dispense_configs[item_name] then
+		minetest.log("warn",
+			("[Tubelib Dispenser] %s is already registered as dispensable, registering it again may change expected behaviour.")
+				:format(item_name))
+	end
+	local parsed_config = parse_config(item_name, config)
+	if not parsed_config then return end
+
+	dispense_configs[item_name] = parsed_config
+	if overrides then
+		dispenser.register_player_overrides(item_name, overrides)
+	end
+end
+
+function dispenser.register_player_overrides(item_name, overrides)
+	if player_overrides[item_name] then
+		minetest.log("warn",
+				("[Tubelib Dispenser] %s already has overrides registered for it, "..
+					"registering others may change expected behaviour."):format(item_name))
+	end
+	if not dispense_configs[item_name] then
+		minetest.log("warn",
+				("[Tubelib Dispenser] %s is not registered as dispensable, it is pointless "..
+					"to register overrides for an item which is not dispensable."):format(item_name))
+	end
+	if type(overrides) ~= "function" then
+		minetest.log("error",
+				("[Tubelib Dispenser] Registered overrides must be a function, %s given for %s."):format(type(overrides), item_name))
+		return
+	end
+	player_overrides[item_name] = overrides
+end
+
+function dispenser.unregister_dispensable(item_name)
+	dispense_configs[item_name] = nil
+	player_overrides[item_name] = nil
+end
+
+
+local default_action
+function dispenser.set_default_action(config)
+	local parsed_config = parse_config("the default action", config)
+	if not parsed_config then return end
+	default_action = parsed_config
+end
+dispenser.set_default_action({ "rightclick_entity", "use", "place", "shoot" })
+
+
+dispenser.actions = {}
+
+function dispenser.actions.detect_entity(dispenser_data)
+	local pointed_thing = minetest.raycast(dispenser_data.pos, dispenser_data.front):next()
+	if pointed_thing.type == "object" then
+		return pointed_thing.ref:get_luaentity()
+	end
+end
+
+function dispenser.actions.fake_player(item_stack, dispenser_data)
+	local player_name = dispenser_data.meta:get_string("player_name")
 	local player = minetest.get_player_by_name(player_name)
 	if not player then
-		return item, "player not logged in"
-	end
-
-	local overrides = player_overrides[name] or player_overrides.default
-	local clicker = fake_player(player, overrides(item, front, dir, pos, meta, player_overrides.default))
-
-	-- Interacting with entities does not work because the callbacks insist the player is real and not faked
-	-- local pointed_thing = minetest.raycast(pos, front):next()
-	-- if pointed_thing.type == "object" then
-	-- 	minetest.log("error", dump(pointed_thing.ref:right_click(clicker)))
-	-- end
-
-	-- Trigger the on_use callback with a fake player and pointed_thing object
-	local result = callback(
-		item,
-		clicker,
-		-- pointed_thing)
-		{
-			type="node",
-			under=front,
-			above=vector.add(front, {x=0,y=1,z=0})
-		})
-
-	-- This happens if the on_use callback is exited unsuccessfully
-	if not result then
-		return item
-	end
-
-	-- This happens if the on_use callback removes items from the  stack and returns it
-	if result:is_empty() then
 		return
 	end
 
-	-- This happens if the item was modified or a new item was returned from the on_use callback
-	return result
+	local item_name = item_stack:get_name()
+	local overrides = player_overrides[item_name] or player_overrides.default
+	return fake_player(player, overrides(item_stack, dispenser_data, player_overrides.default))
 end
 
--- actually dispense an item, return an item if it goes unused, or remains but is modified
-local function dispense(item, front, dir, pos, meta)
-	local name = item:get_name()
-	local action = dispense_configs[name] or default_action
+for action_name, action in pairs(actions) do
+	dispenser.actions["can_"..action_name] = action.check
+	dispenser.actions[action_name] = action.act
 
-	if action == PLACEABLE then
-		-- Check if we can actually place an item there
-		local front_node = minetest.get_node_or_nil(front)
-		local front_def = front_node and minetest.registered_nodes[front_node.name]
-		if not front_def or not front_def.buildable_to then
-			return item, "blocked"
+	dispenser.actions["attempt_"..action_name] = function (item_stack, dispenser_data, player, node, entity)
+		local things = {}
+		if action.node_required then
+			if not node then return end
+			table.insert(things, node)
 		end
-
-		-- Use on_place callback if it exists
-		local placed_item_def = minetest.registered_items[name]
-		if placed_item_def.on_place then
-			return item_callback(placed_item_def.on_place, name, item, front, dir, pos, meta)
+		if action.entity_required then
+			if not entity then return end
+			table.insert(things, entity)
 		end
-
-		-- Make sure the item has a node and is not just an item
-		local placed_node_def = minetest.registered_nodes[name]
-		if not placed_node_def then
-			return item, "cannot be placed"
+		local valid
+		if table.unpack then
+			valid = dispenser.actions["can_"..action_name](item_stack, table.unpack(things))
+		else
+			valid = dispenser.actions["can_"..action_name](item_stack, unpack(things))
 		end
-
-		-- Place the node and trigger an update
-		minetest.set_node(front, {name=name})
-		minetest.check_for_falling(front)
-		return
-	elseif action == USABLE then
-		-- Check if item actually exists and can be used
-		local def = minetest.registered_items[name]
-		if not def or not def.on_use then
-			return item, "cannot be used"
+		if valid then
+			return dispenser.actions[action_name](item_stack, dispenser_data, player, node, entity)
 		end
-		return item_callback(def.on_use, name, item, front, dir, pos, meta)
-	elseif action == SHOOTABLE then
-		-- Dispense a node and give it a velocity
-		local entity = minetest.add_item(front, item)
-		entity:set_velocity({
-			x = dir.x*shoot_speed,
-			y = dir.y*shoot_speed,
-			z = dir.z*shoot_speed
-		})
-		return
 	end
-
-	return item, "no action configured"
 end
 
--- perform a dispensing action and handle the inventory
+
+-- perform a dispensing action and handles the inventory
 local function dispensing(pos, meta)
 	
 	local inv = meta:get_inventory()
@@ -339,8 +494,6 @@ local function dispensing(pos, meta)
 
 	-- Remove the item to be used
 	local stack = inv:get_stack("main", index)
-	local item = stack:take_item()
-	inv:set_stack("main", index, stack)
 
 	-- Calculate which block is in front of the dispenser
 	local param2 = minetest.get_node(pos).param2
@@ -348,30 +501,46 @@ local function dispensing(pos, meta)
 			tubelib2.side_to_dir("R", param2) - 1)
 	local front = vector.add(pos, dir)
 
-	-- Attempt to dispense the item
-	local result, reason = dispense(item, front, dir, pos, meta)
+	-- Get the config and the required data
+	local item_name = stack:get_name()
+	local config = dispense_configs[item_name] or default_action
+	local dispenser_data = {
+		front = front,
+		dir = dir,
+		pos = pos,
+		meta = meta,
+		index = index
+	}
+	local player, node, entity
+	if config.player_required then
+		player = dispenser.actions.fake_player(stack, dispenser_data)
+	end
+	if config.node_required then
+		node = minetest.get_node_or_nil(front)
+	end
+	if config.entity_required then
+		entity = dispenser.actions.detect_entity(dispenser_data)
+	end
 
-	-- If the dispense() returned an item, try to put it back in the inventory, or spit it out
+	-- Attempt to dispense the item
+	local result, reason = config.action(stack, dispenser_data, player, node, entity)
+
+	-- If a modified stack is returned, replace the original
 	if result then
-		if inv:room_for_item("main", result) then
-			-- Try to put back in original stack
-			local leftover = stack:add_item("main", result)
-			if leftover:is_empty() then
-				inv:set_stack("main", index, stack)
-			else -- If it won't fit in the original stack, put it anywhere
-				inv:add_item("main", result)
-			end
-		else
-			-- Spit out item if full
-			minetest.add_item(pos, result)
-		end
+		inv:set_stack("main", index, result)
+	end
+
+	-- Spit out any item that gets put in the hidden 10th slot
+	local spit_stack = inv:get_stack("main", 10)
+	if not spit_stack:is_empty() then
+		minetest.add_item(pos, spit_stack)
+		inv:set_stack("main", 10, nil)
 	end
 
 	-- If a reason was given for failure, we should respond to it
 	if reason == "blocked" then
 		State:blocked(pos, meta)
 	elseif reason then
-		minetest.log("error", reason)
 		State:fault(pos, meta)
 	else
 		State:keep_running(pos, meta, COUNTDOWN_TICKS, 1)
@@ -400,26 +569,52 @@ local function on_receive_fields(pos, formname, fields, player)
 	end
 end
 
+
+
+local orientations = {
+	[0] = { 4,  8},
+	      {13, 17},
+	      {10,  6},
+	      {20, 15},
+}
+
+local function orient_dispenser(pos, placer)
+	if not placer then
+		return
+	end
+	local pitch = math.deg(placer:get_look_vertical())
+	local node = minetest.get_node(pos)
+	if pitch > 55 then
+		node.param2 = orientations[node.param2][1]
+	elseif pitch < -55 then
+		node.param2 = orientations[node.param2][2]
+	else
+		return
+	end
+	minetest.swap_node(pos, node)
+end
+
 minetest.register_node("dispenser:dispenser", {
 	description = S("HighPerf Dispenser"),
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_front.png',
 		'tubelib_front.png',
+		'tubelib_front.png',
+		'tubelib_front.png',
+		'tubelib_front.png',
 		'tubelib_front.png^tubelib_addons3_node_frame.png',
-		'tubelib_front.png',
-		'tubelib_front.png',
-		'tubelib_front.png',
 	},
 
 	after_place_node = function(pos, placer)
+		orient_dispenser(pos, placer)
 		local meta = M(pos)
 		local number = tubelib.add_node(pos, "dispenser:dispenser")
 		State:node_init(pos, number)
 		meta:set_string("player_name", placer:get_player_name())
 
 		local inv = meta:get_inventory()
-		inv:set_size('main', 9)
+		inv:set_size('main', 10)
 	end,
 
 	on_receive_fields = on_receive_fields,
@@ -459,10 +654,10 @@ minetest.register_node("dispenser:dispenser_active", {
 		-- up, down, right, left, back, front
 		'tubelib_front.png',
 		'tubelib_front.png',
+		'tubelib_front.png',
+		'tubelib_front.png',
+		'tubelib_front.png',
 		'tubelib_front.png^tubelib_addons3_node_frame.png',
-		'tubelib_front.png',
-		'tubelib_front.png',
-		'tubelib_front.png',
 	},
 
 	on_receive_fields = on_receive_fields,
@@ -491,20 +686,21 @@ minetest.register_node("dispenser:dispenser_defect", {
 		-- up, down, right, left, back, front
 		'tubelib_front.png',
 		'tubelib_front.png',
+		'tubelib_front.png^tubelib_defect.png',
+		'tubelib_front.png^tubelib_defect.png',
+		'tubelib_front.png^tubelib_defect.png',
 		'tubelib_front.png^tubelib_addons3_node_frame.png',
-		'tubelib_front.png^tubelib_defect.png',
-		'tubelib_front.png^tubelib_defect.png',
-		'tubelib_front.png^tubelib_defect.png',
 	},
 
 	after_place_node = function(pos, placer)
+		orient_dispenser(pos, placer)
 		local meta = M(pos)
 		local number = tubelib.add_node(pos, "dispenser:dispenser")
 		State:node_init(pos, number)
 		meta:set_string("player_name", placer:get_player_name())
 
 		local inv = meta:get_inventory()
-		inv:set_size('main', 9)
+		inv:set_size('main', 10)
 		State:defect(pos, meta)
 	end,
 
@@ -537,20 +733,43 @@ minetest.register_node("dispenser:dispenser_defect", {
 })
 
 
--- minetest.register_craft({
--- 	output = "dispenser:dispenser",
--- 	recipe = {
--- 		{"default:tin_ingot", "tubelib:dispenser", ""},
--- 		{"tubelib:dispenser", "default:gold_ingot", ""},
--- 		{"", "", ""},
--- 	},
--- })
+minetest.register_craft({
+	output = "dispenser:dispenser",
+	recipe = {
+		{"group:wood", "group:wood",      "default:mese_crystal"},
+		{"group:wood", "default:diamond", "default:mese_crystal"},
+		{"group:wood", "group:wood",      "default:mese_crystal"},
+	},
+})
 
 
 tubelib.register_node("dispenser:dispenser", 
 	{"dispenser:dispenser_active", "dispenser:dispenser_defect"}, {
-	on_push_item = function(pos, side, item)
-		return tubelib.put_item(M(pos), "main", item)
+	invalid_sides = {"F"},
+	on_push_item = function(pos, side, item_stack)
+		local meta = M(pos)
+		local listname = "main"
+
+		if meta == nil or meta.get_inventory == nil then return false end
+		local inv = meta:get_inventory()
+		if inv:room_for_item(listname, item_stack) then
+			local list = inv:get_list(listname)
+			local remaining = item_stack
+			for index, stack in ipairs(list) do
+				if index ~= 10 then
+					remaining = stack:add_item(remaining)
+					if remaining:is_empty() then
+						break
+					end
+				end
+			end
+			if remaining:is_empty() then
+				inv:set_list(listname, list)
+				return true
+			end
+			return false
+		end
+		return false
 	end,
 	on_recv_message = function(pos, topic, payload)		
 		local resp = State:on_receive_message(pos, topic, payload)
@@ -567,27 +786,4 @@ tubelib.register_node("dispenser:dispenser",
 	on_node_repair = function(pos)
 		return State:on_node_repair(pos)
 	end,
-})	
-
-
-
-
-dispenser.register_usable("mobs:hairball", function (item, front, dir, pos, meta, default)
-	return function (key)
-		if key == "get_pos" then
-			return function ()
-				return vector.add(pos, {x=0,y=-1.5,z=0})
-			end
-		end
-		return default(item, front, dir, pos, meta)(key)
-	end
-end)
-dispenser.register_usable("bonemeal:bonemeal")
-dispenser.register_usable("moreores:hoe_silver")
-dispenser.register_usable("farming:hoe_wood")
-dispenser.register_placeable("default:desert_sand")
-dispenser.register_shootable("cucina_vegana:sunflower_seed")
-
-
-dispenser.register_usable("bucket:bucket_empty")
-dispenser.register_placeable("bucket:bucket_water")
+})
