@@ -9,7 +9,7 @@
 	See LICENSE.txt for more information
 
 	init.lua:
-	
+
 	A dispenser, capable of interacting with entities and nodes using items
 ]]--
 
@@ -19,7 +19,6 @@ dispenser = {}
 local S = minetest.get_translator("dispenser")
 
 -- for lazy programmers
-local P = minetest.string_to_pos
 local M = minetest.get_meta
 
 local COUNTDOWN_TICKS = 8
@@ -423,7 +422,7 @@ local function parse_config(name, config)
 			end
 		end
 		if #accepted_actions == 0 then
-			minetest.log("error", 
+			minetest.log("error",
 					("[Tubelib Dispenser] %s has not been provided any actions, "..
 						"you should unregister this item if you expect it to have no action."):format(name))
 			return
@@ -607,7 +606,7 @@ local function dispensing(pos, meta)
 	local dir = minetest.facedir_to_dir(
 			tubelib2.side_to_dir("F", param2) - 1)
 	local front = vector.add(pos, dir)
-	
+
 	local inv = meta:get_inventory()
 
 	-- Check if there is an existin overflow
@@ -728,7 +727,7 @@ local function on_receive_fields(pos, formname, fields, player)
 		return
 	end
 	local meta = M(pos)
-	
+
 	if fields.state_button ~= nil then
 		State:state_button_event(pos, fields)
 	else
@@ -760,19 +759,19 @@ minetest.register_node("dispenser:dispenser", {
 		local inv = M(pos):get_inventory()
 		return inv:is_empty("main")
 	end,
-	
+
 	on_dig = function(pos, node, player)
 		State:on_dig_node(pos, node, player)
 		tubelib.remove_node(pos)
 	end,
-	
+
 	allow_metadata_inventory_put = allow_metadata_inventory_put,
 	allow_metadata_inventory_take = allow_metadata_inventory_take,
 	allow_metadata_inventory_move = allow_metadata_inventory_move,
 
 	on_timer = keep_running,
 	on_rotate = screwdriver.disallow,
-	
+
 	paramtype = "light",
 	sunlight_propagates = true,
 	paramtype2 = "facedir",
@@ -795,7 +794,7 @@ minetest.register_node("dispenser:dispenser_active", {
 	},
 
 	on_receive_fields = on_receive_fields,
-	
+
 	allow_metadata_inventory_put = allow_metadata_inventory_put,
 	allow_metadata_inventory_take = allow_metadata_inventory_take,
 	allow_metadata_inventory_move = allow_metadata_inventory_move,
@@ -828,7 +827,7 @@ minetest.register_node("dispenser:dispenser_defect", {
 
 	after_place_node = function(pos, placer)
 		after_place_node(pos, placer)
-		State:defect(pos, meta)
+		State:defect(pos, M(pos))
 	end,
 
 	on_receive_fields = on_receive_fields,
@@ -844,7 +843,7 @@ minetest.register_node("dispenser:dispenser_defect", {
 	after_dig_node = function(pos, oldnode, oldmetadata, digger)
 		tubelib.remove_node(pos)
 	end,
-	
+
 	allow_metadata_inventory_put = allow_metadata_inventory_put,
 	allow_metadata_inventory_take = allow_metadata_inventory_take,
 	allow_metadata_inventory_move = allow_metadata_inventory_move,
@@ -869,7 +868,7 @@ minetest.register_craft({
 	},
 })
 
-tubelib.register_node("dispenser:dispenser", 
+tubelib.register_node("dispenser:dispenser",
 	{"dispenser:dispenser_active", "dispenser:dispenser_defect"}, {
 	invalid_sides = {"F"},
 	on_push_item = function(pos, side, item_stack)
@@ -881,7 +880,7 @@ tubelib.register_node("dispenser:dispenser",
 		local inv = meta:get_inventory()
 		return insert_item(inv, item_stack)
 	end,
-	on_recv_message = function(pos, topic, payload)		
+	on_recv_message = function(pos, topic, payload)
 		local resp = State:on_receive_message(pos, topic, payload)
 		if resp then
 			return resp
@@ -889,7 +888,7 @@ tubelib.register_node("dispenser:dispenser",
 			return "unsupported"
 		end
 	end,
-	
+
 	on_node_load = function(pos)
 		State:on_node_load(pos)
 	end,
