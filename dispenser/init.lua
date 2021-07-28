@@ -396,7 +396,6 @@ local function action_config(action_list)
 		node_required = node_required,
 		action = function (item_stack, dispenser_data, player, node, entity)
 			for _,action_name in ipairs(action_list) do
-				local item_name = item_stack:get_name()
 				local result, reason, failure = dispenser.actions["attempt_"..action_name](item_stack, dispenser_data, player, node, entity)
 				if not failure then
 					return result, reason
@@ -532,11 +531,11 @@ for action_name, action in pairs(actions) do
 	dispenser.actions["attempt_"..action_name] = function (item_stack, dispenser_data, player, node, entity)
 		local things = {}
 		if action.node_required then
-			if not node then return end
+			if not node then return nil, nil, true end
 			table.insert(things, node)
 		end
 		if action.entity_required then
-			if not entity then return end
+			if not entity then return nil, nil, true end
 			table.insert(things, entity)
 		end
 		local valid
