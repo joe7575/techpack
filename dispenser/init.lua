@@ -47,7 +47,7 @@ local State = tubelib.NodeStates:new({
 	cycle_time = CYCLE_TIME,
 	first_cycle_time = FIRST_CYCLE,
 	standby_ticks = STANDBY_TICKS,
-	aging_factor = 50,
+	aging_factor = 5,
 	formspec_func = formspec,
 })
 
