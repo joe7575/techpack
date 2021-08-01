@@ -244,6 +244,12 @@ local function distributing(pos, meta)
 				rearrange_table(kvFilterItemNames[name])
 				busy = true
 				break
+			elseif num ~= stack:get_count() then
+				local color = Side2Color[side]
+				counter[color] = counter[color] + stack:get_count()
+				rearrange_table(kvFilterItemNames[name])
+				busy = true
+				break
 			end
 		end
 		
@@ -257,6 +263,10 @@ local function distributing(pos, meta)
 					counter[color] = counter[color] + num
 					busy = true
 				end
+			elseif num ~= stack:get_count() then
+				local color = Side2Color[side]
+				counter[color] = counter[color] + stack:get_count()
+				busy = true
 			end
 		end
 	end
