@@ -151,7 +151,14 @@ tubelib.register_node("tubelib_addons3:chest", {}, {
 	end,
 	on_push_item = function(pos, side, item)
 		local meta = minetest.get_meta(pos)
-		return tubelib.put_item(meta, "main", item)
+		local res = tubelib.put_item(meta, "main", item)
+		if res == false then
+			local inv = meta:get_inventory()
+			local leftover = inv:add_item("main", item)
+			item:set_count(leftover:get_count())
+			return false
+		end
+		return true
 	end,
 	on_unpull_item = function(pos, side, item)
 		local meta = minetest.get_meta(pos)

@@ -42,11 +42,15 @@ local function pushing(pos, meta)
 	local player_name = meta:get_string("player_name")
 	local items = tubelib.pull_stack(pos, "L", player_name)
 	if items ~= nil then
+		local count = items:get_count()
 		if tubelib.push_items(pos, "R", items, player_name) == false then
 			-- place item back
 			tubelib.unpull_items(pos, "L", items, player_name)
-			State:blocked(pos, meta)
-			return
+			-- Complete stack rejected
+			if count == items:get_count() then
+				State:blocked(pos, meta)
+				return
+			end
 		end
 		if State.get_state(pos, meta) ~= tubelib.STOPPED then
 			State:keep_running(pos, meta, COUNTDOWN_TICKS, 1)
