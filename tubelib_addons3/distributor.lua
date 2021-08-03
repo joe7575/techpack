@@ -508,6 +508,9 @@ tubelib.register_node("tubelib_addons3:distributor",
 	on_pull_item = function(pos, side)
 		return tubelib.get_item(M(pos), "src")
 	end,
+	on_pull_stack = function(pos, side)
+		return tubelib.get_stack(M(pos), "src")
+	end,
 	on_push_item = function(pos, side, item)
 		return tubelib.put_item(M(pos), "src", item)
 	end,
