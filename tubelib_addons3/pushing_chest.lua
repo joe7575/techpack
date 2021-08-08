@@ -7,9 +7,9 @@
 
 	AGPL v3
 	See LICENSE.txt for more information
-	
+
 	pushing_chest.lua
-	
+
 	A high performance pushing chest
 
 ]]--
@@ -49,11 +49,11 @@ local function allow_metadata_inventory_move(pos, from_list, from_index, to_list
 	end
 	Cache[minetest.get_meta(pos):get_string("number")] = nil
 	return count
-end	
+end
 
 local function keep_the_rest(meta, list, taken)
 	if taken then
-		local inv = meta:get_inventory()	
+		local inv = meta:get_inventory()
 		local rest = ItemStack(taken:get_name())
 		if not inv:contains_item(list, rest) then
 			inv:add_item(list, rest)
@@ -65,7 +65,7 @@ local function keep_the_rest(meta, list, taken)
 			return taken
 		end
 	end
-end	
+end
 
 local function aging(pos, meta)
 	local cnt = meta:get_int("tubelib_aging") + 1
@@ -83,7 +83,7 @@ local function set_state(meta, state)
 	local number = meta:get_string("number")
 	meta:set_string("infotext", S("HighPerf Pushing Chest").." "..number..": "..state)
 	meta:set_string("state", state)
-end	
+end
 
 local function configured(pos, item)
 	local meta = minetest.get_meta(pos)
@@ -110,9 +110,10 @@ local function shift_items(pos, elapsed)
 			for i = 0,7 do
 				local idx = ((i + offs) % 8) + 1
 				local stack = inv:get_stack("shift", idx)
-				if stack:get_count() > 0 then
+				local count = stack:get_count()
+				if count > 0 then
 					if tubelib.push_items(pos, "R", stack, player_name) then
-						-- The effort is needed here for the case the 
+						-- The effort is needed here for the case the
 						-- pusher pushes into its own chest.
 						local num = stack:get_count()
 						stack = inv:get_stack("shift", idx)
@@ -121,7 +122,12 @@ local function shift_items(pos, elapsed)
 						aging(pos, meta)
 						return true
 					else
-						set_state(meta, "blocked")
+						-- Complete stack rejected
+						if count == stack:get_count() then
+							set_state(meta, "blocked")
+						else
+							inv:set_stack("shift", idx, stack)
+						end
 					end
 				end
 			end
@@ -153,7 +159,7 @@ local function defect(pos, meta)
 	node.name = "tubelib_addons3:pushing_chest_defect"
 	minetest.swap_node(pos, node)
 	return true
-end	
+end
 
 -- code duplication of method "NodeStates:on_dig_node" (node_states.lua)
 -- (in contrast to (all?) other tubelib nodes that can go defect class "NodeStates" isn't applied here)
@@ -163,15 +169,15 @@ function on_dig_node(pos, node, player)
 	if (not cnt or cnt < 1) then
 		cnt = 1
 	end
-	
+
 	local is_defect = (cnt > AGING_LEVEL1) and ( math.random(math.max(1, math.floor(AGING_LEVEL2 / cnt))) == 1 )
-	
+
 	if is_defect then
-		defect(pos, meta) -- replace node with defect one 
-		node = minetest.get_node(pos) 
+		defect(pos, meta) -- replace node with defect one
+		node = minetest.get_node(pos)
 	end
-	
-	
+
+
 	minetest.node_dig(pos, node, player) -- default behaviour (this function is called automatically if on_dig() callback isn't set)
 
 end
@@ -204,10 +210,10 @@ minetest.register_node("tubelib_addons3:pushing_chest", {
 		inv:set_size('main', 32)
 		inv:set_size('shift', 8)
 	end,
-	
+
 	after_place_node = function(pos, placer)
 		local meta = minetest.get_meta(pos)
-		local number = tubelib.add_node(pos, "tubelib_addons3:pushing_chest")	
+		local number = tubelib.add_node(pos, "tubelib_addons3:pushing_chest")
 		meta:set_string("player_name", placer:get_player_name())
 		meta:set_string("number", number)
 		meta:set_string("formspec", formspec())
@@ -237,7 +243,7 @@ minetest.register_node("tubelib_addons3:pushing_chest", {
 
 	on_timer = shift_items,
 	on_rotate = screwdriver.disallow,
-	
+
 	paramtype = "light",
 	sunlight_propagates = true,
 	paramtype2 = "facedir",
@@ -264,10 +270,10 @@ minetest.register_node("tubelib_addons3:pushing_chest_defect", {
 		inv:set_size('main', 32)
 		inv:set_size('shift', 8)
 	end,
-	
+
 	after_place_node = function(pos, placer)
 		local meta = minetest.get_meta(pos)
-		local number = tubelib.add_node(pos, "tubelib_addons3:pushing_chest")	
+		local number = tubelib.add_node(pos, "tubelib_addons3:pushing_chest")
 		meta:set_string("player_name", placer:get_player_name())
 		meta:set_string("number", number)
 		meta:set_string("formspec", formspec())
@@ -291,7 +297,7 @@ minetest.register_node("tubelib_addons3:pushing_chest_defect", {
 	allow_metadata_inventory_move = allow_metadata_inventory_move,
 
 	on_rotate = screwdriver.disallow,
-	
+
 	paramtype = "light",
 	sunlight_propagates = true,
 	paramtype2 = "facedir",
@@ -310,14 +316,14 @@ minetest.register_craft({
 	},
 })
 
-tubelib.register_node("tubelib_addons3:pushing_chest", 
+tubelib.register_node("tubelib_addons3:pushing_chest",
 	{"tubelib_addons3:pushing_chest_defect"}, {
 	on_recv_message = function(pos, topic, payload)
 		local node = minetest.get_node(pos)
 		if topic == "state" then
 			local meta = minetest.get_meta(pos)
 			local inv = meta:get_inventory()
-			if inv:is_empty("main") then 
+			if inv:is_empty("main") then
 				return "empty"
 			end
 			return meta:get_string("state")
@@ -368,7 +374,7 @@ tubelib.register_node("tubelib_addons3:pushing_chest",
 		local meta = minetest.get_meta(pos)
 		meta:set_int("tubelib_aging", 0)
 		meta:set_int("idx", 2)
-		
+
 		meta:set_string("formspec", formspec())
 		set_state(meta, "empty")
 		local node = minetest.get_node(pos)
@@ -377,4 +383,4 @@ tubelib.register_node("tubelib_addons3:pushing_chest",
 		minetest.get_node_timer(pos):start(2)
 		return true
 	end,
-})	
+})
