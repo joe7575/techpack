@@ -315,7 +315,75 @@ function tubelib.add_grinder_recipe(recipe)
 		recipe.type = "grinding"
 		unified_inventory.register_craft(recipe)
 	end
-end	
+end
+
+local function remove_unified_inventory_recipe(recipe)
+	if recipe.input and recipe.output then
+		local output_name = ItemStack(recipe.output):get_name()
+		local crafts = unified_inventory.crafts_for.recipe[output_name]
+		if crafts then
+			for i, craft in ipairs(crafts) do
+				if craft.type == recipe.type
+					and ItemStack(craft.output):get_name() == output_name
+					and #craft.items == 1
+					and craft.items[1] == recipe.input
+				then
+					table.remove(crafts, i)
+					break
+				end
+			end
+		end
+	elseif recipe.input then
+		for output_name, crafts in pairs(unified_inventory.crafts_for.recipe) do
+			for i, craft in ipairs(crafts) do
+				if craft.type == recipe.type
+					and #craft.items == 1
+					and craft.items[1] == recipe.input
+				then
+					table.remove(crafts, i)
+					break
+				end
+			end
+		end
+	elseif recipe.output then
+		local output_name = ItemStack(recipe.output):get_name()
+		local crafts = unified_inventory.crafts_for.recipe[output_name]
+		if crafts then
+			for i, craft in ipairs(crafts) do
+				if craft.type == recipe.type
+					and ItemStack(craft.output):get_name() == output_name then
+					table.remove(crafts, i)
+					break
+				end
+			end
+		end
+	end
+end
+
+function tubelib.remove_grinder_recipe(recipe)
+	if recipe.input and recipe.output then
+		if Recipes[recipe.input]:get_name() ~= ItemStack(recipe.output):get_name() then
+			return
+		end
+		Recipes[recipe.input] = nil
+	elseif recipe.input then
+		Recipes[recipe.input] = nil
+	elseif recipe.output then
+		local output_name = ItemStack(recipe.output):get_name()
+		for input_name, output in pairs(Recipes) do
+			if output:get_name() == output_name then
+				Recipes[input_name] = nil
+			end
+		end
+	end
+	if minetest.global_exists("unified_inventory") then
+		remove_unified_inventory_recipe({
+			input = recipe.input,
+			output = recipe.output,
+			type = "grinding"
+		})
+	end
+end
 
 for k,v in pairs({
 	["default:cobble"] = "default:gravel",
