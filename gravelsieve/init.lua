@@ -693,7 +693,7 @@ minetest.register_node("gravelsieve:compressed_gravel", {
 })
 
 minetest.register_craft({
-	output = "gravelsieve:sieve",
+	output = "gravelsieve:sieve3",
 	recipe = {
 		{"group:wood", "",                      "group:wood"},
 		{"group:wood", "default:steel_ingot",   "group:wood"},
@@ -702,10 +702,10 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	output = "gravelsieve:auto_sieve",
+	output = "gravelsieve:auto_sieve3",
 	type = "shapeless",
 	recipe = {
-		"gravelsieve:sieve", "default:mese_crystal",  "default:mese_crystal",
+		"gravelsieve:sieve3", "default:mese_crystal",  "default:mese_crystal",
 	},
 })
 
