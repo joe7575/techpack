@@ -3,7 +3,7 @@
 	Tubelib Addons 1
 	================
 
-	Copyright (C) 2017-2020 Joachim Stolberg
+	Copyright (C) 2017-2021 Joachim Stolberg
 
 	AGPL v3
 	See LICENSE.txt for more information
@@ -27,7 +27,7 @@ local P = minetest.string_to_pos
 local M = minetest.get_meta
 
 local CYCLE_TIME = 6
-local MAX_HEIGHT = 18  -- harvesting altitude
+local START_HEIGHT = 18  -- harvesting altitude
 local MAX_DIAMETER = 33
 local BURNING_TIME = 20  -- fuel
 local STANDBY_TICKS = 4  -- used for blocked state
@@ -35,13 +35,14 @@ local COUNTDOWN_TICKS = 2
 local OFFSET = 5  -- for uneven terrains
 
 -- start on top of the base block
-local function working_start_pos(pos)
+local function working_start_pos(pos, altitude)
 	local working_pos = table.copy(pos)
-	working_pos.y = working_pos.y + MAX_HEIGHT
+	working_pos.y = working_pos.y + (altitude or START_HEIGHT)
 	return working_pos
 end
 
 local Radius2Idx = {[4]=1 ,[6]=2, [8]=3, [10]=4, [12]=5, [14]=6, [16]=7}
+local Altitude2Idx = {[-2]=1 ,[-1]=2, [0]=3, [1]=4, [2]=5, [4]=6, [6]=7, [8]=8, [10]=9, [14]=10, [18]=11}
 
 local function formspec(self, pos, meta)
 	-- some recalculations
@@ -52,6 +53,7 @@ local function formspec(self, pos, meta)
 		fuel = 0
 	end
 	local radius = Radius2Idx[this.radius] or 2
+	local altitude = Altitude2Idx[this.altitude or START_HEIGHT] or 11
 	
 	return "size[9,8]"..
 	default.gui_bg..
@@ -59,7 +61,9 @@ local function formspec(self, pos, meta)
 	default.gui_slots..
 	"dropdown[0,0;1.5;radius;4,6,8,10,12,14,16;"..radius.."]".. 
 	"label[1.6,0.2;"..S("Area radius").."]"..
-	"checkbox[0,1;endless;"..S("Run endless")..";"..endless.."]"..
+	"dropdown[0,1;1.5;altitude;-2,-1,0,1,2,4,6,8,10,14,18;"..altitude.."]".. 
+	"label[1.6,1.2;"..S("Altitude ").."]"..
+	"checkbox[0,2;endless;"..S("Run endless")..";"..endless.."]"..
 	"list[context;main;5,0;4,4;]"..
 	"list[context;fuel;1.5,3;1,1;]"..
 	"item_image[1.5,3;1,1;tubelib_addons1:biofuel]"..
@@ -82,7 +86,7 @@ local State = tubelib.NodeStates:new({
 	on_start = function(pos, meta, oldstate)
 		local this = minetest.deserialize(meta:get_string("this"))
 		this.idx = 0
-		this.working_pos = working_start_pos(pos)
+		this.working_pos = working_start_pos(pos, this.altitude)
 		meta:set_string("this", minetest.serialize(this))
 	end,
 	formspec_func = formspec,
@@ -210,7 +214,7 @@ local function calc_new_pos(pos, this, meta)
 	if this.idx >= this.max then
 		if this.endless == 1 then
 			this.idx = 0
-			this.working_pos = working_start_pos(pos)
+			this.working_pos = working_start_pos(pos, this.altitude)
 			return true
 		else
 			return false
@@ -227,7 +231,7 @@ local function harvest_field(this, meta)
 	local inv = meta:get_inventory()
 	local pos = table.copy(this.working_pos)
 	local start_y_pos = pos.y - 1
-	local stop_y_pos = pos.y - MAX_HEIGHT - OFFSET
+	local stop_y_pos = pos.y - (this.altitude or START_HEIGHT) - OFFSET
 	if minetest.is_protected(pos, this.owner) then
 		return true
 	end
@@ -297,6 +301,7 @@ local function on_receive_fields(pos, formname, fields, player)
 	local meta = M(pos)
 	local this = minetest.deserialize(meta:get_string("this"))
 	local radius = this.radius
+	local altitude = this.altitude or START_HEIGHT
 	
 	if fields.radius ~= nil then
 		radius = tonumber(fields.radius)
@@ -308,6 +313,15 @@ local function on_receive_fields(pos, formname, fields, player)
 		State:stop(pos, meta)
 	end
 
+	if fields.altitude ~= nil then
+		altitude = tonumber(fields.altitude)
+	end
+	if altitude ~= this.altitude then
+		this.altitude = altitude
+		meta:set_string("this", minetest.serialize(this))
+		State:stop(pos, meta)
+	end
+	
 	if fields.endless ~= nil then
 		this.endless = fields.endless == "true" and 1 or 0
 	end
@@ -334,7 +348,7 @@ minetest.register_node("tubelib_addons1:harvester_base", {
 		local this = {
 			number = number,
 			owner = placer:get_player_name(),
-			working_pos = working_start_pos(pos),
+			working_pos = working_start_pos(pos, START_HEIGHT),
 			fuel = 0,
 			endless = 0,
 			radius = 6,
@@ -392,7 +406,7 @@ minetest.register_node("tubelib_addons1:harvester_defect", {
 		local this = {
 			number = number,
 			owner = placer:get_player_name(),
-			working_pos = working_start_pos(pos),
+			working_pos = working_start_pos(pos, START_HEIGHT),
 			fuel = 0,
 			endless = 0,
 			radius = 6,
@@ -487,7 +501,7 @@ minetest.register_lbm({
 		local meta = M(pos)
 		local this = minetest.deserialize(meta:get_string("this"))
 		if this then
-			this.working_pos = this.copter_pos or working_start_pos(pos)
+			this.working_pos = this.copter_pos or working_start_pos(pos, this.altitude)
 			meta:set_string("this", minetest.serialize(this))
 		end
 	end
