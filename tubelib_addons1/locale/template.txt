@@ -41,6 +41,7 @@ Tubelib Grinder=
 ### harvester.lua ###
 
 : running (=
+Altitude =
 Area radius=
 Tubelib Harvester=
 Tubelib Harvester Base=

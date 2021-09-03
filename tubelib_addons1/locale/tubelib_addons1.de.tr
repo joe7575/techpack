@@ -41,6 +41,7 @@ Tubelib Grinder=Tubelib Mühle
 ### harvester.lua ###
 
 : running (=: läuft (
+Altitude = Flughöhe
 Area radius=Flächenradius
 Tubelib Harvester=Tubelib Ernter
 Tubelib Harvester Base=Tubelib Ernter Basis

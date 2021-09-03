@@ -186,6 +186,7 @@ tubelib_addons13 optional: minecart
 - 2020-11-20  V2.04  * Switch to AGPL v3, adapt to minetest 5.3, add translation support, fix minor bugs
 - 2021-01-24  V2.05  * PR #74, #76: Implement checks for valid connection sides for many nodes
 - 2021-06-06  V2.06  * PR #78 - #89, chest cart added
+- 2021-09-03  V2.07  * FR #103, Add Altitude to harvester menu
 
 
 ## New in v2 (from players point of view)
