@@ -163,6 +163,7 @@ fn("ethereal:bamboo_leaves")
 fn("ethereal:banana")
 fn("ethereal:orange")
 fn("ethereal:coconut")
+fn("ethereal:golden_apple")
 
 -------------------------------------------------------------------------------
 -- Default Ground
