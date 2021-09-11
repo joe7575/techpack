@@ -14,6 +14,18 @@
 	
 ]]--
 
+local function is_source(pos,meta,  item)
+	local inv = minetest.get_inventory({type="node", pos=pos})
+	local name = item:get_name()
+	if meta:get_string("src_item") == name then
+		return true
+	elseif inv:get_stack("src", 1):get_name() == name then
+		meta:set_string("src_item", name)
+		return true
+	end
+	return false
+end
+
 tubelib.register_node("default:chest", {"default:chest_open"}, {
 	on_pull_item = function(pos, side)
 		local meta = minetest.get_meta(pos)
@@ -65,7 +77,9 @@ tubelib.register_node("default:furnace", {"default:furnace_active"}, {
 	on_push_item = function(pos, side, item)
 		local meta = minetest.get_meta(pos)
 		minetest.get_node_timer(pos):start(1.0)
-		if minetest.get_craft_result({method="fuel", width=1, items={item}}).time ~= 0 then
+		if is_source(pos, meta, item) then
+			return tubelib.put_item(meta, "src", item)
+		elseif minetest.get_craft_result({method="fuel", width=1, items={item}}).time ~= 0 then
 			return tubelib.put_item(meta, "fuel", item)
 		else
 			return tubelib.put_item(meta, "src", item)
