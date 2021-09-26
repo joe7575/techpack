@@ -417,7 +417,7 @@ minetest.register_node("tubelib_addons1:quarry_defect", {
 			return false
 		end
 		local inv = M(pos):get_inventory()
-		return inv:is_empty("main")
+		return inv:is_empty("main") and inv:is_empty("fuel")
 	end,
 
 	after_dig_node = function(pos, oldnode, oldmetadata, digger)
