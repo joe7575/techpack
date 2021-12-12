@@ -77,7 +77,7 @@ minetest.register_node("tubelib_addons3:pusher", {
 		'tubelib_pusher1.png^tubelib_addons3_node_frame4.png',
 		'tubelib_outp.png^tubelib_addons3_node_frame4.png',
 		'tubelib_inp.png^tubelib_addons3_node_frame4.png',
-		"tubelib_pusher1.png^[transformR180]^tubelib_addons3_node_frame4.png^[transformR180]",
+		"tubelib_pusher1.png^tubelib_addons3_node_frame4.png^[transformR180]",
 		"tubelib_pusher1.png^tubelib_addons3_node_frame4.png",
 	},
 
