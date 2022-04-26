@@ -1,14 +1,7 @@
 # textdomain: gravelsieve
 
-
-
-### hammer.lua ###
-
 Hammer converts Cobblestone into Gravel=Hammer, Zertrümmert Pflasterstein in  Kies
-
-### init.lua ###
-
-Automatic Gravel Sieve=Automatisches Kiessieb
-Compressed Gravel=Komprimiertes Kies
 Gravel Sieve=Kiessieb
+Automatic Gravel Sieve=Automatisches Kiessieb
 Sieved Gravel=Gesiebtes Kies
+Compressed Gravel=Komprimiertes Kies
