@@ -1,34 +1,12 @@
 # textdomain: tubelib_addons3
 
-
-
-### chest.lua ###
-
 HighPerf Chest=HighPerf Kiste
 connected with=verbunden mit
-
-### chest_cart.lua ###
-
 TA Chest Cart=TA Kistenwagen
-
-### distributor.lua ###
-
 HighPerf Distributor=HighPerf Verteiler
-
-### funnel.lua ###
-
 HighPerf Funnel=HighPerf Trichter
-
-### pusher.lua ###
-
 HighPerf Pusher=HighPerf Schieber
-
-### pushing_chest.lua ###
-
 HighPerf Pushing Chest=HighPerf Schiebende Kiste
-
-### teleporter.lua ###
-
 Enter channel string=Geben Sie die Kanalbezeichner ein
 Save=Speichern
 Tubelib Teleporter=Tubelib Teleporter
