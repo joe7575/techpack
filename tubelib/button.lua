@@ -175,6 +175,8 @@ minetest.register_node("tubelib:button_active", {
 	drop = "tubelib:button",
 })
 
+tubelib.register_node("tubelib:button", {"tubelib:button_active"}, {tubelib_node = true})
+
 minetest.register_craft({
 	output = "tubelib:button",
 	recipe = {

@@ -198,6 +198,8 @@ minetest.register_node("smartline:button_active", {
 	sounds = default.node_sound_wood_defaults(),
 })
 
+tubelib.register_node("smartline:button", {"smartline:button_active"}, {tubelib_node = true})
+
 minetest.register_craft({
 	output = "smartline:button",
 	recipe = {

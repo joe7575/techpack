@@ -640,6 +640,9 @@ local function get_node_number(pos)
 	num = meta:get_string("own_number")
 	if num and num ~= "" then return num end
 
+	num = meta:get_string("own_num")
+	if num and num ~= "" then return num end
+
 	num = parse_number(meta:get_string("infotext"))
 	if num and num ~= "" then return num end
 
