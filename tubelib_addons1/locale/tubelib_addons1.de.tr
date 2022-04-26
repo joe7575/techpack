@@ -1,76 +1,38 @@
 # textdomain: tubelib_addons1
 
-
-
-### autocrafter.lua ###
-
 Tubelib Autocrafter=Tubelib Autocrafter
-
-### chest.lua ###
-
 Tubelib Protected Chest=Tubelib geschützte Kiste
 connected with=verbunden mit
-
-### detector.lua ###
-
+Tubelib Detector=Tubelib Detektor
 Insert destination node number(s)=Geben Sie die Zielknotennummer(n) ein.
 Save=Speichern
-Tubelib Detector=Tubelib Detektor
-Tubelib Detector, connected=Tubelib Detektor, verbunden
-Tubelib Detector, unconfigured=Tubelib Detektor, nicht konfiguriert
-
-### fermenter.lua ###
-
+Tubelib Detector @1=Tubelib Detektor @1
+Tubelib Detector @1: connected=Tubelib Detektor @1: verbunden
+Tubelib Fermenter=Tubelib Fermenter
+Fermenter will not fit there=Fermenter wird dort nicht passen
+Tubelib Fermenter defect=Tubelib Fermenter defekt
+Tubelib Fermenter Top=Tubelib Fermenter Oberteil
 Bio Gas=Biogas
 Fermenter=Fermenter
-Fermenter will not fit there=Fermenter wird dort nicht passen
 Reformer=Reformer
-Tubelib Fermenter=Tubelib Fermenter
-Tubelib Fermenter Top=Tubelib Fermenter Oberteil
-Tubelib Fermenter defect=Tubelib Fermenter defekt
-
-### funnel.lua ###
-
 Tubelib Funnel=Tubelib Trichter
-
-### grinder.lua ###
-
-Grinding=Mahlen
 Tubelib Grinder=Tubelib Mühle
-
-### harvester.lua ###
-
-: running (=: läuft (
-Altitude = Flughöhe
+Grinding=Mahlen
 Area radius=Flächenradius
+Altitude = Flughöhe
 Tubelib Harvester=Tubelib Ernter
+: running (=: läuft (
 Tubelib Harvester Base=Tubelib Ernter Basis
-
-### harvester.lua ###
-### quarry.lua ###
-
 Run endless=endlos laufen
-
-### liquidsampler.lua ###
-
 Liquid Sampler=Flüssigkeitsaufnehmer
-
-### pusher_fast.lua ###
-
 Fast Pusher=Schneller Schieber
-
-### quarry.lua ###
-
-Digging depth=Grabetiefe
 Start level=Startebene
+Digging depth=Grabetiefe
 Tubelib Quarry=Tubelib Steinbrecher
 [Tubelib Quarry] Area is protected!=[Tubelib Steinbrecher] Gebiet ist geschützt!
 running=läuft
-
-### reformer.lua ###
-
-Bio Fuel=Biotreibstoff
-Reformer will not fit there=Reformer wird dort nicht passen
 Tubelib Reformer=Tubelib Reformer
-Tubelib Reformer Top=Tubelib Reformer Oberteil
+Reformer will not fit there=Reformer wird dort nicht passen
 Tubelib Reformer defect=Tubelib Reformer defekt
+Tubelib Reformer Top=Tubelib Reformer Oberteil
+Bio Fuel=Biotreibstoff

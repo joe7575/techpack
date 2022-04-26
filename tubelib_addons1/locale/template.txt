@@ -1,76 +1,38 @@
 # textdomain: tubelib_addons1
 
-
-
-### autocrafter.lua ###
-
 Tubelib Autocrafter=
-
-### chest.lua ###
-
 Tubelib Protected Chest=
 connected with=
-
-### detector.lua ###
-
+Tubelib Detector=
 Insert destination node number(s)=
 Save=
-Tubelib Detector=
-Tubelib Detector, connected=
-Tubelib Detector, unconfigured=
-
-### fermenter.lua ###
-
+Tubelib Detector @1=
+Tubelib Detector @1: connected=
+Tubelib Fermenter=
+Fermenter will not fit there=
+Tubelib Fermenter defect=
+Tubelib Fermenter Top=
 Bio Gas=
 Fermenter=
-Fermenter will not fit there=
 Reformer=
-Tubelib Fermenter=
-Tubelib Fermenter Top=
-Tubelib Fermenter defect=
-
-### funnel.lua ###
-
 Tubelib Funnel=
-
-### grinder.lua ###
-
-Grinding=
 Tubelib Grinder=
-
-### harvester.lua ###
-
-: running (=
-Altitude =
+Grinding=
 Area radius=
+Altitude =
 Tubelib Harvester=
+: running (=
 Tubelib Harvester Base=
-
-### harvester.lua ###
-### quarry.lua ###
-
 Run endless=
-
-### liquidsampler.lua ###
-
 Liquid Sampler=
-
-### pusher_fast.lua ###
-
 Fast Pusher=
-
-### quarry.lua ###
-
-Digging depth=
 Start level=
+Digging depth=
 Tubelib Quarry=
 [Tubelib Quarry] Area is protected!=
 running=
-
-### reformer.lua ###
-
-Bio Fuel=
-Reformer will not fit there=
 Tubelib Reformer=
-Tubelib Reformer Top=
+Reformer will not fit there=
 Tubelib Reformer defect=
+Tubelib Reformer Top=
+Bio Fuel=
