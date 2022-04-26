@@ -21,20 +21,28 @@ params = {"recursive": False,
     "mods": False,
     "verbose": False,
     "folders": [],
-    "no-old-file": False
+    "no-old-file": False,
+    "break-long-lines": False,
+    "sort": False,
+    "print-source": False,
+    "truncate-unused": False,
 }
 # Available CLI options
 options = {"recursive": ['--recursive', '-r'],
     "help": ['--help', '-h'],
-    "mods": ['--installed-mods'],
+    "mods": ['--installed-mods', '-m'],
     "verbose": ['--verbose', '-v'],
-    "no-old-file": ['--no-old-file']
+    "no-old-file": ['--no-old-file', '-O'],
+    "break-long-lines": ['--break-long-lines', '-b'],
+    "sort": ['--sort', '-s'],
+    "print-source": ['--print-source', '-p'],
+    "truncate-unused": ['--truncate-unused', '-t'],
 }
 
 # Strings longer than this will have extra space added between
 # them in the translation files to make it easier to distinguish their
 # beginnings and endings at a glance
-doublespace_threshold = 60
+doublespace_threshold = 80
 
 def set_params_folders(tab: list):
     '''Initialize params["folders"] from CLI arguments.'''
@@ -69,8 +77,16 @@ DESCRIPTION
         run on locally installed modules
     {', '.join(options["no-old-file"])}
         do not create *.old files
+    {', '.join(options["sort"])}
+        sort output strings alphabetically
+    {', '.join(options["break-long-lines"])}
+        add extra line breaks before and after long strings
+    {', '.join(options["print-source"])}
+	add comments denoting the source file
     {', '.join(options["verbose"])}
         add output information
+    {', '.join(options["truncate-unused"])}
+        delete unused strings from files
 ''')
 
 
@@ -89,8 +105,8 @@ def main():
             print("recursively ", end='')
         # Running
         if params["mods"]:
-            print(f"on all locally installed modules in {os.path.abspath('~/.minetest/mods/')}")
-            run_all_subfolders("~/.minetest/mods")
+            print(f"on all locally installed modules in {os.path.expanduser('~/.minetest/mods/')}")
+            run_all_subfolders(os.path.expanduser("~/.minetest/mods"))
         elif len(params["folders"]) >= 2:
             print("on folder list:", params["folders"])
             for f in params["folders"]:
@@ -126,7 +142,7 @@ pattern_name = re.compile(r'^name[ ]*=[ ]*([^ \n]*)')
 pattern_tr_filename = re.compile(r'\.tr$')
 pattern_po_language_code = re.compile(r'(.*)\.po$')
 
-#attempt to read the mod's name from the mod.conf file. Returns None on failure
+#attempt to read the mod's name from the mod.conf file or folder name. Returns None on failure
 def get_modname(folder):
     try:
         with open(os.path.join(folder, "mod.conf"), "r", encoding='utf-8') as mod_conf:
@@ -135,7 +151,15 @@ def get_modname(folder):
                 if match:
                     return match.group(1)
     except FileNotFoundError:
-        pass
+        if not os.path.isfile(os.path.join(folder, "modpack.txt")):
+            folder_name = os.path.basename(folder)
+            # Special case when run in Minetest's builtin directory
+            if folder_name == "builtin":
+                return "__builtin"
+            else:
+                return folder_name
+        else:
+            return None
     return None
 
 #If there are already .tr files in /locale, returns a list of their names
@@ -183,7 +207,7 @@ def process_po_files(folder, modname):
             if code_match == None:
                 continue
             language_code = code_match.group(1)
-            tr_name = modname + "." + language_code + ".tr"
+            tr_name = f'{modname}.{language_code}.tr'
             tr_file = os.path.join(root, tr_name)
             if os.path.exists(tr_file):
                 if params["verbose"]:
@@ -213,60 +237,64 @@ def mkdir_p(path):
 # dOld is a dictionary of existing translations and comments from
 # the previous version of this text
 def strings_to_text(dkeyStrings, dOld, mod_name, header_comments):
-    lOut = [f"# textdomain: {mod_name}\n"]
+    lOut = [f"# textdomain: {mod_name}"]
     if header_comments is not None:
         lOut.append(header_comments)
-    
+
     dGroupedBySource = {}
 
     for key in dkeyStrings:
         sourceList = list(dkeyStrings[key])
-        sourceList.sort()
+        if params["sort"]:
+            sourceList.sort()
         sourceString = "\n".join(sourceList)
         listForSource = dGroupedBySource.get(sourceString, [])
         listForSource.append(key)
         dGroupedBySource[sourceString] = listForSource
-    
+
     lSourceKeys = list(dGroupedBySource.keys())
     lSourceKeys.sort()
     for source in lSourceKeys:
         localizedStrings = dGroupedBySource[source]
-        localizedStrings.sort()
-        lOut.append("")
-        lOut.append(source)
-        lOut.append("")
+        if params["sort"]:
+            localizedStrings.sort()
+        if params["print-source"]:
+            if lOut[-1] != "":
+                lOut.append("")
+            lOut.append(source)
         for localizedString in localizedStrings:
             val = dOld.get(localizedString, {})
             translation = val.get("translation", "")
             comment = val.get("comment")
-            if len(localizedString) > doublespace_threshold and not lOut[-1] == "":
+            if params["break-long-lines"] and len(localizedString) > doublespace_threshold and not lOut[-1] == "":
                 lOut.append("")
-            if comment != None:
+            if comment != None and comment != "" and not comment.startswith("# textdomain:"):
                 lOut.append(comment)
             lOut.append(f"{localizedString}={translation}")
-            if len(localizedString) > doublespace_threshold:
+            if params["break-long-lines"] and len(localizedString) > doublespace_threshold:
                 lOut.append("")
 
 
     unusedExist = False
-    for key in dOld:
-        if key not in dkeyStrings:
-            val = dOld[key]
-            translation = val.get("translation")
-            comment = val.get("comment")
-            # only keep an unused translation if there was translated
-            # text or a comment associated with it
-            if translation != None and (translation != "" or comment):
-                if not unusedExist:
-                    unusedExist = True
-                    lOut.append("\n\n##### not used anymore #####\n")
-                if len(key) > doublespace_threshold and not lOut[-1] == "":
-                    lOut.append("")
-                if comment != None:
-                    lOut.append(comment)
-                lOut.append(f"{key}={translation}")
-                if len(key) > doublespace_threshold:
-                    lOut.append("")
+    if not params["truncate-unused"]:
+        for key in dOld:
+            if key not in dkeyStrings:
+                val = dOld[key]
+                translation = val.get("translation")
+                comment = val.get("comment")
+                # only keep an unused translation if there was translated
+                # text or a comment associated with it
+                if translation != None and (translation != "" or comment):
+                    if not unusedExist:
+                        unusedExist = True
+                        lOut.append("\n\n##### not used anymore #####\n")
+                    if params["break-long-lines"] and len(key) > doublespace_threshold and not lOut[-1] == "":
+                        lOut.append("")
+                    if comment != None:
+                        lOut.append(comment)
+                    lOut.append(f"{key}={translation}")
+                    if params["break-long-lines"] and len(key) > doublespace_threshold:
+                        lOut.append("")
     return "\n".join(lOut) + '\n'
 
 # Writes a template.txt file
@@ -274,7 +302,7 @@ def strings_to_text(dkeyStrings, dOld, mod_name, header_comments):
 def write_template(templ_file, dkeyStrings, mod_name):
     # read existing template file to preserve comments
     existing_template = import_tr_file(templ_file)
-    
+
     text = strings_to_text(dkeyStrings, existing_template[0], mod_name, existing_template[2])
     mkdir_p(os.path.dirname(templ_file))
     with open(templ_file, "wt", encoding='utf-8') as template_file:
@@ -299,7 +327,7 @@ def read_lua_file_strings(lua_file):
             strings.append(s[1])
         for s in pattern_lua_bracketed_fs.findall(text):
             strings.append(s)
-                
+
         for s in strings:
             s = re.sub(r'"\.\.\s+"', "", s)
             s = re.sub("@[^@=0-9]", "@@", s)
@@ -332,11 +360,11 @@ def import_tr_file(tr_file):
             latest_comment_block = None
             for line in existing_file.readlines():
                 line = line.rstrip('\n')
-                if line[:3] == "###":
-                    if header_comment is None:
+                if line.startswith("###"):
+                    if header_comment is None and not latest_comment_block is None:
                         # Save header comments
                         header_comment = latest_comment_block
-                        # Stip textdomain line
+                        # Strip textdomain line
                         tmp_h_c = ""
                         for l in header_comment.split('\n'):
                             if not l.startswith("# textdomain:"):
@@ -346,7 +374,7 @@ def import_tr_file(tr_file):
                     # Reset comment block if we hit a header
                     latest_comment_block = None
                     continue
-                if line[:1] == "#":
+                elif line.startswith("#"):
                     # Save the comment we're inside
                     if not latest_comment_block:
                         latest_comment_block = line
@@ -383,7 +411,7 @@ def generate_template(folder, mod_name):
                     sources = dOut.get(s, set())
                     sources.add(f"### {os.path.basename(fname)} ###")
                     dOut[s] = sources
-                    
+
     if len(dOut) == 0:
         return None
     templ_file = os.path.join(folder, "locale/template.txt")
@@ -414,7 +442,6 @@ def update_tr_file(dNew, mod_name, tr_file):
 
 # Updates translation files for the mod in the given folder
 def update_mod(folder):
-    print(folder)
     modname = get_modname(folder)
     if modname is not None:
         process_po_files(folder, modname)
@@ -427,24 +454,23 @@ def update_mod(folder):
                 update_tr_file(data, modname, os.path.join(folder, "locale/", tr_file))
     else:
         print(f"\033[31mUnable to find modname in folder {folder}.\033[0m", file=_stderr)
-        #exit(1)
+        exit(1)
 
 # Determines if the folder being pointed to is a mod or a mod pack
 # and then runs update_mod accordingly
 def update_folder(folder):
     is_modpack = os.path.exists(os.path.join(folder, "modpack.txt")) or os.path.exists(os.path.join(folder, "modpack.conf"))
     if is_modpack:
-        subfolders = [f.path for f in os.scandir(folder) if f.is_dir()]
+        subfolders = [f.path for f in os.scandir(folder) if f.is_dir() and not f.name.startswith('.')]
         for subfolder in subfolders:
-            update_mod(subfolder + "/")
+            update_mod(subfolder)
     else:
         update_mod(folder)
     print("Done.")
 
 def run_all_subfolders(folder):
-    for modfolder in [f.path for f in os.scandir(folder) if f.is_dir()]:
-        update_folder(modfolder + "/")
+    for modfolder in [f.path for f in os.scandir(folder) if f.is_dir() and not f.name.startswith('.')]:
+        update_folder(modfolder)
 
 
 main()
-
