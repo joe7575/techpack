@@ -1,116 +1,47 @@
 # textdomain: tubelib_addons2
 
-
-
-### accesscontrol.lua ###
-
-Access code (4 digits):=
 Door block numbers:=
+Access code (4 digits):=
 Enter access code=
 OK=
 Tubelib Access Lock=
 Tubelib Access Lock, Enter access code=
-
-### accesscontrol.lua ###
-### colorlamp.lua ###
-### doorblock.lua ###
-### gateblock.lua ###
-### logic_not.lua ###
-### mesecons_converter.lua ###
-### repeater.lua ###
-
-Save=
-
-### ceilinglamp.lua ###
-
 Tubelib Ceiling Lamp=
-
-### colorlamp.lua ###
-### colorlamp_ud.lua ###
-
 Tubelib Color Lamp=
-
-### doorblock.lua ###
-
-Select texture=
 Tubelib Door Block=
-
-### gateblock.lua ###
-
+Select texture=
 Tubelib Gate Block=
-
-### industriallamp.lua ###
-
+Save=
 Tubelib Industrial Lamp=
-
-### invisiblelamp.lua ###
-
 Tubelib Invisible Lamp=
-
-### logic_not.lua ###
-
 Tubelib Logic Not=
-
-### logic_not.lua ###
-### mesecons_converter.lua ###
-### repeater.lua ###
-
-: connected with=
-: not connected=
-Destination node numbers=
-
-### mesecons_converter.lua ###
-
 Tubelib Mesecons Converter=
-
-### mesecons_converter.lua ###
-### repeater.lua ###
-
 : fault (overloaded)=
-
-### programmer.lua ###
-
-Tubelib Programmer=
-[Tubelib Programmer] Error: programmer not supported!=
+Destination node numbers=
+: not connected=
+: connected with=
+[Tubelib Programmer] programmer reset=
+[Tubelib Programmer] number=
+read=
 [Tubelib Programmer] Unknown node on=
 [Tubelib Programmer] foreign or unknown node!=
 [Tubelib Programmer] node programmed!=
-[Tubelib Programmer] number=
-[Tubelib Programmer] programmer reset=
-read=
-
-### repeater.lua ###
-
+[Tubelib Programmer] Error: programmer not supported!=
+Tubelib Programmer=
 Tubelib Repeater=
-
-### sequencer.lua ###
-
-Define a sequence of commands@nto control other machines.=
-If endless is set, the Sequencer@nrestarts again and again.=
-Numbers(s) are the node numbers,@nthe command shall sent to.=
-Offset is the time to the@nnext line in seconds (1..999).=
 Run endless=
-Sequencer Help=
-
-The command '  ' does nothing,@nonly consuming the offset time.=
-
-The commands 'on'/'off' are used@n for machines and other nodes.=
-
-Tubelib Sequencer=
-exit=
 help=
-
-### sequencer.lua ###
-### timer.lua ###
-
+Sequencer Help=
+Define a sequence of commands@nto control other machines.=
+Numbers(s) are the node numbers,@nthe command shall sent to.=
+The commands 'on'/'off' are used@n for machines and other nodes.=
+Offset is the time to the@nnext line in seconds (1..999).=
+If endless is set, the Sequencer@nrestarts again and again.=
+The command '  ' does nothing,@nonly consuming the offset time.=
+exit=
+Tubelib Sequencer=
 Command=
-
-### streetlamp.lua ###
-
 Tubelib Street Lamp=
-
-### timer.lua ###
-
-Number(s)=
 Time=
+Number(s)=
 Tubelib Timer=
