@@ -9,7 +9,7 @@
 	See LICENSE.txt for more information
 
 	accesscontrol.lua:
-	
+
 ]]--
 
 -- Load support for I18n
@@ -129,19 +129,20 @@ minetest.register_node("tubelib_addons2:accesscontrol", {
 			end
 		end
 	end,
-	
+
 	after_dig_node = function(pos)
 		tubelib.remove_node(pos)
 	end,
-	
+
 	on_timer = switch_off,
-	
+
 	paramtype = "light",
 	sunlight_propagates = true,
 	paramtype2 = "facedir",
 	groups = {choppy=2, cracky=2, crumbly=2},
 	is_ground_content = false,
 	sounds = default.node_sound_metal_defaults(),
+	on_blast = function() end,
 })
 
 
@@ -161,4 +162,4 @@ tubelib.register_node("tubelib_addons2:accesscontrol", {}, {
 			return true
 		end
 	end,
-})		
+})

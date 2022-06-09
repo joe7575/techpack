@@ -571,6 +571,7 @@ for idx = 0,4 do
 		is_ground_content = false,
 		groups = {choppy=2, cracky=1, not_in_creative_inventory=not_in_creative_inventory, tubedevice = 1, tubedevice_receiver = 1},
 		drop = node_name.."3",
+		on_blast = function() end,
 	})
 end
 end
@@ -637,6 +638,7 @@ if minetest.global_exists("tubelib") then
 		sunlight_propagates = true,
 		is_ground_content = false,
 		groups = {choppy=2, cracky=1, not_in_creative_inventory=1},
+		on_blast = function() end,
 	})
 
 	tubelib.register_node("gravelsieve:auto_sieve3",
@@ -758,5 +760,3 @@ if minetest.get_modpath("moreblocks") then
 		sounds = default.node_sound_stone_defaults(),
 	})
 end
-
-

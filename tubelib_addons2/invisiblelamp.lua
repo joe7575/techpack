@@ -9,7 +9,7 @@
 	See LICENSE.txt for more information
 
 	invisiblelamp.lua:
-	
+
 ]]--
 
 -- Load support for I18n
@@ -18,7 +18,7 @@ local S = tubelib_addons2.S
 local function switch_on(pos, node)
 	node.name = "tubelib_addons2:invisiblelamp_on"
 	minetest.swap_node(pos, node)
-end	
+end
 
 local function switch_off(pos, node)
 	node.name = "tubelib_addons2:invisiblelamp"
@@ -26,14 +26,14 @@ local function switch_off(pos, node)
 	local pos1 = {x=pos.x-5, y=pos.y-5, z=pos.z-5}
 	local pos2 = {x=pos.x+5, y=pos.y+5, z=pos.z+5}
 	minetest.fix_light(pos1, pos2)
-end	
+end
 
 minetest.register_node("tubelib_addons2:invisiblelamp", {
 	description = S("Tubelib Invisible Lamp"),
 	drawtype = "glasslike_framed_optional",
 	tiles = {"tubelib_addons2_invisiblelamp.png"},
 	inventory_image = 'tubelib_addons2_invisiblelamp_inventory.png',
-	
+
 	after_place_node = function(pos, placer)
 		local number = tubelib.add_node(pos, "tubelib_addons2:invisiblelamp")
 		local meta = minetest.get_meta(pos)
@@ -57,13 +57,14 @@ minetest.register_node("tubelib_addons2:invisiblelamp", {
 	is_ground_content = false,
 	groups = {cracky = 3, oddly_breakable_by_hand = 3},
 	sounds = default.node_sound_glass_defaults(),
+	on_blast = function() end,
 })
 
 minetest.register_node("tubelib_addons2:invisiblelamp_on", {
 	description = S("Tubelib Invisible Lamp"),
 	drawtype = "glasslike_framed_optional",
 	tiles = {"tubelib_addons2_invisiblelamp.png"},
-	
+
 	on_rightclick = function(pos, node, clicker)
 		if not minetest.is_protected(pos, clicker:get_player_name()) then
 			switch_off(pos, node)
@@ -73,7 +74,7 @@ minetest.register_node("tubelib_addons2:invisiblelamp_on", {
 	after_dig_node = function(pos)
 		tubelib.remove_node(pos)
 	end,
-	
+
 	paramtype = "light",
 	light_source = minetest.LIGHT_MAX,
 	sunlight_propagates = true,
@@ -82,6 +83,7 @@ minetest.register_node("tubelib_addons2:invisiblelamp_on", {
 	drop = "tubelib_addons2:invisiblelamp",
 	groups = {cracky = 3, oddly_breakable_by_hand = 3, not_in_creative_inventory=1},
 	sounds = default.node_sound_glass_defaults(),
+	on_blast = function() end,
 })
 
 minetest.register_craft({
@@ -102,4 +104,4 @@ tubelib.register_node("tubelib_addons2:invisiblelamp", {"tubelib_addons2:invisib
 			switch_off(pos, node)
 		end
 	end,
-})		
+})

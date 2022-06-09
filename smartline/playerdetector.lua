@@ -9,7 +9,7 @@
 	See LICENSE.txt for more information
 
 	playerdetector.lua:
-	
+
 ]]--
 
 -- Load support for I18n
@@ -42,14 +42,14 @@ local function scan_for_player(pos)
 	local names = meta:get_string("names") or ""
 	for _, object in pairs(minetest.get_objects_inside_radius(pos, 4)) do
 		if object:is_player() then
-			if names == "" then 
+			if names == "" then
 				meta:set_string("player_name", object:get_player_name())
-				return true 
+				return true
 			end
 			for _,name in ipairs(string.split(names, " ")) do
-				if object:get_player_name() == name then 
+				if object:get_player_name() == name then
 					meta:set_string("player_name", name)
-					return true 
+					return true
 				end
 			end
 		end
@@ -141,11 +141,11 @@ minetest.register_node("smartline:playerdetector", {
 	end,
 
 	on_receive_fields = on_receive_fields,
-	
+
 	after_dig_node = function(pos)
 		tubelib.remove_node(pos)
 	end,
-	
+
 	on_timer = function (pos, elapsed)
 		if tubelib.data_not_corrupted(pos) then
 			if scan_for_player(pos) then
@@ -164,6 +164,7 @@ minetest.register_node("smartline:playerdetector", {
 	groups = {cracky=2, crumbly=2},
 	is_ground_content = false,
 	sounds = default.node_sound_metal_defaults(),
+	on_blast = function() end,
 })
 
 minetest.register_node("smartline:playerdetector_active", {
@@ -185,9 +186,9 @@ minetest.register_node("smartline:playerdetector_active", {
 			{ -6/32, -6/32, 14/32,  6/32,  6/32, 16/32},
 		},
 	},
-	
+
 	on_receive_fields = on_receive_fields,
-	
+
 	after_dig_node = function(pos)
 		tubelib.remove_node(pos)
 	end,
@@ -206,7 +207,8 @@ minetest.register_node("smartline:playerdetector_active", {
 	groups = {cracky=2, crumbly=2, not_in_creative_inventory=1},
 	is_ground_content = false,
 	sounds = default.node_sound_metal_defaults(),
-	drop = "smartline:playerdetector"
+	drop = "smartline:playerdetector",
+	on_blast = function() end,
 })
 
 minetest.register_craft({
@@ -234,5 +236,4 @@ tubelib.register_node("smartline:playerdetector", {"smartline:playerdetector_act
 	on_node_load = function(pos)
 		minetest.get_node_timer(pos):start(1.0)
 	end,
-})		
-
+})

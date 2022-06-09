@@ -9,7 +9,7 @@
 	See LICENSE.txt for more information
 
 	distributor.lua:
-	
+
 	A high performance distributor
 ]]--
 
@@ -92,12 +92,12 @@ local function invlist_entries_as_list(list)
 end
 
 local function AddToTbl(kvTbl, new_items, val)
-	for _, l in ipairs(new_items) do 
+	for _, l in ipairs(new_items) do
 		if kvTbl[l] == nil then
 			kvTbl[l] = {val}
 		else
 			kvTbl[l][#kvTbl[l] + 1] = val
-		end	
+		end
 	end
 	return kvTbl
 end
@@ -122,7 +122,7 @@ end
 
 local Side2Color = {B="red", L="green", F="blue", R="yellow"}
 local SlotColors = {"red", "green", "blue", "yellow"}
-local Num2Ascii = {"B", "L", "F", "R"} 
+local Num2Ascii = {"B", "L", "F", "R"}
 local FilterCache = {} -- local cache for filter settings
 
 local function filter_settings(pos)
@@ -132,7 +132,7 @@ local function filter_settings(pos)
 	local filter = minetest.deserialize(meta:get_string("filter")) or {false,false,false,false}
 	local kvFilterItemNames = {}  -- {<item:name> = side,...}
 	local OpenPorts = {}  -- {side, ...}
-	
+
 	-- collect all filter settings
 	for idx,slot in ipairs(SlotColors) do
 		local side = Num2Ascii[idx]
@@ -145,9 +145,9 @@ local function filter_settings(pos)
 			end
 		end
 	end
-	
+
 	FilterCache[hash] = {
-		kvFilterItemNames = kvFilterItemNames, 
+		kvFilterItemNames = kvFilterItemNames,
 		OpenPorts = OpenPorts,
 	}
 end
@@ -156,24 +156,24 @@ local function allow_metadata_inventory_put(pos, listname, index, stack, player)
 	if minetest.is_protected(pos, player:get_player_name()) then
 		return 0
 	end
-	
+
 	local meta = M(pos)
 	local inv = meta:get_inventory()
 	local list = inv:get_list(listname)
 	local stack_count = stack:get_count()
-	
+
 	if listname == "src" then
 		if State:get_state(M(pos)) == tubelib.STANDBY then
 			State:start(pos, meta)
 		end
 		return stack_count
 	end
-	
+
 	local space_left = NUM_FILTER_ELEM - invlist_num_entries(list)
 	if space_left <= 0 then
 		return 0
 	end
-	
+
 	filter_settings(pos)
 	return 1
 end
@@ -198,39 +198,39 @@ end
 -- move items to the output slots
 local function distributing(pos, meta)
 	local player_name = meta:get_string("player_name")
-	local counter = minetest.deserialize(meta:get_string("item_counter")) or 
+	local counter = minetest.deserialize(meta:get_string("item_counter")) or
 			{red=0, green=0, blue=0, yellow=0}
-	
+
 	-- calculate the filter settings only once
 	local hash = minetest.hash_node_position(pos)
 	if FilterCache[hash] == nil then
 		filter_settings(pos)
 	end
-	
-	-- read data from Cache 
+
+	-- read data from Cache
 	local kvFilterItemNames = FilterCache[hash].kvFilterItemNames
 	local open_ports = table.copy(FilterCache[hash].OpenPorts)
-	
+
 	-- no filter configured?
-	if not next(kvFilterItemNames) and not next(open_ports) then 
+	if not next(kvFilterItemNames) and not next(open_ports) then
 		State:idle(pos, meta)
 		return
 	end
-	
+
 	local busy = false
 	local inv = meta:get_inventory()
 	local list = inv:get_list("src")
-		
+
 	-- take one stack from inventory, which fits to one output port
 	local stack
 	local start_idx = math.random(1, 8)
 	for i = start_idx,start_idx+8 do
 		stack = list[(i % 8) + 1]
-		if stack:get_count() > 0 and (kvFilterItemNames[stack:get_name()] or next(open_ports)) then 
-			break 
+		if stack:get_count() > 0 and (kvFilterItemNames[stack:get_name()] or next(open_ports)) then
+			break
 		end
 	end
-	
+
 	if stack:get_count() > 0 then
 		local name = stack:get_name()
 		local num = stack:get_count()
@@ -252,7 +252,7 @@ local function distributing(pos, meta)
 				break
 			end
 		end
-		
+
 		-- try unconfigured open output ports
 		if not busy then
 			local side = random_list_elem(open_ports)
@@ -271,7 +271,7 @@ local function distributing(pos, meta)
 		end
 	end
 	inv:set_list("src", list)
-				
+
 	meta:set_string("item_counter", minetest.serialize(counter))
 	if busy then
 		State:keep_running(pos, meta, COUNTDOWN_TICKS, 1)
@@ -306,9 +306,9 @@ local function on_receive_fields(pos, formname, fields, player)
 		filter[4] = fields.filter4 == "true"
 	end
 	meta:set_string("filter", minetest.serialize(filter))
-	
+
 	filter_settings(pos)
-	
+
 	if fields.state_button ~= nil then
 		State:state_button_event(pos, fields)
 	else
@@ -326,9 +326,9 @@ local function change_filter_settings(pos, slot, val)
 		filter[num] = val == "on"
 	end
 	meta:set_string("filter", minetest.serialize(filter))
-	
+
 	filter_settings(pos)
-	
+
 	meta:set_string("formspec", formspec(State, pos, meta))
 	return true
 end
@@ -371,25 +371,26 @@ minetest.register_node("tubelib_addons3:distributor", {
 		local inv = M(pos):get_inventory()
 		return inv:is_empty("src")
 	end,
-	
+
 	on_dig = function(pos, node, player)
 		State:on_dig_node(pos, node, player)
 		tubelib.remove_node(pos)
 	end,
-	
+
 	allow_metadata_inventory_put = allow_metadata_inventory_put,
 	allow_metadata_inventory_take = allow_metadata_inventory_take,
 	allow_metadata_inventory_move = allow_metadata_inventory_move,
 
 	on_timer = keep_running,
 	on_rotate = screwdriver.disallow,
-	
+
 	paramtype = "light",
 	sunlight_propagates = true,
 	paramtype2 = "facedir",
 	groups = {choppy=2, cracky=2, crumbly=2},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = function() end,
 })
 
 
@@ -415,7 +416,7 @@ minetest.register_node("tubelib_addons3:distributor_active", {
 	},
 
 	on_receive_fields = on_receive_fields,
-	
+
 	allow_metadata_inventory_put = allow_metadata_inventory_put,
 	allow_metadata_inventory_take = allow_metadata_inventory_take,
 	allow_metadata_inventory_move = allow_metadata_inventory_move,
@@ -432,6 +433,7 @@ minetest.register_node("tubelib_addons3:distributor_active", {
 	groups = {crumbly=0, not_in_creative_inventory=1},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = function() end,
 })
 
 minetest.register_node("tubelib_addons3:distributor_defect", {
@@ -477,7 +479,7 @@ minetest.register_node("tubelib_addons3:distributor_defect", {
 	after_dig_node = function(pos, oldnode, oldmetadata, digger)
 		tubelib.remove_node(pos)
 	end,
-	
+
 	allow_metadata_inventory_put = allow_metadata_inventory_put,
 	allow_metadata_inventory_take = allow_metadata_inventory_take,
 	allow_metadata_inventory_move = allow_metadata_inventory_move,
@@ -490,6 +492,7 @@ minetest.register_node("tubelib_addons3:distributor_defect", {
 	groups = {choppy=2, cracky=2, crumbly=2, not_in_creative_inventory=1},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = function() end,
 })
 
 
@@ -503,7 +506,7 @@ minetest.register_craft({
 })
 
 
-tubelib.register_node("tubelib_addons3:distributor", 
+tubelib.register_node("tubelib_addons3:distributor",
 	{"tubelib_addons3:distributor_active", "tubelib_addons3:distributor_defect"}, {
 	on_pull_item = function(pos, side)
 		return tubelib.get_item(M(pos), "src")
@@ -522,12 +525,12 @@ tubelib.register_node("tubelib_addons3:distributor",
 			return change_filter_settings(pos, payload.slot, payload.val)
 		elseif topic == "counter" then
 			local meta = minetest.get_meta(pos)
-			return minetest.deserialize(meta:get_string("item_counter")) or 
+			return minetest.deserialize(meta:get_string("item_counter")) or
 					{red=0, green=0, blue=0, yellow=0}
 		elseif topic == "clear_counter" then
 			local meta = minetest.get_meta(pos)
 			meta:set_string("item_counter", minetest.serialize({red=0, green=0, blue=0, yellow=0}))
-		else		
+		else
 			local resp = State:on_receive_message(pos, topic, payload)
 			if resp then
 				return resp
@@ -536,11 +539,11 @@ tubelib.register_node("tubelib_addons3:distributor",
 			end
 		end
 	end,
-	
+
 	on_node_load = function(pos)
 		State:on_node_load(pos)
 	end,
 	on_node_repair = function(pos)
 		return State:on_node_repair(pos)
 	end,
-})	
+})

@@ -9,7 +9,7 @@
 	See LICENSE.txt for more information
 
 	forceload.lua:
-	
+
 ]]--
 
 -- Load support for I18n
@@ -41,7 +41,7 @@ end
 local function remove_list_elem(list, x)
 	local n = nil
 	for idx, v in ipairs(list) do
-		if vector.equals(v, x) then 
+		if vector.equals(v, x) then
 			n = idx
 			break
 		end
@@ -83,7 +83,7 @@ local function add_pos(pos, player)
 	end
 	return false
 end
-	
+
 local function del_pos(pos, player)
 	local lPos = minetest.deserialize(player:get_attribute("tubelib_forceload_blocks")) or {}
 	lPos = remove_list_elem(lPos, pos)
@@ -113,7 +113,7 @@ local function formspec(player)
 	default.gui_bg_img..
 	default.gui_slots..
 	"label[0,0;"..S("List of your Forceload Blocks")..":]"
-	
+
 	for idx,pos in ipairs(lPos) do
 		local pos1, pos2 = calc_area(pos)
 		local ypos = 0.2 + idx * 0.4
@@ -168,7 +168,7 @@ minetest.register_node("tubelib:forceload", {
 		minetest.forceload_free_block(pos, true)
 		tubelib.unmark_region(oldmetadata.fields.owner)
 	end,
-	
+
 	on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
 		if M(pos):get_string("owner") == clicker:get_player_name() or
 				minetest.check_player_privs(clicker:get_player_name(), "server") then
@@ -176,7 +176,7 @@ minetest.register_node("tubelib:forceload", {
 			minetest.show_formspec(clicker:get_player_name(), "tubelib:forceload", s)
 		end
 	end,
-	
+
 	on_punch = function(pos, node, puncher, pointed_thing)
 		local pos1, pos2 = calc_area(pos)
 		tubelib.switch_region(puncher:get_player_name(), pos1, pos2)
@@ -184,10 +184,11 @@ minetest.register_node("tubelib:forceload", {
 
 	paramtype = "light",
 	sunlight_propagates = true,
-	groups = {choppy=2, cracky=2, crumbly=2, 
+	groups = {choppy=2, cracky=2, crumbly=2,
 		not_in_creative_inventory = tubelib.max_num_forceload_blocks == 0 and 1 or 0},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = function() end,
 })
 
 

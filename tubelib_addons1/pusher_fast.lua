@@ -9,14 +9,14 @@
 	See LICENSE.txt for more information
 
 	pusher_fast.lua:
-	
+
 	Fast pusher for push/pull operation of StackItems from chests or other
 	inventory/server nodes to tubes or other inventory/server nodes.
-	
+
 	The Pusher is based on the class NodeStates and supports the following messages:
 	 - topic = "on", payload  = nil
 	 - topic = "off", payload  = nil
-	 - topic = "state", payload  = nil, 
+	 - topic = "state", payload  = nil,
 	   response is "running", "stopped", "standby", "blocked", or "not supported"
 
 ]]--
@@ -78,7 +78,7 @@ local function keep_running(pos, elapsed)
 		return State:is_active(meta)
 	end
 	return false
-end	
+end
 
 minetest.register_node("tubelib_addons1:pusher_fast", {
 	description = S("Fast Pusher"),
@@ -109,7 +109,7 @@ minetest.register_node("tubelib_addons1:pusher_fast", {
 		State:on_dig_node(pos, node, player)
 		tubelib.remove_node(pos)
 	end,
-	
+
 	on_timer = keep_running,
 	on_rotate = screwdriver.disallow,
 
@@ -119,6 +119,7 @@ minetest.register_node("tubelib_addons1:pusher_fast", {
 	groups = {choppy=2, cracky=2, crumbly=2},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = function() end,
 })
 
 
@@ -175,19 +176,20 @@ minetest.register_node("tubelib_addons1:pusher_fast_active", {
 			State:stop(pos, M(pos))
 		end
 	end,
-	
+
 	on_timer = keep_running,
 	on_rotate = screwdriver.disallow,
 
 	diggable = false,
 	can_dig = function() return false end,
-	
+
 	paramtype = "light",
 	sunlight_propagates = true,
 	paramtype2 = "facedir",
 	groups = {crumbly=0, not_in_creative_inventory=1},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = function() end,
 })
 
 minetest.register_node("tubelib_addons1:pusher_fast_defect", {
@@ -213,7 +215,7 @@ minetest.register_node("tubelib_addons1:pusher_fast_defect", {
 	after_dig_node = function(pos)
 		tubelib.remove_node(pos)
 	end,
-	
+
 	on_timer = keep_running,
 	on_rotate = screwdriver.disallow,
 
@@ -223,6 +225,7 @@ minetest.register_node("tubelib_addons1:pusher_fast_defect", {
 	groups = {choppy=2, cracky=2, crumbly=2, not_in_creative_inventory=1},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = function() end,
 })
 
 
@@ -235,14 +238,14 @@ minetest.register_craft({
 	},
 })
 
-tubelib.register_node("tubelib_addons1:pusher_fast", 
+tubelib.register_node("tubelib_addons1:pusher_fast",
 	{"tubelib_addons1:pusher_fast_active", "tubelib_addons1:pusher_fast_defect"}, {
 	on_pull_item = nil,  		-- pusher has no inventory
 	on_push_item = nil,			-- pusher has no inventory
 	on_unpull_item = nil,		-- pusher has no inventory
 	is_pusher = true,           -- is a pulling/pushing node
 	valid_sides = {"R","L"},
-	
+
 	on_recv_message = function(pos, topic, payload)
 		local resp = State:on_receive_message(pos, topic, payload)
 		if resp then
@@ -257,4 +260,4 @@ tubelib.register_node("tubelib_addons1:pusher_fast",
 	on_node_repair = function(pos)
 		return State:on_node_repair(pos)
 	end,
-})	
+})

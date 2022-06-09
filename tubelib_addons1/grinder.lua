@@ -9,9 +9,9 @@
 	See LICENSE.txt for more information
 
 	grinder.lua
-	
+
 	Grinding Cobble to Gravel
-	
+
 ]]--
 
 -- Load support for I18n
@@ -153,8 +153,8 @@ minetest.register_node("tubelib_addons1:grinder", {
 		State:on_dig_node(pos, node, player)
 		tubelib.remove_node(pos)
 	end,
-	
-	
+
+
 	on_rotate = screwdriver.disallow,
 	on_timer = keep_running,
 	on_receive_fields = on_receive_fields,
@@ -168,6 +168,7 @@ minetest.register_node("tubelib_addons1:grinder", {
 	groups = {choppy=2, cracky=2, crumbly=2},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = function() end,
 })
 
 
@@ -185,7 +186,7 @@ minetest.register_node("tubelib_addons1:grinder_active", {
 				length = 1.0,
 			},
 		},
-		
+
 		'tubelib_front.png',
 		"tubelib_front.png",
 		"tubelib_front.png",
@@ -209,6 +210,7 @@ minetest.register_node("tubelib_addons1:grinder_active", {
 	groups = {crumbly=0, not_in_creative_inventory=1},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = function() end,
 })
 
 minetest.register_node("tubelib_addons1:grinder_defect", {
@@ -244,7 +246,7 @@ minetest.register_node("tubelib_addons1:grinder_defect", {
 	after_dig_node = function(pos, oldnode, oldmetadata, digger)
 		tubelib.remove_node(pos)
 	end,
-	
+
 	on_rotate = screwdriver.disallow,
 	allow_metadata_inventory_put = allow_metadata_inventory_put,
 	allow_metadata_inventory_move = allow_metadata_inventory_move,
@@ -256,6 +258,7 @@ minetest.register_node("tubelib_addons1:grinder_defect", {
 	groups = {choppy=2, cracky=2, crumbly=2, not_in_creative_inventory=1},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = function() end,
 })
 
 minetest.register_craft({
@@ -268,7 +271,7 @@ minetest.register_craft({
 })
 
 
-tubelib.register_node("tubelib_addons1:grinder", 
+tubelib.register_node("tubelib_addons1:grinder",
 	{"tubelib_addons1:grinder_active", "tubelib_addons1:grinder_defect"}, {
 	on_pull_stack = function(pos, side)
 		return tubelib.get_stack(M(pos), "dst")
@@ -296,7 +299,7 @@ tubelib.register_node("tubelib_addons1:grinder",
 	on_node_repair = function(pos)
 		return State:on_node_repair(pos)
 	end,
-})	
+})
 
 
 if minetest.global_exists("unified_inventory") then
@@ -472,5 +475,3 @@ for _,v in pairs({
 end
 
 if minetest.get_modpath("jacaranda") then tubelib.add_grinder_recipe({input="jacaranda:trunk", output = "jacaranda:blossom_leaves 8"}) end
-
-

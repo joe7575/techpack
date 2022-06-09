@@ -9,13 +9,13 @@
 	See LICENSE.txt for more information
 
 	battery.lua:
-	
+
 	REPLACED BY SMARTLINE BATTERY !!!
 
 ]]--
 
 local function calc_percent(content)
-	local val = (sl_controller.battery_capacity - 
+	local val = (sl_controller.battery_capacity -
 			math.min(content or 0, sl_controller.battery_capacity))
 	return 100 - math.floor((val * 100.0 / sl_controller.battery_capacity))
 end
@@ -55,7 +55,7 @@ local function register_battery(ext, percent, nici)
 				{ -6/32, -6/32, 14/32,  6/32,  6/32, 16/32},
 			},
 		},
-		
+
 		after_place_node = function(pos, placer)
 			local meta = minetest.get_meta(pos)
 			meta:set_int("content", sl_controller.battery_capacity * percent)
@@ -65,10 +65,10 @@ local function register_battery(ext, percent, nici)
 			on_timer(pos, 1)
 			minetest.get_node_timer(pos):start(30)
 		end,
-		
+
 		on_timer = on_timer,
-		
-		
+
+
 		after_dig_node = function(pos, oldnode, oldmetadata, digger)
 			local percent = calc_percent(tonumber(oldmetadata.fields.content))
 			local stack
@@ -94,6 +94,7 @@ local function register_battery(ext, percent, nici)
 		drop = "",
 		is_ground_content = false,
 		sounds = default.node_sound_stone_defaults(),
+		on_blast = function() end,
 	})
 end
 
@@ -121,12 +122,12 @@ minetest.register_node("sl_controller:battery_empty", {
 			{ -6/32, -6/32, 14/32,  6/32,  6/32, 16/32},
 		},
 	},
-	
+
 	after_place_node = function(pos, placer)
 		local meta = minetest.get_meta(pos)
 		meta:set_int("content", 0)
 	end,
-	
+
 	paramtype = "light",
 	sunlight_propagates = true,
 	paramtype2 = "facedir",
@@ -134,6 +135,7 @@ minetest.register_node("sl_controller:battery_empty", {
 	drop = "",
 	is_ground_content = false,
 	sounds = default.node_sound_stone_defaults(),
+	on_blast = function() end,
 })
 
 

@@ -9,14 +9,14 @@
 	See LICENSE.txt for more information
 
 	pusher.lua:
-	
+
 	Simple node for push/pull operation of StackItems from chests or other
 	inventory/server nodes to tubes or other inventory/server nodes.
-	
+
 	The Pusher is based on the class NodeStates and supports the following messages:
 	 - topic = "on", payload  = nil
 	 - topic = "off", payload  = nil
-	 - topic = "state", payload  = nil, 
+	 - topic = "state", payload  = nil,
 	   response is "running", "stopped", "standby", "blocked", or "not supported"
 
 ]]--
@@ -78,7 +78,7 @@ local function keep_running(pos, elapsed)
 		return State:is_active(meta)
 	end
 	return false
-end	
+end
 
 minetest.register_node("tubelib:pusher", {
 	description = S("Tubelib Pusher"),
@@ -109,7 +109,7 @@ minetest.register_node("tubelib:pusher", {
 		State:on_dig_node(pos, node, player)
 		tubelib.remove_node(pos)
 	end,
-	
+
 	on_timer = keep_running,
 	on_rotate = screwdriver.disallow,
 
@@ -119,6 +119,7 @@ minetest.register_node("tubelib:pusher", {
 	groups = {choppy=2, cracky=2, crumbly=2},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = function() end,
 })
 
 
@@ -175,7 +176,7 @@ minetest.register_node("tubelib:pusher_active", {
 			State:stop(pos, M(pos))
 		end
 	end,
-	
+
 	on_timer = keep_running,
 	on_rotate = screwdriver.disallow,
 
@@ -188,6 +189,7 @@ minetest.register_node("tubelib:pusher_active", {
 	groups = {crumbly=0, not_in_creative_inventory=1},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = function() end,
 })
 
 minetest.register_node("tubelib:pusher_defect", {
@@ -213,7 +215,7 @@ minetest.register_node("tubelib:pusher_defect", {
 	after_dig_node = function(pos)
 		tubelib.remove_node(pos) -- <<=== tubelib
 	end,
-	
+
 	on_timer = keep_running,
 	on_rotate = screwdriver.disallow,
 
@@ -223,6 +225,7 @@ minetest.register_node("tubelib:pusher_defect", {
 	groups = {choppy=2, cracky=2, crumbly=2, not_in_creative_inventory=1},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = function() end,
 })
 
 
@@ -236,7 +239,7 @@ minetest.register_craft({
 })
 
 --------------------------------------------------------------- tubelib
-tubelib.register_node("tubelib:pusher", 
+tubelib.register_node("tubelib:pusher",
 	{"tubelib:pusher_active", "tubelib:pusher_defect"}, {
 	on_pull_item = nil,  		-- pusher has no inventory
 	on_push_item = nil,			-- pusher has no inventory
@@ -257,5 +260,5 @@ tubelib.register_node("tubelib:pusher",
 	on_node_repair = function(pos)
 		return State:on_node_repair(pos)
 	end,
-})	
+})
 --------------------------------------------------------------- tubelib

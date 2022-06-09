@@ -8,11 +8,11 @@
 	AGPL v3
 	See LICENSE.txt for more information
 
-	The autocrafter is derived from pipeworks: 
+	The autocrafter is derived from pipeworks:
 	Copyright (C) 2004 Sam Hocevar <sam@hocevar.net>  WTFPL
 
 	autocrafter.lua:
-	
+
 ]]--
 
 -- Load support for I18n
@@ -77,7 +77,7 @@ local function count_index(invlist)
 end
 
 -- caches some recipe data
-local autocrafterCache = {}  
+local autocrafterCache = {}
 
 local function get_craft(pos, inventory, hash)
 	hash = hash or minetest.hash_node_position(pos)
@@ -86,7 +86,7 @@ local function get_craft(pos, inventory, hash)
 		local recipe = inventory:get_list("recipe")
 		local output, decremented_input = minetest.get_craft_result(
 				{method = "normal", width = 3, items = recipe})
-		craft = {recipe = recipe, consumption=count_index(recipe), 
+		craft = {recipe = recipe, consumption=count_index(recipe),
 				output = output, decremented_input = decremented_input}
 		autocrafterCache[hash] = craft
 	end
@@ -98,7 +98,7 @@ local function autocraft(pos, meta, inventory, craft)
 	local output_item = craft.output.item
 
 	-- check if we have enough room in dst
-	if not inventory:room_for_item("dst", output_item) then	
+	if not inventory:room_for_item("dst", output_item) then
 		State:blocked(pos, meta)
 		return
 	end
@@ -106,9 +106,9 @@ local function autocraft(pos, meta, inventory, craft)
 	local inv_index = count_index(inventory:get_list("src"))
 	-- check if we have enough material available
 	for itemname, number in pairs(consumption) do
-		if (not inv_index[itemname]) or inv_index[itemname] < number then 
+		if (not inv_index[itemname]) or inv_index[itemname] < number then
 			State:idle(pos, meta)
-			return 
+			return
 		end
 	end
 	-- consume material
@@ -123,7 +123,7 @@ local function autocraft(pos, meta, inventory, craft)
 	for i = 1, 9 do
 		inventory:add_item("dst", craft.decremented_input.items[i])
 	end
-	
+
 	State:keep_running(pos, meta, COUNTDOWN_TICKS, output_item:get_count())
 end
 
@@ -292,10 +292,10 @@ minetest.register_node("tubelib_addons1:autocrafter", {
 	description = S("Tubelib Autocrafter"),
 	drawtype = "normal",
 	tiles = {
-		'tubelib_front.png', 
-		'tubelib_front.png', 
+		'tubelib_front.png',
+		'tubelib_front.png',
 		'tubelib_addons1_autocrafter.png'},
-	
+
 	after_place_node = function(pos, placer)
 		local number = tubelib.add_node(pos, "tubelib_addons1:autocrafter")
 		State:node_init(pos, number)
@@ -305,7 +305,7 @@ minetest.register_node("tubelib_addons1:autocrafter", {
 		inv:set_size("dst", 3*3)
 		inv:set_size("output", 1)
 	end,
-	
+
 	can_dig = function(pos, player)
 		if minetest.is_protected(pos, player:get_player_name()) then
 			return false
@@ -319,11 +319,11 @@ minetest.register_node("tubelib_addons1:autocrafter", {
 		State:on_dig_node(pos, node, player)
 		tubelib.remove_node(pos)
 	end,
-	
+
 	on_rotate = screwdriver.disallow,
 	on_timer = keep_running,
 	on_receive_fields = on_receive_fields,
-	
+
 	allow_metadata_inventory_put = allow_metadata_inventory_put,
 	allow_metadata_inventory_take = allow_metadata_inventory_take,
 	allow_metadata_inventory_move = allow_metadata_inventory_move,
@@ -334,14 +334,15 @@ minetest.register_node("tubelib_addons1:autocrafter", {
 	groups = {choppy=2, cracky=2, crumbly=2},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = function() end,
 })
 
 minetest.register_node("tubelib_addons1:autocrafter_active", {
 	description = S("Tubelib Autocrafter"),
 	drawtype = "normal",
 	tiles = {
-		'tubelib_front.png', 
-		'tubelib_front.png', 
+		'tubelib_front.png',
+		'tubelib_front.png',
 		{
 			image = 'tubelib_addons1_autocrafter_active.png',
 			backface_culling = false,
@@ -356,7 +357,7 @@ minetest.register_node("tubelib_addons1:autocrafter_active", {
 
 	diggable = false,
 	can_dig = function() return false end,
-	
+
 	on_rotate = screwdriver.disallow,
 	on_timer = keep_running,
 	on_receive_fields = on_receive_fields,
@@ -370,17 +371,18 @@ minetest.register_node("tubelib_addons1:autocrafter_active", {
 	groups = {crumbly=0, not_in_creative_inventory=1},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = function() end,
 })
 
 minetest.register_node("tubelib_addons1:autocrafter_defect", {
 	description = S("Tubelib Autocrafter"),
 	drawtype = "normal",
 	tiles = {
-		'tubelib_front.png', 
+		'tubelib_front.png',
 		'tubelib_front.png',
 		'tubelib_addons1_autocrafter.png^tubelib_defect.png'
 	},
-	
+
 	after_place_node = function(pos, placer)
 		local number = tubelib.add_node(pos, "tubelib_addons1:autocrafter")
 		State:node_init(pos, number)
@@ -392,7 +394,7 @@ minetest.register_node("tubelib_addons1:autocrafter_defect", {
 		inv:set_size("output", 1)
 		State:defect(pos, meta)
 	end,
-	
+
 	can_dig = function(pos, player)
 		if minetest.is_protected(pos, player:get_player_name()) then
 			return false
@@ -416,6 +418,7 @@ minetest.register_node("tubelib_addons1:autocrafter_defect", {
 	groups = {choppy=2, cracky=2, crumbly=2, not_in_creative_inventory=1},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = function() end,
 })
 
 minetest.register_craft({
@@ -428,7 +431,7 @@ minetest.register_craft({
 })
 
 
-tubelib.register_node("tubelib_addons1:autocrafter", 
+tubelib.register_node("tubelib_addons1:autocrafter",
 	{"tubelib_addons1:autocrafter_active", "tubelib_addons1:autocrafter_defect"}, {
 	on_pull_stack = function(pos, side)
 		return tubelib.get_stack(M(pos), "dst")
@@ -456,4 +459,4 @@ tubelib.register_node("tubelib_addons1:autocrafter",
 	on_node_repair = function(pos)
 		return State:on_node_repair(pos)
 	end,
-})	
+})

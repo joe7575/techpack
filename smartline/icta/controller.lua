@@ -4,7 +4,7 @@
 	===============
 
 	Part of the SmartLine mod
-	
+
 	Copyright (C) 2017-2020 Joachim Stolberg
 
 	AGPL v3
@@ -17,7 +17,7 @@
 --
 -- Helper functions
 --
-local function gen_table(size, val) 
+local function gen_table(size, val)
 	local tbl = {}
 	for idx = 1,size do
 		if type(val) == "table" then
@@ -39,14 +39,14 @@ local function integer(s, min, max)
 	return min
 end
 
-local sOUTPUT = "Edit commands (see help)" 
+local sOUTPUT = "Edit commands (see help)"
 local Cache = {}
 local FS_DATA = gen_table(smartline.NUM_RULES, {})
 
 
 local function output(pos, text, flush_buffer)
 	local meta = minetest.get_meta(pos)
-	if not flush_buffer then 
+	if not flush_buffer then
 		text = meta:get_string("output") .. "\n" .. (text or "")
 		text = text:sub(-500,-1)
 	end
@@ -62,7 +62,7 @@ end
 --		if env.blocked[1] then
 --			env.timer[1] = env.ticks + <after>
 --		end
---		env.conditions[1] = env.blocked[1]	
+--		env.conditions[1] = env.blocked[1]
 --	else
 --		env.conditions[1] = false
 --	end
@@ -77,7 +77,7 @@ end
 --		if env.blocked[1] then
 --			env.timer[1] = env.ticks + <after>
 --		end
---		env.conditions[1] = env.blocked[1]	
+--		env.conditions[1] = env.blocked[1]
 --	else
 --		env.conditions[1] = false
 --	end
@@ -96,7 +96,7 @@ if env.blocked[#] == false and env.ticks %% %s == 0 then
 	if env.blocked[#] then
 		env.timer[#] = env.ticks + %s
 	end
-	env.condition[#] = env.blocked[#]	
+	env.condition[#] = env.blocked[#]
 else
 	env.condition[#] = false
 end
@@ -115,7 +115,7 @@ if env.blocked[#] == false and env.event then
 	if env.blocked[#] then
 		env.timer[#] = env.ticks + %s
 	end
-	env.condition[#] = env.blocked[#]	
+	env.condition[#] = env.blocked[#]
 else
 	env.condition[#] = false
 end
@@ -133,7 +133,7 @@ if env.blocked[#] == false and env.event then
 	if env.blocked[#] then
 		env.timer[#] = env.ticks + %s
 	end
-	env.condition[#] = env.blocked[#]	
+	env.condition[#] = env.blocked[#]
 else
 	env.condition[#] = false
 end
@@ -174,7 +174,7 @@ local function generate(pos, meta, environ)
 		elseif cond == nil and actn ~= nil then
 			output(pos, "Error in condition in rule "..idx)
 		end
-	end 
+	end
 	return table.concat(tbl)
 end
 
@@ -240,7 +240,7 @@ local function battery(pos)
 		return true
 	end
 	return false
-end	
+end
 
 local function start_controller(pos, meta)
 	local number = meta:get_string("number")
@@ -248,10 +248,10 @@ local function start_controller(pos, meta)
 		meta:set_string("formspec", smartline.formspecError(meta))
 		return false
 	end
-	
+
 	meta:set_string("output", "<press update>")
 	meta:set_int("cpu", 0)
-	
+
 	if compile(pos, meta, number) then
 		meta:set_int("state", tubelib.RUNNING)
 		minetest.get_node_timer(pos):start(1)
@@ -301,7 +301,7 @@ local function on_timer(pos, elapsed)
 	local number = meta:get_string("number")
 	if Cache[number] or compile(pos, meta, number) then
 		local res = execute(pos, number, elapsed == -1)
-		if res then 
+		if res then
 			t = minetest.get_us_time() - t
 			if not update_battery(meta, t) then
 				no_battery(pos)
@@ -323,7 +323,7 @@ local function on_receive_fields(pos, formname, fields, player)
 	if player:get_player_name() ~= owner then
 		return
 	end
-	
+
 	--print("fields", dump(fields))
 	if fields.quit then  -- cancel button
 		return
@@ -353,7 +353,7 @@ local function on_receive_fields(pos, formname, fields, player)
 	end
 	if fields._exit_ == "ok" then  -- exit from sub-menu?
 		if fields._button_ then
-			smartline.formspec_button_update(meta, fields)	
+			smartline.formspec_button_update(meta, fields)
 		end
 		-- simulate tab selection
 		fields.tab = "1"
@@ -427,12 +427,12 @@ minetest.register_node("smartline:controller2", {
 			{ -6/32, -6/32, 14/32,  6/32,  6/32, 16/32},
 		},
 	},
-	
+
 	after_place_node = function(pos, placer)
 		local meta = minetest.get_meta(pos)
 		local number = tubelib.add_node(pos, "smartline:controller2")
 		local fs_data = FS_DATA
-		meta:set_string("fs_data", minetest.serialize(fs_data)) 
+		meta:set_string("fs_data", minetest.serialize(fs_data))
 		meta:set_string("owner", placer:get_player_name())
 		meta:set_string("number", number)
 		meta:set_int("state", tubelib.STOPPED)
@@ -442,24 +442,25 @@ minetest.register_node("smartline:controller2", {
 	end,
 
 	on_receive_fields = on_receive_fields,
-	
+
 	on_dig = function(pos, node, puncher, pointed_thing)
 		if minetest.is_protected(pos, puncher:get_player_name()) then
 			return
 		end
-		
+
 		minetest.node_dig(pos, node, puncher, pointed_thing)
 		tubelib.remove_node(pos)
 	end,
-	
+
 	on_timer = on_timer,
-	
+
 	paramtype = "light",
 	sunlight_propagates = true,
 	paramtype2 = "facedir",
 	groups = {choppy=1, cracky=1, crumbly=1},
 	is_ground_content = false,
 	sounds = default.node_sound_stone_defaults(),
+	on_blast = function() end,
 })
 
 
@@ -474,7 +475,7 @@ minetest.register_craft({
 
 -- write inputs from remote nodes
 local function set_input(pos, own_number, rmt_number, val)
-	if rmt_number then 
+	if rmt_number then
 		if Cache[own_number] and Cache[own_number].env.input then
 			local t = minetest.get_us_time()
 			Cache[own_number].env.input[rmt_number] = val
@@ -486,14 +487,14 @@ local function set_input(pos, own_number, rmt_number, val)
 			end
 		end
 	end
-end	
+end
 
 tubelib.register_node("smartline:controller2", {}, {
 	on_recv_message = function(pos, topic, payload)
 		local meta = minetest.get_meta(pos)
 		local number = meta:get_string("number")
 		local state = meta:get_int("state")
-		
+
 		if state == tubelib.RUNNING and topic == "on" then
 			set_input(pos, number, payload, topic)
 		elseif state == tubelib.RUNNING and topic == "off" then
@@ -511,5 +512,4 @@ tubelib.register_node("smartline:controller2", {}, {
 			minetest.get_node_timer(pos):start(1)
 		end
 	end,
-})		
-
+})

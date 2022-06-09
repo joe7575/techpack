@@ -14,11 +14,11 @@
 
 -- Load support for I18n
 local S = smartline.S
-  
-  
+
+
 lcdlib.register_display_entity("smartline:entity")
 
-local function display_update(pos, objref) 
+local function display_update(pos, objref)
 	local meta = minetest.get_meta(pos)
 	local text = meta:get_string("text") or ""
 	text = string.gsub(text, "|", " \n")
@@ -54,7 +54,7 @@ minetest.register_node("smartline:display", {
 	node_box = lcd_box,
 	selection_box = lcd_box,
 	light_source = 6,
-	
+
 	display_entities = {
 		["smartline:entity"] = { depth = 0.42,
 			on_display_update = display_update},
@@ -81,6 +81,7 @@ minetest.register_node("smartline:display", {
 	groups = {cracky=2, crumbly=2},
 	is_ground_content = false,
 	sounds = default.node_sound_glass_defaults(),
+	on_blast = function() end,
 })
 
 
@@ -118,7 +119,7 @@ local function write_row(meta, payload)
 		local str = payload.str or "oops"
 		if row == 0 then
 			meta:set_string("infotext", str)
-			return 
+			return
 		end
 		local rows
 		if meta:get_int("startscreen") == 1 then
@@ -162,5 +163,4 @@ tubelib.register_node("smartline:display", {}, {
 			end
 		end
 	end,
-})		
-
+})

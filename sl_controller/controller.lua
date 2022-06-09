@@ -18,15 +18,15 @@ local M = minetest.get_meta
 
 local sHELP = [[SaferLua Controller
 
- This controller is used to control and monitor 
+ This controller is used to control and monitor
  Tubelib/TechPack machines.
  This controller can be programmed in Lua.
- 
+
  See on GitHub for more help: goo.gl/Et8D6n
 
- The controller only runs, if a battery is 
+ The controller only runs, if a battery is
  placed nearby.
- 
+
 ]]
 
 local Cache = {}
@@ -37,8 +37,8 @@ local tHelpTexts = {[" Overview"] = sHELP, [" Data structures"] = safer_lua.Data
 local sFunctionList = ""
 local tFunctionIndex = {}
 
-minetest.after(2, function() 
-	sFunctionList = table.concat(tFunctions, ",") 
+minetest.after(2, function()
+	sFunctionList = table.concat(tFunctions, ",")
 	for idx,key in ipairs(tFunctions) do
 		tFunctionIndex[key] = idx
 	end
@@ -268,7 +268,7 @@ local function patch_error_string(err, line_offs)
 		else
 			table.insert(tbl, s)
 		end
-	end    
+	end
 	return table.concat(tbl, "\n")
 end
 
@@ -296,7 +296,7 @@ local function compile(pos, meta, number)
 	local env = table.copy(tCommands)
 	env.meta = {pos=pos, owner=owner, number=number, error=error}
 	local code = safer_lua.init(pos, init, func.."\n"..loop, env, error)
-	
+
 	if code then
 		Cache[number] = {code=code, inputs={}, events=env.meta.events}
 		Cache[number].inputs.term = nil  -- terminal inputs
@@ -314,7 +314,7 @@ local function battery(pos)
 		return true
 	end
 	return false
-end	
+end
 
 local function start_controller(pos)
 	local meta = minetest.get_meta(pos)
@@ -323,12 +323,12 @@ local function start_controller(pos)
 		meta:set_string("formspec", formspec0(meta))
 		return false
 	end
-	
+
 	meta:set_string("output", "<press update>")
 	meta:set_int("cycletime", 1)
 	meta:set_int("cyclecount", 0)
 	meta:set_int("cpu", 0)
-	
+
 	if compile(pos, meta, number) then
 		meta:set_int("state", tubelib.RUNNING)
 		meta:set_int("running", tubelib.STATE_RUNNING)
@@ -381,7 +381,7 @@ local function call_loop(pos, meta, elapsed)
 		local cpu = meta:get_int("cpu") or 0
 		local code = Cache[number].code
 		local res = safer_lua.run_loop(pos, elapsed, code, error)
-		if res then 
+		if res then
 			t = minetest.get_us_time() - t
 			cpu = math.floor(((cpu * 20) + t) / 21)
 			meta:set_int("cpu", cpu)
@@ -419,7 +419,7 @@ local function on_receive_fields(pos, formname, fields, player)
 		return
 	end
 	local meta = minetest.get_meta(pos)
-	
+
 	--print(dump(fields))
 	if fields.cancel == nil then
 		if fields.init then
@@ -434,9 +434,9 @@ local function on_receive_fields(pos, formname, fields, player)
 		elseif fields.notes then
 			meta:set_string("notes", fields.notes)
 			meta:set_string("formspec", formspec5(meta))
-		end	
+		end
 	end
-	
+
 	if fields.update then
 		meta:set_string("formspec", formspec4(meta))
 	elseif fields.clear then
@@ -490,7 +490,7 @@ minetest.register_node("sl_controller:controller", {
 			{ -6/32, -6/32, 14/32,  6/32,  6/32, 16/32},
 		},
 	},
-	
+
 	after_place_node = function(pos, placer)
 		local meta = minetest.get_meta(pos)
 		local number = tubelib.add_node(pos, "sl_controller:controller")
@@ -511,24 +511,25 @@ minetest.register_node("sl_controller:controller", {
 	end,
 
 	on_receive_fields = on_receive_fields,
-	
+
 	on_dig = function(pos, node, puncher, pointed_thing)
 		if minetest.is_protected(pos, puncher:get_player_name()) then
 			return
 		end
-		
+
 		minetest.node_dig(pos, node, puncher, pointed_thing)
 		tubelib.remove_node(pos)
 	end,
-	
+
 	on_timer = on_timer,
-	
+
 	paramtype = "light",
 	sunlight_propagates = true,
 	paramtype2 = "facedir",
 	groups = {choppy=1, cracky=1, crumbly=1},
 	is_ground_content = false,
 	sounds = default.node_sound_stone_defaults(),
+	on_blast = function() end,
 })
 
 
@@ -540,7 +541,7 @@ minetest.register_craft({
 
 -- write inputs from remote nodes
 local function set_input(pos, number, input, val)
-	if input and M(pos):get_int("state") == tubelib.RUNNING then 
+	if input and M(pos):get_int("state") == tubelib.RUNNING then
 		if (Cache[number] or compile(pos, M(pos), number)) and Cache[number].inputs then
 			if input == "msg" then
 				if #Cache[number].inputs["msg"] < 10 then
@@ -560,17 +561,17 @@ local function set_input(pos, number, input, val)
 			end
 		end
 	end
-end	
+end
 
 -- used by the command "input"
 function sl_controller.get_input(number, input)
-	if input then 
+	if input then
 		if Cache[number] and Cache[number].inputs then
 			return Cache[number].inputs[input] or "off"
 		end
 	end
 	return "off"
-end	
+end
 
 -- used for Terminal commands
 function sl_controller.get_command(number)
@@ -579,20 +580,20 @@ function sl_controller.get_command(number)
 		Cache[number].inputs["term"] = nil
 		return cmnd
 	end
-end	
+end
 
 -- used for queued messages
 function sl_controller.get_msg(number)
 	if Cache[number] and Cache[number].inputs then
 		return table.remove(Cache[number].inputs["msg"], 1)
 	end
-end	
+end
 
 tubelib.register_node("sl_controller:controller", {}, {
 	on_recv_message = function(pos, topic, payload)
 		local meta = minetest.get_meta(pos)
 		local number = meta:get_string("number")
-		
+
 		if topic == "on" then
 			set_input(pos, number, payload, topic)
 		elseif topic == "off" then
@@ -614,4 +615,4 @@ tubelib.register_node("sl_controller:controller", {}, {
 			minetest.get_node_timer(pos):start(1)
 		end
 	end,
-})		
+})

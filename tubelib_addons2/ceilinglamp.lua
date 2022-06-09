@@ -9,7 +9,7 @@
 	See LICENSE.txt for more information
 
 	ceilinglamp.lua:
-	
+
 ]]--
 
 -- Load support for I18n
@@ -18,7 +18,7 @@ local S = tubelib_addons2.S
 local function switch_on(pos, node)
 	node.name = "tubelib_addons2:ceilinglamp_on"
 	minetest.swap_node(pos, node)
-end	
+end
 
 local function switch_off(pos, node)
 	node.name = "tubelib_addons2:ceilinglamp"
@@ -26,7 +26,7 @@ local function switch_off(pos, node)
 	local pos1 = {x=pos.x-5, y=pos.y-5, z=pos.z-5}
 	local pos2 = {x=pos.x+5, y=pos.y+5, z=pos.z+5}
 	minetest.fix_light(pos1, pos2)
-end	
+end
 
 minetest.register_node("tubelib_addons2:ceilinglamp", {
 	description = S("Tubelib Ceiling Lamp"),
@@ -69,12 +69,13 @@ minetest.register_node("tubelib_addons2:ceilinglamp", {
 	end,
 
 	paramtype = "light",
-	light_source = 0,	
+	light_source = 0,
 	sunlight_propagates = true,
 	paramtype2 = "wallmounted",
 	groups = {choppy=2, cracky=2, crumbly=2},
 	is_ground_content = false,
 	sounds = default.node_sound_glass_defaults(),
+	on_blast = function() end,
 })
 
 minetest.register_node("tubelib_addons2:ceilinglamp_on", {
@@ -100,7 +101,7 @@ minetest.register_node("tubelib_addons2:ceilinglamp_on", {
 		wall_bottom = {-5/16, -8/16, -5/16,  5/16, -5/16,  5/16},
 		wall_side =   {-8/16, -5/16, -5/16, -5/16,  5/16,  5/16}
 	},
-	
+
 	on_rightclick = function(pos, node, clicker)
 		if not minetest.is_protected(pos, clicker:get_player_name()) then
 			switch_off(pos, node)
@@ -108,12 +109,13 @@ minetest.register_node("tubelib_addons2:ceilinglamp_on", {
 	end,
 
 	paramtype = "light",
-	light_source = 12,	
+	light_source = 12,
 	sunlight_propagates = true,
 	paramtype2 = "wallmounted",
 	groups = {crumbly=0, not_in_creative_inventory=1},
 	is_ground_content = false,
 	sounds = default.node_sound_glass_defaults(),
+	on_blast = function() end,
 })
 
 minetest.register_craft({
@@ -131,4 +133,4 @@ tubelib.register_node("tubelib_addons2:ceilinglamp", {"tubelib_addons2:ceilingla
 			switch_off(pos, node)
 		end
 	end,
-})		
+})

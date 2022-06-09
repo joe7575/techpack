@@ -9,7 +9,7 @@
 	See LICENSE.txt for more information
 
 	colorlamp_ud.lua which requires the mod unifieddyes:
-	
+
 ]]--
 
 -- Load support for I18n
@@ -20,14 +20,14 @@ local function switch_on(pos, node, player)
 		node.name = "tubelib_addons2:lamp_on"
 		minetest.swap_node(pos, node)
 	end
-end	
+end
 
 local function switch_off(pos, node, player)
 	if player == nil or not minetest.is_protected(pos, player:get_player_name()) then
 		node.name = "tubelib_addons2:lamp_off"
 		minetest.swap_node(pos, node)
 	end
-end	
+end
 
 minetest.register_node("tubelib_addons2:lamp_off", {
 	description = S("Tubelib Color Lamp"),
@@ -49,7 +49,7 @@ minetest.register_node("tubelib_addons2:lamp_off", {
 
 	on_construct = unifieddyes.on_construct,
 	on_dig = unifieddyes.on_dig,
-	
+
 	paramtype = "light",
 	paramtype2 = "color",
 	palette = "unifieddyes_palette_extended.png",
@@ -58,7 +58,8 @@ minetest.register_node("tubelib_addons2:lamp_off", {
 	sounds = default.node_sound_stone_defaults(),
 	groups = {choppy=2, cracky=1, ud_param2_colorable = 1},
 	is_ground_content = false,
-	drop = "tubelib_addons2:lamp_off"
+	drop = "tubelib_addons2:lamp_off",
+	on_blast = function() end,
 })
 
 
@@ -73,19 +74,20 @@ minetest.register_node("tubelib_addons2:lamp_on", {
 	palette = "unifieddyes_palette_extended.png",
 	sounds = default.node_sound_stone_defaults(),
 	groups = {choppy=2, cracky=1, not_in_creative_inventory=1, ud_param2_colorable = 1},
-	
+
 	on_construct = unifieddyes.on_construct,
 	after_place_node = unifieddyes.recolor_on_place,
-	
+
 	after_dig_node = function(pos, oldnode, oldmetadata, digger)
 		tubelib.remove_node(pos)
 		unifieddyes.after_dig_node(pos, oldnode, oldmetadata, digger)
 	end,
-   
+
 	on_dig = unifieddyes.on_dig,
-	light_source = minetest.LIGHT_MAX,	
+	light_source = minetest.LIGHT_MAX,
 	is_ground_content = false,
-	drop = "tubelib_addons2:lamp_off"
+	drop = "tubelib_addons2:lamp_off",
+	on_blast = function() end,
 })
 
 tubelib.register_node("tubelib_addons2:lamp_off", {"tubelib_addons2:lamp_on"}, {
@@ -98,7 +100,7 @@ tubelib.register_node("tubelib_addons2:lamp_off", {"tubelib_addons2:lamp_on"}, {
 			switch_off(pos, node, nil)
 		end
 	end,
-})	
+})
 
 minetest.register_craft({
 	type = "shapeless",
@@ -117,7 +119,8 @@ for idx=1,12 do
 		paramtype = 'light',
 		groups = {choppy=2, cracky=1, not_in_creative_inventory=1},
 		is_ground_content = false,
-		drop = "tubelib_addons2:lamp_off"
+		drop = "tubelib_addons2:lamp_off",
+		on_blast = function() end,
 	})
 end
 
@@ -127,10 +130,10 @@ minetest.register_lbm({
 	name = "tubelib_addons2:update",
 	nodenames = {
 		"tubelib_addons2:lamp",
-		"tubelib_addons2:lamp1", "tubelib_addons2:lamp2", "tubelib_addons2:lamp3", 
-		"tubelib_addons2:lamp4", "tubelib_addons2:lamp5", "tubelib_addons2:lamp6", 
-		"tubelib_addons2:lamp7", "tubelib_addons2:lamp8", "tubelib_addons2:lamp9", 
-		"tubelib_addons2:lamp10", "tubelib_addons2:lamp11", "tubelib_addons2:lamp12", 
+		"tubelib_addons2:lamp1", "tubelib_addons2:lamp2", "tubelib_addons2:lamp3",
+		"tubelib_addons2:lamp4", "tubelib_addons2:lamp5", "tubelib_addons2:lamp6",
+		"tubelib_addons2:lamp7", "tubelib_addons2:lamp8", "tubelib_addons2:lamp9",
+		"tubelib_addons2:lamp10", "tubelib_addons2:lamp11", "tubelib_addons2:lamp12",
 	},
 	run_at_every_load = true,
 	action = function(pos, node)
@@ -150,4 +153,3 @@ minetest.register_lbm({
 		meta:set_string("infotext", S("Tubelib Color Lamp").." "..number)
 	end
 })
-

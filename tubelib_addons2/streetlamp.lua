@@ -9,7 +9,7 @@
 	See LICENSE.txt for more information
 
 	streetlamp.lua:
-	
+
 ]]--
 
 -- Load support for I18n
@@ -18,12 +18,12 @@ local S = tubelib_addons2.S
 local function switch_on(pos, node)
 	node.name = "tubelib_addons2:streetlamp_on"
 	minetest.swap_node(pos, node)
-end	
+end
 
 local function switch_off(pos, node)
 	node.name = "tubelib_addons2:streetlamp"
 	minetest.swap_node(pos, node)
-end	
+end
 
 minetest.register_node("tubelib_addons2:streetlamp", {
 	description = S("Tubelib Street Lamp"),
@@ -66,12 +66,13 @@ minetest.register_node("tubelib_addons2:streetlamp", {
 	end,
 
 	paramtype = "light",
-	light_source = 0,	
+	light_source = 0,
 	sunlight_propagates = true,
 	paramtype2 = "facedir",
 	groups = {choppy=2, cracky=2, crumbly=2},
 	is_ground_content = false,
 	sounds = default.node_sound_glass_defaults(),
+	on_blast = function() end,
 })
 
 minetest.register_node("tubelib_addons2:streetlamp_on", {
@@ -95,7 +96,7 @@ minetest.register_node("tubelib_addons2:streetlamp_on", {
 		type = "fixed",
 		fixed = {-8/16, -8/16, -8/16,   8/16, 8/16, 8/16},
 	},
-	
+
 	on_rightclick = function(pos, node, clicker)
 		if not minetest.is_protected(pos, clicker:get_player_name()) then
 			switch_off(pos, node)
@@ -103,12 +104,13 @@ minetest.register_node("tubelib_addons2:streetlamp_on", {
 	end,
 
 	paramtype = "light",
-	light_source = minetest.LIGHT_MAX,	
+	light_source = minetest.LIGHT_MAX,
 	sunlight_propagates = true,
 	paramtype2 = "facedir",
 	groups = {crumbly=0, not_in_creative_inventory=1},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = function() end,
 })
 
 minetest.register_craft({
@@ -127,5 +129,5 @@ tubelib.register_node("tubelib_addons2:streetlamp", {"tubelib_addons2:streetlamp
 			switch_off(pos, node)
 		end
 	end,
-})		
+})
 --------------------------------------------------------------- tubelib.

@@ -7,11 +7,11 @@
 
 	AGPL v3
 	See LICENSE.txt for more information
-	
+
 	quarry.lua
-	
+
 	Quarry machine to dig stones and other ground blocks.
-	
+
 	The Quarry digs a hole 5x5 blocks large and up to 100 blocks deep.
 	It starts at the given level (0 is same level as the quarry block,
 	1 is one level higher and so on)) and goes down to the given depth number.
@@ -35,7 +35,7 @@ local COUNTDOWN_TICKS = 5
 
 local Side2Facedir = {F=0, R=1, B=2, L=3, D=4, U=5}
 local Depth2Idx = {[1]=1 ,[2]=2, [3]=3, [5]=4, [10]=5, [15]=6, [20]=7, [25]=8, [50]=9, [100]=10}
-local Level2Idx = {[2]=1, [1]=2, [0]=3, [-1]=4, [-2]=5, [-3]=6, 
+local Level2Idx = {[2]=1, [1]=2, [0]=3, [-1]=4, [-2]=5, [-3]=6,
 				   [-5]=7, [-10]=8, [-15]=9, [-20]=10}
 
 local function formspec(self, pos, meta)
@@ -52,14 +52,14 @@ local function formspec(self, pos, meta)
 	else
 		fuel = 0
 	end
-	
+
 	return "size[9,8]"..
 	default.gui_bg..
 	default.gui_bg_img..
 	default.gui_slots..
-	"dropdown[0,0;1.5;level;2,1,0,-1,-2,-3,-5,-10,-15,-20;"..Level2Idx[start_level].."]".. 
+	"dropdown[0,0;1.5;level;2,1,0,-1,-2,-3,-5,-10,-15,-20;"..Level2Idx[start_level].."]"..
 	"label[1.6,0.2;"..S("Start level").."]"..
-	"dropdown[0,1;1.5;depth;1,2,3,5,10,15,20,25,50,100;"..Depth2Idx[depth].."]".. 
+	"dropdown[0,1;1.5;depth;1,2,3,5,10,15,20,25,50,100;"..Depth2Idx[depth].."]"..
 	"label[1.6,1.2;"..S("Digging depth").."]"..
 	"checkbox[0,2;endless;"..S("Run endless")..";"..endless.."]"..
 	"list[context;main;5,0;4,4;]"..
@@ -95,7 +95,7 @@ local function get_pos(pos, facedir, side, steps)
 	facedir = (facedir + Side2Facedir[side]) % 4
 	local dir = vector.multiply(minetest.facedir_to_dir(facedir), steps or 1)
 	return vector.add(pos, dir)
-end	
+end
 
 local function get_node_lvm(pos)
 	local node = minetest.get_node_or_nil(pos)
@@ -144,7 +144,7 @@ local function get_next_pos(pos, facedir, dir)
 	return vector.add(pos, core.facedir_to_dir(facedir))
 end
 
-local function skip_the_air(pos, curr_level, facedir) 
+local function skip_the_air(pos, curr_level, facedir)
 	local pos1, pos2, lPos
 	pos1 = get_pos(pos, facedir, "F", 2)
 	pos2 = get_pos(pos, facedir, "B", 2)
@@ -157,9 +157,9 @@ local function skip_the_air(pos, curr_level, facedir)
 		pos1.y = pos1.y - 1
 		pos2.y = pos2.y - 1
 	end
-	return pos2.y 
+	return pos2.y
 end
-	
+
 local function quarry_next_node(pos, meta)
 	-- check fuel
 	local fuel = meta:get_int("fuel") or 0
@@ -178,8 +178,8 @@ local function quarry_next_node(pos, meta)
 	else
 		fuel = fuel - 1
 	end
-	meta:set_int("fuel", fuel) 
-	
+	meta:set_int("fuel", fuel)
+
 	local idx = meta:get_int("idx")
 	if idx == 0 then idx = 1 end
 	local facedir = minetest.get_node(pos).param2
@@ -188,10 +188,10 @@ local function quarry_next_node(pos, meta)
 	local start_y = pos.y + meta:get_int("start_level")
 	local stop_y = pos.y + meta:get_int("start_level") - meta:get_int("max_levels") + 1
 	local quarry_pos = P(meta:get_string("quarry_pos"))
-	
+
 	if quarry_pos == nil then  -- start at the beginning?
 		quarry_pos = get_pos(pos, facedir, "L")
-		local y = skip_the_air(quarry_pos, start_y, facedir) 
+		local y = skip_the_air(quarry_pos, start_y, facedir)
 		if y < stop_y then -- below the base line?
 			meta:set_int("idx", 1)
 			meta:set_string("quarry_pos", nil)
@@ -263,7 +263,7 @@ local function on_receive_fields(pos, formname, fields, player)
 		return
 	end
 	local meta = M(pos)
-	
+
 	local max_levels = meta:get_int("max_levels")
 	if fields.depth then
 		max_levels = tonumber(fields.depth)
@@ -273,7 +273,7 @@ local function on_receive_fields(pos, formname, fields, player)
 		meta:set_int("max_levels", max_levels)
 		State:stop(pos, meta)
 	end
-	
+
 	local start_level = meta:get_int("start_level") or 0
 	if fields.level ~= nil then
 		start_level = tonumber(fields.level)
@@ -283,13 +283,13 @@ local function on_receive_fields(pos, formname, fields, player)
 		meta:set_int("start_level", start_level)
 		State:stop(pos, meta)
 	end
-	
+
 	local endless = meta:get_int("endless") or 0
 	if fields.endless ~= nil then
 		endless = fields.endless == "true" and 1 or 0
 	end
 	meta:set_int("endless", endless)
-	
+
 	State:state_button_event(pos, fields)
 end
 
@@ -330,7 +330,7 @@ minetest.register_node("tubelib_addons1:quarry", {
 		State:on_dig_node(pos, node, player)
 		tubelib.remove_node(pos)
 	end,
-	
+
 	on_rotate = screwdriver.disallow,
 	on_receive_fields = on_receive_fields,
 	on_timer = keep_running,
@@ -343,6 +343,7 @@ minetest.register_node("tubelib_addons1:quarry", {
 	groups = {choppy=2, cracky=2, crumbly=2},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = function() end,
 })
 
 minetest.register_node("tubelib_addons1:quarry_active", {
@@ -377,13 +378,14 @@ minetest.register_node("tubelib_addons1:quarry_active", {
 
 	allow_metadata_inventory_put = allow_metadata_inventory_put,
 	allow_metadata_inventory_take = allow_metadata_inventory_take,
-	
+
 	paramtype = "light",
 	sunlight_propagates = true,
 	paramtype2 = "facedir",
 	groups = {crumbly=0, not_in_creative_inventory=1},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = function() end,
 })
 
 minetest.register_node("tubelib_addons1:quarry_defect", {
@@ -434,6 +436,7 @@ minetest.register_node("tubelib_addons1:quarry_defect", {
 	groups = {choppy=2, cracky=2, crumbly=2, not_in_creative_inventory=1},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = function() end,
 })
 
 minetest.register_craft({
@@ -446,7 +449,7 @@ minetest.register_craft({
 })
 
 
-tubelib.register_node("tubelib_addons1:quarry", 
+tubelib.register_node("tubelib_addons1:quarry",
 	{"tubelib_addons1:quarry_active", "tubelib_addons1:quarry_defect"}, {
 	invalid_sides = {"L"},
 	on_pull_item = function(pos, side)
@@ -465,7 +468,7 @@ tubelib.register_node("tubelib_addons1:quarry",
 		if topic == "fuel" then
 			return tubelib.fuelstate(M(pos), "fuel")
 		end
-		
+
 		local resp = State:on_receive_message(pos, topic, payload)
 		if resp then
 			return resp
@@ -482,5 +485,4 @@ tubelib.register_node("tubelib_addons1:quarry",
 	on_node_repair = function(pos)
 		return State:on_node_repair(pos)
 	end,
-})	
-
+})
