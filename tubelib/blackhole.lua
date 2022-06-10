@@ -9,17 +9,17 @@
 	See LICENSE.txt for more information
 
 	blackhole.lua:
-	
+
 	Simple node which lets all items disappear.
 	The blackhole supports the following message:
-	- topic = "status", payload  = nil, 
+	- topic = "status", payload  = nil,
 	  response is the number of disappeared items (0..n)
 ]]--
 
 --                 +--------+
 --                /        /|
 --               +--------+ |
---     IN (L) -->|  BLACK | |          
+--     IN (L) -->|  BLACK | |
 --               |  HOLE  | +
 --               |        |/
 --               +--------+
@@ -58,6 +58,7 @@ minetest.register_node("tubelib:blackhole", {
 	groups = {choppy=2, cracky=2, crumbly=2},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = function() end,
 })
 
 
@@ -75,7 +76,7 @@ minetest.register_craft({
 tubelib.register_node("tubelib:blackhole", {}, {
 	on_pull_item = nil,  		-- not needed
 	on_unpull_item = nil,		-- not needed
-	
+
 	valid_sides = {"L"},
 	on_push_item = function(pos, side, item)
 		local meta = minetest.get_meta(pos)
@@ -84,7 +85,7 @@ tubelib.register_node("tubelib:blackhole", {}, {
 		meta:set_string("infotext", disappeared.." "..S("items disappeared"))
 		return true
 	end,
-	
+
 	on_recv_message = function(pos, topic, payload)
 		local node = minetest.get_node(pos)
 		if topic == "state" then
@@ -94,5 +95,5 @@ tubelib.register_node("tubelib:blackhole", {}, {
 			return "not supported"
 		end
 	end,
-})	
+})
 --------------------------------------------------------------- tubelib

@@ -7,9 +7,9 @@
 
 	AGPL v3
 	See LICENSE.txt for more information
-	
+
 	pusher.lua
-	
+
 	A high performance pusher
 
 ]]--
@@ -67,7 +67,7 @@ local function keep_running(pos, elapsed)
 		return State:is_active(meta)
 	end
 	return false
-end	
+end
 
 minetest.register_node("tubelib_addons3:pusher", {
 	description = S("HighPerf Pusher"),
@@ -98,7 +98,7 @@ minetest.register_node("tubelib_addons3:pusher", {
 		State:on_dig_node(pos, node, player)
 		tubelib.remove_node(pos)
 	end,
-	
+
 	on_timer = keep_running,
 	on_rotate = screwdriver.disallow,
 
@@ -108,6 +108,7 @@ minetest.register_node("tubelib_addons3:pusher", {
 	groups = {choppy=2, cracky=2, crumbly=2},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = function() end,
 })
 
 
@@ -164,7 +165,7 @@ minetest.register_node("tubelib_addons3:pusher_active", {
 			State:stop(pos, M(pos))
 		end
 	end,
-	
+
 	on_timer = keep_running,
 	on_rotate = screwdriver.disallow,
 
@@ -177,6 +178,7 @@ minetest.register_node("tubelib_addons3:pusher_active", {
 	groups = {crumbly=0, not_in_creative_inventory=1},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = function() end,
 })
 
 minetest.register_node("tubelib_addons3:pusher_defect", {
@@ -202,7 +204,7 @@ minetest.register_node("tubelib_addons3:pusher_defect", {
 	after_dig_node = function(pos)
 		tubelib.remove_node(pos)
 	end,
-	
+
 	on_timer = keep_running,
 	on_rotate = screwdriver.disallow,
 
@@ -212,6 +214,7 @@ minetest.register_node("tubelib_addons3:pusher_defect", {
 	groups = {choppy=2, cracky=2, crumbly=2, not_in_creative_inventory=1},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = function() end,
 })
 
 
@@ -224,7 +227,7 @@ minetest.register_craft({
 	},
 })
 
-tubelib.register_node("tubelib_addons3:pusher", 
+tubelib.register_node("tubelib_addons3:pusher",
 	{"tubelib_addons3:pusher_active", "tubelib_addons3:pusher_defect"}, {
 	is_pusher = true,           -- is a pulling/pushing node
 	valid_sides = {"R","L"},
@@ -243,4 +246,4 @@ tubelib.register_node("tubelib_addons3:pusher",
 	on_node_repair = function(pos)
 		return State:on_node_repair(pos)
 	end,
-})	
+})

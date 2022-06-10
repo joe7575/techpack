@@ -9,7 +9,7 @@
 	See LICENSE.txt for more information
 
 	doorblock.lua:
-	
+
 ]]--
 
 -- Load support for I18n
@@ -18,7 +18,7 @@ local S = tubelib_addons2.S
 local sTextures = "Gate Wood,Aspen Wood,Jungle Wood,Pine Wood,"..
                   "Cobblestone,Sandstone,Stone,Desert Sandstone,"..
                   "Copper,Steel,Tin,Coral,"..
-				  "Glas,Obsidian Glas"  
+				  "Glas,Obsidian Glas"
 
 local tTextures = {
 	["Gate Wood"]=1, ["Aspen Wood"]=2, ["Jungle Wood"]=3, ["Pine Wood"]=4,
@@ -26,7 +26,7 @@ local tTextures = {
 	["Copper"]=9, ["Steel"]=10, ["Tin"]=11, ["Coral"]=12,
 	["Glas"]=13, ["Obsidian Glas"]=14,
 }
-	
+
 local tPgns = {"tubelib_addon2_door.png", "default_aspen_wood.png", "default_junglewood.png", "default_pine_wood.png",
 	"default_cobble.png", "default_sandstone.png", "default_stone.png", "default_desert_sandstone.png",
 	"default_copper_block.png", "default_steel_block.png", "default_tin_block.png", "default_coral_skeleton.png",
@@ -60,7 +60,7 @@ for idx,pgn in ipairs(tPgns) do
 			meta:set_string("infotext", S("Tubelib Door Block").." "..number)
 			meta:set_string("formspec", "size[3,2]"..
 			"label[0,0;"..S("Select texture").."]"..
-			"dropdown[0,0.5;3;type;"..sTextures..";1]".. 
+			"dropdown[0,0.5;3;type;"..sTextures..";1]"..
 			"button_exit[0.5,1.5;2,1;exit;"..S("Save").."]")
 		end,
 
@@ -76,7 +76,7 @@ for idx,pgn in ipairs(tPgns) do
 				meta:set_string("formspec", nil)
 			end
 		end,
-		
+
 		after_dig_node = function(pos, oldnode, oldmetadata)
 			tubelib.remove_node(pos)
 		end,
@@ -89,10 +89,11 @@ for idx,pgn in ipairs(tPgns) do
 		groups = {cracky=2, choppy=2, crumbly=2, not_in_creative_inventory=not_in_inventory},
 		is_ground_content = false,
 		drop = "tubelib_addons2:doorblock1",
+		on_blast = function() end,
 	})
 
 	not_in_inventory = 1
-	
+
 	tubelib.register_node("tubelib_addons2:doorblock"..idx, {}, {
 		on_recv_message = function(pos, topic, payload)
 			local node = minetest.get_node(pos)
@@ -110,7 +111,7 @@ for idx,pgn in ipairs(tPgns) do
 				end
 			end
 		end,
-	})		
+	})
 end
 
 minetest.register_craft({

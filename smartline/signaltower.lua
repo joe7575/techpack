@@ -20,14 +20,14 @@ local function switch_on(pos, node, color)
 	meta:set_string("state", color)
 	node.name = "smartline:signaltower_"..color
 	minetest.swap_node(pos, node)
-end	
+end
 
 local function switch_off(pos, node)
 	local meta = minetest.get_meta(pos)
 	meta:set_string("state", "off")
 	node.name = "smartline:signaltower"
 	minetest.swap_node(pos, node)
-end	
+end
 
 minetest.register_node("smartline:signaltower", {
 	description = S("SmartLine Signal Tower"),
@@ -44,7 +44,7 @@ minetest.register_node("smartline:signaltower", {
 			{ -5/32, -16/32, -5/32,  5/32,  16/32, 5/32},
 		},
 	},
-	
+
 	after_place_node = function(pos, placer)
 		local number = tubelib.add_node(pos, "smartline:signaltower")
 		local meta = minetest.get_meta(pos)
@@ -63,12 +63,13 @@ minetest.register_node("smartline:signaltower", {
 	end,
 
 	paramtype = "light",
-	light_source = 0,	
+	light_source = 0,
 	sunlight_propagates = true,
 	paramtype2 = "facedir",
 	groups = {cracky=2, crumbly=2},
 	is_ground_content = false,
 	sounds = default.node_sound_glass_defaults(),
+	on_blast = function() end,
 })
 
 for _,color in ipairs({"green", "amber", "red"}) do
@@ -94,13 +95,14 @@ for _,color in ipairs({"green", "amber", "red"}) do
 		end,
 
 		paramtype = "light",
-		light_source = 10,	
+		light_source = 10,
 		sunlight_propagates = true,
 		paramtype2 = "facedir",
 		groups = {crumbly=0, not_in_creative_inventory=1},
 		is_ground_content = false,
 		sounds = default.node_sound_glass_defaults(),
 		drop = "smartline:signaltower",
+		on_blast = function() end,
 	})
 end
 
@@ -114,8 +116,8 @@ minetest.register_craft({
 })
 
 tubelib.register_node("smartline:signaltower", {
-	"smartline:signaltower_green", 
-	"smartline:signaltower_amber", 
+	"smartline:signaltower_green",
+	"smartline:signaltower_amber",
 	"smartline:signaltower_red"}, {
 	on_recv_message = function(pos, topic, payload)
 		local node = minetest.get_node(pos)
@@ -132,4 +134,4 @@ tubelib.register_node("smartline:signaltower", {
 			return meta:get_string("state")
 		end
 	end,
-})		
+})

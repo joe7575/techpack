@@ -13,6 +13,7 @@ minetest.register_node("tubelib:defect_dummy", {
 	},
 	groups = {cracky=3, crumbly=3, choppy=3, not_in_creative_inventory=1},
 	is_ground_content = false,
+	on_blast = function() end,
 })
 
 local reported_machines = {}
@@ -25,7 +26,7 @@ local function already_reported(pos)
 end
 
 
-function tubelib.data_not_corrupted(pos, has_no_info)	
+function tubelib.data_not_corrupted(pos, has_no_info)
 	if minetest.pos_to_string(pos) ~= minetest.get_meta(pos):get_string("my_pos") then
 		-- node number corrupt?
 		local meta = minetest.get_meta(pos)
@@ -45,13 +46,13 @@ function tubelib.data_not_corrupted(pos, has_no_info)
 				report(pos)
 			end
 		end
-		
+
 		-- button like odes
-		if has_no_info then 
+		if has_no_info then
 			minetest.get_meta(pos):get_string("my_pos", minetest.pos_to_string(pos))
-			return true 
+			return true
 		end
-		
+
 		-- node moved?
 		local info = tubelib.get_node_info(number)
 		if not info or not vector.equals(info.pos, pos) then

@@ -54,7 +54,7 @@ local function register_battery(ext, percent, nici)
 				{ -6/32, -6/32, 14/32,  6/32,  6/32, 16/32},
 			},
 		},
-		
+
 		after_place_node = function(pos, placer)
 			local meta = minetest.get_meta(pos)
 			meta:set_int("content", BATTERY_CAPACITY * percent)
@@ -64,10 +64,10 @@ local function register_battery(ext, percent, nici)
 			on_timer(pos, 1)
 			minetest.get_node_timer(pos):start(30)
 		end,
-		
+
 		on_timer = on_timer,
-		
-		
+
+
 		after_dig_node = function(pos, oldnode, oldmetadata, digger)
 			local percent = calc_percent(tonumber(oldmetadata.fields.content))
 			local stack
@@ -93,6 +93,7 @@ local function register_battery(ext, percent, nici)
 		drop = "",
 		is_ground_content = false,
 		sounds = default.node_sound_stone_defaults(),
+		on_blast = function() end,
 	})
 end
 
@@ -120,12 +121,12 @@ minetest.register_node("smartline:battery_empty", {
 			{ -6/32, -6/32, 14/32,  6/32,  6/32, 16/32},
 		},
 	},
-	
+
 	after_place_node = function(pos, placer)
 		local meta = minetest.get_meta(pos)
 		meta:set_int("content", 0)
 	end,
-	
+
 	paramtype = "light",
 	sunlight_propagates = true,
 	paramtype2 = "facedir",
@@ -133,6 +134,7 @@ minetest.register_node("smartline:battery_empty", {
 	drop = "",
 	is_ground_content = false,
 	sounds = default.node_sound_stone_defaults(),
+	on_blast = function() end,
 })
 
 
@@ -156,8 +158,8 @@ else
 	})
 end
 
-tubelib.register_node("smartline:battery", 
-	{"smartline:battery25", "smartline:battery50", "smartline:battery75"}, 
+tubelib.register_node("smartline:battery",
+	{"smartline:battery25", "smartline:battery50", "smartline:battery75"},
 	{
 		on_node_load = function(pos)
 			minetest.get_node_timer(pos):start(30)

@@ -230,6 +230,7 @@ minetest.register_node("tubelib_addons1:fermenter", {
 	groups = {choppy=2, cracky=2, crumbly=2},
 	is_ground_content = false,
 	sounds = default.node_sound_metal_defaults(),
+	on_blast = function() end,
 })
 
 minetest.register_node("tubelib_addons1:fermenter_defect", {
@@ -302,6 +303,7 @@ minetest.register_node("tubelib_addons1:fermenter_defect", {
 	groups = {choppy=2, cracky=2, crumbly=2, not_in_creative_inventory=1},
 	is_ground_content = false,
 	sounds = default.node_sound_metal_defaults(),
+	on_blast = function() end,
 })
 
 minetest.register_node("tubelib_addons1:fermenter_top", {
@@ -322,6 +324,7 @@ minetest.register_node("tubelib_addons1:fermenter_top", {
 	groups = {crumbly=0, not_in_creative_inventory=1},
 	is_ground_content = false,
 	pointable = false,
+	on_blast = function() end,
 })
 
 minetest.register_craftitem("tubelib_addons1:biogas", {

@@ -9,7 +9,7 @@
 	See LICENSE.txt for more information
 
 	button.lua:
-	
+
 	Example of a simple communication node, only sending messages to other nodes.
 
 ]]--
@@ -83,7 +83,7 @@ minetest.register_node("tubelib:button", {
 		local own_num = tubelib.add_node(pos, "tubelib:button")
 		meta:set_string("own_num", own_num)
 		meta:set_string("formspec", "size[7.5,6]"..
-		"dropdown[0.2,0;3;type;"..S("switch,button 2s,button 4s,button 8s,button 16s")..";1]".. 
+		"dropdown[0.2,0;3;type;"..S("switch,button 2s,button 4s,button 8s,button 16s")..";1]"..
 		"field[0.5,2;7,1;numbers;"..S("Insert destination node number(s)")..";]" ..
 		"checkbox[1,3;public;"..S("public")..";false]"..
 		"button_exit[2,4;3,1;exit;"..S("Save").."]")
@@ -124,7 +124,7 @@ minetest.register_node("tubelib:button", {
 			meta:set_string("formspec", nil)
 		end
 	end,
-	
+
 	on_rightclick = function(pos, node, clicker)
 		local meta = minetest.get_meta(pos)
 		if meta:get_string("numbers") ~= "" and meta:get_string("numbers") ~= nil then
@@ -140,6 +140,7 @@ minetest.register_node("tubelib:button", {
 	groups = {choppy=2, cracky=2, crumbly=2},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = function() end,
 })
 
 
@@ -173,6 +174,7 @@ minetest.register_node("tubelib:button_active", {
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
 	drop = "tubelib:button",
+	on_blast = function() end,
 })
 
 tubelib.register_node("tubelib:button", {"tubelib:button_active"}, {tubelib_node = true})
@@ -185,4 +187,3 @@ minetest.register_craft({
 		{"",              "group:wood",  	    ""},
 	},
 })
-

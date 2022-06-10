@@ -9,7 +9,7 @@
 	See LICENSE.txt for more information
 
 	mesecons_converter.lua:
-	
+
 ]]--
 
 -- Load support for I18n
@@ -22,7 +22,7 @@ local function formspec(meta)
 	return "size[7,5]"..
 		"field[0.5,2;6,1;number;"..S("Destination node numbers")..";"..numbers.."]" ..
 		"button_exit[1,3;2,1;exit;"..S("Save").."]"
-end	
+end
 
 local function send_message(pos, topic, payload)
 	local meta = minetest.get_meta(pos)
@@ -71,20 +71,20 @@ minetest.register_node("tubelib_addons2:mesecons_converter", {
 		if owner ~= player:get_player_name() then
 			return
 		end
-		
+
 		if tubelib.check_numbers(fields.number) then
 			meta:set_string("numbers", fields.number)
 			local own_number = meta:get_string("own_number")
 			meta:set_string("infotext", S("Tubelib Mesecons Converter").." "..own_number..S(": connected with").." "..fields.number)
 			meta:set_string("formspec", formspec(meta))
 		end
-		
+
 		local timer = minetest.get_node_timer(pos)
 		if not timer:is_started() then
 			timer:start(1)
 		end
 	end,
-	
+
 	mesecons = {
 		receptor = {
 			state = mesecon.state.off,
@@ -109,7 +109,7 @@ minetest.register_node("tubelib_addons2:mesecons_converter", {
 			end,
 		}
 	},
-	
+
 	on_timer = function(pos,elapsed)
 		if tubelib.data_not_corrupted(pos) then
 			local meta = minetest.get_meta(pos)
@@ -118,7 +118,7 @@ minetest.register_node("tubelib_addons2:mesecons_converter", {
 		end
 		return false
 	end,
-	
+
 	after_dig_node = function(pos)
 		tubelib.remove_node(pos)
 	end,
@@ -129,6 +129,7 @@ minetest.register_node("tubelib_addons2:mesecons_converter", {
 	groups = {choppy=2, cracky=2, crumbly=2},
 	is_ground_content = false,
 	sounds = default.node_sound_stone_defaults(),
+	on_blast = function() end,
 })
 
 
@@ -154,4 +155,4 @@ tubelib.register_node("tubelib_addons2:mesecons_converter", {}, {
 			return true
 		end
 	end,
-})		
+})

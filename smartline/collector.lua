@@ -9,7 +9,7 @@
 	See LICENSE.txt for more information
 
 	collector.lua:
-	
+
 	Collects states from other nodes, acting as a state concentrator.
 
 ]]--
@@ -22,13 +22,13 @@ local CYCLE_TIME = 1
 local tStates = {stopped = 0, running = 0, standby = 1, blocked = 2, fault = 3, defect = 4}
 local tDropdownPos = {["1 standby"] = 1, ["2 blocked"] = 2 , ["3 fault"] = 3, ["4 defect"] = 4}
 local lStates = {[0] = "stopped", "standby", "blocked", "fault", "defect"}
-	
+
 local function formspec(meta)
 	local poll_numbers = meta:get_string("poll_numbers")
 	local event_number = meta:get_string("event_number")
 	local dropdown_pos = meta:get_int("dropdown_pos")
 	if dropdown_pos == 0 then dropdown_pos = 1 end
-	
+
 	return "size[9,6]"..
 		default.gui_bg..
 		default.gui_bg_img..
@@ -38,7 +38,7 @@ local function formspec(meta)
 		"label[1.3,2.8;"..S("Send an event if state is equal or larget than:").."]"..
 		"dropdown[1.2,3.4;7,4;severity;1 standby,2 blocked,3 fault,4 defect;"..dropdown_pos.."]"..
 		"button_exit[3,5;2,1;exit;"..S("Save").."]"
-end	
+end
 
 
 local function send_event(meta)
@@ -74,7 +74,7 @@ local function on_timer(pos,elapsed)
 		local meta = minetest.get_meta(pos)
 		local poll_numbers = meta:get_string("poll_numbers")
 		local idx = meta:get_int("index") + 1
-		
+
 		if poll_numbers == "" then
 			local own_number = meta:get_string("own_number")
 			meta:set_string("infotext", S("SmartLine State Collector").." "..own_number..": stopped")
@@ -82,15 +82,15 @@ local function on_timer(pos,elapsed)
 			meta:set_int("stored_state", 0)
 			return false
 		end
-		
+
 		if idx > meta:get_int("num_numbers") then
 			idx = 1
 			send_event(meta)
 		end
 		meta:set_int("index", idx)
-		
+
 		request_state(meta, poll_numbers, idx)
-		
+
 		return true
 	end
 	return false
@@ -161,11 +161,11 @@ minetest.register_node("smartline:collector", {
 			end
 			meta:set_string("formspec", formspec(meta))
 		end
-		
+
 	end,
-	
+
 	on_timer = on_timer,
-	
+
 	after_dig_node = function(pos)
 		tubelib.remove_node(pos)
 	end,
@@ -176,6 +176,7 @@ minetest.register_node("smartline:collector", {
 	groups = {choppy=2, cracky=2, crumbly=2},
 	is_ground_content = false,
 	sounds = default.node_sound_stone_defaults(),
+	on_blast = function() end,
 })
 
 
@@ -210,4 +211,4 @@ tubelib.register_node("smartline:collector", {}, {
 	on_node_load = function(pos)
 		minetest.get_node_timer(pos):start(CYCLE_TIME)
 	end,
-})		
+})

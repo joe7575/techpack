@@ -9,7 +9,7 @@
 	See LICENSE.txt for more information
 
 	timer.lua:
-	
+
 ]]--
 
 -- Load support for I18n
@@ -18,9 +18,9 @@ local S = tubelib_addons2.S
 local CYCLE_TIME = 8
 
 local tTime = {
-	["00:00"] = 1, ["02:00"] = 2, ["04:00"] = 3, 
+	["00:00"] = 1, ["02:00"] = 2, ["04:00"] = 3,
 	["06:00"] = 4, ["08:00"] = 5, ["10:00"] = 6,
-	["12:00"] = 7, ["14:00"] = 8, ["16:00"] = 9, 
+	["12:00"] = 7, ["14:00"] = 8, ["16:00"] = 9,
 	["18:00"] =10, ["20:00"] =11, ["22:00"] =12,
 }
 
@@ -39,32 +39,32 @@ local function formspec(events, numbers, actions)
 		default.gui_bg..
 		default.gui_bg_img..
 		default.gui_slots..
-			
+
 		"label[0,0;"..S("Time").."]label[2.3,0;"..S("Number(s)").."]label[4.5,0;"..S("Command").."]"..
-		"dropdown[0,1;2,1;e1;"..sTime..";"..events[1].."]".. 
+		"dropdown[0,1;2,1;e1;"..sTime..";"..events[1].."]"..
 		"field[2.3,1.2;2,1;n1;;"..numbers[1].."]" ..
-		"dropdown[4.5,1;3,1;a1;"..sAction..";"..tAction[actions[1]].."]".. 
-		
-		"dropdown[0,2;2,1;e2;"..sTime..";"..events[2].."]".. 
+		"dropdown[4.5,1;3,1;a1;"..sAction..";"..tAction[actions[1]].."]"..
+
+		"dropdown[0,2;2,1;e2;"..sTime..";"..events[2].."]"..
 		"field[2.3,2.2;2,1;n2;;"..numbers[2].."]" ..
-		"dropdown[4.5,2;3,1;a2;"..sAction..";"..tAction[actions[2]].."]".. 
-		
-		"dropdown[0,3;2,1;e3;"..sTime..";"..events[3].."]".. 
+		"dropdown[4.5,2;3,1;a2;"..sAction..";"..tAction[actions[2]].."]"..
+
+		"dropdown[0,3;2,1;e3;"..sTime..";"..events[3].."]"..
 		"field[2.3,3.2;2,1;n3;;"..numbers[3].."]" ..
-		"dropdown[4.5,3;3,1;a3;"..sAction..";"..tAction[actions[3]].."]".. 
-		
-		"dropdown[0,4;2,1;e4;"..sTime..";"..events[4].."]".. 
+		"dropdown[4.5,3;3,1;a3;"..sAction..";"..tAction[actions[3]].."]"..
+
+		"dropdown[0,4;2,1;e4;"..sTime..";"..events[4].."]"..
 		"field[2.3,4.2;2,1;n4;;"..numbers[4].."]" ..
-		"dropdown[4.5,4;3,1;a4;"..sAction..";"..tAction[actions[4]].."]".. 
-		
-		"dropdown[0,5;2,1;e5;"..sTime..";"..events[5].."]".. 
+		"dropdown[4.5,4;3,1;a4;"..sAction..";"..tAction[actions[4]].."]"..
+
+		"dropdown[0,5;2,1;e5;"..sTime..";"..events[5].."]"..
 		"field[2.3,5.2;2,1;n5;;"..numbers[5].."]" ..
-		"dropdown[4.5,5;3,1;a5;"..sAction..";"..tAction[actions[5]].."]".. 
-		
-		"dropdown[0,6;2,1;e6;"..sTime..";"..events[6].."]".. 
+		"dropdown[4.5,5;3,1;a5;"..sAction..";"..tAction[actions[5]].."]"..
+
+		"dropdown[0,6;2,1;e6;"..sTime..";"..events[6].."]"..
 		"field[2.3,6.2;2,1;n6;;"..numbers[6].."]" ..
-		"dropdown[4.5,6;3,1;a6;"..sAction..";"..tAction[actions[6]].."]".. 
-		
+		"dropdown[4.5,6;3,1;a6;"..sAction..";"..tAction[actions[6]].."]"..
+
 		"button_exit[3,7;2,1;exit;close]"
 end
 
@@ -79,7 +79,7 @@ local function check_rules(pos,elapsed)
 		local done = minetest.deserialize(meta:get_string("done"))
 		local placer_name = meta:get_string("placer_name")
 		local number = meta:get_string("number")
-		
+
 		-- check all rules
 		for idx,act in ipairs(actions) do
 			if act ~= "" and numbers[idx] ~= "" then
@@ -94,7 +94,7 @@ local function check_rules(pos,elapsed)
 				end
 			end
 		end
-		
+
 		-- prepare for the next day
 		if hour == 23 then
 			done = {false,false,false,false,false,false}
@@ -138,7 +138,7 @@ minetest.register_node("tubelib_addons2:timer", {
 		if minetest.is_protected(pos, player:get_player_name()) then
 			return
 		end
-		
+
 		local events = minetest.deserialize(meta:get_string("events"))
 		for idx, evt in ipairs({fields.e1, fields.e2, fields.e3, fields.e4, fields.e5, fields.e6}) do
 			if evt ~= nil then
@@ -162,12 +162,12 @@ minetest.register_node("tubelib_addons2:timer", {
 			end
 		end
 		meta:set_string("actions", minetest.serialize(actions))
-	
+
 		meta:set_string("formspec", formspec(events, numbers, actions))
 		local done = {false,false,false,false,false,false}
 		meta:set_string("done",  minetest.serialize(done))
 	end,
-	
+
 	on_timer = check_rules,
 
 	after_dig_node = function(pos)
@@ -180,6 +180,7 @@ minetest.register_node("tubelib_addons2:timer", {
 	sounds = default.node_sound_stone_defaults(),
 	groups = {choppy=2, cracky=2, crumbly=2},
 	is_ground_content = false,
+	on_blast = function() end,
 })
 
 
@@ -202,4 +203,3 @@ tubelib.register_node("tubelib_addons2:timer", {}, {
 		check_rules(pos,0)
 	end,
 })
-

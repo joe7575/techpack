@@ -9,7 +9,7 @@
 	See LICENSE.txt for more information
 
 	industriallamp.lua:
-	
+
 ]]--
 
 -- Load support for I18n
@@ -20,7 +20,7 @@ local function switch_on(pos, node)
 		node.name = node.name.."_on"
 		minetest.swap_node(pos, node)
 	end
-end	
+end
 
 local function switch_off(pos, node)
 	if string.sub(node.name, -3) == "_on" then
@@ -30,7 +30,7 @@ local function switch_off(pos, node)
 		local pos2 = {x=pos.x+5, y=pos.y+5, z=pos.z+5}
 		minetest.fix_light(pos1, pos2)
 	end
-end	
+end
 
 local function register_lamp(tbl)
 	local num, tiles, tiles_on, node_box, size = tbl.num, tbl.tiles, tbl.tiles_on, tbl.node_box, tbl.size
@@ -40,14 +40,14 @@ local function register_lamp(tbl)
 		drawtype = "nodebox",
 		node_box = node_box,
 		inventory_image = 'tubelib_addons2_industriallamp_inv'..num..'.png',
-		
+
 		selection_box = {
 			type = "wallmounted",
 			wall_top =    {-size.x, 0.5 - size.y, -size.z, size.x, 0.5, size.z},
 			wall_bottom = {-size.x, -0.5, -size.z, size.x, -0.5 + size.y, size.z},
 			wall_side =   {-0.5, -size.z, size.x, -0.5 + size.y, size.z, -size.x},
 		},
-	
+
 		after_place_node = function(pos, placer)
 			local number = tubelib.add_node(pos, "tubelib_addons2:industriallamp"..num)
 			local meta = minetest.get_meta(pos)
@@ -66,12 +66,13 @@ local function register_lamp(tbl)
 		end,
 
 		paramtype = "light",
-		light_source = 0,	
+		light_source = 0,
 		sunlight_propagates = true,
 		paramtype2 = "wallmounted",
 		groups = {choppy=2, cracky=2, crumbly=2},
 		is_ground_content = false,
 		sounds = default.node_sound_glass_defaults(),
+		on_blast = function() end,
 	})
 
 	minetest.register_node("tubelib_addons2:industriallamp"..num.."_on", {
@@ -79,20 +80,20 @@ local function register_lamp(tbl)
 		tiles = tiles_on,
 		drawtype = "nodebox",
 		node_box = node_box,
-		
+
 		selection_box = {
 			type = "wallmounted",
 			wall_top =    {-size.x, 0.5 - size.y, -size.z, size.x, 0.5, size.z},
 			wall_bottom = {-size.x, -0.5, -size.z, size.x, -0.5 + size.y, size.z},
 			wall_side =   {-0.5, -size.z, size.x, -0.5 + size.y, size.z, -size.x},
 		},
-	
+
 		after_place_node = function(pos, placer)
 			local number = tubelib.add_node(pos, "tubelib_addons2:industriallamp"..num)
 			local meta = minetest.get_meta(pos)
 			meta:set_string("infotext", S("Tubelib Industrial Lamp").." "..num..": "..number)
 		end,
-		
+
 		on_rightclick = function(pos, node, clicker)
 			if not minetest.is_protected(pos, clicker:get_player_name()) then
 				node.name = "tubelib_addons2:industriallamp"..num
@@ -108,13 +109,14 @@ local function register_lamp(tbl)
 		end,
 
 		paramtype = "light",
-		light_source = minetest.LIGHT_MAX,	
+		light_source = minetest.LIGHT_MAX,
 		sunlight_propagates = true,
 		paramtype2 = "wallmounted",
 		groups = {choppy=2, cracky=2, crumbly=2, not_in_creative_inventory=1},
 		drop = "tubelib_addons2:industriallamp"..num,
 		is_ground_content = false,
 		sounds = default.node_sound_glass_defaults(),
+		on_blast = function() end,
 	})
 
 	tubelib.register_node("tubelib_addons2:industriallamp"..num, {"tubelib_addons2:industriallamp"..num.."_on"}, {
@@ -149,7 +151,7 @@ minetest.register_craft({
 
 
 register_lamp({
-	num = 1, 
+	num = 1,
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_addons2_industriallamp1.png',
@@ -178,9 +180,9 @@ register_lamp({
 	},
 	size = {x = 8/16, y = 7/32, z = 3/32}
 })
-	
+
 register_lamp({
-	num = 2, 
+	num = 2,
 	tiles = {
 		-- up, down, right, left, back, front
 		'tubelib_addons2_industriallamp2.png',
@@ -209,4 +211,3 @@ register_lamp({
 	},
 	size = {x = 8/32, y = 8/32, z = 5/32}
 })
-	

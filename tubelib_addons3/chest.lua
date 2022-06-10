@@ -7,9 +7,9 @@
 
 	AGPL v3
 	See LICENSE.txt for more information
-	
+
 	chest.lua
-	
+
 	A high performance chest
 
 ]]--
@@ -27,7 +27,7 @@ local function store_action(pos, player, action, stack)
 	local number = meta:get_string("number")
 	local item = stack:get_name().." "..stack:get_count()
 	PlayerActions[number] = {name, action, item}
-end	
+end
 
 local function send_off_command(pos)
 	local meta = minetest.get_meta(pos)
@@ -95,7 +95,7 @@ minetest.register_node("tubelib_addons3:chest", {
 		local inv = meta:get_inventory()
 		inv:set_size('main', 72)
 	end,
-	
+
 	after_place_node = function(pos, placer)
 		local meta = minetest.get_meta(pos)
 		local number = tubelib.add_node(pos, "tubelib_addons3:chest")
@@ -113,7 +113,7 @@ minetest.register_node("tubelib_addons3:chest", {
 		local inv = meta:get_inventory()
 		return inv:is_empty("main")
 	end,
-	
+
 	on_dig = function(pos, node, puncher, pointed_thing)
 		minetest.node_dig(pos, node, puncher, pointed_thing)
 		tubelib.remove_node(pos)
@@ -128,6 +128,7 @@ minetest.register_node("tubelib_addons3:chest", {
 	groups = {choppy=2, cracky=2, crumbly=2},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = function() end,
 })
 
 
@@ -164,7 +165,7 @@ tubelib.register_node("tubelib_addons3:chest", {}, {
 		local meta = minetest.get_meta(pos)
 		return tubelib.put_item(meta, "main", item)
 	end,
-	
+
 	on_recv_message = function(pos, topic, payload)
 		if topic == "state" then
 			local meta = minetest.get_meta(pos)
@@ -185,4 +186,4 @@ tubelib.register_node("tubelib_addons3:chest", {}, {
 			return "unsupported"
 		end
 	end,
-})	
+})

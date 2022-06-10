@@ -9,7 +9,7 @@
 	See LICENSE.txt for more information
 
 	terminal.lua:
-	
+
 ]]--
 
 local HELP = [[#### SmartLine Controller Terminal ####
@@ -21,7 +21,7 @@ Controller to the Terminal.
 Commands can have up to 80 characters.
 Local commands:
 - clear    = clear screen
-- help     = this message 
+- help     = this message
 - pub      = switch to public use
 - priv      = switch to private use
 Global commands:
@@ -66,7 +66,7 @@ local function command(pos, cmnd, player)
 	local owner = meta:get_string("owner") or ""
 	if cmnd then
 		cmnd = cmnd:sub(1,80)
-		
+
 		if cmnd == "clear" then
 			meta:set_string("output", "")
 			meta:set_string("formspec", formspec2(meta))
@@ -104,7 +104,7 @@ local function command(pos, cmnd, player)
 			tubelib.send_message(number, owner, nil, "term", cmnd)
 		end
 	end
-end	
+end
 
 local function register_terminal(num, tiles, node_box, selection_box)
 	minetest.register_node("sl_controller:terminal"..num, {
@@ -113,7 +113,7 @@ local function register_terminal(num, tiles, node_box, selection_box)
 		drawtype = "nodebox",
 		node_box = node_box,
 		selection_box = selection_box,
-		
+
 		after_place_node = function(pos, placer)
 			local number = tubelib.add_node(pos, minetest.get_node(pos).name)
 			local meta = minetest.get_meta(pos)
@@ -136,17 +136,18 @@ local function register_terminal(num, tiles, node_box, selection_box)
 				command(pos, fields.cmnd, player:get_player_name())
 			end
 		end,
-		
+
 		after_dig_node = function(pos)
 			tubelib.remove_node(pos)
 		end,
-		
+
 		paramtype = "light",
 		sunlight_propagates = true,
 		paramtype2 = "facedir",
 		groups = {choppy=2, cracky=2, crumbly=2},
 		is_ground_content = false,
 		sounds = default.node_sound_metal_defaults(),
+		on_blast = function() end,
 	})
 end
 
@@ -235,7 +236,7 @@ tubelib.register_node("sl_controller:terminal2", {}, {
 			return true
 		end
 	end,
-})		
+})
 
 sl_controller.register_function("get_term", {
 	cmnd = function(self)
@@ -279,4 +280,3 @@ sl_controller.register_action("send_msg", {
 		' Send a message to the controller with number "num".\n'..
 		' example: $send_msg("0123", "test")'
 })
-

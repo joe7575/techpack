@@ -9,7 +9,7 @@
 	See LICENSE.txt for more information
 
 	colorlamp.lua:
-	
+
 ]]--
 
 -- Load support for I18n
@@ -32,7 +32,7 @@ local function switch_node(pos, num, player)
 			meta:set_int("color", num)
 		end
 	end
-end	
+end
 
 minetest.register_node("tubelib_addons2:lamp", {
 	description = S("Tubelib Color Lamp"),
@@ -45,7 +45,7 @@ minetest.register_node("tubelib_addons2:lamp", {
 		switch_node(pos, "", placer)
 		meta:set_string("formspec", "size[3,2]"..
 		"label[0,0;Select color]"..
-		"dropdown[0,0.5;3;type;"..sColor..";1]".. 
+		"dropdown[0,0.5;3;type;"..sColor..";1]"..
 		"button_exit[0.5,1.5;2,1;exit;"..S("Save").."]")
 		meta:set_int("color", 1)
 	end,
@@ -59,7 +59,7 @@ minetest.register_node("tubelib_addons2:lamp", {
 			meta:set_string("formspec", nil, player)
 		end
 	end,
-	
+
 	on_rightclick = function(pos, node, clicker)
 		local meta = minetest.get_meta(pos)
 		switch_node(pos, meta:get_int("color"), clicker)
@@ -74,6 +74,7 @@ minetest.register_node("tubelib_addons2:lamp", {
 	sounds = default.node_sound_stone_defaults(),
 	groups = {choppy=2, cracky=1},
 	is_ground_content = false,
+	on_blast = function() end,
 })
 
 tubelib.register_node("tubelib_addons2:lamp", {}, {
@@ -85,7 +86,7 @@ tubelib.register_node("tubelib_addons2:lamp", {}, {
 			switch_node(pos, "", nil)
 		end
 	end,
-})	
+})
 
 
 minetest.register_craft({
@@ -113,7 +114,7 @@ for idx,color in ipairs(tColors) do
 				meta:set_string("formspec", nil)
 			end
 		end,
-		
+
 		on_rightclick = function(pos, node, clicker)
 			switch_node(pos, "", clicker)
 		end,
@@ -123,10 +124,11 @@ for idx,color in ipairs(tColors) do
 		end,
 
 		paramtype = 'light',
-		light_source = minetest.LIGHT_MAX,	
+		light_source = minetest.LIGHT_MAX,
 		sounds = default.node_sound_stone_defaults(),
 		groups = {choppy=2, cracky=1, not_in_creative_inventory=1},
 		is_ground_content = false,
-		drop = "tubelib_addons2:lamp"
+		drop = "tubelib_addons2:lamp",
+    	on_blast = function() end,
 	})
 end

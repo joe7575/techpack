@@ -7,9 +7,9 @@
 
 	AGPL v3
 	See LICENSE.txt for more information
-	
+
 	teleporter.lua
-	
+
 	A node, moving items to the peer teleporter node.
 
 ]]--
@@ -49,13 +49,13 @@ minetest.register_node("tubelib_addons3:teleporter", {
 			Tube:pairing(pos, fields.channel)
 		end
 	end,
-	
+
 	after_dig_node = function(pos, oldnode, oldmetadata, digger)
 		Tube:stop_pairing(pos, oldmetadata, sFormspec)
 		local tube_dir = tonumber(oldmetadata.fields.tube_dir or 0)
 		Tube:after_dig_node(pos, {tube_dir})
 	end,
-	
+
 	on_rotate = screwdriver.disallow,
 	paramtype = "light",
 	sunlight_propagates = true,
@@ -63,6 +63,7 @@ minetest.register_node("tubelib_addons3:teleporter", {
 	groups = {choppy=2, cracky=2, crumbly=2},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = function() end,
 })
 
 

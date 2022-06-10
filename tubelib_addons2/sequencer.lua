@@ -9,7 +9,7 @@
 	See LICENSE.txt for more information
 
 	sequencer.lua:
-	
+
 ]]--
 
 -- Load support for I18n
@@ -30,7 +30,7 @@ local function formspec(state, rules, endless)
 		default.gui_bg_img..
 		default.gui_slots..
 		"label[0,0;Number(s)]label[2.1,0;"..S("Command").."]label[6.4,0;Offset/s]"}
-		
+
 	for idx, rule in ipairs(rules or {}) do
 		tbl[#tbl+1] = "field[0.2,"..(-0.2+idx)..";2,1;num"..idx..";;"..(rule.num or "").."]"
 		tbl[#tbl+1] = "dropdown[2,"..(-0.4+idx)..";3.9,1;act"..idx..";"..sAction..";"..(rule.act or "").."]"
@@ -39,7 +39,7 @@ local function formspec(state, rules, endless)
 	tbl[#tbl+1] = "checkbox[0,8.5;endless;"..S("Run endless")..";"..endless.."]"
 	tbl[#tbl+1] = "image_button[5,8.5;1,1;".. tubelib.state_button(state) ..";button;]"
 	tbl[#tbl+1] = "button[6.2,8.5;1.5,1;"..S("help")..";help]"
-	
+
 	return table.concat(tbl)
 end
 
@@ -89,7 +89,7 @@ local function restart_timer(pos, time)
 	if type(time) == "number" then
 		timer:start(time)
 	end
-end	
+end
 
 local function check_rules(pos, elapsed)
 	if tubelib.data_not_corrupted(pos) then
@@ -151,19 +151,19 @@ local function 	on_receive_fields(pos, formname, fields, player)
 		if minetest.is_protected(pos, player:get_player_name()) then
 			return
 		end
-		
+
 		if fields.help ~= nil then
 			meta:set_string("formspec", formspec_help())
 			return
 		end
-		
+
 		local endless = meta:get_int("endless") or 0
 		if fields.endless ~= nil then
 			endless = fields.endless == "true" and 1 or 0
 			meta:set_int("index", 1)
 		end
 		meta:set_int("endless", endless)
-		
+
 		local rules = minetest.deserialize(meta:get_string("rules"))
 		if fields.exit ~= nil then
 			meta:set_string("formspec", formspec(tubelib.state(running), rules, endless))
@@ -206,7 +206,7 @@ minetest.register_node("tubelib_addons2:sequencer", {
 		'tubelib_front.png',
 		'tubelib_front.png^tubelib_addons2_sequencer.png',
 	},
-	
+
 	after_place_node = function(pos, placer)
 		local meta = minetest.get_meta(pos)
 		local number = tubelib.add_node(pos, "tubelib_addons2:sequencer")
@@ -225,7 +225,7 @@ minetest.register_node("tubelib_addons2:sequencer", {
 	end,
 
 	on_receive_fields = on_receive_fields,
-	
+
 	on_dig = function(pos, node, puncher, pointed_thing)
 		if minetest.is_protected(pos, puncher:get_player_name()) then
 			return
@@ -237,15 +237,16 @@ minetest.register_node("tubelib_addons2:sequencer", {
 			tubelib.remove_node(pos)
 		end
 	end,
-	
+
 	on_timer = check_rules,
-	
+
 	paramtype = "light",
 	sunlight_propagates = true,
 	paramtype2 = "facedir",
 	groups = {choppy=2, cracky=2, crumbly=2},
 	is_ground_content = false,
 	sounds = default.node_sound_stone_defaults(),
+	on_blast = function() end,
 })
 
 
@@ -276,4 +277,4 @@ tubelib.register_node("tubelib_addons2:sequencer", {}, {
 			minetest.get_node_timer(pos):start(1)
 		end
 	end,
-})		
+})

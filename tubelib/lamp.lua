@@ -9,7 +9,7 @@
 	See LICENSE.txt for more information
 
 	lamp.lua:
-	
+
 	Example of a simple communication node, only receiving messages from others.
 	This node claims a position number and registers its message interface.
 	The Lamp supports the following messages:
@@ -24,12 +24,12 @@ local S = tubelib.S
 local function switch_on(pos, node)
 	node.name = "tubelib:lamp_on"
 	minetest.swap_node(pos, node)
-end	
+end
 
 local function switch_off(pos, node)
 	node.name = "tubelib:lamp"
 	minetest.swap_node(pos, node)
-end	
+end
 
 minetest.register_node("tubelib:lamp", {
 	description = S("Tubelib Lamp"),
@@ -54,12 +54,13 @@ minetest.register_node("tubelib:lamp", {
 	end,
 
 	paramtype = "light",
-	light_source = 0,	
+	light_source = 0,
 	sunlight_propagates = true,
 	paramtype2 = "facedir",
 	groups = {choppy=2, cracky=2, crumbly=2},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = function() end,
 })
 
 minetest.register_node("tubelib:lamp_on", {
@@ -75,12 +76,13 @@ minetest.register_node("tubelib:lamp_on", {
 	end,
 
 	paramtype = "light",
-	light_source = minetest.LIGHT_MAX,	
+	light_source = minetest.LIGHT_MAX,
 	sunlight_propagates = true,
 	paramtype2 = "facedir",
 	groups = {crumbly=0, not_in_creative_inventory=1},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = function() end,
 })
 
 minetest.register_craft({
@@ -105,5 +107,5 @@ tubelib.register_node("tubelib:lamp", {"tubelib:lamp_on"}, {
 			switch_off(pos, node)
 		end
 	end,
-})		
+})
 --------------------------------------------------------------- tubelib

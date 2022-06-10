@@ -7,11 +7,11 @@
 
 	AGPL v3
 	See LICENSE.txt for more information
-	
+
 	funnel.lua
 
 	A high performance funnel
-	
+
 ]]--
 
 -- Load support for I18n
@@ -58,7 +58,7 @@ local function scan_for_objects(pos, elapsed)
 					object:remove()
 				end
 			end
-			
+
 		end
 	end
 	return true
@@ -94,7 +94,7 @@ minetest.register_node("tubelib_addons3:funnel", {
 		local inv = meta:get_inventory()
 		inv:set_size('main', 16)
 	end,
-	
+
 	after_place_node = function(pos, placer)
 		tubelib.add_node(pos, "tubelib_addons3:funnel")
 		local meta = minetest.get_meta(pos)
@@ -104,7 +104,7 @@ minetest.register_node("tubelib_addons3:funnel", {
 
 	on_timer = scan_for_objects,
 	on_rotate = screwdriver.disallow,
-		
+
 	can_dig = function(pos, player)
 		if minetest.is_protected(pos, player:get_player_name()) then
 			return false
@@ -117,7 +117,7 @@ minetest.register_node("tubelib_addons3:funnel", {
 	after_dig_node = function(pos, oldnode, oldmetadata, digger)
 		tubelib.remove_node(pos)
 	end,
-	
+
 	allow_metadata_inventory_put = allow_metadata_inventory_put,
 	allow_metadata_inventory_take = allow_metadata_inventory_take,
 
@@ -127,6 +127,7 @@ minetest.register_node("tubelib_addons3:funnel", {
 	groups = {choppy=2, cracky=2, crumbly=2},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = function() end,
 })
 
 
@@ -154,7 +155,7 @@ tubelib.register_node("tubelib_addons3:funnel", {}, {
 		local meta = minetest.get_meta(pos)
 		return tubelib.put_item(meta, "main", item)
 	end,
-	
+
 	on_recv_message = function(pos, topic, payload)
 		if topic == "state" then
 			local meta = minetest.get_meta(pos)
@@ -167,6 +168,4 @@ tubelib.register_node("tubelib_addons3:funnel", {}, {
 		minetest.get_node_timer(pos):start(1)
 	end,
 
-})	
-
-
+})

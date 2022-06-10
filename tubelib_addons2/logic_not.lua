@@ -9,7 +9,7 @@
 	See LICENSE.txt for more information
 
 	logic_not.lua:
-	
+
 ]]--
 
 -- Load support for I18n
@@ -20,7 +20,7 @@ local function formspec(meta)
 	return "size[7,5]"..
 		"field[0.5,2;6,1;number;"..S("Destination node numbers")..";"..numbers.."]" ..
 		"button_exit[1,3;2,1;exit;"..S("Save").."]"
-end	
+end
 
 minetest.register_node("tubelib_addons2:logic_not", {
 	description = S("Tubelib Logic Not"),
@@ -46,7 +46,7 @@ minetest.register_node("tubelib_addons2:logic_not", {
 		if owner ~= player:get_player_name() then
 			return
 		end
-		
+
 		if tubelib.check_numbers(fields.number) then
 			meta:set_string("numbers", fields.number)
 			local own_number = meta:get_string("own_number")
@@ -54,7 +54,7 @@ minetest.register_node("tubelib_addons2:logic_not", {
 			meta:set_string("formspec", formspec(meta))
 		end
 	end,
-	
+
 	after_dig_node = function(pos)
 		tubelib.remove_node(pos)
 	end,
@@ -65,6 +65,7 @@ minetest.register_node("tubelib_addons2:logic_not", {
 	groups = {choppy=2, cracky=2, crumbly=2},
 	is_ground_content = false,
 	sounds = default.node_sound_stone_defaults(),
+	on_blast = function() end,
 })
 
 
@@ -96,4 +97,4 @@ tubelib.register_node("tubelib_addons2:logic_not", {}, {
 			end
 		end
 	end,
-})		
+})

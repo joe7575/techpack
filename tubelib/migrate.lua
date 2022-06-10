@@ -89,7 +89,7 @@ minetest.register_node("tubelib:tube1", {
 		"tubelib_hole.png",
 		"tubelib_hole.png",
 	},
-	
+
 	after_place_node = function(pos, placer, itemstack, pointed_thing)
 		if not Tube:after_place_tube(pos, placer, pointed_thing) then
 			minetest.remove_node(pos)
@@ -97,11 +97,11 @@ minetest.register_node("tubelib:tube1", {
 		end
 		return false
 	end,
-	
+
 	after_dig_node = function(pos, oldnode, oldmetadata, digger)
 		Tube:after_dig_tube(pos, oldnode, oldmetadata)
 	end,
-	
+
 	paramtype2 = "facedir",
 	drawtype = "nodebox",
 	node_box = {
@@ -124,6 +124,7 @@ minetest.register_node("tubelib:tube1", {
 	is_ground_content = false,
 	groups = {choppy=2, cracky=3, stone=1, not_in_creative_inventory=1},
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = function() end,
 })
 
 minetest.register_craft({

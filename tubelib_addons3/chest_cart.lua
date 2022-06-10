@@ -7,9 +7,9 @@
 
 	AGPL v3
 	See LICENSE.txt for more information
-	
+
 	chest.lua
-	
+
 	A high performance chest
 
 ]]--
@@ -59,7 +59,7 @@ end
 minetest.register_node("tubelib_addons3:chest_cart", {
 	description = S("TA Chest Cart"),
 	tiles = {
-		-- up, down, right, left, back, front		
+		-- up, down, right, left, back, front
 			"tubelib_addons3_chest_cart_top.png",
 			"tubelib_addons3_chest_cart_bottom.png",
 			"tubelib_addons3_chest_cart_side.png",
@@ -83,13 +83,14 @@ minetest.register_node("tubelib_addons3:chest_cart", {
 	groups = {cracky = 2, crumbly = 2, choppy = 2},
 	node_placement_prediction = "",
 	diggable = false,
-	
+
 	on_place = minecart.on_nodecart_place,
 	on_punch = minecart.on_nodecart_punch,
 	allow_metadata_inventory_put = allow_metadata_inventory_put,
 	allow_metadata_inventory_take = allow_metadata_inventory_take,
 	on_rightclick = on_rightclick,
-	
+	on_blast = function() end,
+
 	after_place_node = function(pos, placer)
 		local inv = M(pos):get_inventory()
 		inv:set_size('main', 4)
@@ -99,14 +100,14 @@ minetest.register_node("tubelib_addons3:chest_cart", {
 			M(pos):set_string("formspec", formspec())
 		end
 	end,
-	
+
 	set_cargo = function(pos, data)
 		local inv = M(pos):get_inventory()
 		for idx, stack in ipairs(data) do
 			inv:set_stack("main", idx, stack)
 		end
 	end,
-	
+
 	get_cargo = function(pos)
 		local inv = M(pos):get_inventory()
 		local data = {}
@@ -151,7 +152,7 @@ tubelib.register_node("tubelib_addons3:chest_cart", {}, {
 		local meta = minetest.get_meta(pos)
 		return tubelib.put_item(meta, "main", item)
 	end,
-	
+
 	on_recv_message = function(pos, topic, payload)
 		if topic == "state" then
 			local meta = minetest.get_meta(pos)
@@ -160,7 +161,7 @@ tubelib.register_node("tubelib_addons3:chest_cart", {}, {
 			return "unsupported"
 		end
 	end,
-})	
+})
 
 minetest.register_craft({
 	output = "tubelib_addons3:chest_cart",

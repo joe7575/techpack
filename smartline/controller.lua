@@ -17,7 +17,7 @@
 local NUM_RULES = 10
 
 local mail_exists = minetest.get_modpath("mail") and mail ~= nil
- 
+
 local sHELP = [[SmartLine Controller Help
 
 Control other nodes by means of rules, according to:
@@ -28,27 +28,27 @@ Examples for conditions are:
  - the Player Detector detects a player
  - a button is pressed
  - a node state is fault, blocked, standby,...
- - a timer is expired 
- 
+ - a timer is expired
+
 Actions are:
  - switch on/off tubelib nodes, like lamps, door blocks, machines
  - send mail/chat messages to the owner
  - output a text message to the display
- - set timer variables 
+ - set timer variables
  - set/reset flag variables
- 
-Variables and timers: 
- - 8 flags (set/reset) can be used to store conditions 
+
+Variables and timers:
+ - 8 flags (set/reset) can be used to store conditions
     for later use.
  - Action flags (one flag for each rule, set when action is executed)
     The flag can be used as condition for subsequent rules.
  - 8 timers (resolution in seconds) can be use
-   for delayed actions. 
+   for delayed actions.
 
-The controller executes all rules once per second. 
+The controller executes all rules once per second.
 Independent how long the input condition stays 'true',
 the corresponding action will be triggered only once.
-The condition has to become false and then true again, to 
+The condition has to become false and then true again, to
 re-trigger/execute the action again.
 
 The 'label' has no function. It is only used
@@ -66,12 +66,12 @@ It has a 'update' button to update the view.
 
 ]]
 
-local sOUTPUT = "Press 'help' for edit commands" 
- 
+local sOUTPUT = "Press 'help' for edit commands"
+
 --
 -- Helper functions
 --
-local function create_kv_list(elem) 
+local function create_kv_list(elem)
 	local a = {}
 	for i,v in ipairs(elem) do
 		a[v] = i
@@ -181,16 +181,16 @@ local function get_active_subm_definition(postfix, type, fs_data)
 	return idx, fs_definition
 end
 
--- Extract runtime relevant data from the given submenu 
+-- Extract runtime relevant data from the given submenu
 -- postfix: row/culum info like "11" or "a2"
 -- fs_definition: submenu formspec definition
 -- fs_data: formspec data
 local function get_subm_data(postfix, fs_definition, fs_data)
 	local data = {}
 	for idx,elem in ipairs(fs_definition.formspec) do
-		if elem.type == "field" then	
+		if elem.type == "field" then
 			data[elem.name] = fs_data["subm"..postfix.."_"..elem.name] or "?"
-		elseif elem.type == "textlist" then	
+		elseif elem.type == "textlist" then
 			local num = tonumber(fs_data["subm"..postfix.."_"..elem.name]) or 1
 			num = math.min(num, elem.num_choices)
 			data[elem.name] = num
@@ -209,11 +209,11 @@ end
 local function field2fs_data(fs_definition, fields, fs_data)
 	for idx,elem in ipairs(fs_definition.formspec) do
 		local key = "subm"..fields._postfix_.."_"..elem.name
-		if elem.type == "field" then	
+		if elem.type == "field" then
 			if fields[elem.name] then
 				fs_data[key] = fields[elem.name]
 			end
-		elseif elem.type == "textlist" then	
+		elseif elem.type == "textlist" then
 			local evt = minetest.explode_textlist_event(fields[elem.name])
 			if evt.type == "CHG" then
 				fs_data[key] = evt.index
@@ -278,7 +278,7 @@ local function formspec_cond(_postfix_, fs_data)
 		default.gui_slots..
 		"field[0,0;0,0;_type_;;cond]"..
 		"field[0,0;0,0;_postfix_;;".._postfix_.."]"}
-	
+
 	local sConditions = table.concat(aCondTitles, ",")
 	local cond_idx, fs_definition = get_active_subm_definition(_postfix_, "cond", fs_data)
 	tbl[#tbl+1] = "label[0,0.1;Condition type:]"
@@ -291,7 +291,7 @@ end
 
 -- evaluate the row condition
 local function eval_formspec_cond(meta, fs_data, fields, readonly)
-	if readonly then return fs_data end 
+	if readonly then return fs_data end
 	-- determine condition type
 	local cond = minetest.explode_textlist_event(fields.cond)
 	if cond.type == "CHG" then
@@ -303,14 +303,14 @@ local function eval_formspec_cond(meta, fs_data, fields, readonly)
 	local data = get_subm_data(fields._postfix_, fs_definition, fs_data)
 	-- update button for main menu
 	fs_data["cond"..fields._postfix_] = fs_definition.button_label(data)
-	
+
 	if fields._exit_ == nil then
 		-- update formspec if exit is not pressed
 		meta:set_string("formspec", formspec_cond(fields._postfix_, fs_data))
 	end
 	return fs_data
 end
-	
+
 
 --
 -- Action formspec
@@ -322,7 +322,7 @@ local function formspec_actn(_postfix_, fs_data)
 		default.gui_slots..
 		"field[0,0;0,0;_type_;;actn]"..
 		"field[0,0;0,0;_postfix_;;".._postfix_.."]"}
-	
+
 	local sActions = table.concat(aActnTitles, ",")
 	local actn_idx, fs_definition = get_active_subm_definition(_postfix_, "actn", fs_data)
 	tbl[#tbl+1] = "label[0,0.1;Action type:]"
@@ -335,7 +335,7 @@ end
 
 -- evaluate the row action
 local function eval_formspec_actn(meta, fs_data, fields, readonly)
-	if readonly then return fs_data end 
+	if readonly then return fs_data end
 	-- determine action type
 	local actn = minetest.explode_textlist_event(fields.actn)
 	if actn.type == "CHG" then
@@ -347,7 +347,7 @@ local function eval_formspec_actn(meta, fs_data, fields, readonly)
 	local data = get_subm_data(fields._postfix_, fs_definition, fs_data)
 	-- update button for main menu
 	fs_data["actn"..fields._postfix_] = fs_definition.button_label(data)
-	
+
 	if fields._exit_ == nil then
 		-- update formspec if exit is not pressed
 		meta:set_string("formspec", formspec_actn(fields._postfix_, fs_data))
@@ -377,7 +377,7 @@ end
 
 -- evaluate the row label
 local function eval_formspec_label(meta, fs_data, fields, readonly)
-	if readonly then return fs_data end 
+	if readonly then return fs_data end
 	fs_data["subml"..fields._postfix_.."_label"] = fields.label
 	if fields._exit_ == nil then
 		meta:set_string("formspec", formspec_label(fields._postfix_, fs_data))
@@ -406,7 +406,7 @@ end
 
 -- evaluate the row operand
 local function eval_formspec_oprnd(meta, fs_data, fields, readonly)
-	if readonly then return fs_data end 
+	if readonly then return fs_data end
 	local oprnd = minetest.explode_textlist_event(fields.oprnd)
 	if oprnd.type == "CHG" then
 		fs_data["submo"..fields._postfix_.."_oprnd"] = oprnd.index
@@ -426,7 +426,7 @@ local function formspec_main(state, fs_data, output)
 		default.gui_slots..
 		"field[0,0;0,0;_type_;;main]"..
 		"label[0.8,0;label:]label[3.8,0;IF  cond 1:]label[7,0;and/or]label[8.3,0;cond 2:]label[11.7,0;THEN  action:]"}
-		
+
 	for idx = 1,NUM_RULES do
 		local ypos = idx * 0.75 - 0.4
 		tbl[#tbl+1] = "label[0,"..(0.2+ypos)..";"..idx.."]"
@@ -452,7 +452,7 @@ local function eval_formspec_main(meta, fs_data, fields, readonly)
 		if not readonly then
 			fs_data["oprnd"..idx] = fields["oprnd"..idx] or fs_data["oprnd"..idx]
 		end
-		
+
 		-- eval submenu button events
 		if fields["label"..idx] then
 			meta:set_string("formspec", formspec_label(idx, fs_data))
@@ -465,7 +465,7 @@ local function eval_formspec_main(meta, fs_data, fields, readonly)
 		elseif fields["actna"..idx] then
 			meta:set_string("formspec", formspec_actn("a"..idx, fs_data))
 		end
-	end	
+	end
 	return fs_data
 end
 
@@ -489,7 +489,7 @@ local function background(xpos, ypos, val)
 	else
 		return "box["..(xpos-0.1)..",".. ypos..";3.3,0.4;#202020]"
 	end
-end	
+end
 
 local function formspec_state(meta, fs_data)
 	local number = meta:get_string("number")
@@ -500,12 +500,12 @@ local function formspec_state(meta, fs_data)
 		default.gui_slots..
 		"field[0,0;0,0;_type_;;state]"..
 		"label[0.8,0;label:]label[3.8,0;IF  cond 1:]label[7,0;and/or]label[8.3,0;cond 2:]label[11.7,0;THEN  action:]"}
-	
+
 	if state == tubelib.RUNNING and number then
-		local environ = tubelib.get_data(number, "environ") 
+		local environ = tubelib.get_data(number, "environ")
 		local act_gate = tubelib.get_data(number, "act_gate")
 		local conds = tubelib.get_data(number, "conds")
-		
+
 		if environ and act_gate and conds then
 			for idx = 1,NUM_RULES do
 				local ypos = idx * 0.6 + 0.2
@@ -530,13 +530,13 @@ local function formspec_state(meta, fs_data)
 					act_gate[idx] = false
 				end
 			end
-			
+
 			tbl[#tbl+1] = "label[10,7; Seconds: "..(meta:get_int("runtime") or 1).."]"
 
 			tbl[#tbl+1] = "label[0,7;"..output("Inputs", "i(", ")", environ.inputs).."]"
 			tbl[#tbl+1] = "label[0,7.6;"..output("Timers", "t", "", environ.timers).."]"
 			tbl[#tbl+1] = "label[0,8.2;"..output("Flags", "f", "", environ.flags).."]"
-			
+
 			tbl[#tbl+1] = "label[0,8.8;Hint:]"
 			tbl[#tbl+1] = "box[1.3,8.8;6,0.4;#008000]"
 			tbl[#tbl+1] = "label[1.4,8.8;condition true / action executed]"
@@ -544,7 +544,7 @@ local function formspec_state(meta, fs_data)
 			tbl[#tbl+1] = "label[8,8.8;condition false / action out-of-date]"
 		end
 	end
-	
+
 	tbl[#tbl+1] = "button[13.3,6.9;1.7,1;update;update]"
 	tbl[#tbl+1] = "button[13.3,7.8;1.7,1;close;close]"
 	return table.concat(tbl)
@@ -610,8 +610,8 @@ end
 local function start_controller(pos, number, fs_data)
 	-- delete old data
 	tubelib.set_data(number, "environ",  {
-		timers = {}, 
-		flags = {}, 
+		timers = {},
+		flags = {},
 		inputs = {}
 	})
 	tubelib.set_data(number, "conds",    {})
@@ -628,7 +628,7 @@ local function formspec2runtime_rule(number, owner, fs_data)
 	local num2inp = {}
 	for idx = 1,NUM_RULES do
 		-- valid rule?
-		if fs_data["subm1"..idx.."_cond"] and fs_data["subm2"..idx.."_cond"] 
+		if fs_data["subm1"..idx.."_cond"] and fs_data["subm2"..idx.."_cond"]
 		and fs_data["subma"..idx.."_actn"] then
 			-- add to list of runtine rules
 			local rule = {
@@ -640,7 +640,7 @@ local function formspec2runtime_rule(number, owner, fs_data)
 			rule.actn.owner = owner
 			table.insert(rt_rules, rule)
 		end
-	end 
+	end
 	tubelib.set_data(number, "rt_rules", rt_rules)
 end
 
@@ -697,18 +697,18 @@ local function edit_command(fs_data, text)
 	if cmnd and pos1 and pos2 then
 		pos1 = math.max(1, math.min(pos1, NUM_RULES))
 		pos2 = math.max(1, math.min(pos2, NUM_RULES))
-		
-		if cmnd == "x" then 
-			exchange_rules(fs_data, pos1, pos2) 
+
+		if cmnd == "x" then
+			exchange_rules(fs_data, pos1, pos2)
 			return "rows "..pos1.." and "..pos2.." exchanged"
 		end
 		if cmnd == "c" then
-			copy_rule(fs_data, pos1, pos2) 
+			copy_rule(fs_data, pos1, pos2)
 			return "row "..pos1.." copied to "..pos2
 		end
 	elseif cmnd == "d" and pos1 then
 		pos1 = math.max(1, math.min(pos1, NUM_RULES))
-		
+
 		delete_rule(fs_data, pos1)
 		return "row "..pos1.." deleted"
 	end
@@ -725,10 +725,10 @@ local function on_receive_fields(pos, formname, fields, player)
 	local fs_data = minetest.deserialize(meta:get_string("fs_data")) or {}
 	local output = ""
 	local readonly = player:get_player_name() ~= owner
-	
+
 	-- FIRST: test if command entered?
 	if fields.ok then
-		if not readonly then	
+		if not readonly then
 			output = edit_command(fs_data, fields.cmnd)
 			smartline.stop_controller(pos, fs_data)
 			meta:set_string("formspec", formspec_main(tubelib.STOPPED, fs_data, output))
@@ -816,12 +816,12 @@ minetest.register_node("smartline:controller", {
 			{ -6/32, -6/32, 14/32,  6/32,  6/32, 16/32},
 		},
 	},
-	
+
 	after_place_node = function(pos, placer)
 		local meta = minetest.get_meta(pos)
 		local number = tubelib.add_node(pos, "smartline:controller")
 		local fs_data = {}
-		meta:set_string("fs_data", minetest.serialize(fs_data)) 
+		meta:set_string("fs_data", minetest.serialize(fs_data))
 		meta:set_string("owner", placer:get_player_name())
 		meta:set_string("number", number)
 		meta:set_int("state", tubelib.STOPPED)
@@ -831,24 +831,25 @@ minetest.register_node("smartline:controller", {
 	end,
 
 	on_receive_fields = on_receive_fields,
-	
+
 	on_dig = function(pos, node, puncher, pointed_thing)
 		if minetest.is_protected(pos, puncher:get_player_name()) then
 			return
 		end
-		
+
 		minetest.node_dig(pos, node, puncher, pointed_thing)
 		tubelib.remove_node(pos)
 	end,
-	
+
 	on_timer = check_rules,
-	
+
 	paramtype = "light",
 	sunlight_propagates = true,
 	paramtype2 = "facedir",
 	groups = {choppy=1, cracky=1, crumbly=1, not_in_creative_inventory=1},
 	is_ground_content = false,
 	sounds = default.node_sound_stone_defaults(),
+	on_blast = function() end,
   drop = "smartline:controller2",
 })
 
@@ -864,7 +865,7 @@ minetest.register_craft({
 
 
 local function set_input(meta, payload, val)
-	if payload then 
+	if payload then
 		local number = meta:get_string("number")
 		local environ = tubelib.get_data(number, "environ") or {}
 		if environ.inputs then
@@ -872,7 +873,7 @@ local function set_input(meta, payload, val)
 			tubelib.set_data(number, "environ", environ)
 		end
 	end
-end	
+end
 
 tubelib.register_node("smartline:controller", {}, {
 	on_recv_message = function(pos, topic, payload)
@@ -894,11 +895,11 @@ tubelib.register_node("smartline:controller", {}, {
 			minetest.get_node_timer(pos):start(1)
 		end
 	end,
-})		
+})
 
 -- List of Controller actions and conditions is dependent on loaded mods.
 -- Therefore, the order of actions and conditions has to be re-assembled each time.
--- last order from last run is stored as meta data 
+-- last order from last run is stored as meta data
 local storage = minetest.get_mod_storage()
 
 local function old_to_new(newTypes, oldTypes)
@@ -922,7 +923,7 @@ local function update_node_database(meta)
 
 	meta:set_string("aCondTypes", minetest.serialize(aCondTypes))
 	meta:set_string("aActnTypes", minetest.serialize(aActnTypes))
-	
+
 	return tOld2NewCond, tOld2NewActn
 end
 
@@ -931,14 +932,14 @@ local function maintain_dataset(number)
 	if flags ~= nil then
 		local timers = tubelib.get_data(number, "timers") or {}
 		local inputs = tubelib.get_data(number, "inputs") or {}
-		
+
 		tubelib.set_data(number, "environ", {
-			flags = flags, 
-			timers = timers, 
-			inputs = inputs, 
+			flags = flags,
+			timers = timers,
+			inputs = inputs,
 			vars = {}
 		})
-		
+
 		tubelib.set_data(number, "inputs", nil)
 		tubelib.set_data(number, "timers", nil)
 		tubelib.set_data(number, "flags", nil)
@@ -957,7 +958,7 @@ function smartline.update_fs_data(meta, fs_data)
 			fs_data["subm2"..idx.."_cond"] = tOld2NewCond[fs_data["subm2"..idx.."_cond"]]
 			fs_data["subma"..idx.."_actn"] = tOld2NewActn[fs_data["subma"..idx.."_actn"]]
 		end
-		
+
 	end
 	return fs_data
 end
@@ -969,16 +970,15 @@ minetest.register_lbm({
 	run_at_every_load = true,
 	action = function(pos, node)
 		local meta = minetest.get_meta(pos)
-		
+
 		local fs_data = minetest.deserialize(meta:get_string("fs_data"))
 		fs_data = smartline.update_fs_data(meta, fs_data)
 		meta:set_string("fs_data", minetest.serialize(fs_data))
-		
+
 		local number = meta:get_string("number")
 		local owner = meta:get_string("owner")
 		formspec2runtime_rule(number, owner, fs_data)
-	
+
 		maintain_dataset(number)
 	end
 })
-

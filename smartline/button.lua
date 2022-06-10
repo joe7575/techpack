@@ -85,13 +85,13 @@ minetest.register_node("smartline:button", {
 			{ -6/32, -6/32, 14/32,  6/32,  6/32, 16/32},
 		},
 	},
-	
+
 	after_place_node = function(pos, placer)
 		local meta = minetest.get_meta(pos)
 		local own_num = tubelib.add_node(pos, "smartline:button")
 		meta:set_string("own_num", own_num)
 		meta:set_string("formspec", "size[5,6]"..
-		"dropdown[0.2,0;3;type;"..S("switch,button 2s,button 4s,button 8s,button 16s")..";1]".. 
+		"dropdown[0.2,0;3;type;"..S("switch,button 2s,button 4s,button 8s,button 16s")..";1]"..
 		"field[0.5,2;3,1;numbers;"..S("Insert destination block number(s)")..";]" ..
 		"checkbox[1,3;public;public;false]"..
 		"button_exit[1,4;2,1;exit;"..S("Save").."]")
@@ -133,7 +133,7 @@ minetest.register_node("smartline:button", {
 			meta:set_string("formspec", nil)
 		end
 	end,
-	
+
 	on_rightclick = function(pos, node, clicker)
 		local meta = minetest.get_meta(pos)
 		if meta:get_string("numbers") ~= "" and meta:get_string("numbers") ~= nil then
@@ -152,6 +152,7 @@ minetest.register_node("smartline:button", {
 	groups = {cracky=2, crumbly=2},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = function() end,
 })
 
 
@@ -174,7 +175,7 @@ minetest.register_node("smartline:button_active", {
 			{ -6/32, -6/32, 14/32,  6/32,  6/32, 16/32},
 		},
 	},
-	
+
 	on_rightclick = function(pos, node, clicker)
 		local meta = minetest.get_meta(pos)
 		meta:set_string("clicker_name", clicker:get_player_name())
@@ -196,6 +197,7 @@ minetest.register_node("smartline:button_active", {
 	drop = "smartline:button",
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = function() end,
 })
 
 tubelib.register_node("smartline:button", {"smartline:button_active"}, {tubelib_node = true})

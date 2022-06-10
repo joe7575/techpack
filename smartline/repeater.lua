@@ -23,7 +23,7 @@ local function formspec(meta)
 	return "size[7,5]"..
 		"field[0.5,2;6,1;number;"..S("Destination node numbers")..";"..numbers.."]" ..
 		"button_exit[1,3;2,1;exit;"..S("Save").."]"
-end	
+end
 
 minetest.register_node("smartline:repeater", {
 	description = S("SmartLine Repeater"),
@@ -63,20 +63,20 @@ minetest.register_node("smartline:repeater", {
 		if owner ~= player:get_player_name() then
 			return
 		end
-		
+
 		if tubelib.check_numbers(fields.number) then
 			meta:set_string("numbers", fields.number)
 			local own_number = meta:get_string("own_number")
 			meta:set_string("infotext", S("SmartLine Repeater").." "..own_number..": "..S("connected with").." "..fields.number)
 			meta:set_string("formspec", formspec(meta))
 		end
-		
+
 		local timer = minetest.get_node_timer(pos)
 		if not timer:is_started() then
 			timer:start(1)
 		end
 	end,
-	
+
 	on_timer = function(pos,elapsed)
 		if tubelib.data_not_corrupted(pos) then
 			local meta = minetest.get_meta(pos)
@@ -85,7 +85,7 @@ minetest.register_node("smartline:repeater", {
 		end
 		return false
 	end,
-	
+
 	after_dig_node = function(pos)
 		tubelib.remove_node(pos)
 	end,
@@ -96,6 +96,7 @@ minetest.register_node("smartline:repeater", {
 	groups = {choppy=2, cracky=2, crumbly=2},
 	is_ground_content = false,
 	sounds = default.node_sound_stone_defaults(),
+	on_blast = function() end,
 })
 
 
@@ -133,4 +134,4 @@ tubelib.register_node("smartline:repeater", {}, {
 	on_node_load = function(pos)
 		minetest.get_node_timer(pos):start(1)
 	end,
-})		
+})

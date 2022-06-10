@@ -7,11 +7,11 @@
 
 	AGPL v3
 	See LICENSE.txt for more information
-	
+
 	harvester.lua
-	
+
 	Harvester machine to chop wood, leaves and harvest farming crops and flowers.
-	
+
 	The machine is able to harvest an square area of up to 33x33 blocks (radius = 16).
 	The base node has to be placed in the middle of the harvesting area.
 	The Harvester processes one node every 6 seconds.
@@ -54,14 +54,14 @@ local function formspec(self, pos, meta)
 	end
 	local radius = Radius2Idx[this.radius] or 2
 	local altitude = Altitude2Idx[this.altitude or START_HEIGHT] or 11
-	
+
 	return "size[9,8]"..
 	default.gui_bg..
 	default.gui_bg_img..
 	default.gui_slots..
-	"dropdown[0,0;1.5;radius;4,6,8,10,12,14,16;"..radius.."]".. 
+	"dropdown[0,0;1.5;radius;4,6,8,10,12,14,16;"..radius.."]"..
 	"label[1.6,0.2;"..S("Area radius").."]"..
-	"dropdown[0,1;1.5;altitude;-2,-1,0,1,2,4,6,8,10,14,18;"..altitude.."]".. 
+	"dropdown[0,1;1.5;altitude;-2,-1,0,1,2,4,6,8,10,14,18;"..altitude.."]"..
 	"label[1.6,1.2;"..S("Altitude ").."]"..
 	"checkbox[0,2;endless;"..S("Run endless")..";"..endless.."]"..
 	"list[context;main;5,0;4,4;]"..
@@ -111,7 +111,7 @@ local function gen_working_steps()
 		end
 	end
 	return t
-end		
+end
 
 local WorkingSteps = gen_working_steps()
 
@@ -167,7 +167,7 @@ end
 local function remove_or_replace_node(this, pos, inv, node, order)
 	local next_pos = table.copy(pos)
 	next_pos.y = next_pos.y - 1
-	
+
 	-- Not enough space in the inventory
 	if not inv:room_for_item("main", ItemStack(node.name)) then
 		return false
@@ -179,7 +179,7 @@ local function remove_or_replace_node(this, pos, inv, node, order)
 		this.num_items = this.num_items + 1
 		if is_plantable_ground(next_node) and order.plant then  -- hit the ground?
 			minetest.set_node(pos, {name=order.plant, paramtype2 = "wallmounted", param2=1})
-			if order.t1 ~= nil then 
+			if order.t1 ~= nil then
 				-- We have to simulate "on_place" and start the timer by hand
 				-- because the after_place_node function checks player rights and can't therefore
 				-- be used.
@@ -189,7 +189,7 @@ local function remove_or_replace_node(this, pos, inv, node, order)
 		end
 	end
 	return true
-end	
+end
 
 -- check the fuel level and return false if empty
 local function check_fuel(pos, this, meta)
@@ -244,7 +244,7 @@ local function harvest_field(this, meta)
 				if not minetest.is_protected(pos, this.owner) and not remove_or_replace_node(this, pos, inv, node, order) then
 					return false
 				end
-			else 	
+			else
 				return true	-- hit the ground
 			end
 		end
@@ -261,20 +261,20 @@ local function not_blocked(pos, this, meta)
 	end
 	return true
 end
-	
+
 -- move the "harvesting copter" to the next pos and harvest the field below
 local function keep_running(pos, elapsed)
 	if tubelib.data_not_corrupted(pos) then
 		local meta = M(pos)
 		local this = minetest.deserialize(meta:get_string("this"))
 		this.num_items = 0
-		
+
 		if not_blocked(pos, this, meta) then
 			if check_fuel(pos, this, meta) then
 				if calc_new_pos(pos, this, meta) then
 					if harvest_field(this, meta) then
 						meta:set_string("this", minetest.serialize(this))
-						meta:set_string("infotext", 
+						meta:set_string("infotext",
 							S("Tubelib Harvester").." "..this.number..
 							S(": running (")..this.idx.."/"..this.max..")")
 						State:keep_running(pos, meta, COUNTDOWN_TICKS, this.num_items)
@@ -291,8 +291,8 @@ local function keep_running(pos, elapsed)
 		return State:is_active(meta)
 	end
 	return false
-end	
-	
+end
+
 
 local function on_receive_fields(pos, formname, fields, player)
 	if minetest.is_protected(pos, player:get_player_name()) then
@@ -302,7 +302,7 @@ local function on_receive_fields(pos, formname, fields, player)
 	local this = minetest.deserialize(meta:get_string("this"))
 	local radius = this.radius
 	local altitude = this.altitude or START_HEIGHT
-	
+
 	if fields.radius ~= nil then
 		radius = tonumber(fields.radius)
 	end
@@ -321,12 +321,12 @@ local function on_receive_fields(pos, formname, fields, player)
 		meta:set_string("this", minetest.serialize(this))
 		State:stop(pos, meta)
 	end
-	
+
 	if fields.endless ~= nil then
 		this.endless = fields.endless == "true" and 1 or 0
 	end
 	meta:set_string("this", minetest.serialize(this))
-	
+
 	State:state_button_event(pos, fields)
 end
 
@@ -371,7 +371,7 @@ minetest.register_node("tubelib_addons1:harvester_base", {
 		State:on_dig_node(pos, node, player)
 		tubelib.remove_node(pos)
 	end,
-	
+
 	on_rotate = screwdriver.disallow,
 	on_receive_fields = on_receive_fields,
 	on_timer = keep_running,
@@ -384,6 +384,7 @@ minetest.register_node("tubelib_addons1:harvester_base", {
 	groups = {choppy=2, cracky=2, crumbly=2},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = function() end,
 })
 
 minetest.register_node("tubelib_addons1:harvester_defect", {
@@ -400,7 +401,7 @@ minetest.register_node("tubelib_addons1:harvester_defect", {
 		inv:set_size('main', 16)
 		inv:set_size('fuel', 1)
 	end,
-	
+
 	after_place_node = function(pos, placer)
 		local number = tubelib.add_node(pos, "tubelib_addons1:harvester_base")
 		local this = {
@@ -441,6 +442,7 @@ minetest.register_node("tubelib_addons1:harvester_defect", {
 	groups = {choppy=2, cracky=2, crumbly=2, not_in_creative_inventory=1},
 	is_ground_content = false,
 	sounds = default.node_sound_wood_defaults(),
+	on_blast = function() end,
 })
 
 
@@ -474,7 +476,7 @@ tubelib.register_node("tubelib_addons1:harvester_base", {"tubelib_addons1:harves
 		if topic == "fuel" then
 			return tubelib.fuelstate(M(pos), "fuel")
 		end
-		
+
 		local resp = State:on_receive_message(pos, topic, payload)
 		if resp then
 			return resp
@@ -488,7 +490,7 @@ tubelib.register_node("tubelib_addons1:harvester_base", {"tubelib_addons1:harves
 	on_node_repair = function(pos)
 		return State:on_node_repair(pos)
 	end,
-})	
+})
 
 
 -- update to v0.08
@@ -506,4 +508,3 @@ minetest.register_lbm({
 		end
 	end
 })
-

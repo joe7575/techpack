@@ -14,7 +14,7 @@
 
 local SERVER_CAPA = 5000
 local DEFAULT_MEM = {
-	size=0, 
+	size=0,
 	data={
 		version = 1,
 		info = "SaferLua key/value Server",
@@ -71,7 +71,7 @@ minetest.register_node("sl_controller:server", {
 			{ -3/16, -8/16, -7/16, 3/16, 6/16, 7/16},
 		},
 	},
-	
+
 	after_place_node = function(pos, placer)
 		local meta = minetest.get_meta(pos)
 		local number = tubelib.add_node(pos, "sl_controller:server")
@@ -82,7 +82,7 @@ minetest.register_node("sl_controller:server", {
 		on_time(pos, 0)
 		minetest.get_node_timer(pos):start(20)
 	end,
-	
+
 	on_receive_fields = function(pos, formname, fields, player)
 		local meta = minetest.get_meta(pos)
 		local owner = meta:get_string("owner")
@@ -94,7 +94,7 @@ minetest.register_node("sl_controller:server", {
 			end
 		end
 	end,
-	
+
 	on_dig = function(pos, node, puncher, pointed_thing)
 		if minetest.is_protected(pos, puncher:get_player_name()) then
 			return
@@ -105,15 +105,16 @@ minetest.register_node("sl_controller:server", {
 		minetest.node_dig(pos, node, puncher, pointed_thing)
 		tubelib.remove_node(pos)
 	end,
-		
+
 	on_timer = on_time,
-	
+
 	paramtype = "light",
 	sunlight_propagates = true,
 	paramtype2 = "facedir",
 	groups = {choppy=1, cracky=1, crumbly=1},
 	is_ground_content = false,
 	sounds = default.node_sound_stone_defaults(),
+	on_blast = function() end,
 })
 
 minetest.register_craft({
@@ -167,7 +168,7 @@ local function write_value(mem, key, item)
 		mem.size = mem.size + calc_size(item)
 		mem.data[key] = item
 	end
-end	
+end
 
 local function read_value(mem, key)
 	local item = mem.data[key]
@@ -175,7 +176,7 @@ local function read_value(mem, key)
 		item = safer_lua.table_to_datastruct(item)
 	end
 	return item
-end	
+end
 
 tubelib.register_node("sl_controller:server", {}, {
 	on_recv_message = function(pos, topic, payload)
@@ -184,11 +185,11 @@ tubelib.register_node("sl_controller:server", {}, {
 	on_node_load = function(pos)
 		minetest.get_node_timer(pos):start(20)
 	end,
-})		
+})
 
 
 sl_controller.register_function("server_read", {
-	cmnd = function(self, num, key) 
+	cmnd = function(self, num, key)
 		if type(key) == "string" then
 			local mem = get_memory(num, self.meta.owner)
 			if mem then
@@ -221,5 +222,3 @@ sl_controller.register_action("server_write", {
 		" number, string, boolean, nil or data structure.\n"..
 		' example: $server_write("0123", "state", state)'
 })
-
-
