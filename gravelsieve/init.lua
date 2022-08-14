@@ -48,21 +48,15 @@ local S = gravelsieve.S
 
 dofile(minetest.get_modpath("gravelsieve") .. "/hammer.lua")
 
-local settings_get
-if minetest.setting_get then
-	settings_get = minetest.setting_get
-else
-	settings_get = function(...) return minetest.settings:get(...) end
-end
-gravelsieve.ore_rarity = tonumber(settings_get("gravelsieve_ore_rarity")) or 1.16
-gravelsieve.ore_max_elevation = tonumber(settings_get("gravelsieve_ore_max_elevation")) or 0
-gravelsieve.ore_min_elevation = tonumber(settings_get("gravelsieve_ore_min_elevation")) or -30912
+gravelsieve.ore_rarity = tonumber(minetest.settings:get("gravelsieve_ore_rarity")) or 1.16
+gravelsieve.ore_max_elevation = tonumber(minetest.settings:get("gravelsieve_ore_max_elevation")) or 0
+gravelsieve.ore_min_elevation = tonumber(minetest.settings:get("gravelsieve_ore_min_elevation")) or -30912
 local y_spread = math.max(1 + gravelsieve.ore_max_elevation - gravelsieve.ore_min_elevation, 1)
 
 -- Increase the probability over the natural occurrence
-local PROBABILITY_FACTOR = tonumber(settings_get("gravelsieve_probability_factor")) or 3
+local PROBABILITY_FACTOR = tonumber(minetest.settings:get("gravelsieve_probability_factor")) or 3
 
-local STEP_DELAY = tonumber(settings_get("gravelsieve_step_delay")) or 1.0
+local STEP_DELAY = tonumber(minetest.settings:get("gravelsieve_step_delay")) or 1.0
 
 -- tubelib aging feature
 local AGING_LEVEL1 = nil
