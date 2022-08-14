@@ -465,6 +465,7 @@ for idx = 0,4 do
 	minetest.register_node(node_name..idx, {
 		description = description,
 		tiles = tiles_data,
+		use_texture_alpha = "clip",
 		drawtype = "nodebox",
         drop = node_name,
 
