@@ -1,0 +1,33 @@
+# textdomain: tubelib
+
+Basalt Stone=玄武岩石材
+Basalt Stone Brick=玄武岩砖
+Basalt Stone Block=玄武岩方块
+Tubelib Black Hole=Tubelib 黑洞
+items disappeared=物品消失了
+Tubelib Button/Switch=Tubelib 按钮/开关
+switch,button 2s,button 4s,button 8s,button 16s=开关，按钮 2秒，按钮 4秒，按钮8秒，按钮16秒
+Insert destination node number(s)=插入目标节点号
+public=公共
+Save=保存
+Tubelib Button=Tubelib 按钮
+connected with block=已经与方块连接
+Corrupted Tubelib Node=已经损坏的 Tubelib 节点
+Tubelib Distributor=Tubelib 分配器
+List of your Forceload Blocks=你的 Forceload 方块列表
+to=至
+Tubelib Forceload Block=Tubelib Forceload 方块
+Area=区域
+loaded!=已加载！
+Punch the block to make the area visible.=在方块上打孔以使该区域可见。
+Area already loaded or max. number of Forceload Blocks reached!=区域已经加载或达到最大值。已达到 Forceload 方块的数量！
+Tubelib WLAN Chip=Tubelib 无线局域网芯片
+Tubelib Lamp=Tubelib 灯
+Tubelib Pusher=Tubelib 推送器
+[Tubelib] Node repaired=[Tubelib] 节点已经修复
+[Tubelib] state=Tubelib 状态
+counter=计数器
+aging=时效
+Tubelib Repair Kit=Tubelib 维修套件
+Tubelib End Wrench (use @= read status, place @= destroy)=Tubelib 端部扳手 (使用 @= 读取状态，放置 @= 销毁)
+Tubelib Tube=Tubelib 管道

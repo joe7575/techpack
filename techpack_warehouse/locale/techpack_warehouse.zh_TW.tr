@@ -1,0 +1,9 @@
+# textdomain: techpack_warehouse
+
+Warehouse Box Copper=銅倉庫箱
+Warehouse Box Gold=金倉庫箱
+Warehouse Box Steel=鐵倉庫箱
+Pass-through storage for unconfigured items (turn on/off)=未配置項目的直通存儲（打開/關閉）
+Filter: To configure the 8 storages=過濾器：配置8個存儲
+Storage: All items will be stored here=存儲：所有物品都將存放在這裡
+Input: Put items will be moved to the storage, if configured=輸入：如果已配置，放置項目將被移動到存儲
