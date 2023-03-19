@@ -40,6 +40,7 @@ minetest.register_node("tubelib:lamp", {
 	after_place_node = function(pos, placer)
 		local number = tubelib.add_node(pos, "tubelib:lamp")  -- <<=== tubelib
 		local meta = minetest.get_meta(pos)
+		meta:set_string("number", number)
 		meta:set_string("infotext", S("Tubelib Lamp").." "..number)
 	end,
 

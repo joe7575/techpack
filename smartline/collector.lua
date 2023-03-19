@@ -3,7 +3,7 @@
 	SmartLine
 	=========
 
-	Copyright (C) 2017-2020 Joachim Stolberg
+	Copyright (C) 2017-2023 Joachim Stolberg
 
 	AGPL v3
 	See LICENSE.txt for more information
@@ -19,10 +19,12 @@ local S = smartline.S
 
 local CYCLE_TIME = 1
 
-local tStates = {stopped = 0, running = 0, standby = 1, blocked = 2, fault = 3, defect = 4}
-local tDropdownPos = {["1 standby"] = 1, ["2 blocked"] = 2 , ["3 fault"] = 3, ["4 defect"] = 4}
-local lStates = {[0] = "stopped", "standby", "blocked", "fault", "defect"}
-
+-- The numbering seems strange here, but I had to add the "running" state
+-- afterwards without changing the behavior of the block.
+local tStates = {stopped = 0, running = 1, standby = 2, blocked = 3, fault = 4, defect = 5}
+local tDropdownPos = {["1 standby"] = 1, ["2 blocked"] = 2, ["3 fault"] = 3, ["4 defect"] = 4}
+local lStates = {[0] = "stopped", "running", "standby", "blocked", "fault", "defect"}
+	
 local function formspec(meta)
 	local poll_numbers = meta:get_string("poll_numbers")
 	local event_number = meta:get_string("event_number")
@@ -48,7 +50,7 @@ local function send_event(meta)
 		local severity = meta:get_int("dropdown_pos")
 		local owner = meta:get_string("owner")
 		local own_number = meta:get_string("own_number")
-		if state >= severity then
+		if state > severity then
 			tubelib.send_message(event_number, owner, nil, "on", own_number)
 		else
 			tubelib.send_message(event_number, owner, nil, "off", own_number)

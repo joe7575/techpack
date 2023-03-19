@@ -41,7 +41,7 @@ minetest.register_node("tubelib_addons2:lamp", {
 	after_place_node = function(pos, placer)
 		local number = tubelib.add_node(pos, "tubelib_addons2:lamp")
 		local meta = minetest.get_meta(pos)
-		meta:set_int("number", number)
+		meta:set_string("number", number)
 		switch_node(pos, "", placer)
 		meta:set_string("formspec", "size[3,2]"..
 		"label[0,0;Select color]"..
@@ -77,18 +77,6 @@ minetest.register_node("tubelib_addons2:lamp", {
 	on_blast = function() end,
 })
 
-tubelib.register_node("tubelib_addons2:lamp", {}, {
-	on_recv_message = function(pos, topic, payload)
-		if topic == "on" then
-			local meta = minetest.get_meta(pos)
-			switch_node(pos, meta:get_int("color") or "", nil)
-		elseif topic == "off" then
-			switch_node(pos, "", nil)
-		end
-	end,
-})
-
-
 minetest.register_craft({
 	output = "tubelib_addons2:lamp 2",
 	recipe = {
@@ -98,7 +86,9 @@ minetest.register_craft({
 	},
 })
 
+local NodeNames = {}
 for idx,color in ipairs(tColors) do
+	NodeNames[idx] = "tubelib_addons2:lamp"..idx
 	minetest.register_node("tubelib_addons2:lamp"..idx, {
 		description = S("Tubelib Color Lamp"),
 		tiles = {
@@ -132,3 +122,14 @@ for idx,color in ipairs(tColors) do
     	on_blast = function() end,
 	})
 end
+
+tubelib.register_node("tubelib_addons2:lamp", NodeNames, {
+	on_recv_message = function(pos, topic, payload)
+		if topic == "on" then
+			local meta = minetest.get_meta(pos)
+			switch_node(pos, meta:get_int("color") or "", nil)
+		elseif topic == "off" then
+			switch_node(pos, "", nil)
+		end
+	end,
+})
