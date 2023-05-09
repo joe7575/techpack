@@ -189,6 +189,10 @@ gn("default:permafrost")
 gn("default:permafrost_with_moss")
 gn("default:permafrost_with_stones")
 
+if minetest.get_modpath("lava_n_water") then
+	gn("lava_n_water:lava_water_aftermath_stone", "default:cobble")
+end
+
 gn("default:stone",             "default:cobble")
 gn("default:desert_stone",      "default:desert_cobble")
 gn("default:sandstone",         "default:sandstone")
