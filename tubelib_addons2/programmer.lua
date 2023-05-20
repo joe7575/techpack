@@ -25,19 +25,21 @@ local function join_to_string(tbl)
 end
 
 local function reset_programmer(itemstack, user, pointed_thing)
-	user:set_attribute("tubelib_prog_numbers", nil)
+	local meta = user:get_meta()
+	meta:set_string("tubelib_prog_numbers", nil)
 	minetest.chat_send_player(user:get_player_name(), S("[Tubelib Programmer] programmer reset"))
 	return itemstack
 end	
 
 local function read_number(itemstack, user, pointed_thing)
 	local pos = pointed_thing.under
+	local meta = user:get_meta()
 	if pos then
 		local number = tubelib.get_node_number(pos)
 		if number then
-			local numbers = minetest.deserialize(user:get_attribute("tubelib_prog_numbers")) or {}
+			local numbers = minetest.deserialize(meta:get_string("tubelib_prog_numbers")) or {}
 			numbers[number] = true
-			user:set_attribute("tubelib_prog_numbers", minetest.serialize(numbers))
+			meta:set_string("tubelib_prog_numbers", minetest.serialize(numbers))
 			minetest.chat_send_player(user:get_player_name(), S("[Tubelib Programmer] number").." "..number.." "..S("read"))
 		else
 			minetest.chat_send_player(user:get_player_name(), S("[Tubelib Programmer] Unknown node on").." "..minetest.pos_to_string(pos))
@@ -50,11 +52,12 @@ end
 
 local function program_numbers(itemstack, placer, pointed_thing)
 	local pos = pointed_thing.under
+	local pmeta = placer:get_meta()
 	if pos then
 		local meta = minetest.get_meta(pos)
 		local node_number = tubelib.get_node_number(pos)
-		local numbers = minetest.deserialize(placer:get_attribute("tubelib_prog_numbers")) or {}
-		placer:set_attribute("tubelib_prog_numbers", nil)
+		local numbers = minetest.deserialize(pmeta:get_string("tubelib_prog_numbers")) or {}
+		pmeta:set_string("tubelib_prog_numbers", nil)
 		local text = join_to_string(numbers)
 		local player_name = placer:get_player_name()
 		if meta and meta:get_string("owner") ~= player_name then
