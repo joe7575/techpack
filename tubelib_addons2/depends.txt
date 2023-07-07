@@ -1,5 +1,0 @@
-default
-tubelib
-basic_materials
-mesecons?
-unifieddyes?
