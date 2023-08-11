@@ -40,9 +40,9 @@ local S = tubelib.S
 
 tubelib.version = 2.00
 
-tubelib.max_num_forceload_blocks = tonumber(minetest.setting_get("tubelib_max_num_forceload_blocks")) or 10
-tubelib.basalt_stone_enabled = minetest.setting_get("tubelib_basalt_stone_enabled") == "true"
-tubelib.machine_aging_value = tonumber(minetest.setting_get("tubelib_machine_aging_value")) or 100
+tubelib.max_num_forceload_blocks = tonumber(minetest.settings:get("tubelib_max_num_forceload_blocks")) or 10
+tubelib.basalt_stone_enabled = minetest.settings:get("tubelib_basalt_stone_enabled") == "true"
+tubelib.machine_aging_value = tonumber(minetest.settings:get("tubelib_machine_aging_value")) or 100
 
 
 --------------------------- conversion to v0.04
