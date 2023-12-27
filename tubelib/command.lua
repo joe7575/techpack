@@ -23,7 +23,9 @@ local function deserialize(s)
 	local tbl = {}
 	for line in s:gmatch("[^;]+") do
 		local num, spos = unpack(string.split(line, "="))
-		tbl[num] = {pos = minetest.string_to_pos(spos)}
+		if num ~= nil and num ~= "" and spos ~= nil and spos ~= "" then
+			tbl[num] = {pos = minetest.string_to_pos(spos)}
+		end
 	end
 	return tbl
 end
@@ -31,7 +33,9 @@ end
 local function serialize(data)
 	local tbl = {}
 	for k,v in pairs(data) do
-		tbl[#tbl+1] = k.."="..minetest.pos_to_string(v.pos)
+		if k ~= nil and k ~= "" and v ~= nil and v.pos ~= nil then
+			tbl[#tbl+1] = k.."="..minetest.pos_to_string(v.pos)
+		end
 	end
 	return table.concat(tbl, ";")
 end
