@@ -1,5 +1,4 @@
 # textdomain: tubelib
-
 Basalt Stone=Basaltstein
 Basalt Stone Brick=Basaltsteinziegel
 Basalt Stone Block=Basaltsteinblock
@@ -14,10 +13,13 @@ Tubelib Button=Tubelib Taster
 connected with block=verbunden mit Block
 Corrupted Tubelib Node=beschädigter Tubelib Block
 Tubelib Distributor=Tubelib Verteiler
+Block at pos=Block an Pos
+Area from=Bereich von
+Area to=Bereich bis
 List of your Forceload Blocks=Liste deiner Forceload Blöcke
-to=bis
 Tubelib Forceload Block=Tubelib Forceload Block
 Area=Bereich
+to=bis
 loaded!=geladen!
 Punch the block to make the area visible.=Schlage den Block um den Bereich anzuzeigen
 Area already loaded or max. number of Forceload Blocks reached!=Bereich bereits geladen oder max. Anzahl von Forceload Blöcken erreicht!
@@ -31,3 +33,7 @@ aging=altern
 Tubelib Repair Kit=Tubelib Reparatur Kit
 Tubelib End Wrench (use @= read status, place @= destroy)=Tubelib Gabelschlüssel (benutzen @= Status lesen, platzieren @= zerstören)
 Tubelib Tube=Tubelib Röhre
+
+
+##### not used anymore #####
+

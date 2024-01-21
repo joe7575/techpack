@@ -1,5 +1,4 @@
 # textdomain: techpack_stairway
-
 TechPack Grating=
 TechPack Handrail 1=
 TechPack Handrail 2=

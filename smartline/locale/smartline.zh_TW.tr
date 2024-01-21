@@ -1,5 +1,4 @@
 # textdomain: smartline
-
 SmartLine Button/Switch=SmartLine 按鈕/開關
 switch,button 2s,button 4s,button 8s,button 16s=開關，按鈕 2秒，按鈕 4秒，按鈕 8秒，按鈕 16秒
 Insert destination block number(s)=插入目標方塊編號
@@ -30,12 +29,18 @@ Run endless=無休止運行
 SmartLine Sequencer=SmartLine 序列器
 stopped=已經停止
 running=正在運行
-SmartLine Sequencer Help@n	@nDefine a sequence of commands to control other machines.@nNumbers(s) are the node numbers, the command shall sent to.@nThe commands 'on'/'off' are used for machines and other nodes.@nOffset is the time to the next line in seconds (1..999).@nIf endless is set, the Sequencer restarts again and again.@nThe command '  ' does nothing, only consuming the offset time.@n=SmartLine 序列器 幫助@n	@n定義一系列命令來控制其他機器。@nNumbers(s) 是節點編號，命令將會發送到（這個節點）。@n命令“on”和“off”用於機器和其他節點@n偏移量是到下一行的時間，以秒為單位 (1..999)。@n如果設置了 endless（無休止），序列器會一次又一次地重新啟動。@n命令“  ”不執行任何操作，僅消耗偏移時間。@n
-Number(s)=編號
-Command=命令
+SmartLine Sequencer Help@n@nDefine a sequence of commands to control other machines.@nNumbers(s) are the node numbers, the command shall sent to.@nThe commands 'on'/'off' are used for machines and other nodes.@nOffset is the time to the next line in seconds (1..999).@nIf endless is set, the Sequencer restarts again and again.@nThe command '  ' does nothing, only consuming the offset time.@n=
 help=幫助
 close=關閉
+Number(s)=編號
+Command=命令
 SmartLine Signal Tower=SmartLine 信號塔
 Time=時間
 SmartLine Timer=SmartLine 計時器
+SmartLine Timer Help@n@nThe Timer is for a daytime controlled sending of commands@ne.g. to turn street lights on/off. The timer checks the@ntime every few seconds. If the block was just loaded,@nthe timer will check the last 4 hours for commands@nthat still need to be executed.=
+
+
+##### not used anymore #####
+
+SmartLine Sequencer Help@n	@nDefine a sequence of commands to control other machines.@nNumbers(s) are the node numbers, the command shall sent to.@nThe commands 'on'/'off' are used for machines and other nodes.@nOffset is the time to the next line in seconds (1..999).@nIf endless is set, the Sequencer restarts again and again.@nThe command '  ' does nothing, only consuming the offset time.@n=SmartLine 序列器 幫助@n	@n定義一系列命令來控制其他機器。@nNumbers(s) 是節點編號，命令將會發送到（這個節點）。@n命令“on”和“off”用於機器和其他節點@n偏移量是到下一行的時間，以秒為單位 (1..999)。@n如果設置了 endless（無休止），序列器會一次又一次地重新啟動。@n命令“  ”不執行任何操作，僅消耗偏移時間。@n
 SmartLine Timer Help@n@nThe Timer is for a daytime controlled sending of commands@ne.g. to turn street lights on/off. The timer checks the @ntime every few seconds. If the block was just loaded, @nthe timer will check the last 4 hours for commands@nthat still need to be executed.=SmartLine 計時器幫助@n@n計時器用於在白天發送控制命令，@n例如打開、關閉路燈。@n計時器會每隔幾秒鐘檢查一次時間。@n如果方塊剛剛加載，計時器將會@n檢查最後四個小時內仍然需要執行的命令。

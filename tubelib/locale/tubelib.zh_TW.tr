@@ -1,5 +1,4 @@
 # textdomain: tubelib
-
 Basalt Stone=玄武岩石材
 Basalt Stone Brick=玄武岩磚
 Basalt Stone Block=玄武岩方塊
@@ -14,10 +13,13 @@ Tubelib Button=Tubelib 按鈕
 connected with block=已經與方塊連接
 Corrupted Tubelib Node=已經損壞的 Tubelib 節點
 Tubelib Distributor=Tubelib 分配器
-List of your Forceload Blocks=你的 Forceload 方塊列表
-to=至
+Block at pos=
+Area from=
+Area to=
+List of your Forceload Blocks:=
 Tubelib Forceload Block=Tubelib Forceload 方塊
 Area=區域
+to=至
 loaded!=已加載！
 Punch the block to make the area visible.=在方塊上打孔以使該區域可見。
 Area already loaded or max. number of Forceload Blocks reached!=區域已經加載或達到最大值。已達到 Forceload 方塊的數量！
@@ -31,3 +33,8 @@ aging=時效
 Tubelib Repair Kit=Tubelib 維修套件
 Tubelib End Wrench (use @= read status, place @= destroy)=Tubelib 端部扳手 (使用 @= 讀取狀態，放置 @= 銷燬)
 Tubelib Tube=Tubelib 管道
+
+
+##### not used anymore #####
+
+List of your Forceload Blocks=你的 Forceload 方塊列表

@@ -1,17 +1,16 @@
 # textdomain: tubelib_addons2
-
 Door block numbers:=
 Access code (4 digits):=
 Enter access code=
 OK=
 Tubelib Access Lock=
 Tubelib Access Lock, Enter access code=
+Save=
 Tubelib Ceiling Lamp=
 Tubelib Color Lamp=
 Tubelib Door Block=
 Select texture=
 Tubelib Gate Block=
-Save=
 Tubelib Industrial Lamp=
 Tubelib Invisible Lamp=
 Tubelib Logic Not=

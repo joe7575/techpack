@@ -1,5 +1,4 @@
 # textdomain: tubelib
-
 Basalt Stone=
 Basalt Stone Brick=
 Basalt Stone Block=
@@ -14,10 +13,13 @@ Tubelib Button=
 connected with block=
 Corrupted Tubelib Node=
 Tubelib Distributor=
-List of your Forceload Blocks=
-to=
+Block at pos=
+Area from=
+Area to=
+List of your Forceload Blocks:=
 Tubelib Forceload Block=
 Area=
+to=
 loaded!=
 Punch the block to make the area visible.=
 Area already loaded or max. number of Forceload Blocks reached!=

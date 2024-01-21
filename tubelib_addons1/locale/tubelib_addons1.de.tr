@@ -1,5 +1,4 @@
 # textdomain: tubelib_addons1
-
 Tubelib Autocrafter=Tubelib Autocrafter
 Tubelib Protected Chest=Tubelib geschützte Kiste
 connected with=verbunden mit
@@ -23,7 +22,6 @@ Altitude = Flughöhe
 Tubelib Harvester=Tubelib Ernter
 : running (=: läuft (
 Tubelib Harvester Base=Tubelib Ernter Basis
-Run endless=endlos laufen
 Liquid Sampler=Flüssigkeitsaufnehmer
 Fast Pusher=Schneller Schieber
 Start level=Startebene
@@ -31,6 +29,7 @@ Digging depth=Grabetiefe
 Tubelib Quarry=Tubelib Steinbrecher
 [Tubelib Quarry] Area is protected!=[Tubelib Steinbrecher] Gebiet ist geschützt!
 running=läuft
+Run endless=endlos laufen
 Tubelib Reformer=Tubelib Reformer
 Reformer will not fit there=Reformer wird dort nicht passen
 Tubelib Reformer defect=Tubelib Reformer defekt

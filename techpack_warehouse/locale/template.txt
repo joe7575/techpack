@@ -1,5 +1,4 @@
 # textdomain: techpack_warehouse
-
 Warehouse Box Copper=
 Warehouse Box Gold=
 Warehouse Box Steel=

@@ -1,17 +1,16 @@
 # textdomain: tubelib_addons2
-
 Door block numbers:=門擋塊編號：
 Access code (4 digits):=訪問密碼（4 位）：
 Enter access code=輸入訪問密碼
 OK=確定
 Tubelib Access Lock=Tubelib 門禁鎖
 Tubelib Access Lock, Enter access code=Tubelib 門禁鎖，輸入訪問密碼
+Save=保存
 Tubelib Ceiling Lamp=Tubelib 吸頂燈
 Tubelib Color Lamp=Tubelib 彩色燈
 Tubelib Door Block=Tubelib 門擋塊
 Select texture=選擇材質
 Tubelib Gate Block=Tubelib 門座
-Save=保存
 Tubelib Industrial Lamp=Tubelib 工業燈
 Tubelib Invisible Lamp=Tubelib 隱形燈
 Tubelib Logic Not=Tubelib 邏輯非門

@@ -1,5 +1,4 @@
 # textdomain: tubelib_addons1
-
 Tubelib Autocrafter=Tubelib 自动合成器
 Tubelib Protected Chest=Tubelib 保护箱
 connected with=已连接到
@@ -23,7 +22,6 @@ Altitude =海拔高度
 Tubelib Harvester=Tubelib 收割机
 : running (=：运行中（
 Tubelib Harvester Base=Tubelib 收割机底座
-Run endless=无休止运行
 Liquid Sampler=液体采样仪
 Fast Pusher=快速推进器
 Start level=启动级别
@@ -31,6 +29,7 @@ Digging depth=挖掘深度
 Tubelib Quarry=Tubelib 采石场
 [Tubelib Quarry] Area is protected!=[Tubelib 采石场] 区域已被保护！
 running=正在运行
+Run endless=无休止运行
 Tubelib Reformer=Tubelib 重整器
 Reformer will not fit there=转化炉不适合那里
 Tubelib Reformer defect=Tubelib 重整器缺陷

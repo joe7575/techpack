@@ -1,5 +1,4 @@
 # textdomain: tubelib_addons1
-
 Tubelib Autocrafter=
 Tubelib Protected Chest=
 connected with=
@@ -23,7 +22,6 @@ Altitude =
 Tubelib Harvester=
 : running (=
 Tubelib Harvester Base=
-Run endless=
 Liquid Sampler=
 Fast Pusher=
 Start level=
@@ -31,6 +29,7 @@ Digging depth=
 Tubelib Quarry=
 [Tubelib Quarry] Area is protected!=
 running=
+Run endless=
 Tubelib Reformer=
 Reformer will not fit there=
 Tubelib Reformer defect=

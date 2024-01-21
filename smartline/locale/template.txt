@@ -1,5 +1,4 @@
 # textdomain: smartline
-
 SmartLine Button/Switch=
 switch,button 2s,button 4s,button 8s,button 16s=
 Insert destination block number(s)=
@@ -30,12 +29,12 @@ Run endless=
 SmartLine Sequencer=
 stopped=
 running=
-SmartLine Sequencer Help@n	@nDefine a sequence of commands to control other machines.@nNumbers(s) are the node numbers, the command shall sent to.@nThe commands 'on'/'off' are used for machines and other nodes.@nOffset is the time to the next line in seconds (1..999).@nIf endless is set, the Sequencer restarts again and again.@nThe command '  ' does nothing, only consuming the offset time.@n=
-Number(s)=
-Command=
+SmartLine Sequencer Help@n@nDefine a sequence of commands to control other machines.@nNumbers(s) are the node numbers, the command shall sent to.@nThe commands 'on'/'off' are used for machines and other nodes.@nOffset is the time to the next line in seconds (1..999).@nIf endless is set, the Sequencer restarts again and again.@nThe command '  ' does nothing, only consuming the offset time.@n=
 help=
 close=
+Number(s)=
+Command=
 SmartLine Signal Tower=
 Time=
 SmartLine Timer=
-SmartLine Timer Help@n@nThe Timer is for a daytime controlled sending of commands@ne.g. to turn street lights on/off. The timer checks the @ntime every few seconds. If the block was just loaded, @nthe timer will check the last 4 hours for commands@nthat still need to be executed.=
+SmartLine Timer Help@n@nThe Timer is for a daytime controlled sending of commands@ne.g. to turn street lights on/off. The timer checks the@ntime every few seconds. If the block was just loaded,@nthe timer will check the last 4 hours for commands@nthat still need to be executed.=
