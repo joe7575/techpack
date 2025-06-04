@@ -15,6 +15,7 @@
 S = minetest.get_translator("techpack_stairway")
 
 minetest.register_node("techpack_stairway:grating", {
+	use_texture_alpha="clip",
 	description = S("TechPack Grating"),
 	tiles = {
 		'techpack_stairway_bottom.png',
@@ -46,6 +47,7 @@ minetest.register_node("techpack_stairway:grating", {
 })
 
 minetest.register_node("techpack_stairway:handrail1", {
+	use_texture_alpha="clip",
 	description = S("TechPack Handrail 1"),
 	tiles = {
 		'techpack_stairway_bottom.png',
@@ -77,6 +79,7 @@ minetest.register_node("techpack_stairway:handrail1", {
 })
 
 minetest.register_node("techpack_stairway:handrail2", {
+	use_texture_alpha="clip",
 	description = S("TechPack Handrail 2"),
 	tiles = {
 		'techpack_stairway_bottom.png',
@@ -110,6 +113,7 @@ minetest.register_node("techpack_stairway:handrail2", {
 })
 
 minetest.register_node("techpack_stairway:handrail3", {
+	use_texture_alpha="clip",
 	description = S("TechPack Handrail 3"),
 	tiles = {
 		'techpack_stairway_bottom.png',
@@ -143,6 +147,7 @@ minetest.register_node("techpack_stairway:handrail3", {
 })
 
 minetest.register_node("techpack_stairway:handrail4", {
+	use_texture_alpha="clip",
 	description = S("TechPack Handrail 4"),
 	tiles = {
 		'techpack_stairway_bottom.png',
@@ -178,6 +183,7 @@ minetest.register_node("techpack_stairway:handrail4", {
 })
 
 minetest.register_node("techpack_stairway:bridge1", {
+	use_texture_alpha="clip",
 	description = S("TechPack Bridge 1"),
 	tiles = {
 		'techpack_stairway_bottom.png',
@@ -210,6 +216,7 @@ minetest.register_node("techpack_stairway:bridge1", {
 })
 
 minetest.register_node("techpack_stairway:bridge2", {
+	use_texture_alpha="clip",
 	description = S("TechPack Bridge 2"),
 	tiles = {
 		'techpack_stairway_bottom.png',
@@ -243,6 +250,7 @@ minetest.register_node("techpack_stairway:bridge2", {
 })
 
 minetest.register_node("techpack_stairway:bridge3", {
+	use_texture_alpha="clip",
 	description = S("TechPack Bridge 3"),
 	tiles = {
 		'techpack_stairway_bottom.png',
@@ -276,6 +284,7 @@ minetest.register_node("techpack_stairway:bridge3", {
 })
 
 minetest.register_node("techpack_stairway:bridge4", {
+	use_texture_alpha="clip",
 	description = S("TechPack Bridge 4"),
 	tiles = {
 		'techpack_stairway_bottom.png',
@@ -310,6 +319,7 @@ minetest.register_node("techpack_stairway:bridge4", {
 })
 
 minetest.register_node("techpack_stairway:stairway", {
+	use_texture_alpha="clip",
 	description = S("TechPack Stairway"),
 	tiles = {
 		'techpack_stairway_steps.png',
@@ -348,6 +358,7 @@ minetest.register_node("techpack_stairway:stairway", {
 })
 
 minetest.register_node("techpack_stairway:ladder1", {
+	use_texture_alpha="clip",
 	description = S("TechPack Ladder 1"),
 	tiles = {
 		'techpack_stairway_steps.png',
@@ -379,6 +390,7 @@ minetest.register_node("techpack_stairway:ladder1", {
 })
 
 minetest.register_node("techpack_stairway:ladder2", {
+	use_texture_alpha="clip",
 	description = S("TechPack Ladder 2"),
 	tiles = {
 		'techpack_stairway_steps.png',
@@ -411,7 +423,8 @@ minetest.register_node("techpack_stairway:ladder2", {
 })
 
 minetest.register_node("techpack_stairway:ladder3", {
-    description = S("TechPack Ladder 3"),
+    use_texture_alpha="clip",
+	description = S("TechPack Ladder 3"),
     tiles = {
         'techpack_stairway_steps.png',
         'techpack_stairway_steps.png',
@@ -443,6 +456,7 @@ minetest.register_node("techpack_stairway:ladder3", {
 })
 
 minetest.register_node("techpack_stairway:ladder4", {
+	use_texture_alpha="clip",
 	description = S("TechPack Ladder 4"),
 	tiles = {
 		'techpack_stairway_ladder.png',
@@ -474,6 +488,7 @@ minetest.register_node("techpack_stairway:ladder4", {
 
 
 minetest.register_node("techpack_stairway:lattice", {
+	use_texture_alpha="clip",
 	description = S("TechPack Lattice"),
 	tiles = {
 		'techpack_stairway_lattice.png',
@@ -505,6 +520,7 @@ minetest.register_node("techpack_stairway:lattice", {
 })
 
 minetest.register_node("techpack_stairway:lattice_slop", {
+	use_texture_alpha="clip",
 	description = S("TechPack Lattice Slope"),
 	tiles = {
 		'techpack_stairway_lattice.png',
