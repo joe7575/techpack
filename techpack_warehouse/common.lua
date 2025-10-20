@@ -65,7 +65,8 @@ local function move_to_main(pos, index)
 	local main_stack = inv:get_stack("main", index)
 	local inp_stack = inv:get_stack("input", index)
 
-	if inp_stack:get_name() ~= "" and inp_stack:get_name() == main_stack:get_name() then
+	if inp_stack:get_name() ~= "" and
+			(main_stack:is_empty() or inp_stack:get_name() == main_stack:get_name()) then
 		local stack = ItemStack(inp_stack:get_name())
 		stack:set_count(inp_stack:get_count() + main_stack:get_count())
 		inp_stack:clear()
