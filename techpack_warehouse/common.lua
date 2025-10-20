@@ -65,7 +65,8 @@ local function move_to_main(pos, index)
 	local main_stack = inv:get_stack("main", index)
 	local inp_stack = inv:get_stack("input", index)
 
-	if inp_stack:get_name() ~= "" then
+	if inp_stack:get_name() ~= "" and
+			(main_stack:is_empty() or inp_stack:get_name() == main_stack:get_name()) then
 		local stack = ItemStack(inp_stack:get_name())
 		stack:set_count(inp_stack:get_count() + main_stack:get_count())
 		inp_stack:clear()
@@ -177,7 +178,8 @@ function techpack_warehouse.inv_add_item(self, meta, item)
 
 	for idx, stack in ipairs(main_list) do
 		-- If item configured
-		if item_name == inv:get_stack("filter", idx):get_name() then
+		if item_name == inv:get_stack("filter", idx):get_name() and
+				(stack:is_empty() or stack:get_name() == item_name) then
 			local stack_size = stack:get_count()
 			-- If there is some space for further items
 			if stack_size < self.inv_size then
