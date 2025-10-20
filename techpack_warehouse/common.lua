@@ -177,7 +177,8 @@ function techpack_warehouse.inv_add_item(self, meta, item)
 
 	for idx, stack in ipairs(main_list) do
 		-- If item configured
-		if item_name == inv:get_stack("filter", idx):get_name() then
+		if item_name == inv:get_stack("filter", idx):get_name() and
+				(stack:is_empty() or stack:get_name() == item_name) then
 			local stack_size = stack:get_count()
 			-- If there is some space for further items
 			if stack_size < self.inv_size then
