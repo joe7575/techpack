@@ -78,6 +78,21 @@ minetest.register_craft({
 	},
 })
 
+local ShortCircuitTest = 0
+
+local function command(topic, meta, numbers, owner, payload)
+	if topic == "set_numbers" then
+		meta:set_string("infotext", S("Tubelib Logic Not").." "..own_number..S(": connected with").." "..payload)
+		meta:set_string("numbers", payload)
+		meta:set_string("formspec", formspec(meta))
+		return true
+	elseif topic == "on" then
+		return tubelib.send_message(numbers, owner, nil, "off", payload)
+	elseif topic == "off" then
+		return tubelib.send_message(numbers, owner, nil, "on", payload)
+	end
+end
+
 tubelib.register_node("tubelib_addons2:logic_not", {}, {
 	on_recv_message = function(pos, topic, payload)
 		if tubelib.data_not_corrupted(pos) then
@@ -85,15 +100,14 @@ tubelib.register_node("tubelib_addons2:logic_not", {}, {
 			local owner = meta:get_string("owner")
 			local numbers = meta:get_string("numbers")
 			local own_number = meta:get_string("own_number")
-			if topic == "set_numbers" then
-				meta:set_string("infotext", S("Tubelib Logic Not").." "..own_number..S(": connected with").." "..payload)
-				meta:set_string("numbers", payload)
-				meta:set_string("formspec", formspec(meta))
-				return true
-			elseif topic == "on" then
-				return tubelib.send_message(numbers, owner, nil, "off", payload)
-			elseif topic == "off" then
-				return tubelib.send_message(numbers, owner, nil, "on", payload)
+
+			if ShortCircuitTest < 3 then
+				ShortCircuitTest = ShortCircuitTest + 1
+				local resp = command(topic, meta, numbers, owner, payload)
+				ShortCircuitTest = ShortCircuitTest - 1
+				return resp
+			else
+				return false
 			end
 		end
 	end,
