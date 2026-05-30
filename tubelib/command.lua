@@ -700,4 +700,28 @@ generate_Key2Number()
 -- maintain data after 2 seconds
 minetest.after(2, data_maintenance)
 
+-- Chat command: /tubelib_pos <number>  →  shows world coordinates of a block
+minetest.register_chatcommand("tubelib_pos", {
+	params      = tubelib.S("<number>"),
+	description = tubelib.S("Show the position of a Tubelib block by its number"),
+	privs       = { interact = true },
+	func = function(name, param)
+		local num = param:match("^%s*(%d+)%s*$")
+		if not num then
+			return false, tubelib.S("Please provide a valid block number, e.g.: /tubelib_pos 1502")
+		end
+		-- Tubelib numbers are zero-padded to 4 digits (e.g. "1502" or "0042")
+		local padded = string.format("%.04u", tonumber(num))
+		local info = tubelib.get_node_info(padded)
+		if info and info.pos then
+			local pos  = info.pos
+			local node_name = info.name or "?"
+			return true, tubelib.S("Block @1 (@2) is at", "#"..padded, node_name)..
+				string.format(" x=%d y=%d z=%d", pos.x, pos.y, pos.z)
+		else
+			return false, tubelib.S("Block @1 is not registered (removed or never existed).", "#"..padded)
+		end
+	end,
+})
+
 

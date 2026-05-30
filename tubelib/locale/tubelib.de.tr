@@ -35,5 +35,11 @@ Tubelib End Wrench (use @= read status, place @= destroy)=Tubelib Gabelschlüsse
 Tubelib Tube=Tubelib Röhre
 
 
+<number>=<Nummer>
+Show the position of a Tubelib block by its number=Position eines Tubelib-Blocks anhand seiner Nummer anzeigen
+Please provide a valid block number, e.g.: /tubelib_pos 1502=Bitte eine gültige Blocknummer angeben, z. B.: /tubelib_pos 1502
+Block @1 (@2) is at=Block @1 (@2) ist bei
+Block @1 is not registered (removed or never existed).=Block @1 ist nicht registriert (entfernt oder nie vorhanden).
+
 ##### not used anymore #####
 
