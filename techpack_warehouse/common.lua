@@ -105,7 +105,7 @@ function techpack_warehouse.tiles_active(background_img)
 	return {
 		-- up, down, right, left, back, front
 		{
-			image = "tubelib_addons3_pusher_active.png",
+			name = "tubelib_addons3_pusher_active.png",
 			backface_culling = false,
 			animation = {
 				type = "vertical_frames",
@@ -115,7 +115,7 @@ function techpack_warehouse.tiles_active(background_img)
 			},
 		},
 		{
-			image = "tubelib_addons3_pusher_active.png",
+			name = "tubelib_addons3_pusher_active.png",
 			backface_culling = false,
 			animation = {
 				type = "vertical_frames",

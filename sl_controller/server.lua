@@ -53,7 +53,7 @@ minetest.register_node("sl_controller:server", {
 		"sl_controller_server_side.png^[transformFX",
 		"sl_controller_server_back.png",
 		{
-			image = "sl_controller_server_front.png",
+			name = "sl_controller_server_front.png",
 			backface_culling = false,
 			animation = {
 				type = "vertical_frames",

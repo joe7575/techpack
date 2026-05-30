@@ -399,7 +399,7 @@ minetest.register_node("tubelib_addons3:distributor_active", {
 	tiles = {
 		-- up, down, right, left, back, front
 		{
-			image = "tubelib_addons3_distributor_active.png",
+			name = "tubelib_addons3_distributor_active.png",
 			backface_culling = false,
 			animation = {
 				type = "vertical_frames",

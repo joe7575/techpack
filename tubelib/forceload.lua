@@ -142,7 +142,7 @@ minetest.register_node("tubelib:forceload", {
 		'tubelib_front.png',
 		'tubelib_front.png',
 		{
-			image = "tubelib_forceload.png",
+			name = "tubelib_forceload.png",
 			backface_culling = false,
 			animation = {
 				type = "vertical_frames",

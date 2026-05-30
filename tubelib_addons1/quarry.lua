@@ -355,7 +355,7 @@ minetest.register_node("tubelib_addons1:quarry_active", {
 		'tubelib_addons1_quarry.png',
 		'tubelib_addons1_quarry.png',
 		{
-			image = 'tubelib_addons1_quarry_active.png',
+			name = 'tubelib_addons1_quarry_active.png',
 			backface_culling = false,
 			animation = {
 				type = "vertical_frames",

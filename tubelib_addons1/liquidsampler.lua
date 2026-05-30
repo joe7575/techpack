@@ -190,7 +190,7 @@ minetest.register_node("tubelib_addons1:liquidsampler_active", {
 		'tubelib_front.png',
 		'tubelib_addons1_liquidsampler.png',
 		{
-			image = "tubelib_addons1_liquidsampler_active.png",
+			name = "tubelib_addons1_liquidsampler_active.png",
 			backface_culling = false,
 			animation = {
 				type = "vertical_frames",

@@ -177,7 +177,7 @@ minetest.register_node("tubelib_addons1:grinder_active", {
 	tiles = {
 		-- up, down, right, left, back, front
 		{
-			image = 'tubelib_addons1_grinder_active.png',
+			name = 'tubelib_addons1_grinder_active.png',
 			backface_culling = false,
 			animation = {
 				type = "vertical_frames",

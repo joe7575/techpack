@@ -48,7 +48,7 @@ minetest.register_node("tubelib_addons2:lamp_off", {
 	end,
 
 	on_construct = unifieddyes.on_construct,
-	on_dig = unifieddyes.on_dig,
+	preserve_metadata = unifieddyes.preserve_metadata,
 
 	paramtype = "light",
 	paramtype2 = "color",
@@ -83,7 +83,7 @@ minetest.register_node("tubelib_addons2:lamp_on", {
 		unifieddyes.after_dig_node(pos, oldnode, oldmetadata, digger)
 	end,
 
-	on_dig = unifieddyes.on_dig,
+	preserve_metadata = unifieddyes.preserve_metadata,
 	light_source = minetest.LIGHT_MAX,
 	is_ground_content = false,
 	drop = "tubelib_addons2:lamp_off",

@@ -117,7 +117,7 @@ minetest.register_node("tubelib_addons3:pusher_active", {
 	tiles = {
 		-- up, down, right, left, back, front
 		{
-			image = "tubelib_addons3_pusher_active.png",
+			name = "tubelib_addons3_pusher_active.png",
 			backface_culling = false,
 			animation = {
 				type = "vertical_frames",
@@ -127,7 +127,7 @@ minetest.register_node("tubelib_addons3:pusher_active", {
 			},
 		},
 		{
-			image = "tubelib_addons3_pusher_active.png",
+			name = "tubelib_addons3_pusher_active.png",
 			backface_culling = false,
 			animation = {
 				type = "vertical_frames",
@@ -139,7 +139,7 @@ minetest.register_node("tubelib_addons3:pusher_active", {
 		'tubelib_outp.png^tubelib_addons3_node_frame4.png',
 		'tubelib_inp.png^tubelib_addons3_node_frame4.png',
 		{
-			image = "tubelib_addons3_pusher_active.png^[transformR180]",
+			name = "tubelib_addons3_pusher_active.png^[transformR180]",
 			backface_culling = false,
 			animation = {
 				type = "vertical_frames",
@@ -149,7 +149,7 @@ minetest.register_node("tubelib_addons3:pusher_active", {
 			},
 		},
 		{
-			image = "tubelib_addons3_pusher_active.png",
+			name = "tubelib_addons3_pusher_active.png",
 			backface_culling = false,
 			animation = {
 				type = "vertical_frames",

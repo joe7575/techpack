@@ -82,6 +82,7 @@ for idx,pgn in ipairs(tPgns) do
 		end,
 
 		--drawtype = "glasslike",
+		use_texture_alpha = (idx >= 13) and "blend" or nil,
 		paramtype = "light",
 		paramtype2 = "facedir",
 		sunlight_propagates = true,

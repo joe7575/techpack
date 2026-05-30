@@ -344,7 +344,7 @@ minetest.register_node("tubelib_addons1:autocrafter_active", {
 		'tubelib_front.png',
 		'tubelib_front.png',
 		{
-			image = 'tubelib_addons1_autocrafter_active.png',
+			name = 'tubelib_addons1_autocrafter_active.png',
 			backface_culling = false,
 			animation = {
 				type = "vertical_frames",
