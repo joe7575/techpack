@@ -39,9 +39,10 @@ local function in_list(list, x)
 end
 
 local function remove_list_elem(list, x)
+	local area_x = calc_area(x)
 	local n = nil
 	for idx, v in ipairs(list) do
-		if vector.equals(v, x) then
+		if vector.equals(calc_area(v), area_x) then
 			n = idx
 			break
 		end
@@ -54,24 +55,6 @@ end
 
 local function chat(player, text)
 	minetest.chat_send_player(player:get_player_name(), "[Tubelib] "..text)
-end
-
-local function get_node_lvm(pos)
-	local node = minetest.get_node_or_nil(pos)
-	if node then
-		return node
-	end
-	local vm = minetest.get_voxel_manip()
-	local MinEdge, MaxEdge = vm:read_from_map(pos, pos)
-	local data = vm:get_data()
-	local param2_data = vm:get_param2_data()
-	local area = VoxelArea:new({MinEdge = MinEdge, MaxEdge = MaxEdge})
-	local idx = area:index(pos.x, pos.y, pos.z)
-	node = {
-		name = minetest.get_name_from_content_id(data[idx]),
-		param2 = param2_data[idx]
-	}
-	return node
 end
 
 local function add_pos(pos, player)
@@ -95,11 +78,6 @@ end
 local function get_pos_list(player)
 	local meta = player:get_meta()
 	return minetest.deserialize(meta:get_string("tubelib_forceload_blocks")) or {}
-end
-
-local function set_pos_list(player, lPos)
-	local meta = player:get_meta()
-	meta:set_string("tubelib_forceload_blocks", minetest.serialize(lPos))
 end
 
 local function get_data(pos, player)
@@ -127,7 +105,7 @@ local function formspec(name)
 		tRes[#tRes+1] = minetest.formspec_escape(P2S(pos))
 		tRes[#tRes+1] = minetest.formspec_escape(P2S(pos1))
 		tRes[#tRes+1] = minetest.formspec_escape(P2S(pos2))
-		tRes[#tRes+1] = minetest.forceload_block(pos, true) and "Loaded" or "Unloaded"
+		tRes[#tRes+1] = minetest.get_node_or_nil(pos) ~= nil and "Loaded" or "Pending"
 	end
 	return "size[9,9]"..
 		default.gui_bg..
@@ -220,15 +198,9 @@ if tubelib.max_num_forceload_blocks > 0 then
 end
 
 minetest.register_on_joinplayer(function(player)
-	local lPos = {}
 	for _,pos in ipairs(get_pos_list(player)) do
-		local node = get_node_lvm(pos)
-		if node.name == "tubelib:forceload" then
-			minetest.forceload_block(pos, true)
-			lPos[#lPos+1] = pos
-		end
+		minetest.forceload_block(pos, true)
 	end
-	set_pos_list(player, lPos)
 end)
 
 minetest.register_on_leaveplayer(function(player)
