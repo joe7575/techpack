@@ -110,13 +110,16 @@ local function get_data(pos, player)
 	return pos1, pos2, num, max
 end
 
-local function formspec(player)
+local function formspec(name)
+	local player = minetest.get_player_by_name(name)
+	if not player then return nil end
 	local lPos = get_pos_list(player)
 	local tRes = {}
 	tRes[#tRes+1] = "#"
 	tRes[#tRes+1] = S("Block at pos")
 	tRes[#tRes+1] = S("Area from")
 	tRes[#tRes+1] = S("Area to")
+	tRes[#tRes+1] = "Status"
 
 	for idx,pos in ipairs(lPos) do
 		local pos1, pos2 = calc_area(pos)
@@ -124,13 +127,14 @@ local function formspec(player)
 		tRes[#tRes+1] = minetest.formspec_escape(P2S(pos))
 		tRes[#tRes+1] = minetest.formspec_escape(P2S(pos1))
 		tRes[#tRes+1] = minetest.formspec_escape(P2S(pos2))
+		tRes[#tRes+1] = minetest.forceload_block(pos, true) and "Loaded" or "Unloaded"
 	end
 	return "size[9,9]"..
 		default.gui_bg..
 		default.gui_bg_img..
 		default.gui_slots..
 		"label[0,0;"..S("List of your Forceload Blocks").."]"..
-		"tablecolumns[text,width=1.8;text,width=12;text,width=12;text,width=12]"..
+		"tablecolumns[text,width=1.8;text,width=12;text,width=12;text,width=12;text,width=8]"..
 		"table[0,0.6;8.8,8.4;output;"..table.concat(tRes, ",")..";1]"
 end
 
@@ -179,10 +183,13 @@ minetest.register_node("tubelib:forceload", {
 	end,
 
 	on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
-		if M(pos):get_string("owner") == clicker:get_player_name() or
-				minetest.check_player_privs(clicker:get_player_name(), "server") then
-			local s = formspec(clicker)
-			minetest.show_formspec(clicker:get_player_name(), "tubelib:forceload", s)
+		local owner = M(pos):get_string("owner")
+		local name = clicker:get_player_name()
+		if name == owner or minetest.check_player_privs(name, "server") then
+			local s = formspec(owner)
+			if s then
+				minetest.show_formspec(name, "tubelib:forceload", s)
+			end
 		end
 	end,
 
