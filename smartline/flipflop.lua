@@ -53,7 +53,9 @@ local function set_state(pos, new_state)
 	meta:set_int("state", new_state)
 	meta:set_string("infotext", S("SmartLine T-FlipFlop").." "..own_num..": "..state_str)
 	meta:set_string("formspec", formspec(meta))
-	send_output(pos)
+	-- Use minetest.after to break any synchronous call chain (e.g. ring wiring)
+	-- and avoid Lua stack overflows.
+	minetest.after(0, send_output, pos)
 end
 
 minetest.register_node("smartline:flipflop", {
