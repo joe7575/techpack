@@ -48,6 +48,7 @@ TechPack provides:
 - an item Detector node sending commands (on/off)
 - a Repeater node to distribute received commands to connected nodes
 - a Logic Not node to invert on/off commands
+- a T-FlipFlop node to switch on/off commands
 - Gate/Door nodes in different textures to be controlled via on/off commands
 - an Access Lock node with number key field 
 - a Mesecon Converter node to translate tubelib commands in mesecon commands and vice versa
