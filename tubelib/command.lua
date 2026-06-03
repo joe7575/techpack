@@ -384,6 +384,9 @@ function tubelib.send_message(numbers, placer_name, clicker_name, topic, payload
 			local data = Number2Pos[num]
 			if not_protected(data.pos, placer_name, clicker_name) then
 				if tubelib_NodeDef[data.name] and tubelib_NodeDef[data.name].on_recv_message then
+					topic = topic or ""
+					payload = payload or ""
+					minetest.log("action", "[Tubelib] Message sent to "..data.name.." #"..num..": topic='"..topic.."', payload='"..tostring(payload).."'")
 					tubelib_NodeDef[data.name].on_recv_message(data.pos, topic, payload)
 				end
 			end
@@ -395,6 +398,9 @@ function tubelib.send_request(number, topic, payload)
 	if Number2Pos[number] and Number2Pos[number].name then
 		local data = Number2Pos[number]
 		if tubelib_NodeDef[data.name] and tubelib_NodeDef[data.name].on_recv_message then
+			topic = topic or ""
+			payload = payload or ""
+			minetest.log("action", "[Tubelib] Message sent to "..data.name.." #"..number..": topic='"..topic.."', payload='"..tostring(payload).."'")
 			return tubelib_NodeDef[data.name].on_recv_message(data.pos, topic, payload)
 		end
 	end
@@ -611,10 +617,14 @@ function tubelib.temporary_remove_node(pos, number, name, add_data)
 		add_data.number = number
 		add_data.name = name
 		TemporaryRemovedNodes[key] = add_data
+		-- Persist immediately so a crash between saves doesn't lose the entry.
+		storage:set_string("TemporaryRemovedNodes", minetest.serialize(TemporaryRemovedNodes))
 	else
 		if TemporaryRemovedNodes[key] then
 			local data = table.copy(TemporaryRemovedNodes[key])
 			TemporaryRemovedNodes[key] = nil
+			-- Persist removal so the entry doesn't reappear after a restart.
+			storage:set_string("TemporaryRemovedNodes", minetest.serialize(TemporaryRemovedNodes))
 			return data
 		end
 	end
