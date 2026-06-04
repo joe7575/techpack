@@ -1,24 +1,69 @@
 # textdomain: tubelib_addons2
+
+##[ accesscontrol.lua ]##
 Door block numbers:=
 Access code (4 digits):=
 Enter access code=
 OK=
 Tubelib Access Lock=
 Tubelib Access Lock, Enter access code=
+
+##[ accesscontrol.lua ]##
+##[ colorlamp.lua ]##
+##[ doorblock.lua ]##
+##[ gate_chest.lua ]##
+##[ gateblock.lua ]##
+##[ logic_not.lua ]##
+##[ mesecons_converter.lua ]##
+##[ repeater.lua ]##
 Save=
+
+##[ ceilinglamp.lua ]##
 Tubelib Ceiling Lamp=
+
+##[ colorlamp.lua ]##
+##[ colorlamp_ud.lua ]##
 Tubelib Color Lamp=
+
+##[ doorblock.lua ]##
 Tubelib Door Block=
 Select texture=
+
+##[ gate_chest.lua ]##
+Gate: open=
+Gate: closed=
+Gate block number(s)=
+Load gate=
+Gate Controller=
+block(s) configured=
+
+##[ gateblock.lua ]##
 Tubelib Gate Block=
+
+##[ industriallamp.lua ]##
 Tubelib Industrial Lamp=
+
+##[ invisiblelamp.lua ]##
 Tubelib Invisible Lamp=
+
+##[ logic_not.lua ]##
 Tubelib Logic Not=
-Tubelib Mesecons Converter=
-: fault (overloaded)=
+
+##[ logic_not.lua ]##
+##[ mesecons_converter.lua ]##
+##[ repeater.lua ]##
 Destination node numbers=
 : not connected=
 : connected with=
+
+##[ mesecons_converter.lua ]##
+Tubelib Mesecons Converter=
+
+##[ mesecons_converter.lua ]##
+##[ repeater.lua ]##
+: fault (overloaded)=
+
+##[ programmer.lua ]##
 [Tubelib Programmer] programmer reset=
 [Tubelib Programmer] number=
 read=
@@ -27,7 +72,11 @@ read=
 [Tubelib Programmer] node programmed!=
 [Tubelib Programmer] Error: programmer not supported!=
 Tubelib Programmer=
+
+##[ repeater.lua ]##
 Tubelib Repeater=
+
+##[ sequencer.lua ]##
 Run endless=
 help=
 Sequencer Help=
@@ -39,8 +88,15 @@ If endless is set, the Sequencer@nrestarts again and again.=
 The command '  ' does nothing,@nonly consuming the offset time.=
 exit=
 Tubelib Sequencer=
+
+##[ sequencer.lua ]##
+##[ timer.lua ]##
 Command=
+
+##[ streetlamp.lua ]##
 Tubelib Street Lamp=
+
+##[ timer.lua ]##
 Time=
 Number(s)=
 Tubelib Timer=

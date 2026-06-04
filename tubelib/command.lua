@@ -380,13 +380,13 @@ end
 
 function tubelib.send_message(numbers, placer_name, clicker_name, topic, payload)
 	for _,num in ipairs(string_split(numbers, " ")) do
-		if Number2Pos[num] and Number2Pos[num].name then
+		if Number2Pos[num] and Number2Pos[num].pos then
+			if not Number2Pos[num].name then
+				Number2Pos[num].name = get_node_lvm(Number2Pos[num].pos).name
+			end
 			local data = Number2Pos[num]
 			if not_protected(data.pos, placer_name, clicker_name) then
 				if tubelib_NodeDef[data.name] and tubelib_NodeDef[data.name].on_recv_message then
-					topic = topic or ""
-					payload = payload or ""
-					minetest.log("action", "[Tubelib] Message sent to "..data.name.." #"..num..": topic='"..topic.."', payload='"..tostring(payload).."'")
 					tubelib_NodeDef[data.name].on_recv_message(data.pos, topic, payload)
 				end
 			end
@@ -395,12 +395,12 @@ function tubelib.send_message(numbers, placer_name, clicker_name, topic, payload
 end
 
 function tubelib.send_request(number, topic, payload)
-	if Number2Pos[number] and Number2Pos[number].name then
+	if Number2Pos[number] and Number2Pos[number].pos then
+		if not Number2Pos[number].name then
+			Number2Pos[number].name = get_node_lvm(Number2Pos[number].pos).name
+		end
 		local data = Number2Pos[number]
 		if tubelib_NodeDef[data.name] and tubelib_NodeDef[data.name].on_recv_message then
-			topic = topic or ""
-			payload = payload or ""
-			minetest.log("action", "[Tubelib] Message sent to "..data.name.." #"..number..": topic='"..topic.."', payload='"..tostring(payload).."'")
 			return tubelib_NodeDef[data.name].on_recv_message(data.pos, topic, payload)
 		end
 	end
@@ -607,32 +607,15 @@ function tubelib.get_inv_state(meta, listname)
     return state
 end
 
--- Mainly used for door/gate nodes
--- To delete an entry, provide nil as number. The stored data will be returned.
-function tubelib.temporary_remove_node(pos, number, name, add_data)
-	local key = get_key_str(pos)
-	if number then
-		add_data = add_data or {}
-		add_data.pos = pos
-		add_data.number = number
-		add_data.name = name
-		TemporaryRemovedNodes[key] = add_data
-		-- Persist immediately so a crash between saves doesn't lose the entry.
-		storage:set_string("TemporaryRemovedNodes", minetest.serialize(TemporaryRemovedNodes))
-	else
-		if TemporaryRemovedNodes[key] then
-			local data = table.copy(TemporaryRemovedNodes[key])
-			TemporaryRemovedNodes[key] = nil
-			-- Persist removal so the entry doesn't reappear after a restart.
-			storage:set_string("TemporaryRemovedNodes", minetest.serialize(TemporaryRemovedNodes))
-			return data
-		end
-	end
-end
-
 -------------------------------------------------------------------------------
 -- Data Maintenance
 -------------------------------------------------------------------------------
+
+local function is_passable(pos)
+	local node = minetest.get_node(pos)
+	local ndef = minetest.registered_nodes[node.name]
+	return not ndef or ndef.walkable == false
+end
 
 local function parse_number(s)
 	for _,word in ipairs(s:split(" ")) do
@@ -664,15 +647,16 @@ local function get_node_number(pos)
 end
 
 local function data_maintenance()
-	minetest.log("info", "[Tubelib] Data maintenance started")
-	
+	minetest.log("action", "[Tubelib] Data maintenance started")
+
 	-- Remove unused positions
 	local tbl = table.copy(Number2Pos)
 	Number2Pos = {}
 	local cnt1 = 0
 	local cnt2 = 0
 	for num,item in pairs(tbl) do
-		local name = Name2Name[get_node_lvm(item.pos).name]
+		local node = get_node_lvm(item.pos)
+		local name = Name2Name[node.name]
 		cnt1 = cnt1 + 1
 		-- Is there a tubelib node?
 		if tubelib_NodeDef[name] then
@@ -683,32 +667,36 @@ local function data_maintenance()
 				-- Store again
 				Number2Pos[num] = item
 				-- Add node names which are not stored as file
-				Number2Pos[num].name = name
-				--print("added", num, name)
+				Number2Pos[num].name = name or node.name
 			else
-				--print("wrong number", num, name)
-			end
-		else
-			local key = get_key_str(item.pos)
-			local data = TemporaryRemovedNodes[key]
-			if data then
-				cnt2 = cnt2 + 1
-				-- Store again
-				Number2Pos[data.number] = data
-				--print("restored", data.number, data.name)
-			else
-				--print("no data", num)
+				minetest.log("action", "[Tubelib] DM: DROP   #"..num.." ("..name..") at "..S(item.pos).." - meta num='"..tostring(nnum).."' != db num='"..num.."'")
 			end
 		end
 	end
-	minetest.log("info", "[Tubelib] Data base shrank from "..cnt1.." to "..cnt2.." nodes")
-	minetest.log("info", "[Tubelib] Data maintenance finished")
+
+	-- Bring removed nodes back to life
+	for key,node in pairs(TemporaryRemovedNodes) do
+		if node.number and node.name and node.pos and is_passable(node.pos) then
+			minetest.add_node(node.pos, {name = node.name, param2 = node.param2 or 0})
+			local meta = minetest.get_meta(node.pos)
+			meta:set_string("number", node.number)
+			minetest.log("action", "[Tubelib] DM: Bring removed nodes back to life #"..node.number.." ("..node.name..") at "..S(node.pos))
+			TemporaryRemovedNodes[key] = nil
+		end
+	end
+
+	minetest.log("action", "[Tubelib] Data maintenance finished: "..cnt1.." -> "..cnt2.." nodes")
+
 end
 
 generate_Key2Number()
 
--- maintain data after 2 seconds
-minetest.after(2, data_maintenance)
+-- maintain data after 2 seconds (can be disabled via tubelib_skip_data_maintenance = true)
+if not minetest.settings:get_bool("tubelib_skip_data_maintenance", false) then
+	minetest.after(2, data_maintenance)
+else
+	minetest.log("action", "[Tubelib] Data maintenance skipped (tubelib_skip_data_maintenance=true)")
+end
 
 -- Chat command: /tubelib_pos <number>  →  shows world coordinates of a block
 minetest.register_chatcommand("tubelib_pos", {

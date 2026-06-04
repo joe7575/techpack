@@ -8,14 +8,14 @@
 	AGPL v3
 	See LICENSE.txt for more information
 
-	gate_chest.lua:
+	gate_controller.lua:
 
 	A chest-based gate controller. Up to 8 gate/door blocks are physically
 	removed from the world and stored in the chest inventory when the gate
 	opens ("off"). Sending "on" places all stored blocks back into the world.
 
 	Number2Pos entries for the managed gate blocks are intentionally left to
-	expire via data_maintenance; the gate chest stores all needed data
+	expire via data_maintenance; the gate controller stores all needed data
 	(position, name, param2) in its own persistent metadata.
 
 ]]--
@@ -129,7 +129,7 @@ local function configure(pos, numbers)
 	meta:set_string("numbers",   numbers)
 	meta:set_string("state",     "closed")
 	meta:set_string("infotext",
-		S("Gate Chest") .. " " .. own ..
+		S("Gate Controller") .. " " .. own ..
 		" (" .. #positions .. " " .. S("block(s) configured") .. ")")
 	meta:set_string("formspec", formspec(meta))
 end
@@ -138,28 +138,28 @@ end
 -- Node registration
 ------------------------------------------------------------------------
 
-minetest.register_node("tubelib_addons2:gate_chest", {
-	description = S("Gate Chest"),
+minetest.register_node("tubelib_addons2:gate_controller", {
+	description = S("Gate Controller"),
 	tiles = {
 		-- up, down, right, left, back, front
 		"tubelib_addons3_chest_bottom.png",
 		"tubelib_addons3_chest_bottom.png",
-		"tubelib_addons3_chest_side.png",
-		"tubelib_addons3_chest_side.png",
-		"tubelib_addons3_chest_side.png",
-		"tubelib_addons3_chest_front.png",
+		"tubelib_addons3_chest_side.png^tubelib_addons2_doorcontroller.png",
+		"tubelib_addons3_chest_side.png^tubelib_addons2_doorcontroller.png",
+		"tubelib_addons3_chest_side.png^tubelib_addons2_doorcontroller.png",
+		"tubelib_addons3_chest_side.png^tubelib_addons2_doorcontroller.png",
 	},
 
 	after_place_node = function(pos, placer)
 		local meta = minetest.get_meta(pos)
 		local inv  = meta:get_inventory()
 		inv:set_size("main", NUM_SLOTS)
-		local number = tubelib.add_node(pos, "tubelib_addons2:gate_chest")
+		local number = tubelib.add_node(pos, "tubelib_addons2:gate_controller")
 		meta:set_string("number",    number)
 		meta:set_string("owner",     placer:get_player_name())
 		meta:set_string("state",     "closed")
 		meta:set_string("positions", minetest.serialize({}))
-		meta:set_string("infotext",  S("Gate Chest") .. " " .. number)
+		meta:set_string("infotext",  S("Gate Controller") .. " " .. number)
 		meta:set_string("formspec",  formspec(meta))
 	end,
 
@@ -213,7 +213,7 @@ minetest.register_node("tubelib_addons2:gate_chest", {
 })
 
 minetest.register_craft({
-	output = "tubelib_addons2:gate_chest",
+	output = "tubelib_addons2:gate_controller",
 	recipe = {
 		{"group:wood",       "default:steel_ingot", "group:wood"},
 		{"tubelib:wlanchip", "default:chest",       "tubelib:wlanchip"},
@@ -227,7 +227,7 @@ minetest.register_craft({
 -- "off" → open gate  (remove blocks into the inventory)
 ------------------------------------------------------------------------
 
-tubelib.register_node("tubelib_addons2:gate_chest", {}, {
+tubelib.register_node("tubelib_addons2:gate_controller", {}, {
 	on_recv_message = function(pos, topic, payload)
 		if topic == "on" then
 			close_gate(pos)
@@ -236,3 +236,5 @@ tubelib.register_node("tubelib_addons2:gate_chest", {}, {
 		end
 	end,
 })
+
+minetest.register_alias("tubelib_addons2:gate_chest", "tubelib_addons2:gate_controller")

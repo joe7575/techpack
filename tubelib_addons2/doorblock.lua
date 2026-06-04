@@ -94,25 +94,6 @@ for idx,pgn in ipairs(tPgns) do
 	})
 
 	not_in_inventory = 1
-
-	tubelib.register_node("tubelib_addons2:doorblock"..idx, {}, {
-		on_recv_message = function(pos, topic, payload)
-			local node = minetest.get_node(pos)
-			if topic == "on" then
-				local meta = minetest.get_meta(pos)
-				local number = meta:get_string("number")
-				minetest.remove_node(pos)
-				tubelib.temporary_remove_node(pos, number, node.name, {param2 = node.param2})
-			elseif topic == "off" then
-				local data = tubelib.temporary_remove_node(pos)
-				if data then
-					minetest.add_node(pos, {name = data.name, param2 = data.param2})
-					local meta = minetest.get_meta(pos)
-					meta:set_string("number", data.number)
-				end
-			end
-		end,
-	})
 end
 
 minetest.register_craft({

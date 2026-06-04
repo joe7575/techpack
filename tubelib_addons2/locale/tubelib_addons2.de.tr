@@ -1,25 +1,70 @@
 # textdomain: tubelib_addons2
+
+##[ accesscontrol.lua ]##
 Door block numbers:=Türblocknummern:
 Access code (4 digits):=Zugangscode (4 Zahlen):
 Enter access code=Zugangscode eingeben
 OK=OK
 Tubelib Access Lock=Tubelib Zugangsschloss
 Tubelib Access Lock, Enter access code=Tubelib Zugangsschloss, Zugangscode eingeben
+
+##[ accesscontrol.lua ]##
+##[ colorlamp.lua ]##
+##[ doorblock.lua ]##
+##[ gate_chest.lua ]##
+##[ gateblock.lua ]##
+##[ logic_not.lua ]##
+##[ mesecons_converter.lua ]##
+##[ repeater.lua ]##
 Save=Speichern
+
+##[ ceilinglamp.lua ]##
 Tubelib Ceiling Lamp=Tubelib Deckenleuchte
+
+##[ colorlamp.lua ]##
+##[ colorlamp_ud.lua ]##
 Tubelib Color Lamp=Tubelib Farblampe
+
+##[ doorblock.lua ]##
 Tubelib Door Block=Tubelib Türblock
 Select texture=Wähle Textur
+
+##[ gate_chest.lua ]##
+Gate: open=Tor: offen
+Gate: closed=Tor: geschlossen
+Gate block number(s)=Torblocknummer(n)
+Load gate=Lade Tor
+Gate Controller=Tor Controller
+block(s) configured=Block/Blöcke konfiguriert
+
+##[ gateblock.lua ]##
 Tubelib Gate Block=Tubelib Torblock
+
+##[ industriallamp.lua ]##
 Tubelib Industrial Lamp=Tubelib Industrielampe
+
+##[ invisiblelamp.lua ]##
 Tubelib Invisible Lamp=Tubelib Unsichtbare Lampe
+
+##[ logic_not.lua ]##
 #WARNING: AUTOTRANSLATED BY GOOGLE TRANSLATE
 Tubelib Logic Not=Tubelib Logisches NOT
-Tubelib Mesecons Converter=Tubelib Mesecons Konverter
-: fault (overloaded)=: Fehler (überlastet)
+
+##[ logic_not.lua ]##
+##[ mesecons_converter.lua ]##
+##[ repeater.lua ]##
 Destination node numbers=Zielknotennummern
 : not connected=: nicht verbunden
 : connected with=: verbunden mit
+
+##[ mesecons_converter.lua ]##
+Tubelib Mesecons Converter=Tubelib Mesecons Konverter
+
+##[ mesecons_converter.lua ]##
+##[ repeater.lua ]##
+: fault (overloaded)=: Fehler (überlastet)
+
+##[ programmer.lua ]##
 [Tubelib Programmer] programmer reset=[Tubelib Programmer] Programmer zurückgesetzt
 [Tubelib Programmer] number=[Tubelib Programmer] Nummer
 read=lesen
@@ -28,8 +73,12 @@ read=lesen
 [Tubelib Programmer] node programmed!=[Tubelib Programmer] Knoten programmiert!
 [Tubelib Programmer] Error: programmer not supported!=[Tubelib Programmer] Fehler: Programmer wird nicht unterstützt!
 Tubelib Programmer=Tubelib Programmer
+
+##[ repeater.lua ]##
 #WARNING: AUTOTRANSLATED BY GOOGLE TRANSLATE
 Tubelib Repeater=Tubelib Repeater
+
+##[ sequencer.lua ]##
 Run endless=Laufe endlos
 help=Hilfe
 Sequencer Help=Sequenzer-Hilfe
@@ -41,8 +90,20 @@ If endless is set, the Sequencer@nrestarts again and again.=Wenn endlos eingeste
 The command '  ' does nothing,@nonly consuming the offset time.=Der Befehl '' macht nichts,@nverbraucht nur die Wartezeit.
 exit=raus
 Tubelib Sequencer=Tubelib Sequenzer
+
+##[ sequencer.lua ]##
+##[ timer.lua ]##
 Command=Befehl
+
+##[ streetlamp.lua ]##
 Tubelib Street Lamp=Tubelib Straßenlaterne
+
+##[ timer.lua ]##
 Time=Zeit
 Number(s)=Nummer(n)
 Tubelib Timer=Tubelib Timer
+
+
+##### not used anymore #####
+
+Gate Chest=Tor Controller
