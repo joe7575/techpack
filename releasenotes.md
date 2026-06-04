@@ -1,6 +1,26 @@
 # Release Notes for ModPack TechPack [techpack]
 
 
+## V2.07.00 (2026-06-04)
+
+### Additions
+- SmartLine: T-FlipFlop node added
+- tubelib_addons2: Gate Controller node added (manages gate/door blocks exclusively)
+- Add `/tubelib_pos` chat command to look up world coordinates of a block by its node number
+
+### Removals
+
+### Changes
+- Compatibility fixes for Luanti 5.16 (migrated from Minetest 5.6)
+- Forceload formspec now shows only the owner's blocks; Status column added (Loaded/Pending)
+
+### Fixes
+- SmartLine: Fix T-FlipFlop ring wiring stack overflow
+- Fix block loss: gate/door blocks now managed exclusively via gate_controller
+- tubelib: persist TemporaryRemovedNodes immediately on gate block state change
+- tubelib forceload: fix on_joinplayer clearing + status display for Luanti 5.16.1
+
+
 ## V2.06.00 (2021-06-06)
 
 ### Additions
