@@ -81,8 +81,8 @@ local function open_gate(pos)
 		-- only act if the slot is currently empty (avoid double-collect)
 		if inv:get_stack("main", i):is_empty() then
 			local node = minetest.get_node(entry.pos)
-			if node.name == entry.name then
-				inv:set_stack("main", i, ItemStack(entry.name))
+			if node and node.name then
+				inv:set_stack("main", i, ItemStack(node.name))
 				minetest.remove_node(entry.pos)
 			end
 		end
