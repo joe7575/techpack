@@ -12,7 +12,7 @@
 
 	A chest-based gate controller. Up to 8 gate/door blocks are physically
 	removed from the world and stored in the chest inventory when the gate
-	opens ("off"). Sending "on" places all stored blocks back into the world.
+	opens ("on"). Sending "off" places all stored blocks back into the world.
 
 	Number2Pos entries for the managed gate blocks are intentionally left to
 	expire via data_maintenance; the gate controller stores all needed data
@@ -223,16 +223,16 @@ minetest.register_craft({
 
 ------------------------------------------------------------------------
 -- Tubelib message interface
--- "on"  → close gate (place blocks back into the world)
--- "off" → open gate  (remove blocks into the inventory)
+-- "off" → close gate (place blocks back into the world)
+-- "on"  → open gate  (remove blocks into the inventory)
 ------------------------------------------------------------------------
 
 tubelib.register_node("tubelib_addons2:gate_controller", {}, {
 	on_recv_message = function(pos, topic, payload)
 		if topic == "on" then
-			close_gate(pos)
-		elseif topic == "off" then
 			open_gate(pos)
+		elseif topic == "off" then
+			close_gate(pos)
 		end
 	end,
 })
