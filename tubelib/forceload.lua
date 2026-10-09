@@ -198,9 +198,20 @@ if tubelib.max_num_forceload_blocks > 0 then
 end
 
 minetest.register_on_joinplayer(function(player)
+	local lPos = {}
 	for _,pos in ipairs(get_pos_list(player)) do
-		minetest.forceload_block(pos, true)
+		local node = minetest.get_node_or_nil(pos)
+		if node == nil or node.name == "tubelib:forceload" then
+			-- area not loaded yet or block still present
+			minetest.forceload_block(pos, true)
+			lPos[#lPos+1] = pos
+		else
+			-- Block was removed outside of after_dig_node (e.g. WorldEdit):
+			-- free the area so a new block can be placed
+			minetest.forceload_free_block(pos, true)
+		end
 	end
+	player:get_meta():set_string("tubelib_forceload_blocks", minetest.serialize(lPos))
 end)
 
 minetest.register_on_leaveplayer(function(player)
