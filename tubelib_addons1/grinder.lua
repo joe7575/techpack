@@ -86,11 +86,11 @@ local function grinding(pos, meta, inv)
 	for _,stack in ipairs(inv:get_list("src") or {}) do
 		if not stack:is_empty() then
 			local name = stack:get_name()
-			if Recipes[name] then
-				local output = Recipes[name]
-				if inv:room_for_item("dst", output) then
-					inv:add_item("dst", output)
-					inv:remove_item("src", ItemStack(name))
+			local recipe = Recipes[name]
+			if recipe then
+				if stack:get_count() >= recipe.inp_num and inv:room_for_item("dst", recipe.output) then
+					inv:add_item("dst", recipe.output)
+					inv:remove_item("src", ItemStack(name .. " " .. recipe.inp_num))
 					State:keep_running(pos, meta, COUNTDOWN_TICKS)
 				else
 					State:blocked(pos, meta)
@@ -312,7 +312,8 @@ if minetest.global_exists("unified_inventory") then
 end
 
 function tubelib.add_grinder_recipe(recipe)
-	Recipes[recipe.input] =  ItemStack(recipe.output)
+	local name, num = unpack(string.split(recipe.input, " ", false, 1))
+	Recipes[name] = {output = ItemStack(recipe.output), inp_num = tonumber(num) or 1}
 	if minetest.global_exists("unified_inventory") then
 		recipe.items = {recipe.input}
 		recipe.type = "grinding"
@@ -365,16 +366,19 @@ end
 
 function tubelib.remove_grinder_recipe(recipe)
 	if recipe.input and recipe.output then
-		if Recipes[recipe.input]:get_name() ~= ItemStack(recipe.output):get_name() then
+		local name = unpack(string.split(recipe.input, " ", false, 1))
+		local entry = Recipes[name]
+		if entry and entry.output:get_name() ~= ItemStack(recipe.output):get_name() then
 			return
 		end
-		Recipes[recipe.input] = nil
+		Recipes[name] = nil
 	elseif recipe.input then
-		Recipes[recipe.input] = nil
+		local name = unpack(string.split(recipe.input, " ", false, 1))
+		Recipes[name] = nil
 	elseif recipe.output then
 		local output_name = ItemStack(recipe.output):get_name()
-		for input_name, output in pairs(Recipes) do
-			if output:get_name() == output_name then
+		for input_name, entry in pairs(Recipes) do
+			if entry.output:get_name() == output_name then
 				Recipes[input_name] = nil
 			end
 		end
@@ -471,7 +475,25 @@ for _,v in pairs({
 		"pomegranate",
 		"willow"
 	 }) do
-		if minetest.get_modpath(v) then tubelib.add_grinder_recipe({input=v .. ":trunk", output=v .. ":leaves 8"}) end
+		if minetest.get_modpath(v) then 
+			tubelib.add_grinder_recipe({input=v .. ":trunk", output=v .. ":leaves 8"})
+		end
 end
 
-if minetest.get_modpath("jacaranda") then tubelib.add_grinder_recipe({input="jacaranda:trunk", output = "jacaranda:blossom_leaves 8"}) end
+if minetest.get_modpath("jacaranda") then 
+	tubelib.add_grinder_recipe({input="jacaranda:trunk", output = "jacaranda:blossom_leaves 8"})
+end
+
+if minetest.get_modpath("farming") then
+	tubelib.add_grinder_recipe({input="farming:wheat 3", output="farming:flour"})
+	tubelib.add_grinder_recipe({input="farming:seed_wheat 6", output="farming:flour"})
+	tubelib.add_grinder_recipe({input="farming:barley 3", output="farming:flour"})
+	tubelib.add_grinder_recipe({input="farming:seed_barley 6", output="farming:flour"})
+	tubelib.add_grinder_recipe({input="farming:rye 3", output="farming:flour"})
+	tubelib.add_grinder_recipe({input="farming:seed_rye 6", output="farming:flour"})
+	tubelib.add_grinder_recipe({input="farming:rice 3", output="farming:rice_flour"})
+	tubelib.add_grinder_recipe({input="farming:seed_rice 6", output="farming:rice_flour"})
+	tubelib.add_grinder_recipe({input="farming:oat 3", output="farming:flour"})
+	tubelib.add_grinder_recipe({input="farming:seed_oat 6", output="farming:flour"})
+	tubelib.add_grinder_recipe({input="farming:seed_cotton 3", output="basic_materials:oil_extract"})
+end
